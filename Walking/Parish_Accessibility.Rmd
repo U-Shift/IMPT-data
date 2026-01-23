@@ -1,0 +1,203 @@
+---
+title: "Accessibility (parish)"
+output: html_document
+---
+
+> This script assumes variables at `Global.Rmd` have been loaded
+
+```{r}
+library(readxl)
+library(dplyr)
+library(mapview)
+```
+
+# Indicators
+
+## Number of jobs reachable in 15 minutes
+
+```{r}
+data_jobs_reachable = read_excel("/data/BaseDados_PMMUS/3-CondiçõesAcesso/3\ -\ Condições\ Acesso.xlsx", sheet="trabalho")
+View(data_jobs_reachable)
+
+parish_jobs_reachable  = data_jobs_reachable |>
+  left_join(grid_hex_pop |> select(ID, N_INDIVIDU) |> sf::st_drop_geometry(), by=c("id"="ID")) |>
+  group_by(concelho, freg) |> 
+  summarise(jobs_reachable = weighted.mean(WALK, N_INDIVIDU))
+
+# Normalize using min-max normalization
+parish_access_jobs = parish_jobs_reachable |>
+  mutate(access = (jobs_reachable - min(jobs_reachable)) / (max(jobs_reachable) - min(jobs_reachable)))
+```
+
+## Travel time to nearest school
+
+```{r}
+data_nearest_school = read_excel("/data/BaseDados_PMMUS/3-CondiçõesAcesso/3\ -\ Condições\ Acesso.xlsx", sheet="p_esc") |>
+  mutate(WALK = as.numeric(WALK))
+View(data_nearest_school)
+
+parish_time_school = data_nearest_school |>
+  left_join(grid_hex_pop |> select(ID, N_INDIVIDU) |> sf::st_drop_geometry(), by=c("id"="ID")) |>
+  group_by(concelho, freg) |> 
+  summarise(time_school = weighted.mean(WALK, N_INDIVIDU, na.rm=TRUE))
+
+parish_ratio_access_school = data_nearest_school |>
+  left_join(grid_hex_pop |> select(ID, N_INDIVIDU) |> sf::st_drop_geometry(), by=c("id"="ID")) |>
+  mutate(accessible = ifelse(is.na(WALK), 0, 1)) |>
+  group_by(concelho, freg) |> 
+  summarise(ratio_access_school = sum(accessible * N_INDIVIDU) / sum(N_INDIVIDU))
+
+# Normalize combining time and ratio of access
+parish_access_school = parish_time_school |>
+  left_join(parish_ratio_access_school, by=c("concelho", "freg")) |>
+  mutate(access = ratio_access_school * (1-time_school/15)) |>
+  mutate(access = ifelse(is.na(access), 0, access))
+```
+
+
+## Travel time to primary health care
+
+```{r}
+data_nearest_health = read_excel("/data/BaseDados_PMMUS/3-CondiçõesAcesso/3\ -\ Condições\ Acesso.xlsx", sheet="csp") |>
+  mutate(WALK = as.numeric(WALK))
+View(data_nearest_health)
+
+parish_time_health = data_nearest_health |>
+  left_join(grid_hex_pop |> select(ID, N_INDIVIDU) |> sf::st_drop_geometry(), by=c("id"="ID")) |>
+  group_by(concelho, freg) |> 
+  summarise(time_health = weighted.mean(WALK, N_INDIVIDU, na.rm=TRUE))
+
+parish_ratio_access_health = data_nearest_health |>
+  left_join(grid_hex_pop |> select(ID, N_INDIVIDU) |> sf::st_drop_geometry(), by=c("id"="ID")) |>
+  mutate(accessible = ifelse(is.na(WALK), 0, 1)) |>
+  group_by(concelho, freg) |> 
+  summarise(ratio_access_health = sum(accessible * N_INDIVIDU) / sum(N_INDIVIDU))
+
+parish_access_health = parish_time_health |>
+  left_join(parish_ratio_access_health, by=c("concelho", "freg")) |>
+  # (1-time_health/15) converts time to a 0-1 scale (0 is 15 minutes or more, 1 is 0 minutes)
+  mutate(access = ratio_access_health * (1-time_health/15)) |> 
+  mutate(access = ifelse(is.na(access), 0, access))
+```
+
+
+## Travel time to supermarket
+
+```{r}
+data_nearest_supermarket = read_excel("/data/BaseDados_PMMUS/3-CondiçõesAcesso/3\ -\ Condições\ Acesso.xlsx", sheet="superm") |>
+  mutate(WALK = as.numeric(WALK))
+View(data_nearest_supermarket)
+
+parish_time_supermarket = data_nearest_supermarket |>
+  left_join(grid_hex_pop |> select(ID, N_INDIVIDU) |> sf::st_drop_geometry(), by=c("id"="ID")) |>
+  group_by(concelho, freg) |> 
+  summarise(time_supermarket = weighted.mean(WALK, N_INDIVIDU, na.rm=TRUE))
+
+parish_ratio_access_supermarket = data_nearest_supermarket |>
+  left_join(grid_hex_pop |> select(ID, N_INDIVIDU) |> sf::st_drop_geometry(), by=c("id"="ID")) |>
+  mutate(accessible = ifelse(is.na(WALK), 0, 1)) |>
+  group_by(concelho, freg) |> 
+  summarise(ratio_access_supermarket = sum(accessible * N_INDIVIDU) / sum(N_INDIVIDU))
+
+parish_access_supermarket = parish_time_supermarket |>
+  left_join(parish_ratio_access_supermarket, by=c("concelho", "freg")) |>
+  mutate(access = ratio_access_supermarket * (1-time_supermarket/15)) |>
+  mutate(access = ifelse(is.na(access), 0, access))
+```
+
+# Factor weighting
+
+```{r}
+parish_accessibility = parish_access_jobs |>
+  select(concelho, freg, access_jobs = access) |>
+  left_join(parish_access_school |> select(concelho, freg, access_school = access), by=c("concelho", "freg")) |>
+  left_join(parish_access_health |> select(concelho, freg, access_health = access), by=c("concelho", "freg")) |>
+  left_join(parish_access_supermarket |> select(concelho, freg, access_supermarket = access), by=c("concelho", "freg"))
+```
+
+
+## Equal weights
+
+Assign equal weights to all accessibility indicators
+
+## PCA
+
+Perform PCA to derive weights from data
+
+> Based on https://www.datacamp.com/tutorial/pca-analysis-r
+
+```{r}
+# PCA for accessibility indicators
+library(factoextra)
+
+numerical_data = parish_accessibility[,3:6]
+head(numerical_data)
+
+data.pca <- prcomp(data_normalized, center=TRUE, scale.=FALSE) # scale not required as data is already normalized
+summary(data.pca)
+
+data.pca$rotation
+pca_scores = -data.pca$x[,1]
+pca_scores = (pca_scores - min(pca_scores)) / (max(pca_scores) - min(pca_scores))
+```
+
+```{r}
+data.pca$loadings[, 1:2]
+# Scree Plot: Percentage of variance explained by each component
+fviz_eig(data.pca, addlabels = TRUE)
+
+# Biplot: Similarities and dissimilarities between the samples (groups) ab impact of each attribute on each of the principal components
+fviz_pca_var(data.pca, col.var = "black")
+fviz_pca_biplot(data.pca, label = "var", addEllipses=TRUE, ellipse.level=0.95,ggtheme = theme_minimal())
+
+# Cos2: How much each variable is represented in a given component
+fviz_cos2(data.pca, choice = "var", axes = 1:2)
+
+# Biplot + Cos2
+fviz_pca_var(data.pca, col.var = "cos2",
+            gradient.cols = c("black", "orange", "green"),
+            repel = TRUE)
+```
+
+
+
+## Final accessibility score
+
+```{r}
+accessibility_score = parish_accessibility |>
+  mutate(
+    # Equal weights
+    ACCESS_equal_weight = (access_jobs + access_school + access_health + access_supermarket) / 4
+  )
+
+accessibility_score$ACCESS_pca = pca_scores
+
+View(accessibility_score)
+```
+
+```{r}
+library(stringi)
+
+accessibility_score_sf = accessibility_score |>
+  mutate(
+    concelho_match = tolower(stri_trans_general(concelho, "Latin-ASCII")),
+    freg_match = tolower(stri_trans_general(freg, "Latin-ASCII"))
+  ) |>
+  left_join(parishes |> mutate(
+    concelho_match = tolower(stri_trans_general(Concelho, "Latin-ASCII")),
+    freg_match = tolower(stri_trans_general(Freguesia, "Latin-ASCII"))
+  ), by=c("concelho_match", "freg_match")) |>
+  select(-concelho_match, -freg_match, -Concelho, -Freguesia) |>
+  sf::st_as_sf()
+
+map = mapview::mapview(accessibility_score_sf, zcol="ACCESS_equal_weight", layer.name="Accessibility Score<br/>(equal weights)") +
+  mapview::mapview(accessibility_score_sf, zcol="ACCESS_pca", layer.name=sprintf(
+    "Accessibility Score<br/>(PCA, %.2f%% var explained)",
+    summary(data.pca)$importance[2,1]*100
+    ))
+map
+
+# mapshot(map, "outputs/accessibility.html", selfcontained = FALSE)
+```
+
+
