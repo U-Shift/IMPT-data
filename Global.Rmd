@@ -34,7 +34,7 @@ municipalities = st_read("/data/mqat/MUNICIPIOSgeo.gpkg") # https://github.com/U
 ```{r}
 # Read shapefile at /data/BaseDados_PMMUS/Grelha/GrelhaHexagAML/GrelhaHexagAML.shp 
 grid_hex = st_read("/data/BaseDados_PMMUS/Grelha/GrelhaHexagAML/GrelhaHexagAML.shp")
-# View(grelha_hex |> sf::st_drop_geometry())
+# View(grid_hex |> sf::st_drop_geometry())
 # mapview::mapview(grelha_hex)
 
 grid_hex_pop = st_read("/data/BaseDados_PMMUS/2-OcupaçãoTerritório/2.1 - DinâmicasDemográficas.gpkg", layer="Grelha_hexag_amL_pop-2021")

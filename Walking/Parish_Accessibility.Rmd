@@ -133,10 +133,10 @@ library(factoextra)
 numerical_data = parish_accessibility[,3:6]
 head(numerical_data)
 
-data.pca <- prcomp(data_normalized, center=TRUE, scale.=FALSE) # scale not required as data is already normalized
+data.pca <- prcomp(numerical_data, center=TRUE, scale.=FALSE) # scale not required as data is already normalized
 summary(data.pca)
 
-data.pca$rotation
+-data.pca$rotation
 pca_scores = -data.pca$x[,1]
 pca_scores = (pca_scores - min(pca_scores)) / (max(pca_scores) - min(pca_scores))
 ```
