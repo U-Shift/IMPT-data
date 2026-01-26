@@ -27,6 +27,7 @@ parish_jobs_reachable  = data_jobs_reachable |>
 # Normalize using min-max normalization
 parish_access_jobs = parish_jobs_reachable |>
   mutate(access = (jobs_reachable - min(jobs_reachable)) / (max(jobs_reachable) - min(jobs_reachable)))
+View(parish_access_jobs)
 ```
 
 ## Travel time to nearest school
