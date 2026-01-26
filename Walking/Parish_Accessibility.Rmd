@@ -16,7 +16,7 @@ library(mapview)
 ## Number of jobs reachable in 15 minutes
 
 ```{r}
-data_jobs_reachable = read_excel("/data/BaseDados_PMMUS/3-CondiçõesAcesso/3\ -\ Condições\ Acesso.xlsx", sheet="trabalho")
+data_jobs_reachable = read_excel("/data/IMPT/BaseDados_PMMUS/3-CondiçõesAcesso/3\ -\ Condições\ Acesso.xlsx", sheet="trabalho")
 View(data_jobs_reachable)
 
 parish_jobs_reachable  = data_jobs_reachable |>
@@ -32,7 +32,7 @@ parish_access_jobs = parish_jobs_reachable |>
 ## Travel time to nearest school
 
 ```{r}
-data_nearest_school = read_excel("/data/BaseDados_PMMUS/3-CondiçõesAcesso/3\ -\ Condições\ Acesso.xlsx", sheet="p_esc") |>
+data_nearest_school = read_excel("/data/IMPT/BaseDados_PMMUS/3-CondiçõesAcesso/3\ -\ Condições\ Acesso.xlsx", sheet="p_esc") |>
   mutate(WALK = as.numeric(WALK))
 View(data_nearest_school)
 
@@ -58,7 +58,7 @@ parish_access_school = parish_time_school |>
 ## Travel time to primary health care
 
 ```{r}
-data_nearest_health = read_excel("/data/BaseDados_PMMUS/3-CondiçõesAcesso/3\ -\ Condições\ Acesso.xlsx", sheet="csp") |>
+data_nearest_health = read_excel("/data/IMPT/BaseDados_PMMUS/3-CondiçõesAcesso/3\ -\ Condições\ Acesso.xlsx", sheet="csp") |>
   mutate(WALK = as.numeric(WALK))
 View(data_nearest_health)
 
@@ -84,7 +84,7 @@ parish_access_health = parish_time_health |>
 ## Travel time to supermarket
 
 ```{r}
-data_nearest_supermarket = read_excel("/data/BaseDados_PMMUS/3-CondiçõesAcesso/3\ -\ Condições\ Acesso.xlsx", sheet="superm") |>
+data_nearest_supermarket = read_excel("/data/IMPT/BaseDados_PMMUS/3-CondiçõesAcesso/3\ -\ Condições\ Acesso.xlsx", sheet="superm") |>
   mutate(WALK = as.numeric(WALK))
 View(data_nearest_supermarket)
 
