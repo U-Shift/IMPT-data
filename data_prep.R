@@ -34,12 +34,20 @@ CAOP_GLPS = CAOP_GLPS |>
   filter(municipio != "Lisboa") |> 
   rbind(freguesias_lx_recortadas)
 
-freguesias = CAOP_GLPS
+# For freguesias with multiple polygons, choose the one with greatest area_ha
+CAOP_GLPS_UNIQUE_dtmnfr = CAOP_GLPS |> 
+  st_drop_geometry() |>
+  group_by(dtmnfr) |>
+  summarise(area_ha = max(area_ha)) |> 
+  ungroup()
+
+freguesias = CAOP_GLPS_UNIQUE_dtmnfr
 
 # mapview(CAOP_GLPS)
 # View(CAOP_GLPS)
 
 st_write(CAOP_GLPS, "/data/IMPT/geo/freguesias_2024.gpkg", delete_dsn = TRUE)
+st_write(CAOP_GLPS_UNIQUE_dtmnfr, "/data/IMPT/geo/freguesias_2024_unique.gpkg", delete_dsn = TRUE)
 
 # group sf by municipio
 municipios = CAOP_GLPS |> 
