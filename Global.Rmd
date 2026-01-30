@@ -11,15 +11,15 @@ library(dplyr)
 
 # Geographical boundaries
 
-## Parishes
+## Districts
 
 ```{r}
-metadata_parishes = readRDS("/data/IMPT/mqat/Metadata_Freguesias.Rds")
-metadata_parishes
+metadata_districts = readRDS("/data/IMPT/mqat/Metadata_Freguesias.Rds")
+metadata_districts
 
-parishes = st_read("/data/IMPT/mqat/FREGUESIASgeo.gpkg") |> # https://github.com/U-Shift/MQAT/raw/refs/heads/main/data/IMPT/Metadata_Freguesias.Rds
-  left_join(metadata_parishes |> select(Dicofre, Freguesia), by="Dicofre")
-# mapview::mapview(parishes, zcol="Concelho")
+districts = st_read("/data/IMPT/mqat/FREGUESIASgeo.gpkg") |> # https://github.com/U-Shift/MQAT/raw/refs/heads/main/data/IMPT/Metadata_Freguesias.Rds
+  left_join(metadata_districts |> select(Dicofre, Freguesia), by="Dicofre")
+# mapview::mapview(districts, zcol="Concelho")
 
 ```
 
