@@ -1,8 +1,0 @@
----
-title: "IMPT"
-output: html_document
----
-
-> This script assumes variables at `Global.Rmd` have been loaded
-
-
