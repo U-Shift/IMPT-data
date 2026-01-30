@@ -69,6 +69,13 @@ library(osmdata)
 # Road network exported using Hot Exports Tool, https://export.hotosm.org/exports/4782f0b8-6778-4c0e-8e4f-97fc62e7f240, to generate .pbf file for r5r
 road_network = st_read("/data/IMPT/geo/IMPT_Road_network.gpkg")
 
+# # filter main roads
+# road_network_base = road_network |>
+#   filter(highway %in% c("primary", "secondary", "tertiary", "trunk", "motorway")) |> 
+#   select(osm_id, name, highway)
+# 
+# # map
+# mapview::mapview(road_network_base, zcol = "highway")
 
 # Trips -------------------------------------------------------------------
 
@@ -275,4 +282,123 @@ od_freguesias_jittered_id = od_freguesias_jittered
 od_freguesias_jittered_id$id = 1:nrow(od_freguesias_jittered_id)
 
 st_write(od_freguesias_jittered_id, "/data/IMPT/trips/od_freguesias_jittered_2024.gpkg", delete_dsn = TRUE)
+
+
+# GTFS data ---------------------------------------------------------------
+
+library(GTFShift)
+library(lubridate)
+
+gtfs_db = data.frame(
+  operator=character(),
+  url=character(),
+  shapes=logical(),
+  outside_area=logical(),
+  calendar_add_years=numeric() # For outdated calendars
+)
+
+# gtfs_db = gtfs_db |> bind_rows(data.frame(
+#   operator="Carris Metropolitana",
+#   url="https://api.carrismetropolitana.pt/gtfs",
+#   shapes=TRUE, outside_area=FALSE, calendar_add_years=NA
+# ))
+# gtfs_db = gtfs_db |> bind_rows(data.frame(
+#   operator="Carris Municipal",
+#   url="https://gateway.carris.pt/gateway/gtfs/api/v2.8/GTFS",
+#   shapes=TRUE, outside_area=FALSE, calendar_add_years=NA
+# ))
+# gtfs_db = gtfs_db |> bind_rows(data.frame(
+#   operator="Comboios de Portugal",
+#   url="https://publico.cp.pt/gtfs/gtfs.zip",
+#   shapes=FALSE, outside_area=TRUE, calendar_add_years=NA
+# ))
+gtfs_db = gtfs_db |> bind_rows(data.frame(
+  operator="MobiCascais",
+  url="https://drive.google.com/u/0/uc?id=13ucYiAJRtu-gXsLa02qKJrGOgDjbnUWX&export=download",
+  shapes=TRUE, outside_area=FALSE, calendar_add_years=NA
+))
+gtfs_db = gtfs_db |> bind_rows(data.frame(
+  operator="Metropolitano de Lisboa",
+  url="https://www.metrolisboa.pt/google_transit/googleTransit.zip",
+  shapes=TRUE, outside_area=FALSE, calendar_add_years=NA
+))
+gtfs_db = gtfs_db |> bind_rows(data.frame(
+  operator="Transtejo Soflusa",
+  url="https://api.transtejo.pt/files/GTFS.zip",
+  shapes=TRUE, outside_area=FALSE, calendar_add_years=NA
+))
+gtfs_db = gtfs_db |> bind_rows(data.frame(
+  operator="Fertagus",
+  url="https://www.fertagus.pt/GTFSTMLzip/Fertagus_GTFS.zip",
+  shapes=TRUE, outside_area=FALSE, calendar_add_years=NA
+))
+gtfs_db = gtfs_db |> bind_rows(data.frame(
+  operator="Transportes Colectivos do Barreiro",
+  url="https://www.tcbarreiro.pt/front/files/sample_gtfs/GTFS-TCB_24.zip?68960872ed168",
+  shapes=TRUE, outside_area=FALSE, calendar_add_years=NA
+))
+gtfs_db = gtfs_db |> bind_rows(data.frame(
+  operator="Metro Transportes do Sul",
+  url="https://mts.pt/imt/MTS-20240129.zip",
+  shapes=TRUE, outside_area=FALSE, calendar_add_years=1
+))
+
+write.csv(gtfs_db, "useful_data/gtfs_db.csv", row.names = FALSE)
+
+
+gtfs_to_aggregate = list()
+for(i in 1:nrow(gtfs_db)){
+  gtfs = gtfs_db[i, ]
+  operator = gtfs$operator
+  message(sprintf("Importing GTFS for %s...", operator))
+  
+  gtfs_imported = GTFShift::load_feed(gtfs$url, create_transfers=FALSE)
+  
+  # Write original GTFS
+  tidytransit::write_gtfs(gtfs_imported, paste0("/data/IMPT/gtfs/original/gtfs_", gsub(" ", "_", tolower(operator)), ".zip"))
+  
+  # No need to fix shapes, as GTFShift::load_feed does that by default
+  # if (gtfs_db$shapes[i] == FALSE) 
+  
+  if (gtfs$outside_area == TRUE) {
+    message("Feed outside area, filtering...")
+    gtfs_imported = tidytransit::filter_feed_by_area(
+      gtfs_imported, 
+      st_bbox(municipios_union)
+    )
+  }
+  
+  if (!is.na(gtfs$calendar_add_years)) {
+    message("Feed with outdated calendar, updating...")
+    gtfs_imported$calendar = gtfs_imported$calendar |> mutate(
+      start_date = date(start_date)+years(gtfs$calendar_add_years),
+      end_date = date(end_date)+years(gtfs$calendar_add_years)
+    )
+    
+    # If gtfs_imported$calendar_dates, also update
+    if ("calendar_dates" %in% names(gtfs_imported)) {
+      gtfs_imported$calendar_dates = gtfs_imported$calendar_dates |> mutate(
+        date = date(date)+years(gtfs$calendar_add_years)
+      )
+    }
+    gtfs_imported = tidytransit::as_tidygtfs(gtfs_imported)
+  }
+  
+  gtfs_to_aggregate = append(gtfs_to_aggregate, list(gtfs_imported))
+  
+  tidytransit::write_gtfs(gtfs_imported, paste0("/data/IMPT/gtfs/processed/gtfs_", gsub(" ", "_", tolower(operator)), ".zip"))
+}
+
+
+# Unify GTFS feeds, creating transfers table
+gtfs_unified = GTFShift::unify(
+  gtfs_to_aggregate, 
+  prefix=TRUE, # Add agency prefix to ids to avoid conflicts
+  store_path="/data/IMPT/gtfs/gtfs_unified_noRouting.zip"
+)
+
+# r5r ---------------------------------------------------------------------
+
+# Addapted from https://u-shift.github.io/Traffic-Simulation-Models/network.html
+
 
