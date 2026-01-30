@@ -246,5 +246,33 @@ assertthat::assert_that(sum(trips_freguesias_2016$Other) == sum(trips_freguesias
 
 saveRDS(trips_freguesias_2024, "/data/IMPT/trips/TRIPSmode_freguesias_2024.Rds")
 
+# Jittering ---------------------------------------------------------------
+# Adaptted from https://u-shift.github.io/Traffic-Simulation-Models/jittering.html
 
+library(odjitter)
+
+# Jitter with disagregation threshold of 200 trips
+od_freguesias_jittered = odjitter::jitter(  
+  od = trips_freguesias_2024,
+  zones = freguesias,
+  subpoints = road_network, 
+  disaggregation_key = "Total",
+  disaggregation_threshold = 200
+)
+
+# Validate calcuations
+assertthat::assert_that(sum(od_freguesias_jittered$Total) == sum(trips_freguesias_2024$Total))
+assertthat::assert_that(sum(od_freguesias_jittered$Walk) == sum(trips_freguesias_2024$Walk))
+assertthat::assert_that(sum(od_freguesias_jittered$Bike) == sum(trips_freguesias_2024$Bike))
+assertthat::assert_that(sum(od_freguesias_jittered$Car) == sum(trips_freguesias_2024$Car))
+assertthat::assert_that(sum(od_freguesias_jittered$PTransit) == sum(trips_freguesias_2024$PTransit))
+assertthat::assert_that(sum(od_freguesias_jittered$Other) == sum(trips_freguesias_2024$Other))
+
+mapview::mapview(od_freguesias_jittered, lwd = 0.2)
+
+# add an id to the jittered pairs, so we can join later
+od_freguesias_jittered_id = od_freguesias_jittered
+od_freguesias_jittered_id$id = 1:nrow(od_freguesias_jittered_id)
+
+st_write(od_freguesias_jittered_id, "/data/IMPT/trips/od_freguesias_jittered_2024.gpkg", delete_dsn = TRUE)
 
