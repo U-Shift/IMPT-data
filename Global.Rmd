@@ -9,25 +9,26 @@ library(sf)
 library(dplyr)
 ```
 
-# Geographical boundaries
+# Polygons
 
 ## Districts
 
 ```{r}
-metadata_districts = readRDS("/data/IMPT/mqat/Metadata_Freguesias.Rds")
-metadata_districts
+districts_names = readRDS("/data/IMPT/mqat/Metadata_Freguesias.Rds")
 
-districts = st_read("/data/IMPT/mqat/FREGUESIASgeo.gpkg") |> # https://github.com/U-Shift/MQAT/raw/refs/heads/main/data/IMPT/Metadata_Freguesias.Rds
-  left_join(metadata_districts |> select(Dicofre, Freguesia), by="Dicofre")
-# mapview::mapview(districts, zcol="Concelho")
+# https://github.com/U-Shift/MQAT/raw/refs/heads/main/data/IMPT/Metadata_Freguesias.Rds
+districts = st_read("/data/IMPT/mqat/FREGUESIASgeo.gpkg") |> 
+  left_join(districts_names |> select(Dicofre, Freguesia), by="Dicofre")
+mapview::mapview(districts, zcol="Concelho")
 
 ```
 
 ## Municipalities
 
 ```{r}
-municipalities = st_read("/data/IMPT/mqat/MUNICIPIOSgeo.gpkg") # https://github.com/U-Shift/MQAT/raw/refs/heads/main/geo/MUNICIPIOSgeo.gpkg
-# mapview::mapview(municipalities)
+# https://github.com/U-Shift/MQAT/raw/refs/heads/main/geo/MUNICIPIOSgeo.gpkg
+municipalities = st_read("/data/IMPT/mqat/MUNICIPIOSgeo.gpkg") 
+mapview::mapview(municipalities)
 ```
 
 ## Grid 
