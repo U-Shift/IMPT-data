@@ -34,11 +34,10 @@ CAOP_GLPS = CAOP_GLPS |>
   filter(municipio != "Lisboa") |> 
   rbind(freguesias_lx_recortadas)
 
-# For freguesias with multiple polygons, choose the one with greatest area_ha
+# For freguesias with multiple polygons, choose the one with greatest area_ha, without loosing other attributes
 CAOP_GLPS_UNIQUE_dtmnfr = CAOP_GLPS |> 
-  st_drop_geometry() |>
   group_by(dtmnfr) |>
-  summarise(area_ha = max(area_ha)) |> 
+  slice_max(order_by = area_ha, n=1, with_ties = FALSE) |>
   ungroup()
 
 freguesias = CAOP_GLPS_UNIQUE_dtmnfr
