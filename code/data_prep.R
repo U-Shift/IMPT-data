@@ -65,6 +65,10 @@ municipios_union = municipios |> sf::st_union() |> sf::st_make_valid()
 st_write(municipios_union, "/data/IMPT/geo/municipios_union_2024.geojson", delete_dsn = TRUE)
 municipios_union = st_read("/data/IMPT/geo/municipios_union_2024.geojson")
 
+# for the bbox (to Copernicus)
+municipios_union_bbox = st_as_sfc(st_bbox(municipios_union))
+st_write(municipios_union_bbox, "/data/IMPT/geo/municipios_union_bbox_2024.geojson", delete_dsn = TRUE)
+
 # OSM data ----------------------------------------------------------------
 
 # Road network exported using Hot Exports Tool, https://export.hotosm.org/exports/4782f0b8-6778-4c0e-8e4f-97fc62e7f240, to generate .pbf file for r5r
@@ -427,6 +431,20 @@ census_points24 = st_read("/data/IMPT/geo/census24_points.gpkg")
 
 
 
+# POIs --------------------------------------------------------------------
+
+pois_pt = st_read("https://github.com/U-Shift/SiteSelection/releases/download/0.1/osm_poi_landuse.gpkg")
+pois = pois_pt[municipios_union,] # spatial filter
+table(pois$group)
+# amenity healthcare    leisure       shop      sport    tourism 
+# 13761        757       3150      11245       2984       1620 
+
+# mapview::mapview(pois, zcol = "group")
+
+# save and load
+st_write(pois, "/data/IMPT/geo/pois_osm2024.gpkg", delete_dsn = TRUE)
+pois = st_read("/data/IMPT/geo/pois_osm2024.gpkg")
+
 # GTFS data ---------------------------------------------------------------
 
 library(GTFShift)
@@ -540,10 +558,32 @@ gtfs_unified = GTFShift::unify(
   store_path="/data/IMPT/gtfs/gtfs_unified_noRouting.zip"
 )
 
+
+# DEM elevation -----------------------------------------------------------
+
+# useful for r5r routing with elevation data, in particular for walking and cycling
+# followed the Coipernicus DEM instructions at https://u-shift.github.io/Traffic-Simulation-Models/network.html#elevation
+
+# check DEM
+dem = terra::rast("/data/IMPT/geo/r5r/GLPS_DEM_COPERNICUS_30_DEM_2026.tif") # rename the extension to .tif !!
+terra::plot(dem)
+terra::res(dem) # 30m resolution
+terra::crs(dem) # WGS84
+
 # r5r ---------------------------------------------------------------------
 
 # Addapted from https://u-shift.github.io/Traffic-Simulation-Models/network.html
 
+
+
+
+
+
+
+# Grid --------------------------------------------------------------------
+
+# Keep using the TML grid, or produce a new one, replicable, with h3?
+# https://u-shift.github.io/Traffic-Simulation-Models/pois.html#hexagonal-using-h3jsr
 
 
 
