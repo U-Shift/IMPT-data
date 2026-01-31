@@ -1,4 +1,4 @@
-# CAOP 2024 para  atualizar as NUT II
+# Data preparation, mainly geometries
 
 library(sf)
 library(dplyr)
@@ -67,7 +67,7 @@ municipios_union = st_read("/data/IMPT/geo/municipios_union_2024.geojson")
 
 # for the bbox (to Copernicus)
 municipios_union_bbox = st_as_sfc(st_bbox(municipios_union))
-st_write(municipios_union_bbox, "/data/IMPT/geo/municipios_union_bbox_2024.geojson", delete_dsn = TRUE)
+st_write(municipios_union_bbox, st, delete_dsn = TRUE)
 
 # OSM data ----------------------------------------------------------------
 
@@ -75,17 +75,20 @@ st_write(municipios_union_bbox, "/data/IMPT/geo/municipios_union_bbox_2024.geojs
 road_network = st_read("/data/IMPT/geo/IMPT_Road_network.gpkg")
 
 # # filter main roads
-# road_network_base = road_network |>
-#   filter(highway %in% c("primary", "secondary", "tertiary", "trunk", "motorway")) |> 
-#   select(osm_id, name, highway)
-# 
-# # map# from polygons to points
-census_poitns = census |> 
-  st_transform(4326) |> # make sue it is in universal CRS
-  st_centroid()
-plot(census_poitns) # census units in points
-names(census_poitns)
-# mapview::mapview(road_network_base, zcol = "highway")
+# 1-4
+road_network_main = road_network |>
+  filter(highway %in% c("primary", "secondary", "tertiary", "trunk", "motorway")) |>
+  select(osm_id, name, highway)
+mapview::mapview(road_network_main, zcol = "highway")
+
+# filter even more roads
+# 1-3
+road_network_base = road_network_main |>
+  filter(!highway %in% "tertiary")
+mapview::mapview(road_network_base, zcol = "highway")
+
+st_write(road_network_main, "/data/IMPT/geo/road_network_main.gpkg", delete_dsn = TRUE)
+st_write(road_network_base, "/data/IMPT/geo/road_network_base.gpkg", delete_dsn = TRUE)
 
 # Trips -------------------------------------------------------------------
 
