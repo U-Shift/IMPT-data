@@ -169,6 +169,8 @@ all_dicofre_conversion_weight = all_dicofre_conversion_weight |>
   bind_rows(all_dicofre_conversion_weight_subset) |> 
   select(-area_change)
 
+rm(all_dicofre_conversion_weight_subset)
+
 # save
 write.csv(all_dicofre_conversion, "useful_data/dicofre_16_24_conversion_full.csv", row.names = FALSE)
 saveRDS(all_dicofre_conversion, "useful_data/dicofre_16_24_conversion_full.Rds")
@@ -411,15 +413,17 @@ census_points21 = Census21_BGRI |>
 plot(census_points21$geom) # census units in points
 names(census_points21)
 
-# replace the old dicofre by the new ones, using a geometric operation (intersect?)
-census_points = census_points21 |> 
-  left_join(all_dicofre_conversion, by = c("DTMNFR21" = "dtmnfr16"))
-
-census_points_transform = census_points |> 
-  st_drop_geometry() |> 
-  group_by(c(1:10, 48)) |> 
-  summarise_all()
-
+# create a new variable dicofre24 that match the freguesias spatially intersection the census points with the freguesias polygons
+census_points24 = census_points21 |> 
+  st_join(freguesias |> select(dtmnfr, freguesia, municipio), join = st_intersects, left=TRUE) |> 
+  rename(dicofre24 = dtmnfr) |> 
+  mutate(id = BGRI2021) |> 
+  #move id var for the beginning
+  select(id, everything())
+ 
+# save
+st_write(census_points24, "/data/IMPT/geo/census24_points.gpkg", delete_dsn = TRUE)
+census_points24 = st_read("/data/IMPT/geo/census24_points.gpkg")
 
 
 
