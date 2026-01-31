@@ -9,3 +9,7 @@ When creating a new folder, please make sure to run the command below to set the
 ```bash
 $ chmod 777 /data/IMPT/folderName
 ```
+
+## Load data
+
+Please use `data_load.R` to load the already preprocessed data.
