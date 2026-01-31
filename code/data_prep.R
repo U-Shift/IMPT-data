@@ -63,7 +63,7 @@ municipios = st_read("/data/IMPT/geo/municipios_2024.gpkg")
 # for the whole limit (to HOT export tool)
 municipios_union = municipios |> sf::st_union() |> sf::st_make_valid()
 st_write(municipios_union, "/data/IMPT/geo/municipios_union_2024.geojson", delete_dsn = TRUE)
-
+municipios_union = st_read("/data/IMPT/geo/municipios_union_2024.geojson")
 
 # OSM data ----------------------------------------------------------------
 
@@ -91,6 +91,9 @@ trips_freguesias_2016_sf = trips_freguesias_2016 |>
   st_as_sf(crs=4326)
 
 
+## conversion --------------------------------------------------------------
+
+# Identify freguesias that were created or removed between 2016 and 2024
 difference_created = setdiff(freguesias$dtmnfr, trips_freguesias_2016_sf$Origin_dicofre16)
 difference_removed = setdiff(trips_freguesias_2016_sf$Origin_dicofre16, freguesias$dtmnfr)
 
@@ -111,8 +114,26 @@ conversion_dicofre = conversion_dicofre |> bind_rows(data.frame(old="111123", ne
 conversion_dicofre = conversion_dicofre |> bind_rows(data.frame(old="111126", new="111130"))
 conversion_dicofre = conversion_dicofre |> bind_rows(data.frame(old="111126", new="111133"))
 
-write.csv(conversion_dicofre, "useful_data/dicofre_16_24_conversion.csv")
+write.csv(conversion_dicofre, "useful_data/dicofre_16_24_conversion.csv", row.names = FALSE)
+conversion_dicofre = read.csv("useful_data/dicofre_16_24_conversion.csv")
 
+## create a useful conversion dicofre with all, even the ones that did not change
+freguesias16 = trips_freguesias_2016 |> 
+  select(Origin_dicofre16) |>
+  distinct() |>
+  rename(dtmnfr16 = Origin_dicofre16)
+
+all_dicofre_conversion = freguesias16 |> 
+  filter(!dtmnfr16 %in% conversion_dicofre$old) |> 
+  mutate(dtmnfr24 = dtmnfr16) |>
+  bind_rows(conversion_dicofre |> 
+              mutate(old = as.character(old),
+                     new = as.character(new)) |>
+              rename(dtmnfr16 = old, dtmnfr24 = new))
+
+write.csv(all_dicofre_conversion, "useful_data/dicofre_16_24_conversion_full.csv", row.names = FALSE)
+saveRDS(all_dicofre_conversion, "useful_data/dicofre_16_24_conversion_full.Rds")
+all_dicofre_conversion = readRDS("useful_data/dicofre_16_24_conversion_full.Rds")
 
 # Adjust trips to new dicofre ids
 trips_freguesias_to_convert = trips_freguesias_2016 |> filter(
@@ -259,7 +280,7 @@ trips_freguesias_2024 = readRDS("/data/IMPT/trips/TRIPSmode_freguesias_2024.Rds"
 # Jittering ---------------------------------------------------------------
 # Adaptted from https://u-shift.github.io/Traffic-Simulation-Models/jittering.html
 
-remotes::install_github("itsleeds/odjitter", subdir = "r")
+# remotes::install_github("itsleeds/odjitter", subdir = "r")
 library(odjitter)
 
 # NÃO SEI SE É PRECISO UM setseed(42) para termos sempre o mesmo resultado...
@@ -324,6 +345,36 @@ st_write(od_freguesias_jittered_OR_geo, "/data/IMPT/trips/od_freguesias_jittered
 st_write(od_freguesias_jittered_DE_geo, "/data/IMPT/trips/od_freguesias_jittered200_DE.gpkg", delete_dsn = TRUE)
 od_freguesias_jittered_OR_geo = st_read("/data/IMPT/trips/od_freguesias_jittered200_OR.gpkg")
 od_freguesias_jittered_DE_geo = st_read("/data/IMPT/trips/od_freguesias_jittered200_DE.gpkg")
+
+
+
+# Census 21 data ----------------------------------------------------------
+
+## download and extract zip for /data/IMPT folder
+# ceunsus_url = "https://mapas.ine.pt/download/filesGPG/2021/nuts3/BGRI21_170.zip"
+# temp <- "/data/IMPT/original/census2021.zip"
+# download.file(ceunsus_url, temp, mode = "wb")
+# unzip(temp, exdir = "/data/IMPT/original/")
+Census21_BGRI = st_read("/data/IMPT/original/BGRI21_170.gpkg")
+
+## make sure there is no polygon missing or exclude extra ones
+# mapview::mapview(Census21_BGRI) + mapview(municipios_union, col.regions = "red")
+# they are the same areas!
+
+# from polygons to points
+census_poitns = Census21_BGRI |> 
+  st_centroid() |> 
+  st_transform(4326) # make sue it is in universal CRS
+plot(census_poitns$geom) # census units in points
+names(census_poitns)
+
+# replace the old dicofre by the new ones, using a geometric operation (intersect?)
+
+
+
+
+
+
 
 # GTFS data ---------------------------------------------------------------
 
