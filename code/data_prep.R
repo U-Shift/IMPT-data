@@ -75,7 +75,12 @@ road_network = st_read("/data/IMPT/geo/IMPT_Road_network.gpkg")
 #   filter(highway %in% c("primary", "secondary", "tertiary", "trunk", "motorway")) |> 
 #   select(osm_id, name, highway)
 # 
-# # map
+# # map# from polygons to points
+census_poitns = census |> 
+  st_transform(4326) |> # make sue it is in universal CRS
+  st_centroid()
+plot(census_poitns) # census units in points
+names(census_poitns)
 # mapview::mapview(road_network_base, zcol = "highway")
 
 # Trips -------------------------------------------------------------------
@@ -119,6 +124,7 @@ conversion_dicofre = read.csv("useful_data/dicofre_16_24_conversion.csv")
 
 ## create a useful conversion dicofre with all, even the ones that did not change
 freguesias16 = trips_freguesias_2016 |> 
+  
   select(Origin_dicofre16) |>
   distinct() |>
   rename(dtmnfr16 = Origin_dicofre16)
@@ -131,9 +137,46 @@ all_dicofre_conversion = freguesias16 |>
                      new = as.character(new)) |>
               rename(dtmnfr16 = old, dtmnfr24 = new))
 
+# provide a weight based on the area changed, for the ones the same, weight = 1
+
+all_dicofre_conversion_weight = all_dicofre_conversion |>
+  left_join(
+    freguesias |> st_drop_geometry() |> select(dtmnfr, area_ha) |> rename(dtmnfr16 = dtmnfr, area_ha_16 = area_ha),
+    by=c("dtmnfr16")
+  ) |>
+  left_join(
+    freguesias |> st_drop_geometry() |> select(dtmnfr, area_ha) |> rename(dtmnfr24 = dtmnfr, area_ha_24 = area_ha),
+    by=c("dtmnfr24")
+  ) |>
+  mutate(
+    area_change = abs(area_ha_24 - area_ha_16),
+    weight = ifelse(area_change == 0, 1, area_ha_24 / (area_ha_16 + area_change))
+  )
+
+all_dicofre_conversion_weight_subset = all_dicofre_conversion_weight |> 
+  filter(is.na(area_change)) |> 
+  group_by(dtmnfr16) |>
+  summarise(area_ha_16 = sum(area_ha_24))
+all_dicofre_conversion_weight_subset = all_dicofre_conversion_weight |> 
+  filter(is.na(area_change)) |> 
+  select(dtmnfr16, dtmnfr24, area_ha_24) |>
+  left_join(all_dicofre_conversion_weight_subset)
+all_dicofre_conversion_weight_subset = all_dicofre_conversion_weight_subset |>
+  mutate(weight = area_ha_24 / area_ha_16 ) 
+
+all_dicofre_conversion_weight = all_dicofre_conversion_weight |> 
+  filter(!is.na(area_change)) |> 
+  bind_rows(all_dicofre_conversion_weight_subset) |> 
+  select(-area_change)
+
+# save
 write.csv(all_dicofre_conversion, "useful_data/dicofre_16_24_conversion_full.csv", row.names = FALSE)
 saveRDS(all_dicofre_conversion, "useful_data/dicofre_16_24_conversion_full.Rds")
+write.csv(all_dicofre_conversion_weight, "useful_data/dicofre_16_24_conversion_full_with_weights.csv", row.names = FALSE)
+saveRDS(all_dicofre_conversion_weight, "useful_data/dicofre_16_24_conversion_full_with_weights.Rds")
+# load
 all_dicofre_conversion = readRDS("useful_data/dicofre_16_24_conversion_full.Rds")
+all_dicofre_conversion_weight = readRDS("useful_data/dicofre_16_24_conversion_full_with_weights.Rds")
 
 # Adjust trips to new dicofre ids
 trips_freguesias_to_convert = trips_freguesias_2016 |> filter(
@@ -362,16 +405,20 @@ Census21_BGRI = st_read("/data/IMPT/original/BGRI21_170.gpkg")
 # they are the same areas!
 
 # from polygons to points
-census_poitns = Census21_BGRI |> 
+census_points21 = Census21_BGRI |> 
   st_centroid() |> 
   st_transform(4326) # make sue it is in universal CRS
-plot(census_poitns$geom) # census units in points
-names(census_poitns)
+plot(census_points21$geom) # census units in points
+names(census_points21)
 
 # replace the old dicofre by the new ones, using a geometric operation (intersect?)
+census_points = census_points21 |> 
+  left_join(all_dicofre_conversion, by = c("DTMNFR21" = "dtmnfr16"))
 
-
-
+census_points_transform = census_points |> 
+  st_drop_geometry() |> 
+  group_by(c(1:10, 48)) |> 
+  summarise_all()
 
 
 
