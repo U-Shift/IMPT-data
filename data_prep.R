@@ -47,6 +47,7 @@ freguesias = CAOP_GLPS_UNIQUE_dtmnfr
 
 st_write(CAOP_GLPS, "/data/IMPT/geo/freguesias_2024.gpkg", delete_dsn = TRUE)
 st_write(CAOP_GLPS_UNIQUE_dtmnfr, "/data/IMPT/geo/freguesias_2024_unique.gpkg", delete_dsn = TRUE)
+freguesias = st_read("/data/IMPT/geo/freguesias_2024_unique.gpkg")
 
 # group sf by municipio
 municipios = CAOP_GLPS |> 
@@ -57,14 +58,14 @@ municipios = municipios [-6, ] # Remove strange Lisbon
 
 # mapview(municipios)
 st_write(municipios, "/data/IMPT/geo/municipios_2024.gpkg", delete_dsn = TRUE)
+municipios = st_read("/data/IMPT/geo/municipios_2024.gpkg")
 
+# for the whole limit (to HOT export tool)
 municipios_union = municipios |> sf::st_union() |> sf::st_make_valid()
 st_write(municipios_union, "/data/IMPT/geo/municipios_union_2024.geojson", delete_dsn = TRUE)
 
 
 # OSM data ----------------------------------------------------------------
-
-library(osmdata)
 
 # Road network exported using Hot Exports Tool, https://export.hotosm.org/exports/4782f0b8-6778-4c0e-8e4f-97fc62e7f240, to generate .pbf file for r5r
 road_network = st_read("/data/IMPT/geo/IMPT_Road_network.gpkg")
@@ -252,11 +253,17 @@ assertthat::assert_that(sum(trips_freguesias_2016$PTransit) == sum(trips_fregues
 assertthat::assert_that(sum(trips_freguesias_2016$Other) == sum(trips_freguesias_2024$Other))
 
 saveRDS(trips_freguesias_2024, "/data/IMPT/trips/TRIPSmode_freguesias_2024.Rds")
+trips_freguesias_2024 = readRDS("/data/IMPT/trips/TRIPSmode_freguesias_2024.Rds")
+
 
 # Jittering ---------------------------------------------------------------
 # Adaptted from https://u-shift.github.io/Traffic-Simulation-Models/jittering.html
 
+remotes::install_github("itsleeds/odjitter", subdir = "r")
 library(odjitter)
+
+# NÃO SEI SE É PRECISO UM setseed(42) para termos sempre o mesmo resultado...
+
 
 # Jitter with disagregation threshold of 200 trips
 od_freguesias_jittered = odjitter::jitter(  
@@ -282,7 +289,41 @@ od_freguesias_jittered_id = od_freguesias_jittered
 od_freguesias_jittered_id$id = 1:nrow(od_freguesias_jittered_id)
 
 st_write(od_freguesias_jittered_id, "/data/IMPT/trips/od_freguesias_jittered_2024.gpkg", delete_dsn = TRUE)
+od_freguesias_jittered_id = st_read("/data/IMPT/trips/od_freguesias_jittered_2024.gpkg")
 
+
+## Origins and Destinations as points
+
+library(stplanr)
+
+#with stplanr
+od_freguesias_jittered_points = line2df(od_freguesias_jittered)
+od_freguesias_jittered_OR = od_freguesias_jittered_points |>
+  select(L1, fx, fy) |> # from
+  rename(id = L1,
+         lon = fx,
+         lat = fy)
+od_freguesias_jittered_DE = od_freguesias_jittered_points |>
+  select(L1, tx, ty) |> # to
+  rename(id = L1,
+         lon = tx,
+         lat = ty)
+
+# as sf
+od_freguesias_jittered_OR_geo = st_as_sf(od_freguesias_jittered_OR,
+                                            coords = c("lon", "lat"),
+                                            crs = 4326)
+od_freguesias_jittered_DE_geo = st_as_sf(od_freguesias_jittered_DE,
+                                            coords = c("lon", "lat"),
+                                            crs = 4326)
+
+# mapview(od_freguesias_jittered_OR_geo, col.regions = "red") + 
+#   mapview(od_freguesias_jittered_DE_geo, col.regions = "blue")
+
+st_write(od_freguesias_jittered_OR_geo, "/data/IMPT/trips/od_freguesias_jittered200_OR.gpkg", delete_dsn = TRUE)
+st_write(od_freguesias_jittered_DE_geo, "/data/IMPT/trips/od_freguesias_jittered200_DE.gpkg", delete_dsn = TRUE)
+od_freguesias_jittered_OR_geo = st_read("/data/IMPT/trips/od_freguesias_jittered200_OR.gpkg")
+od_freguesias_jittered_DE_geo = st_read("/data/IMPT/trips/od_freguesias_jittered200_DE.gpkg")
 
 # GTFS data ---------------------------------------------------------------
 
@@ -400,5 +441,10 @@ gtfs_unified = GTFShift::unify(
 # r5r ---------------------------------------------------------------------
 
 # Addapted from https://u-shift.github.io/Traffic-Simulation-Models/network.html
+
+
+
+
+
 
 
