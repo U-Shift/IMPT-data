@@ -588,7 +588,15 @@ mapview::mapview(transit_net$routes, zcol = "mode")
 origins <- st_sf(
   id = "seixal",
   geometry = st_sfc(
-    st_point(c(-9.098720, 38.642105)),
+    # st_point(c(-9.098720, 38.642105)), # Perto barco (TTSL)
+    st_point(c(-9.101199, 38.610285)), # Fogueteiro (Fertagus + Carris)
+    # st_point(c(-9.099113, 38.620695)), # Arrentela
+    # st_point(c(-8.894169, 38.525378)), # Setúbal (Carris Metropolitana)
+    # st_point(c(-9.331880, 38.943850)), # Mafra (Carris Metropolitana)
+    # st_point(c(-9.070170, 38.866450)), # Santa iria (CP)
+    # st_point(c(-9.446505, 38.711528)), # Cascais (Mobicascais + CP)
+    # st_point(c(-9.054498, 38.650430)), # Barreiro (TCB + CP)
+    # st_point(c(-9.152688, 38.682233)), # Almada centro (Carris Metriopolitana + Ferry)
     crs = 4326
   )
 )
@@ -596,7 +604,8 @@ origins <- st_sf(
 destinations <- st_sf(
   id = "ist",
   geometry = st_sfc(
-    st_point(c(-9.139527, 38.738244)),
+    st_point(c(-9.139527, 38.738244)), # IST
+    # st_point(c(-9.151366, 38.636913)), # Corroios (MTS na ligação a Almada)
     crs = 4326
   )
 )
@@ -614,12 +623,13 @@ detailed_transit = detailed_itineraries(
   # time_window = 10, # the default
   max_walk_time = 30,
   max_trip_duration = 120,
-  drop_geometry = TRUE, # no geometry this time (processig time)
+  # drop_geometry = TRUE, # no geometry this time (processig time)
   verbose = FALSE
 )
 
 table(detailed_transit$mode)
-View(detailed_transit)
+# View(detailed_transit)
+mapview::mapview(detailed_transit, zcol = "mode")
 
 # Grid --------------------------------------------------------------------
 
