@@ -636,8 +636,60 @@ mapview::mapview(detailed_transit, zcol = "mode")
 # Keep using the TML grid, or produce a new one, replicable, with h3?
 # https://u-shift.github.io/Traffic-Simulation-Models/pois.html#hexagonal-using-h3jsr
 
+grelha_tml = sf::st_read("/data/IMPT/BaseDados_PMMUS/Grelha/GrelhaHexagAML/GrelhaHexagAML.shp")
+mapview(grelha_tml)
+nrow(grelha_tml)
+grelha_tml_centroids = st_centroid(grelha_tml)
 
+grelha_tml_cropped = grelha_tml |>
+  st_transform(crs=4326) |>
+  # Filter polygons inside limit$geom, removing those that are only partially inside (<50%)
+  st_intersection(limit$geom) |>
+  mutate(area_ha = as.numeric(st_area(geometry))/10000) |>
+  filter(area_ha >= 0.5 * (as.numeric(st_area(st_transform(grelha_tml[1, ], crs=4326)))/10000) ) |> # at least 50% of original area  
+  st_drop_geometry() |>
+  left_join(grelha_tml |> select(id, geometry) |> st_transform(crs=4326), by="id") |> # keep original geometry
+  st_as_sf(crs=4326)
+  
 
+nrow(grelha_tml_cropped)
+# mapview(grelha_tml_cropped)
+st_write(grelha_tml_cropped |> select(id), "/data/IMPT/geo/grelha_tml_d500.gpkg", delete_dsn = TRUE)
 
-
-
+# We will keep using the TML grid for now, but in the future we can produce a new one with h3, which is replicable and has nice properties (equal area, hierarchical, etc).
+# library(h3jsr)
+# 
+# # Resolution: https://h3geo.org/docs/core-library/restable/ 
+# # h3_res = 10 # 150m diameter
+# h3_res = 9 # 400m diameter
+# # h3_res = 8 # 1060m diameter
+# 
+# GRID_h3 = limit |>  
+#   polygon_to_cells(res = h3_res, simple = FALSE)
+# GRID_h3 = GRID_h3$h3_addresses |>
+#   cell_to_polygon(simple = FALSE)
+# nrow(GRID_h3)
+# mapview(GRID_h3) + mapview(grelha_tml_centroids |> st_transform(crs=4326), col.regions="red")
+# 
+# GRID_h3 = GRID_h3 |>
+#   mutate(id = seq(1:nrow(GRID_h3)))  # give an ID to each cell
+# h3_index = GRID_h3 |> st_drop_geometry() # save h3_address for later
+# 
+# mapview(GRID_h3)
+# 
+# # Hex manual
+# GRID = limit |>
+#   st_transform(crs = 3857) |> # to a projected crs
+#   st_make_grid(cellsize = 577, # meters, we are using a projected crs
+#                what = "polygons",
+#                square = FALSE) |> # if FALSE, hexagons
+#   st_sf() |> # from list to sf
+#   st_transform(crs = 4326) |>  # back to WGS84
+#   st_intersection(limit$geom) # crop (optional)
+# nrow(GRID)
+# 
+# # GRID = GRID |>  
+# #   rename(geometry = st_make_grid.st_transform.city_limit..crs...3857...cellsize...400..) |> 
+# #   mutate(id = c(1:nrow(GRID))) # just to give an ID to each cell 
+#  
+# mapview(GRID, alpha.regions = 0.2)+ mapview(grelha_tml_centroids |> st_transform(crs=4326), col.regions="red")
