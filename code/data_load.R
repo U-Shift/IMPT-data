@@ -20,8 +20,8 @@ conversion_dicofre_weight = readRDS("useful_data/dicofre_16_24_conversion_full_w
 
 # Road network
 road_network = st_read("/data/IMPT/geo/IMPT_Road_network.gpkg") # all
-st_write(road_network_main, "/data/IMPT/geo/road_network_main.gpkg", delete_dsn = TRUE) # 1 to 4 level
-st_write(road_network_base, "/data/IMPT/geo/road_network_base.gpkg", delete_dsn = TRUE) # 1 to 3 level
+road_network_main = st_read("/data/IMPT/geo/road_network_main.gpkg") # 1 to 4 level
+road_network_base = st_read("/data/IMPT/geo/road_network_base.gpkg") # 1 to 3 level
 
 
 # ODs
@@ -31,7 +31,7 @@ od_freguesias_jittered_OR_geo = st_read("/data/IMPT/trips/od_freguesias_jittered
 od_freguesias_jittered_DE_geo = st_read("/data/IMPT/trips/od_freguesias_jittered200_DE.gpkg") # points destination
 
 
-# Census points
+# Census points - including data
 census_points24 = st_read("/data/IMPT/geo/census24_points.gpkg")
 
 
