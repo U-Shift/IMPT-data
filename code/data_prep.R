@@ -461,21 +461,21 @@ gtfs_db = data.frame(
   calendar_add_years=numeric() # For outdated calendars
 )
 
-# gtfs_db = gtfs_db |> bind_rows(data.frame(
-#   operator="Carris Metropolitana",
-#   url="https://api.carrismetropolitana.pt/gtfs",
-#   shapes=TRUE, outside_area=FALSE, calendar_add_years=NA
-# ))
-# gtfs_db = gtfs_db |> bind_rows(data.frame(
-#   operator="Carris Municipal",
-#   url="https://gateway.carris.pt/gateway/gtfs/api/v2.8/GTFS",
-#   shapes=TRUE, outside_area=FALSE, calendar_add_years=NA
-# ))
-# gtfs_db = gtfs_db |> bind_rows(data.frame(
-#   operator="Comboios de Portugal",
-#   url="https://publico.cp.pt/gtfs/gtfs.zip",
-#   shapes=FALSE, outside_area=TRUE, calendar_add_years=NA
-# ))
+gtfs_db = gtfs_db |> bind_rows(data.frame(
+  operator="Carris Metropolitana",
+  url="https://api.carrismetropolitana.pt/gtfs",
+  shapes=TRUE, outside_area=FALSE, calendar_add_years=NA
+))
+gtfs_db = gtfs_db |> bind_rows(data.frame(
+  operator="Carris Municipal",
+  url="https://gateway.carris.pt/gateway/gtfs/api/v2.8/GTFS",
+  shapes=TRUE, outside_area=FALSE, calendar_add_years=NA
+))
+gtfs_db = gtfs_db |> bind_rows(data.frame(
+  operator="Comboios de Portugal",
+  url="https://publico.cp.pt/gtfs/gtfs.zip",
+  shapes=FALSE, outside_area=TRUE, calendar_add_years=NA
+))
 gtfs_db = gtfs_db |> bind_rows(data.frame(
   operator="MobiCascais",
   url="https://drive.google.com/u/0/uc?id=13ucYiAJRtu-gXsLa02qKJrGOgDjbnUWX&export=download",
@@ -551,15 +551,8 @@ for(i in 1:nrow(gtfs_db)){
   gtfs_to_aggregate = append(gtfs_to_aggregate, list(gtfs_imported))
   
   tidytransit::write_gtfs(gtfs_imported, paste0("/data/IMPT/gtfs/processed/gtfs_", gsub(" ", "_", tolower(operator)), ".zip"))
+  tidytransit::write_gtfs(gtfs_imported, paste0("/data/IMPT/geo/r5r/gtfs_", gsub(" ", "_", tolower(operator)), ".zip"))
 }
-
-
-# Unify GTFS feeds, creating transfers table
-gtfs_unified = GTFShift::unify(
-  gtfs_to_aggregate, 
-  prefix=TRUE, # Add agency prefix to ids to avoid conflicts
-  store_path="/data/IMPT/gtfs/gtfs_unified_noRouting.zip"
-)
 
 
 # DEM elevation -----------------------------------------------------------
@@ -576,12 +569,57 @@ terra::crs(dem) # WGS84
 # r5r ---------------------------------------------------------------------
 
 # Addapted from https://u-shift.github.io/Traffic-Simulation-Models/network.html
+# Load packages
+library(tidyverse)
+library(sf)
+options(java.parameters = '-Xmx8G') # allocate memory for 8GB 
+library(r5r)
+
+data_path= "/data/IMPT/geo/r5r"
+network = r5r::build_network(
+  data_path,
+  elevation = "TOBLER" # optional. MINETTI or NONE
+)
 
 
+transit_net = transit_network_to_sf(network)
+mapview::mapview(transit_net$routes, zcol = "mode")
+
+origins <- st_sf(
+  id = "seixal",
+  geometry = st_sfc(
+    st_point(c(-9.098720, 38.642105)),
+    crs = 4326
+  )
+)
+
+destinations <- st_sf(
+  id = "ist",
+  geometry = st_sfc(
+    st_point(c(-9.139527, 38.738244)),
+    crs = 4326
+  )
+)
 
 
+departure_datetime = as.POSIXct("03-02-2026 06:00:00", format = "%d-%m-%Y %H:%M:%S")
+detailed_transit = detailed_itineraries(
+  r5r_network = network,
+  origins = origins,
+  destinations = destinations,
+  mode = "TRANSIT",
+  mode_egress = "WALK",
+  departure_datetime = departure_datetime,
+  max_rides = 4, # 1 transfers
+  # time_window = 10, # the default
+  max_walk_time = 30,
+  max_trip_duration = 120,
+  drop_geometry = TRUE, # no geometry this time (processig time)
+  verbose = FALSE
+)
 
-
+table(detailed_transit$mode)
+View(detailed_transit)
 
 # Grid --------------------------------------------------------------------
 
