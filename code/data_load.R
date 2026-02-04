@@ -40,8 +40,7 @@ pois = st_read("/data/IMPT/geo/pois_osm2024.gpkg")
 
 
 # Grid
-
-
+grid = st_read("/data/IMPT/geo/grelha_tml_d500.gpkg")
 
 # r5r
 # r5r_core = r5r::setup_r5("/data/IMPT/geo/r5r/", verbose = FALSE)
