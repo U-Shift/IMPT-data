@@ -448,6 +448,33 @@ table(pois$group)
 st_write(pois, "/data/IMPT/geo/pois_osm2024.gpkg", delete_dsn = TRUE)
 pois = st_read("/data/IMPT/geo/pois_osm2024.gpkg")
 
+pois_health = read.csv("https://github.com/carrismetropolitana/datasets/raw/refs/heads/latest/facilities/health_centers/health_centers.csv") |>
+  filter(
+    # https://www.cm-seixal.pt/noticia/autarquia-participa-em-audicao-sobre-hospital-no-seixal
+    name!="futuro Hospital do Seixal"
+  ) |>
+  mutate(
+    lon = ifelse(id=="HC0077", -1*lon, lon)
+  ) |>
+  select(id, name, lat, lon) |>
+  mutate(
+    type = case_when(
+      grepl("Hospital", name) ~ "Hospital",
+      grepl("Centro de Medicina", name) ~ "Hospital",
+      # grepl("Familiar", name) ~ "USF", # To validate if Centro de Saúde and USF overlap (occurs in some cases)
+      TRUE ~ "Centro de Saúde"
+    )
+  ) |>
+  st_as_sf(coords = c("lon", "lat"), crs = 4326)
+
+mapview(pois_health, zcol="type")
+
+st_write(pois_health, "/data/IMPT/pois/healthcare.gpkg", delete_dsn = TRUE)
+
+# TODO!
+# Pharmacies: Get data source 
+# Schools: Use https://github.com/carrismetropolitana/datasets/blob/latest/facilities/schools/schools.csv
+
 # GTFS data ---------------------------------------------------------------
 
 library(GTFShift)
