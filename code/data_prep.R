@@ -569,17 +569,26 @@ terra::crs(dem) # WGS84
 # r5r ---------------------------------------------------------------------
 
 # Addapted from https://u-shift.github.io/Traffic-Simulation-Models/network.html
+
+# # r5r dev version with latest features
+# utils::remove.packages('r5r')
+# devtools::install_github("ipeaGIT/r5r", subdir = "r-package")
+
 # Load packages
 library(tidyverse)
 library(sf)
-options(java.parameters = '-Xmx8G') # allocate memory for 8GB 
+options(java.parameters = '-Xmx30G') # allocate memory for 8GB 
 library(r5r)
 
 data_path= "/data/IMPT/geo/r5r"
 network = r5r::build_network(
   data_path,
-  elevation = "TOBLER" # optional. MINETTI or NONE
+  verbose = FALSE,
+  elevation = "MINETTI" # optional. TOBLER or NONE
 )
+
+# piggyback::pb_upload("/data/IMPT/geo/r5r/network.dat", tag = "latest")
+
 
 
 transit_net = transit_network_to_sf(network)
