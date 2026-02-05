@@ -24,7 +24,7 @@ IMPT_URL = function(path) {
     return(sprintf("%s%s?key=%s", DATA_LOCATION, path, API_KEY))
   }
   # Otherwise, return local path
-  return(DATA_LOCATION)
+  return(sprintf("%s%s", DATA_LOCATION, path))
 }
 
 readRDS_remote <- function(file, quiet = TRUE) { # From https://stackoverflow.com/a/66874958
