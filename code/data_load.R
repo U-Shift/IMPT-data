@@ -98,10 +98,10 @@ pois_healthcare = st_read(IMPT_URL("/pois/healthcare.gpkg"))
 # pois_schools = st_read(IMPT_URL("/pois/schools.gpkg"))
 
 # Grid
-grid_tml = st_read("/data/IMPT/geo/grelha_tml_d500.gpkg")
-grid = st_read("/data/IMPT/geo/grelha_h3_r8.gpkg")	
-h3_index = readRDS("/data/IMPT/geo/grelha_h3_r8_index.Rds")
-points_h3 = st_read("/data/IMPT/geo/grelha_h3_r8_centroids.gpkg")
+grid_tml = st_read(IMPT_URL("/geo/grelha_tml_d500.gpkg"))
+grid = st_read(IMPT_URL("/geo/grelha_h3_r8.gpkg"))
+h3_index = readRDS_remote(IMPT_URL("/geo/grelha_h3_r8_index.Rds"))
+points_h3 = st_read(IMPT_URL("/geo/grelha_h3_r8_centroids.gpkg"))
 
 
 # r5r
@@ -113,7 +113,9 @@ if (grepl("^http", r5r_location, ignore.case = TRUE)) {
   local_folder = "data/r5r"
   if (dir.exists(local_folder)) {
     r5r_location = local_folder
+    message("Using local copy of r5r data. To force download, delete the folder 'data/r5r' and run again.")
   } else {
+    message("Downloading r5r data from remote server. This may take a while the first time...")
     r5r_location = download_remote_dir(r5r_location, "data/r5r") # This takes a while for the first time
   }
 }
@@ -121,6 +123,7 @@ if (grepl("^http", r5r_location, ignore.case = TRUE)) {
 r5r_network = r5r::build_network(r5r_location, verbose = FALSE)
 
 
+# Attention! Stop here. Run the code below only when you have finished using r5r, to free up memory :)
 r5r::stop_r5(r5r_network)
 rJava::.jgc(R.gc = TRUE)
 
