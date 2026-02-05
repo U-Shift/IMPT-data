@@ -12,6 +12,7 @@ library(tidyr)
 
 DATA_LOCATION = "/data/IMPT" # When running at server.ushift.pt, use server local data
 # DATA_LOCATION = "https://impt.server.ushift.pt" # When running locally, get data from remote server
+# DATA_LOCATION = "data"
 API_KEY = Sys.getenv("IMPT_DATA_KEY") # Set it using usethis::edit_r_environ(), followed by CTRL+F10
 
 IMPT_URL = function(path) {
