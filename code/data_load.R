@@ -98,7 +98,11 @@ pois_healthcare = st_read(IMPT_URL("/pois/healthcare.gpkg"))
 # pois_schools = st_read(IMPT_URL("/pois/schools.gpkg"))
 
 # Grid
-grid = st_read(IMPT_URL("/geo/grelha_tml_d500.gpkg"))
+grid_tml = st_read("/data/IMPT/geo/grelha_tml_d500.gpkg")
+grid = st_read("/data/IMPT/geo/grelha_h3_r8.gpkg")	
+h3_index = readRDS("/data/IMPT/geo/grelha_h3_r8_index.Rds")
+points_h3 = st_read("/data/IMPT/geo/grelha_h3_r8_centroids.gpkg")
+
 
 # r5r
 r5r_location = IMPT_URL("/geo/r5r/")
@@ -113,10 +117,13 @@ if (grepl("^http", r5r_location, ignore.case = TRUE)) {
     r5r_location = download_remote_dir(r5r_location, "data/r5r") # This takes a while for the first time
   }
 }
-r5r_core = r5r::setup_r5(r5r_location, verbose = FALSE)
+
+r5r_network = r5r::build_network(r5r_location, verbose = FALSE)
+
+# r5r::stop_r5(r5r_core)
+# rJava::.jgc(R.gc = TRUE)
+
 
 # Statistic Data ----------------------------------------------------------
 
 
-# r5r::stop_r5(r5r_core)
-# rJava::.jgc(R.gc = TRUE)

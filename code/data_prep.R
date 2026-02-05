@@ -693,26 +693,30 @@ nrow(grelha_tml_cropped)
 st_write(grelha_tml_cropped |> select(id), "/data/IMPT/geo/grelha_tml_d500.gpkg", delete_dsn = TRUE)
 
 # We will keep using the TML grid for now, but in the future we can produce a new one with h3, which is replicable and has nice properties (equal area, hierarchical, etc).
-# library(h3jsr)
+library(h3jsr)
 # 
-# # Resolution: https://h3geo.org/docs/core-library/restable/ 
-# # h3_res = 10 # 150m diameter
+# Resolution: https://h3geo.org/docs/core-library/restable/
+# h3_res = 10 # 150m diameter
 # h3_res = 9 # 400m diameter
-# # h3_res = 8 # 1060m diameter
-# 
-# GRID_h3 = limit |>  
-#   polygon_to_cells(res = h3_res, simple = FALSE)
-# GRID_h3 = GRID_h3$h3_addresses |>
-#   cell_to_polygon(simple = FALSE)
-# nrow(GRID_h3)
+h3_res = 8 # 1060m diameter - use for the MVP
+
+GRID_h3 = limit |>
+  polygon_to_cells(res = h3_res, simple = FALSE)
+GRID_h3 = GRID_h3$h3_addresses |>
+  cell_to_polygon(simple = FALSE)
+nrow(GRID_h3)
 # mapview(GRID_h3) + mapview(grelha_tml_centroids |> st_transform(crs=4326), col.regions="red")
-# 
-# GRID_h3 = GRID_h3 |>
-#   mutate(id = seq(1:nrow(GRID_h3)))  # give an ID to each cell
-# h3_index = GRID_h3 |> st_drop_geometry() # save h3_address for later
-# 
-# mapview(GRID_h3)
-# 
+
+GRID_h3 = GRID_h3 |>
+  mutate(id = seq(1:nrow(GRID_h3)))  # give an ID to each cell
+h3_index = GRID_h3 |> st_drop_geometry() # save h3_address for later
+
+mapview(GRID_h3)
+
+st_write(GRID_h3 |> select(id), "/data/IMPT/geo/grelha_h3_r8.gpkg", delete_dsn = TRUE)
+saveRDS(h3_index, "/data/IMPT/geo/grelha_h3_r8_index.Rds")
+
+
 # # Hex manual
 # GRID = limit |>
 #   st_transform(crs = 3857) |> # to a projected crs
@@ -723,9 +727,18 @@ st_write(grelha_tml_cropped |> select(id), "/data/IMPT/geo/grelha_tml_d500.gpkg"
 #   st_transform(crs = 4326) |>  # back to WGS84
 #   st_intersection(limit$geom) # crop (optional)
 # nrow(GRID)
-# 
-# # GRID = GRID |>  
-# #   rename(geometry = st_make_grid.st_transform.city_limit..crs...3857...cellsize...400..) |> 
-# #   mutate(id = c(1:nrow(GRID))) # just to give an ID to each cell 
-#  
+
+# GRID = GRID |>
+#   rename(geometry = st_make_grid.st_transform.city_limit..crs...3857...cellsize...400..) |>
+#   mutate(id = c(1:nrow(GRID))) # just to give an ID to each cell
+
 # mapview(GRID, alpha.regions = 0.2)+ mapview(grelha_tml_centroids |> st_transform(crs=4326), col.regions="red")
+
+
+
+## Grid centroids
+
+GRID_h3_centroids = st_centroid(GRID_h3) |> 	
+  select(id, h3_address)
+
+st_write(GRID_h3_centroids, "/data/IMPT/geo/grelha_h3_r8_centroids.gpkg", delete_dsn = TRUE)
