@@ -11,7 +11,7 @@ r5r_network = build_network(data_path = "/data/IMPT/geo/r5r/") # already existin
 
 # set r5r parameters
 points = points_h3
-nrow(points) # 3686
+nrow(points) # 3686 - this is the res 8 h3 grid
 mode_egress = "WALK"
 max_walk_time = 15 # 20?
 max_lts = 3 # for bike
@@ -299,3 +299,10 @@ ttm_pt_2h_2t_night = travel_time_matrix(r5r_network,
 nrow(ttm_pt_2h_2t_night)
 saveRDS(ttm_pt_2h_2t_night, "/data/IMPT/ttm/ttm_h3_res8/ttm_pt_2h_2t_night.rds")
 
+
+
+
+# stop r5r ----------------------------------------------------------------
+
+r5r::stop_r5(r5r_network)
+rJava::.jgc(R.gc = TRUE)

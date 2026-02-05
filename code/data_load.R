@@ -120,8 +120,9 @@ if (grepl("^http", r5r_location, ignore.case = TRUE)) {
 
 r5r_network = r5r::build_network(r5r_location, verbose = FALSE)
 
-# r5r::stop_r5(r5r_core)
-# rJava::.jgc(R.gc = TRUE)
+
+r5r::stop_r5(r5r_network)
+rJava::.jgc(R.gc = TRUE)
 
 
 # Statistic Data ----------------------------------------------------------
