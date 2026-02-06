@@ -27,17 +27,17 @@ max_rides_3 = 3 # 2 transfers
 use_csv = TRUE # except for TRANSIT
 
 
-# manual run for CAR
-# ttm_car_60min = 
-  travel_time_matrix(r5r_network,
-                                origins = points,
-                                destinations = points,
-                                mode = "CAR",
-                                departure_datetime = departure_datetime_HP,
-                                max_trip_duration = max_trip_duration_60,
-                                output_dir = "data/ttm/ttm_h3_res8/out_csv",
-                                verbose = FALSE,
-                                progress = TRUE)
+# # manual run for CAR
+# # ttm_car_60min = 
+#   travel_time_matrix(r5r_network,
+#                                 origins = points,
+#                                 destinations = points,
+#                                 mode = "CAR",
+#                                 departure_datetime = departure_datetime_HP,
+#                                 max_trip_duration = max_trip_duration_60,
+#                                 output_dir = "data/ttm/ttm_h3_res8/out_csv",
+#                                 verbose = FALSE,
+#                                 progress = TRUE)
 
 
 # run for different modes -------------------------------------------------
@@ -47,10 +47,10 @@ folder_name = sprintf("%s/ttm/ttm_%s", root_folder, tolower(grid_name))
 if(!dir.exists(folder_name)) {
   dir.create(folder_name, recursive = TRUE)
 }
-# for runs with high ram ## FALTA VARIAR TAMBEM COM TRIPDURATION, senão overwrite :(
-if(!dir.exists(paste0(folder_name, "/out_csv")) & use_csv == TRUE) {
-  dir.create(paste0(folder_name, "/out_csv"), recursive = TRUE)
-}
+# # for runs with high ram ## FALTA VARIAR TAMBEM COM TRIPDURATION, senão overwrite :(
+# if(!dir.exists(paste0(folder_name, "/out_csv")) & use_csv == TRUE) {
+#   dir.create(paste0(folder_name, "/out_csv"), recursive = TRUE)
+# }
   
 for (mode in c("WALK")) { # c("CAR", "BICYCLE", "WALK", "TRANSIT")
   for (max_trip_duration in c(60, 120)) {
@@ -64,12 +64,12 @@ for (mode in c("WALK")) { # c("CAR", "BICYCLE", "WALK", "TRANSIT")
     
     # Varying parameters
     args$mode = mode
-    args$max_trip_duration = max_trip_duration # VARY ONLY FOR PT AND CAR!
+    args$max_trip_duration = max_trip_duration 
     
-    # Car export to output_dir
-    if (mode == "CAR"){
-      args$output_dir = paste0(folder_name, "/out_csv")
-    }
+    # # Car export to output_dir
+    # if (mode == "CAR"){
+    #   args$output_dir = paste0(folder_name, "/out_csv")
+    # }
     
     # > Transit has multiple departure times
     departures = c(departure_datetime_HP)
@@ -114,19 +114,19 @@ for (mode in c("WALK")) { # c("CAR", "BICYCLE", "WALK", "TRANSIT")
 
 
 # load files --------------------------------------------------------------
-# For Car
-path_csv = paste0(folder_name, "/out_csv")
-# full.names = TRUE ensures the file paths include the directory name
-file_paths <- list.files(path = path_csv, pattern = "\\.csv$", full.names = TRUE)
-
-# 2. Read all files and combine them into one data frame
-ttm_ <- map_dfr(file_paths, read_csv, show_col_types = FALSE) # This take some time (3min?)
-saveRDS(ttm_, paste0(folder_name, "/ttm_car_60min", ".rds"))
-rm(ttm_)
-# delete path_csv directory...
-fs::dir_delete(path_csv)
-
-# the output files should be 12 +2 +1 +1 (PT, CAR, WALK, BIKE)
+# # For Car
+# path_csv = paste0(folder_name, "/out_csv")
+# # full.names = TRUE ensures the file paths include the directory name
+# file_paths <- list.files(path = path_csv, pattern = "\\.csv$", full.names = TRUE)
+# 
+# # 2. Read all files and combine them into one data frame
+# ttm_ <- map_dfr(file_paths, read_csv, show_col_types = FALSE) # This take some time (3min?)
+# saveRDS(ttm_, paste0(folder_name, "/ttm_car_60min", ".rds"))
+# rm(ttm_)
+# # delete path_csv directory...
+# fs::dir_delete(path_csv)
+# 
+# # the output files should be 12 +2 +1 +1 (PT, CAR, WALK, BIKE)
 
 # load all ttm files
 # Get a vector of all .rds file paths
