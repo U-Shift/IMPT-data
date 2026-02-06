@@ -110,13 +110,13 @@ for (mode in c("CAR")) { # c("CAR", "BICYCLE", "WALK", "TRANSIT")
 
 
 # load files --------------------------------------------------------------
-
+# For Car, Bike, Walk
 path_csv = paste0(folder_name, "/out_csv")
 # full.names = TRUE ensures the file paths include the directory name
 file_paths <- list.files(path = path_csv, pattern = "\\.csv$", full.names = TRUE)
 
 # 2. Read all files and combine them into one data frame
-ttm_ <- map_dfr(file_paths, read_csv) # This take some time (3min?)
+ttm_ <- map_dfr(file_paths, read_csv, show_col_types = FALSE) # This take some time (3min?)
 saveRDS(ttm_, paste0(folder_name, "/ttm_car_60min", ".rds"))
 rm(ttm_)
 # delete path_csv directory...
