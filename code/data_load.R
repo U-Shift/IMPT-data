@@ -10,8 +10,8 @@ library(tidyr)
 
 # Data location  ----------------------------------------------------------
 
-DATA_LOCATION = "/data/IMPT" # When running at server.ushift.pt, use server local data
-# DATA_LOCATION = "https://impt.server.ushift.pt" # When running locally, get data from remote server
+# DATA_LOCATION = "/data/IMPT" # When running at server.ushift.pt, use server local data
+DATA_LOCATION = "https://impt.server.ushift.pt" # When running locally, get data from remote server
 # DATA_LOCATION = "data"
 API_KEY = Sys.getenv("IMPT_DATA_KEY") # Set it using usethis::edit_r_environ(), followed by CTRL+F10
 
@@ -100,9 +100,14 @@ pois_healthcare = st_read(IMPT_URL("/pois/healthcare.gpkg"))
 
 # Grid
 grid_tml = st_read(IMPT_URL("/geo/grelha_tml_d500.gpkg"))
+# r8
 grid = st_read(IMPT_URL("/geo/grelha_h3_r8.gpkg"))
 h3_index = readRDS_remote(IMPT_URL("/geo/grelha_h3_r8_index.Rds"))
 points_h3 = st_read(IMPT_URL("/geo/grelha_h3_r8_centroids.gpkg"))
+# r9
+# grid = st_read(IMPT_URL("/geo/grelha_h3_r9.gpkg"))
+# h3_index = readRDS_remote(IMPT_URL("/geo/grelha_h3_r9_index.Rds"))
+# points_h3 = st_read(IMPT_URL("/geo/grelha_h3_r9_centroids.gpkg"))
 
 
 # r5r
@@ -122,12 +127,12 @@ if (grepl("^http", r5r_location, ignore.case = TRUE)) {
 }
 ## WE DONT NEED ALL THIS, ONLY network.dat and network_settings.json
 
-r5r_network = r5r::build_network(r5r_location, verbose = FALSE)
-
+# r5r_network = r5r::build_network(r5r_location, verbose = FALSE)
+r5r_network = r5r::build_network("data/r5r/", verbose = FALSE)
 
 # Attention! Stop here. Run the code below only when you have finished using r5r, to free up memory :)
-r5r::stop_r5(r5r_network)
-rJava::.jgc(R.gc = TRUE)
+# r5r::stop_r5(r5r_network)
+# rJava::.jgc(R.gc = TRUE)
 
 
 # Statistic Data ----------------------------------------------------------
