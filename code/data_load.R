@@ -1,7 +1,7 @@
 # Load relevant data after preparation
 # see data_prep-R to check hot it was prepared
 
-options(java.parameters = '-Xmx32G') # RAM to 16GB
+options(java.parameters = '-Xmx64G') # RAM to 16GB
 library(r5r)
 library(dplyr)
 library(sf)
