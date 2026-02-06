@@ -79,15 +79,15 @@ conversion_dicofre_all = readRDS("useful_data/dicofre_16_24_conversion_full.Rds"
 conversion_dicofre_weight = readRDS("useful_data/dicofre_16_24_conversion_full_with_weights.Rds")
 
 # Road network
-road_network = st_read(IMPT_URL("/geo/IMPT_Road_network.gpkg")) # all
+# road_network = st_read(IMPT_URL("/geo/IMPT_Road_network.gpkg")) # all
 road_network_main = st_read(IMPT_URL("/geo/road_network_main.gpkg")) # 1 to 4 level
 road_network_base = st_read(IMPT_URL("/geo/road_network_base.gpkg")) # 1 to 3 level
 
-# ODs
-trips_freguesias_2024 = readRDS_remote(IMPT_URL("/trips/TRIPSmode_freguesias_2024.Rds"))
-od_freguesias_jittered200 = st_read(IMPT_URL("/trips/od_freguesias_jittered_2024.gpkg")) # lines
-od_freguesias_jittered_OR_geo = st_read(IMPT_URL("/trips/od_freguesias_jittered200_OR.gpkg")) # points origin
-od_freguesias_jittered_DE_geo = st_read(IMPT_URL("/trips/od_freguesias_jittered200_DE.gpkg")) # points destination
+# # ODs
+# trips_freguesias_2024 = readRDS_remote(IMPT_URL("/trips/TRIPSmode_freguesias_2024.Rds"))
+# od_freguesias_jittered200 = st_read(IMPT_URL("/trips/od_freguesias_jittered_2024.gpkg")) # lines
+# od_freguesias_jittered_OR_geo = st_read(IMPT_URL("/trips/od_freguesias_jittered200_OR.gpkg")) # points origin
+# od_freguesias_jittered_DE_geo = st_read(IMPT_URL("/trips/od_freguesias_jittered200_DE.gpkg")) # points destination
 
 # Census points
 census = st_read(IMPT_URL("/geo/census24_points.gpkg"))
@@ -120,6 +120,7 @@ if (grepl("^http", r5r_location, ignore.case = TRUE)) {
     r5r_location = download_remote_dir(r5r_location, "data/r5r") # This takes a while for the first time
   }
 }
+## WE DONT NEED ALL THIS, ONLY network.dat and network_settings.json
 
 r5r_network = r5r::build_network(r5r_location, verbose = FALSE)
 
