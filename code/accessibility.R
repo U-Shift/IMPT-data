@@ -31,12 +31,12 @@ grid_points_population = st_centroid(grid_population)
 
 # Number of opportunities -------------------------------------------------
 
-POINTS = pois_healthcare
+POINTS = pois_healthcare ## ADD FILTER BY type
 ttm = readRDS_remote(IMPT_URL("/ttm/ttm_h3_res8/ttm_car_60min_202602040800.rds"))
 
 grid_points <- st_join(grid, POINTS |> rename(id_point = id), join = st_intersects) |>
   group_by(id) |>
-  summarise(healthcare = n()) |> 
+  summarise(healthcare = n()) |> ## MUDAR PARA hospitals and CS, com um group_by(type) ?
   # id as character
   mutate(id = as.character(id))
 # mapview(grid_points, zcol = "health")
