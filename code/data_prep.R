@@ -697,8 +697,8 @@ library(h3jsr)
 # 
 # Resolution: https://h3geo.org/docs/core-library/restable/
 # h3_res = 10 # 150m diameter
-# h3_res = 9 # 400m diameter
-h3_res = 8 # 1060m diameter - use for the MVP
+h3_res = 9 # 400m diameter
+# h3_res = 8 # 1060m diameter - use for the MVP
 
 GRID_h3 = limit |>
   polygon_to_cells(res = h3_res, simple = FALSE)
@@ -713,8 +713,10 @@ h3_index = GRID_h3 |> st_drop_geometry() # save h3_address for later
 
 mapview(GRID_h3)
 
-st_write(GRID_h3 |> select(id), "/data/IMPT/geo/grelha_h3_r8.gpkg", delete_dsn = TRUE)
-saveRDS(h3_index, "/data/IMPT/geo/grelha_h3_r8_index.Rds")
+# st_write(GRID_h3 |> select(id), "/data/IMPT/geo/grelha_h3_r8.gpkg", delete_dsn = TRUE)
+# saveRDS(h3_index, "/data/IMPT/geo/grelha_h3_r8_index.Rds")
+st_write(GRID_h3 |> select(id), "/data/IMPT/geo/grelha_h3_r9.gpkg", delete_dsn = TRUE)
+saveRDS(h3_index, "/data/IMPT/geo/grelha_h3_r9_index.Rds")
 
 
 # # Hex manual
@@ -741,4 +743,5 @@ saveRDS(h3_index, "/data/IMPT/geo/grelha_h3_r8_index.Rds")
 GRID_h3_centroids = st_centroid(GRID_h3) |> 	
   select(id, h3_address)
 
-st_write(GRID_h3_centroids, "/data/IMPT/geo/grelha_h3_r8_centroids.gpkg", delete_dsn = TRUE)
+# st_write(GRID_h3_centroids, "/data/IMPT/geo/grelha_h3_r8_centroids.gpkg", delete_dsn = TRUE)
+st_write(GRID_h3_centroids, "/data/IMPT/geo/grelha_h3_r9_centroids.gpkg", delete_dsn = TRUE)
