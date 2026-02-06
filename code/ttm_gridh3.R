@@ -1,7 +1,6 @@
 # run ttm to all cell combinations and all modes
 
 library(tidyverse)
-library(interp)
 
 # load network, variable r5r_network using data_load.R
 r5r_network
@@ -10,8 +9,9 @@ r5r_network
 # root_folder = "/data/IMPT"
 root_folder = "data" # Set to "/data/IMPT/ when running at server.ushift.pt, or "data" when running locally
 points = points_h3
-grid_name = "h3_res8"
-nrow(points) # 3686 - this is the res 8 h3 grid
+nrow(points) # 3686 - this is the res 8 h3 grid, and 25890 for res 9
+grid_name = "h3_res8" # fast to run, but 13.5Million combinations!. takes 17min for each run
+# grid_name = "h3_res9" # takes 13min to run within rstudio-server, for transit.
 mode_egress = "WALK"
 max_walk_time = 15 # 20?
 max_lts = 3 # for bike
@@ -24,14 +24,35 @@ max_trip_duration_120 = 120 # 2 hours
 max_trip_duration_60 = 60 # 1 hours
 max_rides_2 = 2 # 1 transfers
 max_rides_3 = 3 # 2 transfers
+use_csv = TRUE # except for TRANSIT
+
+
+# manual run
+# ttm_car_60min = 
+  travel_time_matrix(r5r_network,
+                                origins = points,
+                                destinations = points,
+                                mode = "CAR",
+                                departure_datetime = departure_datetime_HP,
+                                max_trip_duration = max_trip_duration_60,
+                                output_dir = "data/ttm/ttm_h3_res8/out_csv",
+                                verbose = FALSE,
+                                progress = TRUE)
+
+
+# run for different modes -------------------------------------------------
 
 # main()
 folder_name = sprintf("%s/ttm/ttm_%s", root_folder, tolower(grid_name))
 if(!dir.exists(folder_name)) {
   dir.create(folder_name, recursive = TRUE)
 }
+# for runs with high ram ## FALTA VARIAR TAMBEM COM TRIPDURATION, senão overwrite :(
+if(!dir.exists(paste0(folder_name, "/out_csv")) & use_csv == TRUE) {
+  dir.create(paste0(folder_name, "/out_csv"), recursive = TRUE)
+}
   
-for (mode in c("TRANSIT")) { # c("CAR", "BICYCLE", "WALK", "TRANSIT")
+for (mode in c("CAR")) { # c("CAR", "BICYCLE", "WALK", "TRANSIT")
   for (max_trip_duration in c(60, 120)) {
     message(paste("Running travel time matrix for mode:", mode, "max trip duration:", max_trip_duration))
     
@@ -40,10 +61,11 @@ for (mode in c("TRANSIT")) { # c("CAR", "BICYCLE", "WALK", "TRANSIT")
     args$r5r_network = r5r_network
     args$origins = points
     args$destinations = points
+    args$output_dir = paste0(folder_name, "/out_csv")
     
     # Varying parameters
     args$mode = mode
-    args$max_trip_duration = max_trip_duration
+    args$max_trip_duration = max_trip_duration # VARY ONLY FOR PT AND CAR!
     
     # > Transit has multiple departure times
     departures = c(departure_datetime_HP)
@@ -84,6 +106,36 @@ for (mode in c("TRANSIT")) { # c("CAR", "BICYCLE", "WALK", "TRANSIT")
     }
   }
 }
+# Now run also for the other modes!
+
+
+# load files --------------------------------------------------------------
+
+path_csv = paste0(folder_name, "/out_csv")
+# full.names = TRUE ensures the file paths include the directory name
+file_paths <- list.files(path = path_csv, pattern = "\\.csv$", full.names = TRUE)
+
+# 2. Read all files and combine them into one data frame
+ttm_ <- map_dfr(file_paths, read_csv) # This take some time (3min?)
+saveRDS(ttm_, paste0(folder_name, "/ttm_car_60min", ".rds"))
+rm(ttm_)
+# delete path_csv directory...
+fs::dir_delete(path_csv)
+
+# the output files should be 12 +2 +1 +1 (PT, CAR, WALK, BIKE)
+
+# load all ttm files
+# Get a vector of all .rds file paths
+file_paths <- list.files(
+  path = folder_name,
+  pattern = "\\.rds$",    # Use a regular expression to match files ending in .rds
+  full.names = TRUE       # Returns the full path, essential for reading the files
+)
+
+# Load all files into a list
+data_list <- lapply(file_paths, readRDS)
+
+
 
 # stop r5r ----------------------------------------------------------------
 r5r::stop_r5(r5r_network)
