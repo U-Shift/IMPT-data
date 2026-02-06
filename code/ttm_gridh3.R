@@ -27,7 +27,7 @@ max_rides_3 = 3 # 2 transfers
 use_csv = TRUE # except for TRANSIT
 
 
-# manual run
+# manual run for CAR
 # ttm_car_60min = 
   travel_time_matrix(r5r_network,
                                 origins = points,
@@ -52,7 +52,7 @@ if(!dir.exists(paste0(folder_name, "/out_csv")) & use_csv == TRUE) {
   dir.create(paste0(folder_name, "/out_csv"), recursive = TRUE)
 }
   
-for (mode in c("CAR")) { # c("CAR", "BICYCLE", "WALK", "TRANSIT")
+for (mode in c("WALK")) { # c("CAR", "BICYCLE", "WALK", "TRANSIT")
   for (max_trip_duration in c(60, 120)) {
     message(paste("Running travel time matrix for mode:", mode, "max trip duration:", max_trip_duration))
     
@@ -61,11 +61,15 @@ for (mode in c("CAR")) { # c("CAR", "BICYCLE", "WALK", "TRANSIT")
     args$r5r_network = r5r_network
     args$origins = points
     args$destinations = points
-    args$output_dir = paste0(folder_name, "/out_csv")
     
     # Varying parameters
     args$mode = mode
     args$max_trip_duration = max_trip_duration # VARY ONLY FOR PT AND CAR!
+    
+    # Car export to output_dir
+    if (mode == "CAR"){
+      args$output_dir = paste0(folder_name, "/out_csv")
+    }
     
     # > Transit has multiple departure times
     departures = c(departure_datetime_HP)
@@ -106,11 +110,11 @@ for (mode in c("CAR")) { # c("CAR", "BICYCLE", "WALK", "TRANSIT")
     }
   }
 }
-# Now run also for the other modes!
+# Now run also for the other modes! Se details for CAR
 
 
 # load files --------------------------------------------------------------
-# For Car, Bike, Walk
+# For Car
 path_csv = paste0(folder_name, "/out_csv")
 # full.names = TRUE ensures the file paths include the directory name
 file_paths <- list.files(path = path_csv, pattern = "\\.csv$", full.names = TRUE)
