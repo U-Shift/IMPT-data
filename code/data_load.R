@@ -39,30 +39,12 @@ readRDS_remote <- function(file, quiet = TRUE) { # From https://stackoverflow.co
   readRDS(file)
 }
 
-download_remote_dir <- function(dir_url, local_folder) {
-  # If does not exist, create it
-  if (!dir.exists(local_folder)) {
-    dir.create(local_folder, recursive = TRUE)
-  }
-  # Fetch nginx directory listing
-  html <- readLines(dir_url, warn = FALSE)
-  href_lines <- html[grepl("href=", html)]
-  # Extract filenames
-  files <- sub('.*href="([^"]+)".*', '\\1', href_lines)
-  # Remove parent dir, trailing slashes, and query junk
-  files <- files[
-    files != "../" &
-      !grepl("/$", files)
-  ]
-  # Download files
-  for (f in files) {
-    download.file(
-      paste0(stringr::str_split(dir_url, "\\?")[[1]][[1]], f, "?", stringr::str_split(dir_url, "\\?")[[1]][[2]]),
-      file.path(local_folder, f),
-      mode = "wb"
-    )
-  }
-  return(local_folder)
+download_remote_file <- function(dir_url, filename, destinatin_folder) {
+  download.file(
+    paste0(stringr::str_split(r5r_location, "\\?")[[1]][[1]], filename, "?", stringr::str_split(r5r_location, "\\?")[[1]][[2]]),
+    file.path(destinatin_folder, filename),
+    mode = "wb"
+  )
 }
 
 # Geo ---------------------------------------------------------------------
@@ -113,23 +95,16 @@ points_h3 = st_read(IMPT_URL("/geo/grelha_h3_r8_centroids.gpkg"))
 
 # r5r
 r5r_location = IMPT_URL("/geo/r5r/")
-# If remote, download files to local before proceeding with r5r setup
-# Only downloads first time, after that it uses local copy, so it is faster 
-# Attention! If r5r updated on server, make sure to force download by deleting local folder "data/r5r" before running again
-if (grepl("^http", r5r_location, ignore.case = TRUE)) {
-  local_folder = "data/r5r"
-  if (dir.exists(local_folder)) {
-    r5r_location = local_folder
-    message("Using local copy of r5r data. To force download, delete the folder 'data/r5r' and run again.")
-  } else {
-    message("Downloading r5r data from remote server. This may take a while the first time...")
-    r5r_location = download_remote_dir(r5r_location, "data/r5r") # This takes a while for the first time
-  }
-}
-## WE DONT NEED ALL THIS, ONLY network.dat and network_settings.json
+# Download files for network previously built to temp dir, for local use
+r5r_temp_dir = tempdir()
+download_remote_file(r5r_location, "network.dat", r5r_temp_dir)
+download_remote_file(r5r_location, "network_settings.json", r5r_temp_dir)
+download_remote_file(r5r_location, "GLPS_DEM_COPERNICUS_30_DEM_2026.tif", r5r_temp_dir)
+# List files in r5r_temp_dir
+list.files(r5r_temp_dir)
 
 # r5r_network = r5r::build_network(r5r_location, verbose = FALSE)
-r5r_network = r5r::build_network("data/r5r/", verbose = FALSE)
+r5r_network = r5r::build_network(r5r_temp_dir, verbose = FALSE)
 
 # Attention! Stop here. Run the code below only when you have finished using r5r, to free up memory :)
 r5r::stop_r5(r5r_network)
