@@ -97,6 +97,7 @@ pois = st_read(IMPT_URL("/geo/pois_osm2024.gpkg"))
 pois_healthcare = st_read(IMPT_URL("/pois/healthcare.gpkg"))
 # pois_pharmacies = st_read(IMPT_URL("/pois/pharmacies.gpkg"))
 # pois_schools = st_read(IMPT_URL("/pois/schools.gpkg"))
+pois_jobs = st_read(IMPT_URL("/pois/pois_jobs_imob_jt50.gpkg"))
 
 # Grid
 grid_tml = st_read(IMPT_URL("/geo/grelha_tml_d500.gpkg"))
