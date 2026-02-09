@@ -717,6 +717,7 @@ st_write(GRID_h3 |> select(id), "/data/IMPT/geo/grelha_h3_r8.gpkg", delete_dsn =
 saveRDS(h3_index, "/data/IMPT/geo/grelha_h3_r8_index.Rds")
 # st_write(GRID_h3 |> select(id), "/data/IMPT/geo/grelha_h3_r9.gpkg", delete_dsn = TRUE)
 # saveRDS(h3_index, "/data/IMPT/geo/grelha_h3_r9_index.Rds")
+GRID_h3_9 = st_read("/data/IMPT/geo/grelha_h3_r9.gpkg")
 
 
 # # Hex manual
