@@ -1,5 +1,6 @@
 library(gtfstools)
 library(mapview)
+library(osmdata)
 
 # Get PT stops
 gtfs_paths <- list.files(IMPT_URL("/gtfs/processed"), pattern="\\.zip$" , full.names = TRUE)
@@ -10,7 +11,12 @@ for (i in gtfs_paths) {
   all_stops[[i]] <- stops_sf
 }
 mapview(all_stops)
-#CM_gtfs <- read_gtfs(IMPT_URL("/gtfs/processed/gtfs_carris_metropolitana.zip"))
-#  CM_stops_sf <- stops_as_sf(CM_gtfs$stops)
-#  mapview(CM_stops_sf)
-  
+
+
+# Get cycleways from OSM
+osm_cycleways <- opq(bbox = "Área Metropolitana de Lisboa, Portugal") |>
+  add_osm_feature(key = "highway", value = "cycleway") |>
+  osmdata_sf()
+aml_cycleways <- osm_cycleways$osm_lines |>
+  st_as_sf()
+mapview(aml_cycleways)
