@@ -219,7 +219,8 @@ vehicles_by_dicofre_new <- vehicles_hh %>%
     total_motor_vehicles_per_hh = weighted.mean(total_motor_vehicles, hh_weight_new, na.rm = TRUE),
     pct_hh_no_vehicle = sum(hh_weight_new[total_vehicles == 0], na.rm = TRUE) / sum(hh_weight_new, na.rm = TRUE) * 100,
     .groups = "drop"
-  )
+  ) |> 
+  rename(dicofre = dicofre_home_new)
 
 # quick check
 summary(vehicles_by_dicofre$avg_cars)
@@ -228,5 +229,13 @@ summary(vehicles_by_dicofre$pct_no_vehicle)
 summary(vehicles_by_dicofre_new$pct_hh_no_vehicle)
 
 
+vehicles_by_dicofre_new_geo = vehicles_by_dicofre_new |>
+  left_join(freguesias, by = c("dicofre" = "dtmnfr")) |> 
+  st_as_sf()
+mapview::mapview(vehicles_by_dicofre_new_geo, zcol="avg_cars")
+mapview::mapview(vehicles_by_dicofre_new_geo, zcol="avg_bicycles")
+
+
+# export
 saveRDS(vehicles_by_dicofre_new, "data/imob_vehicles_freg.Rds")
 write.csv(vehicles_by_dicofre_new, "data/imob_vehicles_freg.csv", row.names = FALSE)
