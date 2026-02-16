@@ -14,7 +14,7 @@ mapview(all_stops)
 
 
 # Get all roads in AML from OSM ----
-osm_roads <- opq(bbox = "Alvalade, Lisboa, Portugal") |>
+osm_roads <- opq(bbox = "Área Metropolitana de Lisboa, Portugal") |>
   # Highways with tags "service", "track" and "road" are excluded
   add_osm_feature(key = "highway", value = c("motorway", "trunk", "primary", "secondary", 
                   "tertiary", "unclassified", "residential", "motorway_link", "trunk_link",
@@ -24,6 +24,22 @@ osm_roads <- opq(bbox = "Alvalade, Lisboa, Portugal") |>
 aml_roads <- osm_roads$osm_lines |>
   st_as_sf()
 mapview(aml_roads)
+
+
+# Get AML pedestrian infrastructure from OSM ----
+osm_pedpaths <- opq(bbox = "Área Metropolitana de Lisboa, Portugal") |>
+  add_osm_features(list(
+    # Separate footpaths. 
+    # Residential streets are included due to them not including neither paths nor sidewalk tags but being mostly walkable.
+    "highway" = c("footway", "residential", "pedestrian", "steps"),
+    "footway" = c("sidewalk", "crossing", "path", "platform", "corridor", "alley", "track"),
+    #Roads with sidewalk tags
+    "sidewalk" = c("both", "left", "right")
+    )) |>
+  osmdata_sf()
+aml_pedpaths <- osm_pedpaths$osm_lines |>
+  st_as_sf()
+mapview(aml_pedpaths)
 
 
 # Get AML bicycle infrastructure from OSM ----
@@ -43,18 +59,13 @@ aml_cycleways <- osm_cycleways$osm_lines |>
 mapview(aml_cycleways)
 
 
-# Get AML pedestrian infrastructure from OSM ----
-osm_pedpaths <- opq(bbox = "Área Metropolitana de Lisboa, Portugal") |>
-  add_osm_features(list(
-    # Separate footpaths. 
-    # Residential streets are included due to them not including neither paths nor sidewalk tags but being mostly walkable.
-    "highway" = c("footway", "residential", "pedestrian", "steps"),
-    "footway" = c("sidewalk", "crossing", "path", "platform", "corridor", "alley", "track"),
-    #Roads with sidewalk tags
-    "sidewalk" = c("both", "left", "right")
-    )) |>
-  osmdata_sf()
-aml_pedpaths <- osm_pedpaths$osm_lines |>
-  st_as_sf()
-mapview(aml_pedpaths)
+# Calculate lenght of each type of infrastructure ----
+road_lenght <- sum(st_length(aml_roads))
+cycleway_lenght <- sum(st_length(aml_cycleways))
+pedpath_lenght <- sum(st_length(aml_pedpaths))
 
+# Next steps:
+# 1. Disaggregate infrastructure lenght data to get by Freguesia
+# 2. Calculate walking/cycling existence of infrastructure (km of pedpath/cycleway per km of road)
+# 3. Calculate continuity of walking/cycling infrastructure through Speedwalk? (https://a-b-street.github.io/speedwalk/)
+# 4. Calculate quality of cycling infrastructure
