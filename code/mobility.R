@@ -20,6 +20,7 @@ mapview(all_stops)
 
 
 # Roads ----
+  # Get all road infrastructure OSM data for AML
 osm_roads <- opq(bbox = "Área Metropolitana de Lisboa, Portugal") |>
   # Highways with tags "service", "track" and "road" are excluded
   add_osm_feature(key = "highway", value = c("motorway", "trunk", "primary", "secondary", 
@@ -29,7 +30,23 @@ osm_roads <- opq(bbox = "Área Metropolitana de Lisboa, Portugal") |>
   osmdata_sf()
 aml_roads <- osm_roads$osm_lines |>
   st_as_sf()
+  # Remove unnecessary columns
+aml_roads <- aml_roads |>
+  select(osm_id, name, highway, geometry)
 #mapview(aml_roads)
+
+# Disaggregate and measure pedpath length by Freguesia
+roads_by_freguesia <- st_join(aml_roads, freguesias, left = FALSE)
+roads_by_freguesia$length_segment <- st_length(roads_by_freguesia)
+road_length_by_freguesia <- roads_by_freguesia |>
+  group_by(freguesia) |>
+  summarise(road_length = sum(length_segment))
+road_length_by_freguesia <- road_length_by_freguesia |>
+  st_drop_geometry()
+freguesias_by_road <- freguesias |>
+  left_join(road_length_by_freguesia, by = "freguesia") |>
+  mutate(road_length = ifelse(is.na(road_length), 0, road_length))
+mapview(freguesias_by_road, zcol = "road_length")
 
 
 # Pedestrians ----
@@ -47,6 +64,7 @@ osm_pedpaths <- opq(bbox = "Área Metropolitana de Lisboa, Portugal") |>
   osmdata_sf()
 aml_pedpaths <- osm_pedpaths$osm_lines |>
   st_as_sf()
+  # Remove unnecessary columns
 aml_pedpaths <- aml_pedpaths |>
   select(osm_id, name, highway, sidewalk, geometry)
 #mapview(aml_pedpaths)
@@ -80,7 +98,7 @@ osm_cycleways <- opq(bbox = "Área Metropolitana de Lisboa, Portugal") |>
   osmdata_sf()
 aml_cycleways <- osm_cycleways$osm_lines |>
   st_as_sf()
-    # Remove unnecessary columns
+  # Remove unnecessary columns
 aml_cycleways <- aml_cycleways |>
   select(osm_id, name, bicycle, highway, geometry)
 #mapview(aml_cycleways)
@@ -99,17 +117,24 @@ freguesias_by_cycleway <- freguesias |>
 #mapview(freguesias_by_cycleway, zcol = "cycleway_length")
 
 
+# Compute ratio of pedpath/cycleway to roads ----
+freguesias_by_infrastructure <- freguesias |>
+  left_join(road_length_by_freguesia, by = "freguesia") |>
+  left_join(pedpath_length_by_freguesia, by = "freguesia") |>
+  left_join(cycleway_length_by_freguesia, by = "freguesia") |>
+  mutate(
+    road_length = ifelse(is.na(road_length), 0, road_length),
+    pedpath_length = ifelse(is.na(pedpath_length), 0, pedpath_length),
+    cycleway_length = ifelse(is.na(cycleway_length), 0, cycleway_length),
+    pedpath_to_road_ratio = ifelse(road_length > 0, pedpath_length / road_length, NA),
+    cycleway_to_road_ratio = ifelse(road_length > 0, cycleway_length / road_length, NA)
+  )
+mapview(freguesias_by_infrastructure, zcol = "pedpath_to_road_ratio")
+mapview(freguesias_by_infrastructure, zcol = "cycleway_to_road_ratio")
 
-
-
-# Lenght of each type of infrastructure ----
-road_length_total <- sum(st_length(aml_roads))
-cycleway_length_total <- sum(st_length(aml_cycleways))
-pedpath_length_total <- sum(st_length(aml_pedpaths))
 
 
 # Next steps:
-# 1. Disaggregate infrastructure length data to get by Freguesia
-# 2. Calculate walking/cycling existence of infrastructure (km of pedpath/cycleway per km of road)
-# 3. Calculate continuity of walking/cycling infrastructure through Speedwalk? (https://a-b-street.github.io/speedwalk/)
-# 4. Calculate quality of cycling infrastructure
+# 1. Compute continuity of walking/cycling infrastructure 
+# (use Speedwalk? (https://a-b-street.github.io/speedwalk/))
+# 2. Compute quality of cycling infrastructure
