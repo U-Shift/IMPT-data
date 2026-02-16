@@ -19,7 +19,7 @@ for (i in gtfs_paths) {
 mapview(all_stops)
 
 
-# Get all roads in AML from OSM ----
+# Roads ----
 osm_roads <- opq(bbox = "Área Metropolitana de Lisboa, Portugal") |>
   # Highways with tags "service", "track" and "road" are excluded
   add_osm_feature(key = "highway", value = c("motorway", "trunk", "primary", "secondary", 
@@ -32,14 +32,16 @@ aml_roads <- osm_roads$osm_lines |>
 #mapview(aml_roads)
 
 
-# Get AML pedestrian infrastructure from OSM ----
+# Pedestrians ----
+  # Get OSM pedestrian infrastructure data for AML
 osm_pedpaths <- opq(bbox = "Área Metropolitana de Lisboa, Portugal") |>
   add_osm_features(list(
-    # Separate footpaths. 
-    # Residential streets are included due to them not including neither paths nor sidewalk tags but being mostly walkable.
+    # Residential streets are included due to them not having 
+    # path or sidewalk tags in OSM, but being mostly walkable.
+    # Separate footpaths
     "highway" = c("footway", "residential", "pedestrian", "steps"),
     "footway" = c("sidewalk", "crossing", "path", "platform", "corridor", "alley", "track"),
-    #Roads with sidewalk tags
+    # Roads with sidewalk tags
     "sidewalk" = c("both", "left", "right")
     )) |>
   osmdata_sf()
@@ -49,22 +51,22 @@ aml_pedpaths <- aml_pedpaths |>
   select(osm_id, name, highway, sidewalk, geometry)
 #mapview(aml_pedpaths)
 
-# Now disaggregate and measure pedpath length by Freguesia (Being worked on)
-# pedpaths_by_freguesia <- st_join(aml_pedpaths, freguesias, left = FALSE)
-# pedpaths_by_freguesia$length_segment <- st_length(pedpaths_by_freguesia)
-# pedpath_length_by_freguesia <- pedpaths_by_freguesia |>
-#   group_by(freguesia) |>
-#   summarise(pedpath_lenght = sum(length_segment))
-# pedpath_length_by_freguesia <- pedpath_length_by_freguesia |>
-#   st_drop_geometry()
-# freguesias_by_pedpath <- freguesias |>
-#   left_join(pedpath_length_by_freguesia, by = "freguesia") |>
-#   mutate(pedpath_length = ifelse(is.na(cycleway_length), 0, cycleway_length))
-# mapview(freguesias_by_pedpath, zcol = "pedpath_length")
+# Disaggregate and measure pedpath length by Freguesia
+pedpaths_by_freguesia <- st_join(aml_pedpaths, freguesias, left = FALSE)
+pedpaths_by_freguesia$length_segment <- st_length(pedpaths_by_freguesia)
+pedpath_length_by_freguesia <- pedpaths_by_freguesia |>
+  group_by(freguesia) |>
+  summarise(pedpath_length = sum(length_segment))
+pedpath_length_by_freguesia <- pedpath_length_by_freguesia |>
+  st_drop_geometry()
+freguesias_by_pedpath <- freguesias |>
+  left_join(pedpath_length_by_freguesia, by = "freguesia") |>
+  mutate(pedpath_length = ifelse(is.na(pedpath_length), 0, pedpath_length))
+#mapview(freguesias_by_pedpath, zcol = "pedpath_length")
 
 
 # Bicycles ----
-  # Start by getting the OSM cycleway data for the AML
+  # Get OSM cycleway data for AML
 osm_cycleways <- opq(bbox = "Área Metropolitana de Lisboa, Portugal") |>
   add_osm_features(features = list(
     # Dedicated cycle paths
@@ -83,7 +85,7 @@ aml_cycleways <- aml_cycleways |>
   select(osm_id, name, bicycle, highway, geometry)
 #mapview(aml_cycleways)
 
-  # Now disaggregate and measure cycleway length by Freguesia
+  # Disaggregate and measure cycleway length by Freguesia
 cycleways_by_freguesia <- st_join(aml_cycleways, freguesias, left = FALSE)
 cycleways_by_freguesia$length_segment <- st_length(cycleways_by_freguesia)
 cycleway_length_by_freguesia <- cycleways_by_freguesia |>
