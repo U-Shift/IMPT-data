@@ -13,7 +13,20 @@ for (i in gtfs_paths) {
 mapview(all_stops)
 
 
-# Get cycleways from OSM ----
+# Get all roads in AML from OSM ----
+osm_roads <- opq(bbox = "Alvalade, Lisboa, Portugal") |>
+  # Highways with tags "service", "track" and "road" are excluded
+  add_osm_feature(key = "highway", value = c("motorway", "trunk", "primary", "secondary", 
+                  "tertiary", "unclassified", "residential", "motorway_link", "trunk_link",
+                  "primary_link", "secondary_link", "tertiary_link", "living_street")
+  ) |>
+  osmdata_sf()
+aml_roads <- osm_roads$osm_lines |>
+  st_as_sf()
+mapview(aml_roads)
+
+
+# Get AML bicycle infrastructure from OSM ----
 osm_cycleways <- opq(bbox = "Área Metropolitana de Lisboa, Portugal") |>
   add_osm_features(features = list(
     # Dedicated cycle paths
@@ -30,7 +43,7 @@ aml_cycleways <- osm_cycleways$osm_lines |>
 mapview(aml_cycleways)
 
 
-# Get pedestrian paths from OSM ----
+# Get AML pedestrian infrastructure from OSM ----
 osm_pedpaths <- opq(bbox = "Área Metropolitana de Lisboa, Portugal") |>
   add_osm_features(list(
     # Separate footpaths. 
