@@ -7,6 +7,9 @@
 library(gtfstools)
 library(mapview)
 library(osmdata)
+library(igraph)
+library(tidygraph)
+library(sfnetworks)
 
 # Get all AML PT stops ----
 gtfs_paths <- list.files(IMPT_URL("/gtfs/processed"), pattern="\\.zip$" , full.names = TRUE)
@@ -137,6 +140,23 @@ mapview(freguesias_by_infrastructure, zcol = "cycleway_to_road_ratio")
 mapview(freguesias_by_infrastructure, zcol = "cycling_quality_ratio")
 
 
+# Attempt to measure network continuity ----
+  # Bicycles
+cycling_network_graph <- as_sfnetwork(aml_cycleways, directed = FALSE)
+cycling_edges <- cycling_network_graph |> activate("edges") |> st_as_sf() |> summarise(n = n()) |> pull(n)
+cycling_nodes <- cycling_network_graph |> activate("nodes") |> st_as_sf() |> summarise(n = n()) |> pull(n)
+cycling_components <-  cycling_network_graph |>
+  activate("nodes") |>
+  mutate(component = group_components()) |>
+  pull(component) |>
+  unique() |>
+  length()
+cycling_R <- cycling_edges - cycling_nodes + cycling_components
+
+plot(cycling_network_graph, 
+     main = "Cycling Network",
+     col = "blue", 
+     lwd = 0.5)
 
 
 # Save results ----
@@ -147,4 +167,3 @@ saveRDS(freguesias_by_infrastructure |> st_drop_geometry(), "/data/IMPT/mobility
 # Next steps:
 # 1. Compute continuity of walking/cycling infrastructure 
 # (use Speedwalk? (https://a-b-street.github.io/speedwalk/))
-# 2. Compute quality of cycling infrastructure
