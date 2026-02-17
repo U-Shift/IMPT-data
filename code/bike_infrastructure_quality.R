@@ -68,9 +68,12 @@ if (!file.exists(f)) download.file(u, f)
 lisbon = sf::read_sf(f)
 lisbon = lisbon |>
   sf::st_cast("POLYGON")
-osm = get_travel_network("Portugal", boundary = lisbon, boundary_type = "clipsrc", force_vectortranslate = TRUE)
-cycle_net = get_cycling_network(osm)
-drive_net = get_driving_network_major(osm)
+#osm = get_travel_network("Portugal", boundary = lisbon, boundary_type = "clipsrc", force_vectortranslate = TRUE)
+# Replace : by _ in column names
+aml_cycleways = aml_cycleways |>
+  dplyr::rename_with(~ gsub(":", "_", .x))
+cycle_net = get_cycling_network(aml_cycleways)
+drive_net = get_driving_network_major(aml_roads)
 cycle_net = distance_to_road(cycle_net, drive_net)
 
 
@@ -151,7 +154,14 @@ table(cycle_net_pt$cycle_segregation)
 m = plot_osm_tmap(cycle_net_pt)
 m
 
+# Remove unnecessary columns
+cycle_net_pt <- cycle_net_pt |>
+  select(osm_id, name, highway, geometry, cycle_segregation)
+
 mapview::mapview(cycle_net_pt |> filter(cycle_segregation != "Mixed traffic"), zcol="cycle_segregation")
+
+
+st_write(cycle_net_pt, "/data/IMPT/mobility/cycle_network_class.gpkg", delete_dsn = TRUE)
 
 # there are still a lot of them what have the osm tag foot="yes" and shouldn't have it.
 # Edit in OSM. Examples

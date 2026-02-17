@@ -21,7 +21,7 @@ mapview(all_stops)
 
 # Roads ----
   # Get all road infrastructure OSM data for AML
-osm_roads <- opq(bbox = "Área Metropolitana de Lisboa, Portugal") |>
+osm_roads <- opq(bbox = municipios |> sf::st_bbox()) |>
   # Highways with tags "service", "track" and "road" are excluded
   add_osm_feature(key = "highway", value = c("motorway", "trunk", "primary", "secondary", 
                   "tertiary", "unclassified", "residential", "motorway_link", "trunk_link",
@@ -35,7 +35,7 @@ aml_roads <- aml_roads |>
   select(osm_id, name, highway, geometry)
 #mapview(aml_roads)
 
-# Disaggregate and measure pedpath length by Freguesia
+# Disaggregate and measure road length by Freguesia
 roads_by_freguesia <- st_join(aml_roads, freguesias, left = FALSE)
 roads_by_freguesia$length_segment <- st_length(roads_by_freguesia)
 road_length_by_freguesia <- roads_by_freguesia |>
@@ -46,12 +46,12 @@ road_length_by_freguesia <- road_length_by_freguesia |>
 freguesias_by_road <- freguesias |>
   left_join(road_length_by_freguesia, by = "freguesia") |>
   mutate(road_length = ifelse(is.na(road_length), 0, road_length))
-mapview(freguesias_by_road, zcol = "road_length")
+#mapview(freguesias_by_road, zcol = "road_length")
 
 
 # Pedestrians ----
   # Get OSM pedestrian infrastructure data for AML
-osm_pedpaths <- opq(bbox = "Área Metropolitana de Lisboa, Portugal") |>
+osm_pedpaths <- opq(bbox = municipios |> sf::st_bbox()) |>
   add_osm_features(list(
     # Residential streets are included due to them not having 
     # path or sidewalk tags in OSM, but being mostly walkable.
@@ -85,7 +85,7 @@ freguesias_by_pedpath <- freguesias |>
 
 # Bicycles ----
   # Get OSM cycleway data for AML
-osm_cycleways <- opq(bbox = "Área Metropolitana de Lisboa, Portugal") |>
+osm_cycleways <- opq(bbox = municipios |> sf::st_bbox()) |>
   add_osm_features(features = list(
     # Dedicated cycle paths
     "highway" = "cycleway",
@@ -131,6 +131,9 @@ freguesias_by_infrastructure <- freguesias |>
   )
 mapview(freguesias_by_infrastructure, zcol = "pedpath_to_road_ratio")
 mapview(freguesias_by_infrastructure, zcol = "cycleway_to_road_ratio")
+
+# Save file without geometry
+saveRDS(freguesias_by_infrastructure |> st_drop_geometry(), "/data/IMPT/mobility/freguesias_infrastructure_ratio.rds")
 
 
 
