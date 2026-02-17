@@ -43,10 +43,6 @@ road_length_by_freguesia <- roads_by_freguesia |>
   summarise(road_length = sum(length_segment))
 road_length_by_freguesia <- road_length_by_freguesia |>
   st_drop_geometry()
-freguesias_by_road <- freguesias |>
-  left_join(road_length_by_freguesia, by = "freguesia") |>
-  mutate(road_length = ifelse(is.na(road_length), 0, road_length))
-#mapview(freguesias_by_road, zcol = "road_length")
 
 
 # Pedestrians ----
@@ -77,10 +73,6 @@ pedpath_length_by_freguesia <- pedpaths_by_freguesia |>
   summarise(pedpath_length = sum(length_segment))
 pedpath_length_by_freguesia <- pedpath_length_by_freguesia |>
   st_drop_geometry()
-freguesias_by_pedpath <- freguesias |>
-  left_join(pedpath_length_by_freguesia, by = "freguesia") |>
-  mutate(pedpath_length = ifelse(is.na(pedpath_length), 0, pedpath_length))
-#mapview(freguesias_by_pedpath, zcol = "pedpath_length")
 
 
 # Bicycles ----
@@ -98,9 +90,9 @@ osm_cycleways <- opq(bbox = municipios |> sf::st_bbox()) |>
   osmdata_sf()
 aml_cycleways <- osm_cycleways$osm_lines |>
   st_as_sf()
-  # Remove unnecessary columns
+    # Remove unnecessary columns
 aml_cycleways <- aml_cycleways |>
-  select(osm_id, name, bicycle, highway, geometry)
+  select(osm_id, name, highway, geometry)
 #mapview(aml_cycleways)
 
   # Disaggregate and measure cycleway length by Freguesia
@@ -111,28 +103,43 @@ cycleway_length_by_freguesia <- cycleways_by_freguesia |>
   summarise(cycleway_length = sum(length_segment))
 cycleway_length_by_freguesia <- cycleway_length_by_freguesia |>
   st_drop_geometry()
-freguesias_by_cycleway <- freguesias |>
-  left_join(cycleway_length_by_freguesia, by = "freguesia") |>
-  mutate(cycleway_length = ifelse(is.na(cycleway_length), 0, cycleway_length))
-#mapview(freguesias_by_cycleway, zcol = "cycleway_length")
 
+
+  # Evaluate cycleway quality by freguesia
+segregated_cycleways <- cycle_net_pt |> filter(cycle_segregation == "Cycle track or lane")
+segregated_by_freguesia <- st_join(segregated_cycleways, freguesias, left = FALSE)
+segregated_by_freguesia$length_segment <- st_length(segregated_by_freguesia)
+segregated_length_by_freguesia <- segregated_by_freguesia |>
+  group_by(freguesia) |>
+  summarise(segregated_cycleway_length = sum(length_segment))
+segregated_length_by_freguesia <- segregated_length_by_freguesia |>
+  st_drop_geometry()
+  
+  
 
 # Compute ratio of pedpath/cycleway to roads ----
 freguesias_by_infrastructure <- freguesias |>
   left_join(road_length_by_freguesia, by = "freguesia") |>
   left_join(pedpath_length_by_freguesia, by = "freguesia") |>
   left_join(cycleway_length_by_freguesia, by = "freguesia") |>
+  left_join(segregated_length_by_freguesia, by = "freguesia") |>
   mutate(
     road_length = ifelse(is.na(road_length), 0, road_length),
     pedpath_length = ifelse(is.na(pedpath_length), 0, pedpath_length),
     cycleway_length = ifelse(is.na(cycleway_length), 0, cycleway_length),
-    pedpath_to_road_ratio = ifelse(road_length > 0, pedpath_length / road_length, NA),
-    cycleway_to_road_ratio = ifelse(road_length > 0, cycleway_length / road_length, NA)
+    segregated_cycleway_length = ifelse(is.na(segregated_cycleway_length), 0, segregated_cycleway_length),
+    pedpath_to_road_ratio = ifelse(road_length > 0, pedpath_length / road_length, 0),
+    cycleway_to_road_ratio = ifelse(road_length > 0, cycleway_length / road_length, 0),
+    cycling_quality_ratio = ifelse(cycleway_length > 0, segregated_cycleway_length / cycleway_length, 0)
   )
 mapview(freguesias_by_infrastructure, zcol = "pedpath_to_road_ratio")
 mapview(freguesias_by_infrastructure, zcol = "cycleway_to_road_ratio")
+mapview(freguesias_by_infrastructure, zcol = "cycling_quality_ratio")
 
-# Save file without geometry
+
+
+
+# Save results ----
 saveRDS(freguesias_by_infrastructure |> st_drop_geometry(), "/data/IMPT/mobility/freguesias_infrastructure_ratio.rds")
 
 
