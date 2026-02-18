@@ -142,10 +142,10 @@ mapview(freguesias_by_infrastructure, zcol = "cycling_quality_ratio")
 
 # Attempt to measure network continuity ----
   # Bicycles
-cycling_network_graph <- as_sfnetwork(aml_cycleways, directed = FALSE)
-cycling_edges <- cycling_network_graph |> activate("edges") |> st_as_sf() |> summarise(n = n()) |> pull(n)
-cycling_nodes <- cycling_network_graph |> activate("nodes") |> st_as_sf() |> summarise(n = n()) |> pull(n)
-cycling_components <-  cycling_network_graph |>
+aml_cycling_net_graph <- as_sfnetwork(cycleways_by_freguesia, directed = FALSE)
+cycling_edges <- aml_cycling_net_graph |> activate("edges") |> st_as_sf() |> summarise(n = n()) |> pull(n)
+cycling_nodes <- aml_cycling_net_graph |> activate("nodes") |> st_as_sf() |> summarise(n = n()) |> pull(n)
+cycling_components <-  aml_cycling_net_graph |>
   activate("nodes") |>
   mutate(component = group_components()) |>
   pull(component) |>
@@ -153,17 +153,28 @@ cycling_components <-  cycling_network_graph |>
   length()
 cycling_R <- cycling_edges - cycling_nodes + cycling_components
 
-plot(cycling_network_graph, 
-     main = "Cycling Network",
+plot(aml_cycling_net_graph, 
+     main = "AML Cycling Network",
      col = "blue", 
      lwd = 0.5)
+
+    # Create a graph for each freguesia
+freguesias2 <- freguesias$freguesia
+freguesia_cycling_net_graph <- list()
+for(i in freguesias2) {
+  # Filter edges that belong to the current parish
+  edges_freguesia <- cycleways_by_freguesia[cycleways_by_freguesia$freguesia == i, ]
+  if(nrow(edges_freguesia) > 0) {  # Check if there are edges
+    freguesia_cycling_net_graph[[i]] <- as_sfnetwork(edges_freguesia, directed = FALSE)
+  } 
+  else {
+    freguesia_cycling_net_graph[[i]] <- list(0)  # No edges for this parish
+  }
+}
+
 
 
 # Save results ----
 saveRDS(freguesias_by_infrastructure |> st_drop_geometry(), "/data/IMPT/mobility/freguesias_infrastructure_ratio.rds")
-
-
-
-# Next steps:
-# 1. Compute continuity of walking/cycling infrastructure 
-# (use Speedwalk? (https://a-b-street.github.io/speedwalk/))
+saveRDS(aml_cycling_net_graph, "/data/IMPT/mobility/aml_cycling_net_graph.rds")
+saveRDS(freguesia_cycling_net_graph, "/data/IMPT/mobility/freguesia_cycling_net_graph.rds")
