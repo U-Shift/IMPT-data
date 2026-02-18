@@ -1,12 +1,18 @@
-# Nota: Alguns passos deste código demoram muito tempo a correr
-# (nomeadamente os relacionados com a rede viária e pedonal total da AML)
-# seria útil arranjar maneira de agregar mais os dados do OSM
-# ou na road_network do ficheiro data_load (= st_read(IMPT_URL("/geo/IMPT_Road_network.gpkg")) 
-# antes de correr tudo
+# Objective: Compute mobility parameters for every mode
+# Done so far:
+  # Car: Ownership rates (in veh_ownership.R)
+  # Walking: Existence of infrastructure.
+  # Cycling: Existence of infrastructure, Quality of infrastructure.
+# In progress:
+  # Walking: Continuity of infrastructure.
+  # Cycling: Continuity of infrastructure.
+# Not started:
+  # PT: Frequency, Availability/coverage, Shared mobility availability, Night/weekend service.
 
 library(gtfstools)
 library(mapview)
 library(osmdata)
+library(sf)
 library(igraph)
 library(tidygraph)
 library(sfnetworks)
@@ -109,7 +115,7 @@ cycleway_length_by_freguesia <- cycleway_length_by_freguesia |>
 
 
   # Evaluate cycleway quality by freguesia
-segregated_cycleways <- cycle_net_pt |> filter(cycle_segregation == "Cycle track or lane")
+segregated_cycleways <- st_read("/data/IMPT/mobility/cycle_network_class.gpkg") |> filter(cycle_segregation == "Cycle track or lane")
 segregated_by_freguesia <- st_join(segregated_cycleways, freguesias, left = FALSE)
 segregated_by_freguesia$length_segment <- st_length(segregated_by_freguesia)
 segregated_length_by_freguesia <- segregated_by_freguesia |>
@@ -140,41 +146,55 @@ mapview(freguesias_by_infrastructure, zcol = "cycleway_to_road_ratio")
 mapview(freguesias_by_infrastructure, zcol = "cycling_quality_ratio")
 
 
-# Attempt to measure network continuity ----
+# Network continuity ----
+  # Turned OSM data into graphs and measured number of edges, nodes and components.
+  # Problem: what metric do we want to use to measure continuity/connectivity?
+
   # Bicycles
 aml_cycling_net_graph <- as_sfnetwork(cycleways_by_freguesia, directed = FALSE)
-cycling_edges <- aml_cycling_net_graph |> activate("edges") |> st_as_sf() |> summarise(n = n()) |> pull(n)
-cycling_nodes <- aml_cycling_net_graph |> activate("nodes") |> st_as_sf() |> summarise(n = n()) |> pull(n)
+cycling_edges <- aml_cycling_net_graph |> 
+  activate("edges") |> st_as_sf() |> summarise(n = n()) |> pull(n)
+cycling_nodes <- aml_cycling_net_graph |> 
+  activate("nodes") |> st_as_sf() |> summarise(n = n()) |> pull(n)
 cycling_components <-  aml_cycling_net_graph |>
   activate("nodes") |>
   mutate(component = group_components()) |>
   pull(component) |>
   unique() |>
   length()
-cycling_R <- cycling_edges - cycling_nodes + cycling_components
-
-plot(aml_cycling_net_graph, 
-     main = "AML Cycling Network",
-     col = "blue", 
-     lwd = 0.5)
+#plot(aml_cycling_net_graph, main = "AML Cycling Network",col = "blue", lwd = 0.5)
 
     # Create a graph for each freguesia
 freguesias2 <- freguesias$freguesia
 freguesia_cycling_net_graph <- list()
+cycling_net_continuity <- freguesias |> st_drop_geometry()
 for(i in freguesias2) {
-  # Filter edges that belong to the current parish
+  # Filter edges that belong to the current freguesia
   edges_freguesia <- cycleways_by_freguesia[cycleways_by_freguesia$freguesia == i, ]
   if(nrow(edges_freguesia) > 0) {  # Check if there are edges
     freguesia_cycling_net_graph[[i]] <- as_sfnetwork(edges_freguesia, directed = FALSE)
+    # Calculate number of edges, nodes and components per freguesia
+    cycling_net_continuity[cycling_net_continuity$freguesia == i, "n_edges"] <- nrow(edges_freguesia)
+    cycling_net_continuity[cycling_net_continuity$freguesia == i, "n_nodes"] <- freguesia_cycling_net_graph[[i]] |> 
+      activate("nodes") |> st_as_sf() |> summarise(n = n()) |> pull(n)
+    cycling_net_continuity[cycling_net_continuity$freguesia == i, "n_components"] <- freguesia_cycling_net_graph[[i]] |>
+      activate("nodes") |>
+      mutate(component = group_components()) |>
+      pull(component) |>
+      unique() |>
+      length()
   } 
   else {
-    freguesia_cycling_net_graph[[i]] <- list(0)  # No edges for this parish
+    freguesia_cycling_net_graph[[i]] <- list(0)  # No edges for this freguesia
+    cycling_net_continuity[cycling_net_continuity$freguesia == i, "n_edges"] <- 0
+    cycling_net_continuity[cycling_net_continuity$freguesia == i, "n_nodes"] <- 0
+    cycling_net_continuity[cycling_net_continuity$freguesia == i, "n_components"] <- 0
   }
 }
 
-
-
 # Save results ----
+st_write(freguesias_by_infrastructure, "/data/IMPT/mobility/freguesias_infrastructure_ratio.gpkg", delete_dsn = TRUE)
 saveRDS(freguesias_by_infrastructure |> st_drop_geometry(), "/data/IMPT/mobility/freguesias_infrastructure_ratio.rds")
 saveRDS(aml_cycling_net_graph, "/data/IMPT/mobility/aml_cycling_net_graph.rds")
 saveRDS(freguesia_cycling_net_graph, "/data/IMPT/mobility/freguesia_cycling_net_graph.rds")
+saveRDS(cycling_net_continuity, "/data/IMPT/mobility/network_continuity_by_freguesia.rds")
