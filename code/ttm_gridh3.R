@@ -1,3 +1,23 @@
+options(java.parameters = '-Xmx64G') # RAM to 16GB
+library(r5r)
+
+# r5r
+r5r_location = IMPT_URL("/geo/r5r/")
+# Download files for network previously built to temp dir, for local use
+r5r_temp_dir = tempdir()
+download_remote_file(r5r_location, "network.dat", r5r_temp_dir)
+download_remote_file(r5r_location, "network_settings.json", r5r_temp_dir)
+download_remote_file(r5r_location, "GLPS_DEM_COPERNICUS_30_DEM_2026.tif", r5r_temp_dir)
+# List files in r5r_temp_dir
+list.files(r5r_temp_dir)
+
+# r5r_network = r5r::build_network(r5r_location, verbose = FALSE)
+r5r_network = r5r::build_network(r5r_temp_dir, verbose = FALSE)
+
+# Attention! Stop here. Run the code below only when you have finished using r5r, to free up memory :)
+r5r::stop_r5(r5r_network)
+rJava::.jgc(R.gc = TRUE)
+
 # run ttm to all cell combinations and all modes
 
 library(tidyverse)

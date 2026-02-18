@@ -1,8 +1,6 @@
 # Load relevant data after preparation
 # see data_prep-R to check hot it was prepared
 
-options(java.parameters = '-Xmx64G') # RAM to 16GB
-library(r5r)
 library(dplyr)
 library(sf)
 library(tidyr)
@@ -12,7 +10,7 @@ library(tidyr)
 
 # DATA_LOCATION = "/data/IMPT" # When running at server.ushift.pt, use server local data
 DATA_LOCATION = "https://impt.server.ushift.pt" # When running locally, get data from remote server
-# DATA_LOCATION = "data"
+DATA_LOCATION = "data"
 API_KEY = Sys.getenv("IMPT_DATA_KEY") # Set it using usethis::edit_r_environ(), followed by CTRL+F10
 
 IMPT_URL = function(path) {
@@ -77,10 +75,6 @@ census = st_read(IMPT_URL("/geo/census24_points.gpkg"))
 
 # POIs
 pois = st_read(IMPT_URL("/geo/pois_osm2024.gpkg"))
-pois_healthcare = st_read(IMPT_URL("/pois/healthcare.gpkg"))
-# pois_pharmacies = st_read(IMPT_URL("/pois/pharmacies.gpkg"))
-# pois_schools = st_read(IMPT_URL("/pois/schools.gpkg"))
-pois_jobs = st_read(IMPT_URL("/pois/pois_jobs_imob_jt50.gpkg"))
 
 # Grid
 grid_tml = st_read(IMPT_URL("/geo/grelha_tml_d500.gpkg"))
@@ -92,24 +86,6 @@ points_h3 = st_read(IMPT_URL("/geo/grelha_h3_r8_centroids.gpkg"))
 grid = st_read(IMPT_URL("/geo/grelha_h3_r9.gpkg"))
 h3_index = readRDS_remote(IMPT_URL("/geo/grelha_h3_r9_index.Rds"))
 points_h3 = st_read(IMPT_URL("/geo/grelha_h3_r9_centroids.gpkg"))
-
-
-# r5r
-r5r_location = IMPT_URL("/geo/r5r/")
-# Download files for network previously built to temp dir, for local use
-r5r_temp_dir = tempdir()
-download_remote_file(r5r_location, "network.dat", r5r_temp_dir)
-download_remote_file(r5r_location, "network_settings.json", r5r_temp_dir)
-download_remote_file(r5r_location, "GLPS_DEM_COPERNICUS_30_DEM_2026.tif", r5r_temp_dir)
-# List files in r5r_temp_dir
-list.files(r5r_temp_dir)
-
-# r5r_network = r5r::build_network(r5r_location, verbose = FALSE)
-r5r_network = r5r::build_network(r5r_temp_dir, verbose = FALSE)
-
-# Attention! Stop here. Run the code below only when you have finished using r5r, to free up memory :)
-r5r::stop_r5(r5r_network)
-rJava::.jgc(R.gc = TRUE)
 
 
 # Statistic Data ----------------------------------------------------------
