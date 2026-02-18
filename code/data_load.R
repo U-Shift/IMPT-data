@@ -88,9 +88,9 @@ grid = st_read(IMPT_URL("/geo/grelha_h3_r8.gpkg"))
 h3_index = readRDS_remote(IMPT_URL("/geo/grelha_h3_r8_index.Rds"))
 points_h3 = st_read(IMPT_URL("/geo/grelha_h3_r8_centroids.gpkg"))
 # r9
-# grid_9 = st_read(IMPT_URL("/geo/grelha_h3_r9.gpkg"))
-# h3_index = readRDS_remote(IMPT_URL("/geo/grelha_h3_r9_index.Rds"))
-# points_h3_9 = st_read(IMPT_URL("/geo/grelha_h3_r9_centroids.gpkg"))
+grid = st_read(IMPT_URL("/geo/grelha_h3_r9.gpkg"))
+h3_index = readRDS_remote(IMPT_URL("/geo/grelha_h3_r9_index.Rds"))
+points_h3 = st_read(IMPT_URL("/geo/grelha_h3_r9_centroids.gpkg"))
 
 
 # r5r

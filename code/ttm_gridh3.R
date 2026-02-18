@@ -11,7 +11,7 @@ root_folder = "data" # Set to "/data/IMPT/ when running at server.ushift.pt, or 
 points = points_h3
 nrow(points) # 3686 - this is the res 8 h3 grid, and 25890 for res 9
 grid_name = "h3_res8" # fast to run, but 13.5Million combinations!. takes 17min for each run
-# grid_name = "h3_res9" # takes 13min to run within rstudio-server, for transit.
+grid_name = "h3_res9" # takes 13min to run within rstudio-server, for transit.
 mode_egress = "WALK"
 max_walk_time = 15 # 20?
 max_lts = 3 # for bike
@@ -24,8 +24,6 @@ max_trip_duration_120 = 120 # 2 hours
 max_trip_duration_60 = 60 # 1 hours
 max_rides_2 = 2 # 1 transfers
 max_rides_3 = 3 # 2 transfers
-use_csv = TRUE # except for TRANSIT
-
 
 # # manual run for CAR
 # # ttm_car_60min = 
@@ -47,12 +45,8 @@ folder_name = sprintf("%s/ttm/ttm_%s", root_folder, tolower(grid_name))
 if(!dir.exists(folder_name)) {
   dir.create(folder_name, recursive = TRUE)
 }
-# # for runs with high ram ## FALTA VARIAR TAMBEM COM TRIPDURATION, senão overwrite :(
-# if(!dir.exists(paste0(folder_name, "/out_csv")) & use_csv == TRUE) {
-#   dir.create(paste0(folder_name, "/out_csv"), recursive = TRUE)
-# }
   
-for (mode in c("WALK")) { # c("CAR", "BICYCLE", "WALK", "TRANSIT")
+for (mode in c("CAR", "BICYCLE", "WALK", "TRANSIT")) {
   for (max_trip_duration in c(60, 120)) {
     message(paste("Running travel time matrix for mode:", mode, "max trip duration:", max_trip_duration))
     
@@ -65,11 +59,6 @@ for (mode in c("WALK")) { # c("CAR", "BICYCLE", "WALK", "TRANSIT")
     # Varying parameters
     args$mode = mode
     args$max_trip_duration = max_trip_duration 
-    
-    # # Car export to output_dir
-    # if (mode == "CAR"){
-    #   args$output_dir = paste0(folder_name, "/out_csv")
-    # }
     
     # > Transit has multiple departure times
     departures = c(departure_datetime_HP)
@@ -96,50 +85,43 @@ for (mode in c("WALK")) { # c("CAR", "BICYCLE", "WALK", "TRANSIT")
           args$max_rides = mr
         }
         
-        filename = sprintf("%s/ttm_%s_%dmin_%s", folder_name, tolower(mode), max_trip_duration, strftime(departure_datetime, "%Y%m%d%H%M", tz = "Europe/Lisbon"))
+        output_csv = sprintf("%s/ttm_%s_%dmin_%s", folder_name, tolower(mode), max_trip_duration, strftime(departure_datetime, "%Y%m%d%H%M", tz = "Europe/Lisbon"))
         if (!is.na(mr)) {
-          filename = sprintf("%s_%dtransfers.rds", filename, mr-1)
-        } else {
-          filename = sprintf("%s.rds", filename)
+          output_csv = sprintf("%s_%dtransfers", output_csv, mr-1)
         }
-        ttm = do.call(travel_time_matrix, args)
-        message("Saving to ", filename)
-        saveRDS(ttm, filename)
-        message("Done :)")
+        if(!dir.exists(output_csv)) {
+          dir.create(output_csv, recursive = TRUE)
+        }
+        
+        args$output_dir = output_csv
+        message("Running ttm... Storing output to ", output_csv)
+        do.call(travel_time_matrix, args)
+        message("Done :) Next mode...")
       }
     }
   }
 }
-# Now run also for the other modes! Se details for CAR
 
+# aggregate csvs into single rds --------------------------------------------------------------
 
-# load files --------------------------------------------------------------
-# # For Car
-# path_csv = paste0(folder_name, "/out_csv")
-# # full.names = TRUE ensures the file paths include the directory name
-# file_paths <- list.files(path = path_csv, pattern = "\\.csv$", full.names = TRUE)
-# 
-# # 2. Read all files and combine them into one data frame
-# ttm_ <- map_dfr(file_paths, read_csv, show_col_types = FALSE) # This take some time (3min?)
-# saveRDS(ttm_, paste0(folder_name, "/ttm_car_60min", ".rds"))
-# rm(ttm_)
-# # delete path_csv directory...
-# fs::dir_delete(path_csv)
-# 
-# # the output files should be 12 +2 +1 +1 (PT, CAR, WALK, BIKE)
-
-# load all ttm files
-# Get a vector of all .rds file paths
-file_paths <- list.files(
-  path = folder_name,
-  pattern = "\\.rds$",    # Use a regular expression to match files ending in .rds
-  full.names = TRUE       # Returns the full path, essential for reading the files
-)
-
-# Load all files into a list
-data_list <- lapply(file_paths, readRDS)
-
-
+for (folder in list.dirs(folder_name, recursive = FALSE)) {
+  message("Aggregating CSVs in folder: ", folder)
+  
+  # Get all CSV file paths in the folder
+  csv_files <- list.files(path = folder, pattern = "\\.csv$", full.names = TRUE)
+  
+  # Read and combine all CSV files into one data frame
+  ttm_combined <- map_dfr(csv_files, read_csv, show_col_types = FALSE)
+  
+  # Save the combined data frame as an RDS file
+  rds_file_path <- paste0(folder, ".rds")
+  saveRDS(ttm_combined, rds_file_path)
+  
+  # Clean up: remove the original CSV files
+  # file.remove(csv_files)
+  
+  message("Finished aggregating and cleaning up for folder: ", folder)
+}
 
 # stop r5r ----------------------------------------------------------------
 r5r::stop_r5(r5r_network)
