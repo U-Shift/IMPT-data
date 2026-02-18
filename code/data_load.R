@@ -64,6 +64,7 @@ conversion_dicofre_weight = readRDS("useful_data/dicofre_16_24_conversion_full_w
 # road_network = st_read(IMPT_URL("/geo/IMPT_Road_network.gpkg")) # all
 road_network_main = st_read(IMPT_URL("/geo/road_network_main.gpkg")) # 1 to 4 level
 road_network_base = st_read(IMPT_URL("/geo/road_network_base.gpkg")) # 1 to 3 level
+# active_infra_ratio = readRDS(IMPT_URL("/mobility/freguesias_infrastructure_ratio.rds")) # not working
 
 # # ODs
 # trips_freguesias_2024 = readRDS_remote(IMPT_URL("/trips/TRIPSmode_freguesias_2024.Rds"))
