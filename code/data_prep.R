@@ -744,18 +744,11 @@ h3_index = GRID_h3 |> st_drop_geometry() # save h3_address for later
 
 mapview(GRID_h3)
 
-<<<<<<< HEAD
 # st_write(GRID_h3 |> select(id), "/data/IMPT/geo/grelha_h3_r8.gpkg", delete_dsn = TRUE)
 # saveRDS(h3_index, "/data/IMPT/geo/grelha_h3_r8_index.Rds")
 st_write(GRID_h3 |> select(id), "/data/IMPT/geo/grelha_h3_r9.gpkg", delete_dsn = TRUE)
 saveRDS(h3_index, "/data/IMPT/geo/grelha_h3_r9_index.Rds")
-=======
-st_write(GRID_h3 |> select(id), "/data/IMPT/geo/grelha_h3_r8.gpkg", delete_dsn = TRUE)
-saveRDS(h3_index, "/data/IMPT/geo/grelha_h3_r8_index.Rds")
-# st_write(GRID_h3 |> select(id), "/data/IMPT/geo/grelha_h3_r9.gpkg", delete_dsn = TRUE)
-# saveRDS(h3_index, "/data/IMPT/geo/grelha_h3_r9_index.Rds")
-GRID_h3_9 = st_read("/data/IMPT/geo/grelha_h3_r9.gpkg")
->>>>>>> 97eb5164f1e89589c2a77f6d3c2b8845530f702a
+
 
 
 # # Hex manual
@@ -782,10 +775,6 @@ GRID_h3_9 = st_read("/data/IMPT/geo/grelha_h3_r9.gpkg")
 GRID_h3_centroids = st_centroid(GRID_h3) |> 	
   select(id, h3_address)
 
-<<<<<<< HEAD
+
 # st_write(GRID_h3_centroids, "/data/IMPT/geo/grelha_h3_r8_centroids.gpkg", delete_dsn = TRUE)
-st_write(GRID_h3_centroids, "/data/IMPT/geo/grelha_h3_r9_centroids.gpkg", delete_dsn = TRUE)
-=======
-st_write(GRID_h3_centroids, "/data/IMPT/geo/grelha_h3_r8_centroids.gpkg", delete_dsn = TRUE)
 # st_write(GRID_h3_centroids, "/data/IMPT/geo/grelha_h3_r9_centroids.gpkg", delete_dsn = TRUE)
->>>>>>> 97eb5164f1e89589c2a77f6d3c2b8845530f702a
