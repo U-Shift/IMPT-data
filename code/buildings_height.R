@@ -9,70 +9,71 @@ library(dplyr)
 
 
 fetch_building_points <- function(city_name, bbox_list, parket_file_dir) {
-  
   parquet_s3_path <- paste0("s3://us-west-2.opendata.source.coop/tge-labs/globalbuildingatlas-lod1/", parket_file_dir, ".parquet")
-  
-  
+
+
   # 1. Extract coordinates from list
   coords <- bbox_list[[city_name]]
-  if(is.null(coords)) stop("City not found in list!")
-  
+  if (is.null(coords)) stop("City not found in list!")
+
   # Map variables for the SQL query
   # Note: your list format is xmin, ymin, xmax, ymax
-  q_xmin <- coords[1]; q_ymin <- coords[2]; q_xmax <- coords[3]; q_ymax <- coords[4]
-  
+  q_xmin <- coords[1]
+  q_ymin <- coords[2]
+  q_xmax <- coords[3]
+  q_ymax <- coords[4]
+
   # 2. Setup DuckDB
   con <- dbConnect(duckdb())
   dbExecute(con, "INSTALL spatial; LOAD spatial; INSTALL httpfs; LOAD httpfs; SET s3_region='us-west-2'; SET preserve_insertion_order=false;")
-  
+
   # 3. Query using BBox midpoints (Fastest & most stable)
   query <- paste0("
-    SELECT * EXCLUDE (geometry), 
+    SELECT * EXCLUDE (geometry),
            ST_AsWKB(TRY_CAST(geometry AS GEOMETRY)) as geom_wkb
     FROM read_parquet('", parquet_s3_path, "')
     WHERE bbox.xmin >= ", q_xmin, " AND bbox.xmax <= ", q_xmax, "
-      AND bbox.ymin >= ", q_ymin, " AND bbox.ymax <= ", q_ymax
-  )
-  
-  
+      AND bbox.ymin >= ", q_ymin, " AND bbox.ymax <= ", q_ymax)
+
+
   message(paste("Fetching data for", city_name, "..."))
-  raw_data <- dbGetQuery(con, query) |> 
+  raw_data <- dbGetQuery(con, query) |>
     filter(!is.na(geom_wkb)) # Remove the NULLs we created
   dbDisconnect(con) # STOP the connection to free resources
-  
+
   if (nrow(raw_data) == 0) {
     message("No buildings found for this area.")
     return(NULL)
   }
-  
+
   # 4. Transform to SF points
-  buildings_centroids <- raw_data %>%
-    filter(!is.na(geom_wkb)) %>% # remove non-geometric entries
-    mutate(geometry = st_as_sfc(geom_wkb, crs = 4326)) %>%  # Convert to sf object so st_area works correctly
-    st_as_sf() %>%
+  buildings_centroids <- raw_data |>
+    filter(!is.na(geom_wkb)) |> # remove non-geometric entries
+    mutate(geometry = st_as_sfc(geom_wkb, crs = 4326)) |> # Convert to sf object so st_area works correctly
+    st_as_sf() |>
     mutate(
       # Transform to metric (3857) to get area in square meters
-      footprint_m2 = round(as.numeric(st_area(st_transform(., 3857)))), #A0
+      footprint_m2 = round(as.numeric(st_area(st_transform(geometry, 3857)))), # A0
       est_floors = pmax(1, round(height / 3)), # average 3m height per floor, with a minimum of 1 flooror
       total_floor_area_m2 = round(footprint_m2 * est_floors), # ABC
       # Midpoints for the final point geometry
       lon = (bbox$xmin + bbox$xmax) / 2,
       lat = (bbox$ymin + bbox$ymax) / 2
-    ) %>%
+    ) |>
     # Convert polygons to points using the midpoints calculated
-    st_drop_geometry() %>% 
-    st_as_sf(coords = c("lon", "lat"), crs = 4326) %>%
+    st_drop_geometry() |>
+    st_as_sf(coords = c("lon", "lat"), crs = 4326) |>
     select(source, id, height, var, est_floors, footprint_m2, total_floor_area_m2)
-  
+
   return(buildings_centroids)
 }
 
 
 # run ---------------------------------------------------------------------
-# See in the 
+# See in the
 # datalod1 = st_read("data/lod1.geojson")
 #### SEE HERE: https://source.coop/tge-labs/globalbuildingatlas-lod1
-lisbon_file_dir = "w010_n40_w005_n35" # Lisbon
+lisbon_file_dir <- "w010_n40_w005_n35" # Lisbon
 # sydney_file_dir = "e150_s30_e155_s35" # Sydney
 # paris_file_dir = "e000_n50_e005_n45" # Paris
 # barcelona_file_dir = "e000_n45_e005_n40" # Barcelona
@@ -98,11 +99,10 @@ st_write(lisbon_buildings, "/data/IMPT/pois/lisbon_metro_buildings_height.geojso
 summary(lisbon_buildings$est_floor) # median: 1, mean: 1.64
 # summary(sydney_buildings$est_floor) # median: 2; mean: 1.95
 # summary(paris_buildings$est_floor) # median: 3; mean: 2.92
-# summary(barcelona_buildings$est_floor) # median: 4; mean: 3.773 (this is the city bbox, not the region) 
+# summary(barcelona_buildings$est_floor) # median: 4; mean: 3.773 (this is the city bbox, not the region)
 
 
-
-lisbon_buildings_city = lisbon_buildings[lisboa,] # spatial filter
+lisbon_buildings_city <- lisbon_buildings[lisboa, ] # spatial filter
 # paris_buildings_city = paris_buildings[paris_lim, ]
 # sydney_buildings_city = sydney_buildings[sydney_city |> st_make_valid(), ]
 # barcelona_buildings_city = barcelona_buildings[barcelona_perim, ]
@@ -123,17 +123,18 @@ summary(lisbon_buildings_city$total_floor_area_m2) # median: 752, mean: 4803
 library(mapview)
 library(RColorBrewer)
 
-mapview(lisbon_buildings_city, 
-        zcol = "est_floors", # flors
-        # zcol = "total_floor_area_m2", # area
-        # cex = "est_floors",       # Size of the dots based on floors
-        cex = 0.6, # fixed size
-        col.regions = colorRampPalette(brewer.pal(9, "YlOrRd")),        # Our custom color palette
-        alpha.regions = 0.7,      # Slight transparency to see overlapping points
-        alpha = 0, # hide limit
-        layer.name = "Est. Floors",
-        map.types = c("CartoDB.DarkMatter", "OpenStreetMap", "Esri.WorldImagery"),
-        legend = TRUE)
+mapview(lisbon_buildings_city,
+  zcol = "est_floors", # flors
+  # zcol = "total_floor_area_m2", # area
+  # cex = "est_floors",       # Size of the dots based on floors
+  cex = 0.6, # fixed size
+  col.regions = colorRampPalette(brewer.pal(9, "YlOrRd")), # Our custom color palette
+  alpha.regions = 0.7, # Slight transparency to see overlapping points
+  alpha = 0, # hide limit
+  layer.name = "Est. Floors",
+  map.types = c("CartoDB.DarkMatter", "OpenStreetMap", "Esri.WorldImagery"),
+  legend = TRUE
+)
 
 
 # upload to github --------------------------------------------------------
