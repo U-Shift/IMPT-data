@@ -5,7 +5,8 @@ library(stplanr)
 
 
 # load imob data
-IMOB = readRDS("data/IMOB_trips.Rds")
+# IMOB = readRDS("data/IMOB_trips.Rds")
+IMOB = readRDS("/data/IMPT/trips/IMOB_trips.Rds")
 names(IMOB)
 
 table(IMOB$D0500_Dsg)
@@ -114,13 +115,35 @@ summary(OD_jobs$trips) #median 30 or 43
 
 # jitter in freguesias
 
-od_jobs_jittered = odjitter::jitter(  
+# with road network
+road_network = st_read("/data/IMPT/geo/IMPT_Road_network.gpkg")
+
+od_jobs_jittered = odjitter::jitter(
   od = OD_jobs,
   zones = freguesias,
-  subpoints = road_network, 
+  subpoints = road_network,
   disaggregation_key = "trips",
-  disaggregation_threshold = 50
+  disaggregation_threshold = 50,
+  rng_seed = 42
 )
+
+
+# # with buildings, weighted by construction area (ABC)
+# buildings = st_read("/data/IMPT/pois/lisbon_metro_buildings_height.geojson")
+# buildings = buildings |> rename(weigth = total_floor_area_m2)
+# 
+# od_jobs_jittered = odjitter::jitter(  
+#   od = OD_jobs,
+#   zones = freguesias,
+#   subpoints_origins = buildings,
+#   subpoints_destinations = buildings,
+#   weight_key_destinations = -weight,
+#   disaggregation_key = "trips",
+#   disaggregation_threshold = 50,
+#   rng_seed = 42 # deterministic randomization
+# )
+
+
 
 # add an id to the jittered pairs, so we can join later
 od_jobs_jittered_id = od_jobs_jittered
@@ -156,8 +179,8 @@ pois_jobs = od_jobs_jittered_DE_geo |>
 
 mapview::mapview(pois_jobs)
 
-st_write(pois_jobs, "data/pois/pois_jobs_imob_jt50.gpkg", delete_dsn = TRUE)
-
+# st_write(pois_jobs, "data/pois/pois_jobs_imob_jt50.gpkg", delete_dsn = TRUE)
+# st_write(pois_jobs, "data/pois/pois_jobs_imob_jt50_buildings.gpkg", delete_dsn = TRUE)
 
 ## Save OD mode and trip purpose for other ttm statistics?
 saveRDS(OD_all_new, "data/IMOB_od_freg_mode_purpose.Rds")
