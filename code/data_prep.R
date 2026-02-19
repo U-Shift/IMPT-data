@@ -447,6 +447,9 @@ table(pois$group)
 # save and load
 st_write(pois, "/data/IMPT/geo/pois_osm2024.gpkg", delete_dsn = TRUE)
 pois = st_read("/data/IMPT/geo/pois_osm2024.gpkg")
+table(pois$type|> as.factor() |> forcats::fct_infreq())
+table(pois$group)
+table((pois |> filter(group=="amenity"))$type|> as.factor() |> forcats::fct_infreq())
 
 pois_health = read.csv("https://github.com/carrismetropolitana/datasets/raw/refs/heads/latest/facilities/health_centers/health_centers.csv") |>
   filter(
@@ -466,14 +469,42 @@ pois_health = read.csv("https://github.com/carrismetropolitana/datasets/raw/refs
     )
   ) |>
   st_as_sf(coords = c("lon", "lat"), crs = 4326)
-
 mapview(pois_health, zcol="type")
+st_write(pois_health, IMPT_URL("/pois/healthcare.gpkg"), delete_dsn = TRUE)
 
-st_write(pois_health, "/data/IMPT/pois/healthcare.gpkg", delete_dsn = TRUE)
+pois_schools = read.csv("https://github.com/carrismetropolitana/datasets/raw/refs/heads/latest/facilities/schools/schools.csv") |>
+  mutate(
+    type = case_when(
+      pre_school == 1 ~ "Pre-school",
+      basic_1 == 1 ~ "1st Cycle",
+      basic_2 == 1 ~ "2nd Cycle",
+      basic_3 == 1 ~ "3rd Cycle",
+      high_school == 1 ~ "High School",
+      professional == 1 ~ "High School",
+      university == 1 ~ "University",
+      TRUE ~ "Other"
+    )
+  ) |>
+  st_as_sf(coords = c("lon", "lat"), crs = 4326)
+mapview(pois_schools, zcol="type")
+st_write(pois_schools, IMPT_URL("/pois/schools.gpkg"), delete_dsn = TRUE)
 
-# TODO!
-# Pharmacies: Get data source 
-# Schools: Use https://github.com/carrismetropolitana/datasets/blob/latest/facilities/schools/schools.csv
+pois_green = pois |> filter(group == "leisure" & type %in% c("park", "garden")) # include playgrouds?
+mapview(pois_green, zcol="type")
+st_write(pois_green, IMPT_URL("/pois/green.gpkg"), delete_dsn = TRUE)
+
+pois_supermarket= pois |> filter(type == "supermarket" | type == "convenience")
+mapview(pois_supermarket, zcol="type")
+st_write(pois_supermarket, IMPT_URL("/pois/supermarket.gpkg"), delete_dsn = TRUE)
+
+pois_recreation = pois |> filter(type %in% c(
+  # amenity
+  "library", "theatre", "cinema", "cafe", "bar", "pub",
+  # sport
+  "pitch", "fitness_station", "swimming_pool", "sports_centre", "fitness_center"
+))
+mapview(pois_recreation, zcol="type")
+st_write(pois_recreation, IMPT_URL("/pois/recreation.gpkg"), delete_dsn = TRUE)
 
 # GTFS data ---------------------------------------------------------------
 
@@ -713,10 +744,18 @@ h3_index = GRID_h3 |> st_drop_geometry() # save h3_address for later
 
 mapview(GRID_h3)
 
+<<<<<<< HEAD
 # st_write(GRID_h3 |> select(id), "/data/IMPT/geo/grelha_h3_r8.gpkg", delete_dsn = TRUE)
 # saveRDS(h3_index, "/data/IMPT/geo/grelha_h3_r8_index.Rds")
 st_write(GRID_h3 |> select(id), "/data/IMPT/geo/grelha_h3_r9.gpkg", delete_dsn = TRUE)
 saveRDS(h3_index, "/data/IMPT/geo/grelha_h3_r9_index.Rds")
+=======
+st_write(GRID_h3 |> select(id), "/data/IMPT/geo/grelha_h3_r8.gpkg", delete_dsn = TRUE)
+saveRDS(h3_index, "/data/IMPT/geo/grelha_h3_r8_index.Rds")
+# st_write(GRID_h3 |> select(id), "/data/IMPT/geo/grelha_h3_r9.gpkg", delete_dsn = TRUE)
+# saveRDS(h3_index, "/data/IMPT/geo/grelha_h3_r9_index.Rds")
+GRID_h3_9 = st_read("/data/IMPT/geo/grelha_h3_r9.gpkg")
+>>>>>>> 97eb5164f1e89589c2a77f6d3c2b8845530f702a
 
 
 # # Hex manual
@@ -743,5 +782,10 @@ saveRDS(h3_index, "/data/IMPT/geo/grelha_h3_r9_index.Rds")
 GRID_h3_centroids = st_centroid(GRID_h3) |> 	
   select(id, h3_address)
 
+<<<<<<< HEAD
 # st_write(GRID_h3_centroids, "/data/IMPT/geo/grelha_h3_r8_centroids.gpkg", delete_dsn = TRUE)
 st_write(GRID_h3_centroids, "/data/IMPT/geo/grelha_h3_r9_centroids.gpkg", delete_dsn = TRUE)
+=======
+st_write(GRID_h3_centroids, "/data/IMPT/geo/grelha_h3_r8_centroids.gpkg", delete_dsn = TRUE)
+# st_write(GRID_h3_centroids, "/data/IMPT/geo/grelha_h3_r9_centroids.gpkg", delete_dsn = TRUE)
+>>>>>>> 97eb5164f1e89589c2a77f6d3c2b8845530f702a
