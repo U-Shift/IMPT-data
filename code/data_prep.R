@@ -499,7 +499,7 @@ st_write(pois_supermarket, IMPT_URL("/pois/supermarket.gpkg"), delete_dsn = TRUE
 
 pois_recreation = pois |> filter(type %in% c(
   # amenity
-  "library", "theatre", "cinema", "cafe", "bar", "pub",
+  "library", "theatre", "cinema", "restaurant", "cafe", "bar", "pub",
   # sport
   "pitch", "fitness_station", "swimming_pool", "sports_centre", "fitness_center"
 ))
