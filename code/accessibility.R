@@ -1,5 +1,7 @@
 library(mapview)
 
+output_dir = "/accessibility/r8"
+
 # Travel time matrix ---------------------------------------------------------------
 
 # ttm_bike_60 = readRDS_remote(IMPT_URL("/ttm/ttm_h3_res9/ttm_bicycle_60min_202602040800.rds"))
@@ -11,11 +13,20 @@ library(mapview)
 ttm_root = "/ttm/ttm_h3_res8"
 ttm_list = list(
   # Mode, Travel time matrix file, Time cutoffs to consider
-  list("walk", "ttm_walk_60min_202602040800.rds", list(15,30)),
-  list("bike", "ttm_bicycle_60min_202602040800.rds", list(15,30)),
-  list("car", "ttm_car_60min_202602040800.rds", list(5,10,15,30)),
-  list("transit_1t", "ttm_transit_60min_202602040800_1transfers.rds", list(5,10,15,30)),
-  list("transit_2t", "ttm_transit_60min_202602040800_2transfers.rds", list(5,10,15,30))
+  list("walk", "ttm_walk_60min_202602040800.rds", list(15,30,45)),
+  list("bike", "ttm_bicycle_60min_202602040800.rds", list(15,30,45)),
+  list("car", "ttm_car_60min_202602040800.rds", list(5,10,15,30,45)),
+  list("transit_1t", "ttm_transit_60min_202602040800_1transfers.rds", list(5,10,15,30,45)),
+  list("transit_2t", "ttm_transit_60min_202602040800_2transfers.rds", list(5,10,15,30,45))
+)
+
+ttm_list = list(
+  # Mode, Travel time matrix file, Time cutoffs to consider
+  list("walk", "ttm_walk_60min_202602040800.rds", list(45)),
+  list("bike", "ttm_bicycle_60min_202602040800.rds", list(45)),
+  list("car", "ttm_car_60min_202602040800.rds", list(45)),
+  list("transit_1t", "ttm_transit_60min_202602040800_1transfers.rds", list(45)),
+  list("transit_2t", "ttm_transit_60min_202602040800_2transfers.rds", list(45))
 )
 
 # POIs ---------------------------------------------------------------
@@ -28,14 +39,14 @@ pois_jobs = st_read(IMPT_URL("/pois/pois_jobs_imob_jt50.gpkg")) |> rename(n=trip
 
 pois_list = list(
   # POI type, sf data.frame with points 
-  list("health", pois_health),
-  list("health_primary", pois_health |> filter(type=="Centro de Saúde")),
-  list("health_hospital", pois_health |> filter(type=="Hospital")),
-  list("groceries", pois_supermarket),
-  list("greenspaces", pois_green),
-  list("recreation", pois_recreation),
-  list("schools", pois_schools),
-  list("schools_primary", pois_schools |> filter(grepl("Cycle", type))),
+  # list("health", pois_health),
+  # list("health_primary", pois_health |> filter(type=="Centro de Saúde")),
+  # list("health_hospital", pois_health |> filter(type=="Hospital")),
+  # list("groceries", pois_supermarket),
+  # list("greenspaces", pois_green),
+  # list("recreation", pois_recreation),
+  # list("schools", pois_schools),
+  # list("schools_primary", pois_schools |> filter(grepl("Cycle", type))),
   list("jobs", pois_jobs)
 )
 
@@ -115,7 +126,7 @@ for(i in 1:length(pois_list)) {
         rename(!!ncolname := sym(pois_name))
         
       # mapview(grid |> left_join(grid_points_access), zcol = colname)
-      write.csv(grid_points_access, IMPT_URL(sprintf("/accessibility/%s.csv", colname)), row.names = FALSE)
+      write.csv(grid_points_access, IMPT_URL(sprintf("%s/%s.csv", output_dir, colname)), row.names = FALSE)
       message(paste(">>> Saved result for", colname, ", procedding with next..."))
     }
   }
@@ -154,6 +165,12 @@ accessibility_measures = list(
     list("bike", 15),
     list("car", 15),
     list("transit_2t", 15)
+  )),
+  list("jobs", "residents", list(
+    list("walk", 45),
+    list("bike", 45),
+    list("car", 45),
+    list("transit_2t", 45)
   ))
 )
 
@@ -190,44 +207,57 @@ for (i in 1:length(accessibility_measures)) {
     
     colname = paste0("access_", poi_name, "_", mode_name, "_", mode_time, "min")
     ncolname = paste("n_", poi_name, sep = "")
-    access = read.csv(IMPT_URL(sprintf("/accessibility/%s.csv", colname)))
+    access = read.csv(IMPT_URL(sprintf("%s/%s.csv", output_dir, colname)))
+    if (m>1) {
+      access = access |> select(-sym(ncolname))
+    }
     
     grid_access = grid_access |>
       left_join(access, by = "id")
     
     freguesia_access = freguesia_accessibility |> 
-      st_join(grid_access |> select(id, sym(colname), sym(ncolname)), join = st_intersects) |>
+      select(dtmnfr, geom) |>
+      st_join(grid_access, join = st_intersects) |>
       st_drop_geometry() |>
-      group_by(dtmnfr) |>
-      summarise(
-        # Weighted means by population
-        !!colname := weighted.mean(get(colname), get(census_col), na.rm=TRUE),
-        # N sum
-        !!ncolname := sum(get(ncolname), na.rm=TRUE)
-      ) 
+      group_by(dtmnfr)
+    
+    if (m==1) {
+      freguesia_access = freguesia_access |>
+        summarise(
+          # Weighted means by population
+          !!colname := weighted.mean(get(colname), get(census_col), na.rm=TRUE),
+          # N sum
+          !!ncolname := sum(get(ncolname), na.rm=TRUE)
+        ) 
+    } else {
+      freguesia_access = freguesia_access |>
+        summarise(
+          # Weighted means by population
+          !!colname := weighted.mean(get(colname), get(census_col), na.rm=TRUE)
+        ) 
+    }
     
     freguesia_accessibility = freguesia_accessibility |> 
-      left_join(freguesia_access |> select(dtmnfr, sym(colname), sym(ncolname)), by = "dtmnfr")
+      left_join(freguesia_access, by = "dtmnfr")
     # View(freguesia_accessibility|>st_drop_geometry())
   }
 }
 
-st_write(freguesia_accessibility, IMPT_URL("/accessibility/accessibility_freguesia.gpkg"), delete_dsn = TRUE)
-write.csv(freguesia_accessibility |> st_drop_geometry(), IMPT_URL("/accessibility/accessibility_freguesia.csv"), row.names = FALSE) 
-st_write(grid_access, IMPT_URL("/accessibility/accessibility_grid.gpkg"), delete_dsn = TRUE)
-write.csv(grid_access, IMPT_URL("/accessibility/accessibility_grid.csv"), row.names = FALSE)
+st_write(freguesia_accessibility, IMPT_URL(sprintf("%s/accessibility_freguesia.gpkg", output_dir)), delete_dsn = TRUE)
+write.csv(freguesia_accessibility |> st_drop_geometry(), IMPT_URL(sprintf("%s/accessibility_freguesia.csv", output_dir)), row.names = FALSE) 
+st_write(grid_access, IMPT_URL(sprintf("%s/accessibility_grid.gpkg", output_dir)), delete_dsn = TRUE)
+write.csv(grid_access, IMPT_URL(sprintf("%s/accessibility_grid.csv", output_dir)), row.names = FALSE)
 
-# mapview(freguesia_accessibility, zcol = "access_health_walk_15min") +
-#   mapview(freguesia_accessibility, zcol = "access_health_bike_15min") +
-#   mapview(freguesia_accessibility, zcol = "access_health_car_30min") +
-#   mapview(freguesia_accessibility, zcol = "access_health_transit_2t_30min") +
-#   mapview(pois_health)
-# 
-# mapview(grid_access, zcol = "access_health_walk_15min") +
-#   mapview(grid_access, zcol = "access_health_bike_15min") +
-#   mapview(grid_access, zcol = "access_health_car_30min") +
-#   mapview(grid_access, zcol = "access_health_transit_2t_30min") +
-#   mapview(pois_health)
+# mapview(freguesia_accessibility, zcol = "access_jobs_walk_45min") +
+#   mapview(freguesia_accessibility, zcol = "access_jobs_bike_45min") +
+#   mapview(freguesia_accessibility, zcol = "access_jobs_car_45min") +
+#   mapview(freguesia_accessibility, zcol = "access_jobs_transit_2t_45min") 
+# # 
+# mapview(grid_access, zcol = "access_jobs_walk_45min") +
+#   mapview(grid_access, zcol = "access_jobs_bike_45min") +
+#   mapview(grid_access, zcol = "access_jobs_car_45min") +
+#   mapview(grid_access, zcol = "access_jobs_transit_2t_45min")
+# #   mapview(pois_health)
 
 # Nearest opportunity -----------------------------------------------------
 # 
