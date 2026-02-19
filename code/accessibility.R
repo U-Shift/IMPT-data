@@ -8,7 +8,7 @@ library(mapview)
 # nrow(ttm_bike_120)
 # nrow(ttm_bike_120 |> filter(travel_time_p50<=55))
 # View(ttm_bike_120)
-
+ttm_root = "/ttm/ttm_h3_res8"
 ttm_list = list(
   # Mode, Travel time matrix file, Time cutoffs to consider
   list("walk", "ttm_walk_60min_202602040800.rds", list(15,30)),
@@ -19,12 +19,12 @@ ttm_list = list(
 )
 
 # POIs ---------------------------------------------------------------
-pois_health = st_read(IMPT_URL("/pois/healthcare.gpkg"))
-pois_supermarket = st_read(IMPT_URL("/pois/supermarket.gpkg"))
-pois_green= st_read(IMPT_URL("/pois/green.gpkg"))
-pois_recreation = st_read(IMPT_URL("/pois/recreation.gpkg"))
-pois_schools = st_read(IMPT_URL("/pois/schools.gpkg"))
-# pois_jobs = st_read(IMPT_URL("/pois/pois_jobs_imob_jt50.gpkg"))
+pois_health = st_read(IMPT_URL("/pois/healthcare.gpkg")) |> mutate(n=1)
+pois_supermarket = st_read(IMPT_URL("/pois/supermarket.gpkg")) |> mutate(n=1)
+pois_green= st_read(IMPT_URL("/pois/green.gpkg")) |> mutate(n=1)
+pois_recreation = st_read(IMPT_URL("/pois/recreation.gpkg")) |> mutate(n=1)
+pois_schools = st_read(IMPT_URL("/pois/schools.gpkg")) |> mutate(n=1)
+pois_jobs = st_read(IMPT_URL("/pois/pois_jobs_imob_jt50.gpkg")) |> rename(n=trips)
 
 pois_list = list(
   # POI type, sf data.frame with points 
@@ -35,7 +35,8 @@ pois_list = list(
   list("greenspaces", pois_green),
   list("recreation", pois_recreation),
   list("schools", pois_schools),
-  list("schools_primary", pois_schools |> filter(grepl("Cycle", type)))
+  list("schools_primary", pois_schools |> filter(grepl("Cycle", type))),
+  list("jobs", pois_jobs)
 )
 
 
@@ -72,7 +73,7 @@ grid_points_population = st_centroid(grid_population)
 # 1. Count opportunities accessible
 for(i in 1:length(pois_list)) {
   pois_name = pois_list[[i]][[1]]
-  pois_data = pois_list[[i]][[2]] |> mutate(obs = 1)
+  pois_data = pois_list[[i]][[2]]
   if ("id" %in% colnames(pois_data)) {
     pois_data = pois_data |> select(-id)
   }
@@ -81,12 +82,17 @@ for(i in 1:length(pois_list)) {
   grid_points <- st_join(grid, pois_data, join = st_intersects) |>
     group_by(id) |>
     # Sum the dummy column. 'na.rm = TRUE' treats the NAs (non-matches) as 0.
-    summarise(!!pois_name := sum(obs, na.rm = TRUE)) |> # mapview(grid_points, zcol=pois_name)
+    summarise(!!pois_name := sum(n, na.rm = TRUE)) |> # mapview(grid_points, zcol=pois_name)
     st_drop_geometry()
+  
   
   for(z in 1:length(ttm_list)) {
     ttm_name = ttm_list[[z]][[1]]
-    ttm_data = readRDS_remote(IMPT_URL(sprintf("/ttm/ttm_h3_res9/%s", ttm_list[[z]][[2]])))
+    ttm_data = readRDS_remote(IMPT_URL(sprintf("%s/%s", ttm_root, ttm_list[[z]][[2]]))) |>
+      mutate(
+        from_id = as.integer(from_id),
+        to_id = as.integer(to_id)
+      )
     ttm_cutoffs = ttm_list[[z]][[3]]
     message(paste("> Processing travel time matrix:", ttm_name))
     
@@ -102,8 +108,14 @@ for(i in 1:length(pois_list)) {
       ) |> rename(
         !!colname := sym(pois_name)
       )
-      # mapview(grid |> left_join(access_result), zcol = colname)
-      write.csv(access_result, IMPT_URL(sprintf("/accessibility/%s.csv", colname)), row.names = FALSE)
+      
+      ncolname = paste("n_", pois_name, sep = "")
+      grid_points_access = grid_points |> 
+        left_join(access_result, by = "id") |>
+        rename(!!ncolname := sym(pois_name))
+        
+      # mapview(grid |> left_join(grid_points_access), zcol = colname)
+      write.csv(grid_points_access, IMPT_URL(sprintf("/accessibility/%s.csv", colname)), row.names = FALSE)
       message(paste(">>> Saved result for", colname, ", procedding with next..."))
     }
   }
@@ -177,22 +189,25 @@ for (i in 1:length(accessibility_measures)) {
     mode_time = modes_time[[m]][[2]]
     
     colname = paste0("access_", poi_name, "_", mode_name, "_", mode_time, "min")
+    ncolname = paste("n_", poi_name, sep = "")
     access = read.csv(IMPT_URL(sprintf("/accessibility/%s.csv", colname)))
     
     grid_access = grid_access |>
       left_join(access, by = "id")
     
     freguesia_access = freguesia_accessibility |> 
-      st_join(grid_access |> select(id, sym(colname)), join = st_intersects) |>
+      st_join(grid_access |> select(id, sym(colname), sym(ncolname)), join = st_intersects) |>
       st_drop_geometry() |>
       group_by(dtmnfr) |>
       summarise(
         # Weighted means by population
-        !!colname := weighted.mean(get(colname), get(census_col), na.rm=TRUE)
+        !!colname := weighted.mean(get(colname), get(census_col), na.rm=TRUE),
+        # N sum
+        !!ncolname := sum(get(ncolname), na.rm=TRUE)
       ) 
     
     freguesia_accessibility = freguesia_accessibility |> 
-      left_join(freguesia_access |> select(dtmnfr, sym(colname)), by = "dtmnfr")
+      left_join(freguesia_access |> select(dtmnfr, sym(colname), sym(ncolname)), by = "dtmnfr")
     # View(freguesia_accessibility|>st_drop_geometry())
   }
 }
@@ -215,10 +230,10 @@ write.csv(grid_access, IMPT_URL("/accessibility/accessibility_grid.csv"), row.na
 #   mapview(pois_health)
 
 # Nearest opportunity -----------------------------------------------------
-
-cost_to_closest = accessibility::cost_to_closest(
-  travel_matrix = ttm,
-  land_use_data = grid_points,
-  opportunity = 'healthcare',
-  travel_cost = 'travel_time_p50'
-)
+# 
+# cost_to_closest = accessibility::cost_to_closest(
+#   travel_matrix = ttm,
+#   land_use_data = grid_points,
+#   opportunity = 'healthcare',
+#   travel_cost = 'travel_time_p50'
+# )
