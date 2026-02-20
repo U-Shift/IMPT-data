@@ -612,6 +612,45 @@ for(i in 1:nrow(gtfs_db)){
   tidytransit::write_gtfs(gtfs_imported, paste0("/data/IMPT/geo/r5r/gtfs_", gsub(" ", "_", tolower(operator)), ".zip"))
 }
 
+# Get all AML PT stops 
+library(tidytransit)
+gtfs_paths <- list.files(IMPT_URL("/gtfs/processed"), pattern="\\.zip$" , full.names = TRUE)
+pois_transit = data.frame()
+for (i in gtfs_paths) {
+  gtfs <- read_gtfs(i)
+  stops_sf <- stops_as_sf(gtfs$stops) |> select(stop_id, geometry)
+  stops_sf$agency = gtfs$agency$agency_name[[1]]
+  
+  gtfs = filter_feed_by_date(gtfs, "2026-02-04")
+  
+  stops_frequency_peak = get_stop_frequency(gtfs, start_time="08:00:00", end_time="09:00:00", service_ids=unique(gtfs$calendar$service_id)) |>
+    group_by(stop_id) |>
+    summarise(frequency_peak = sum(n_departures))
+  stops_frequency_day = get_stop_frequency(gtfs, start_time="00:00:00", end_time="23:59:59", service_ids=unique(gtfs$calendar$service_id)) |>
+    group_by(stop_id) |>
+    summarise(frequency_day = sum(n_departures))
+  
+  stop_headway_peak = get_stop_frequency(gtfs, start_time="08:00:00", end_time="09:00:00", service_ids=unique(gtfs$calendar$service_id)) |>
+    select(stop_id, headway_peak = mean_headway)
+  stop_headway_day = get_stop_frequency(gtfs, start_time="00:00:00", end_time="23:59:59", service_ids=unique(gtfs$calendar$service_id)) |>
+    select(stop_id, headway_day = mean_headway)
+  
+  stops_sf = stops_sf |>
+    left_join(stops_frequency_peak, by="stop_id") |>
+    left_join(stops_frequency_day, by="stop_id") |> 
+    left_join(stop_headway_peak, by="stop_id") |> 
+    left_join(stop_headway_day, by="stop_id")
+  
+  pois_transit = rbind(pois_transit, stops_sf)
+}
+# Filter inside limit_bbox
+pois_transit = pois_transit |> st_filter(limit_bbox)
+table(pois_transit$agency)
+summary(pois_transit)
+# mapview(pois_transit, zcol="agency")
+# mapview(pois_transit, zcol="headway_peak")
+# mapview(pois_transit, zcol="headway_day")
+st_write(pois_transit, IMPT_URL("/pois/transit_stops.gpkg"), delete_dsn = TRUE)
 
 # DEM elevation -----------------------------------------------------------
 

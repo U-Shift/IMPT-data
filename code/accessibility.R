@@ -30,33 +30,7 @@ pois_green= st_read(IMPT_URL("/pois/green.gpkg")) |> mutate(n=1)
 pois_recreation = st_read(IMPT_URL("/pois/recreation.gpkg")) |> mutate(n=1)
 pois_schools = st_read(IMPT_URL("/pois/schools.gpkg")) |> mutate(n=1)
 pois_jobs = st_read(IMPT_URL("/pois/pois_jobs_imob_jt50.gpkg")) |> rename(n=trips)
-
-# Get all AML PT stops 
-library(tidytransit)
-gtfs_paths <- list.files(IMPT_URL("/gtfs/processed"), pattern="\\.zip$" , full.names = TRUE)
-pois_transit = data.frame()
-for (i in gtfs_paths) {
-  gtfs <- read_gtfs(i)
-  stops_sf <- stops_as_sf(gtfs$stops) |> select(stop_id, geometry)
-  stops_sf$agency = gtfs$agency$agency_name[[1]]
-  
-  stops_frequency_peak = get_stop_frequency(gtfs, start_time="08:00:00", end_time="09:00:00") |>
-    group_by(stop_id) |>
-    summarise(frequency_peak = sum(n_departures))
-  stops_frequency_day = get_stop_frequency(gtfs, start_time="00:00:00", end_time="23:59:59") |>
-    group_by(stop_id) |>
-    summarise(frequency_day = sum(n_departures))
-  
-  stops_sf = stops_sf |>
-    left_join(stops_frequency_peak, by="stop_id") |>
-    left_join(stops_frequency_day, by="stop_id")
-  
-  pois_transit = rbind(pois_transit, stops_sf)
-}
-# Filter inside limit_bbox
-pois_transit = pois_transit |> st_filter(limit_bbox)
-table(pois_transit$agency)
-mapview(pois_transit, zcol="agency")
+pois_transit = st_read(IMPT_URL("/pois/transit_stops.gpkg")) |> mutate(n=1)
 
 pois_bus = pois_transit |> filter(agency %in% c("Carris", "Cascais Próxima", "Transportes Colectivos do Barreiro", "Viação Alvorada"))
 pois_mass = pois_transit |> filter(agency %in% c("CP - Comboios de Portugal", "Fertagus", "Metro Transportes do Sul", "Metropolitano de Lisboa, E.P.E.", "TTSL - Transtejo Soflusa"))
