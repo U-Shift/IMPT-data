@@ -328,11 +328,4 @@ write.csv(grid_access, IMPT_URL(sprintf("%s/accessibility_grid.csv", output_dir)
 #   mapview(grid_access, zcol = "access_jobs_transit_2t_45min")
 # #   mapview(pois_health)
 
-# Nearest opportunity -----------------------------------------------------
-# 
-# cost_to_closest = accessibility::cost_to_closest(
-#   travel_matrix = ttm,
-#   land_use_data = grid_points,
-#   opportunity = 'healthcare',
-#   travel_cost = 'travel_time_p50'
-# )
+
