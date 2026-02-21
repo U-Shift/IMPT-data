@@ -17,7 +17,9 @@ library(tidygraph)
 library(tidytransit)
 library(sfnetworks)
 
-# Get all AML PT stops ----
+### Availability/coverage of public transportation ----
+
+  # Start by getting all PT stops in AML
 gtfs_paths <- list.files(IMPT_URL("/gtfs/processed"), pattern="\\.zip$" , full.names = TRUE)
 all_stops <- list()
 for (i in gtfs_paths) {
@@ -25,13 +27,14 @@ for (i in gtfs_paths) {
   stops_sf <- stops_as_sf(gtfs$stops)
   all_stops[[i]] <- stops_sf
 }
-mapview(all_stops)
+#mapview(all_stops)
+
+  # Create 250m buffers for all PT stops
 all_stops_combined = bind_rows(all_stops) |> st_as_sf()
 all_stops_combined <- all_stops_combined |> select(stop_id, stop_code, stop_name, geometry)
 stops_buffers <- st_buffer(all_stops_combined, dist = 250) #250m buffer around stops
-# mapview(stops_buffers, col.regions = "red", alpha.regions = 0.2, layer.name = "Stop Buffers") +
-#   mapview(census, col.regions = "darkblue", cex = 2, layer.name = "Census Points") +
-#   mapview(all_stops_combined, col.regions = "darkred", cex = 3, layer.name = "Transit Stops")
+
+  # Evaluate population coverage by PT stop
 census_stops <- census |> select(id, N_INDIVIDUOS, SHAPE_Length, SHAPE_Area, dicofre24, freguesia, municipio, geom)
 census_stops$reachable_stops <- lengths(st_intersects(census_stops, stops_buffers))
 census_stops$has_stops <- lengths(st_intersects(census_stops, stops_buffers))>0
@@ -46,9 +49,13 @@ freguesias_by_stops <- census_stops |>
     ratio_served_population = (served_population / freguesia_population)
   )
 
+### Shared Mobility Availability ----
+aml_shared_mobility = st_read(IMPT_URL("/BaseDados_PMMUS/11-ModosPartilhados/11 - ModosPartilhados.gpkg"), layer = "Pontos-partilha_amL")
 
 
-# Roads ----
+
+
+### Roads ----
   # Get all road infrastructure OSM data for AML
 osm_roads <- opq(bbox = municipios |> sf::st_bbox()) |>
   # Highways with tags "service", "track" and "road" are excluded
@@ -72,7 +79,7 @@ road_length_by_freguesia <- road_length_by_freguesia |>
   st_drop_geometry()
 
 
-# Pedestrians ----
+### Pedestrians ----
   # Get OSM pedestrian infrastructure data for AML
 osm_pedpaths <- opq(bbox = municipios |> sf::st_bbox()) |>
   add_osm_features(list(
@@ -100,7 +107,7 @@ pedpath_length_by_freguesia <- pedpath_length_by_freguesia |>
   st_drop_geometry()
 
 
-# Bicycles ----
+### Bicycles ----
   # Get OSM cycleway data for AML
 osm_cycleways <- opq(bbox = municipios |> sf::st_bbox()) |>
   add_osm_features(features = list(
@@ -140,7 +147,7 @@ segregated_length_by_freguesia <- segregated_length_by_freguesia |>
   
   
 
-# Compute ratio of pedpath/cycleway to roads ----
+### Compute ratio of pedpath/cycleway to roads ----
 freguesias_by_infrastructure <- freguesias |>
   left_join(road_length_by_freguesia, by = "freguesia") |>
   left_join(pedpath_length_by_freguesia, by = "freguesia") |>
