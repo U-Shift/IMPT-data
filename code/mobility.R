@@ -3,10 +3,10 @@
   # Car: Ownership rates (in veh_ownership.R)
   # Walking: Existence of infrastructure.
   # Cycling: Existence of infrastructure, Quality of infrastructure.
-# In progress:
-  # PT: Availability/coverage
+# Almost complete:
+  # PT: Availability/coverage, Shared mobility availability
 # Not started:
-  # PT: Shared mobility availability, Night/weekend service.
+  # PT: Night/weekend service.
 
 library(gtfstools)
 library(mapview)
@@ -50,8 +50,14 @@ freguesias_by_stops <- census_stops |>
   )
 
 ### Shared Mobility Availability ----
-aml_shared_mobility = st_read(IMPT_URL("/BaseDados_PMMUS/11-ModosPartilhados/11 - ModosPartilhados.gpkg"), layer = "Pontos-partilha_amL")
-
+  # Grid from data_load.R
+grid_shared_mob = grid
+freguesias_shared_mob = freguesias
+aml_shared_mobility = st_read(IMPT_URL("/BaseDados_PMMUS/11-ModosPartilhados/11 - ModosPartilhados.gpkg"), layer = "Pontos-partilha_amL") |>
+  st_transform(st_crs(grid_shared_mob))
+  # Get number of shared mobility locations by grid hexagon and freguesia
+grid_shared_mob$shared_mobility_points <- lengths(st_intersects(grid_shared_mob, aml_shared_mobility))
+freguesias_shared_mob$shared_mobility_points <- lengths(st_intersects(freguesias_shared_mob, aml_shared_mobility))
 
 
 
@@ -170,6 +176,7 @@ mapview(freguesias_by_infrastructure, zcol = "cycling_quality_ratio")
 
 # Save results ----
 st_write(freguesias_by_infrastructure, "/data/IMPT/mobility/freguesias_infrastructure_ratio.gpkg", delete_dsn = TRUE)
+st_write(grid_shared_mob, "/data/IMPT/mobility/grid_shared_mobility.gpkg", delete_dsn = TRUE)
+saveRDS(freguesias_shared_mob, "/data/IMPT/mobility/freguesias_shared_mobility.rds")
 saveRDS(freguesias_by_infrastructure |> st_drop_geometry(), "/data/IMPT/mobility/freguesias_infrastructure_ratio.rds")
 saveRDS(freguesias_by_stops |> st_drop_geometry(), "/data/IMPT/mobility/freguesias_stops_coverage.rds")
-
