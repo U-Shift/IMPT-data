@@ -37,7 +37,7 @@ stops_buffers <- st_buffer(all_stops_combined, dist = 250) #250m buffer around s
   # Evaluate population coverage by PT stop
 census_stops <- census |> select(id, N_INDIVIDUOS, SHAPE_Length, SHAPE_Area, dicofre24, freguesia, municipio, geom)
 census_stops$reachable_stops <- lengths(st_intersects(census_stops, stops_buffers))
-census_stops$has_stops <- lengths(st_intersects(census_stops, stops_buffers))>0
+census_stops$has_stops <- census_stops$reachable_stops>0
 census_stops$pop_near_stops <- census_stops$N_INDIVIDUOS * census_stops$has_stops
 freguesias_by_stops <- census_stops |>
   st_drop_geometry() |>  # Drop geometry for aggregation
