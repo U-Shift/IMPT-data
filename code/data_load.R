@@ -21,6 +21,15 @@ IMPT_URL = function(path) {
       stop("IMPT_DATA_KEY env var is not defined. Please set it using usethis::edit_r_environ() and restart R.")
     }
     return(sprintf("%s%s?key=%s", DATA_LOCATION, path, API_KEY))
+  } else {
+    # If does not start with "/", add it
+    if (!startsWith(path, "/")) {
+      path = paste0("/", path)
+    }
+    # If local folder does not exist, create, recursively if needed
+    if (!dir.exists(DATA_LOCATION)) {
+      dir.create(DATA_LOCATION, recursive = TRUE)
+    }
   }
   # Otherwise, return local path
   return(sprintf("%s%s", DATA_LOCATION, path))
@@ -64,12 +73,6 @@ road_network_main = st_read(IMPT_URL("/geo/road_network_main.gpkg")) # 1 to 4 le
 road_network_base = st_read(IMPT_URL("/geo/road_network_base.gpkg")) # 1 to 3 level
 # active_infra_ratio = readRDS(IMPT_URL("/mobility/freguesias_infrastructure_ratio.rds")) # not working
 
-# # ODs
-# trips_freguesias_2024 = readRDS_remote(IMPT_URL("/trips/TRIPSmode_freguesias_2024.Rds"))
-# od_freguesias_jittered200 = st_read(IMPT_URL("/trips/od_freguesias_jittered_2024.gpkg")) # lines
-# od_freguesias_jittered_OR_geo = st_read(IMPT_URL("/trips/od_freguesias_jittered200_OR.gpkg")) # points origin
-# od_freguesias_jittered_DE_geo = st_read(IMPT_URL("/trips/od_freguesias_jittered200_DE.gpkg")) # points destination
-
 # Census points
 census = st_read(IMPT_URL("/geo/census24_points.gpkg"))
 
@@ -82,11 +85,6 @@ grid_tml = st_read(IMPT_URL("/geo/grelha_tml_d500.gpkg"))
 grid = st_read(IMPT_URL("/geo/grelha_h3_r8.gpkg"))
 h3_index = readRDS_remote(IMPT_URL("/geo/grelha_h3_r8_index.Rds"))
 points_h3 = st_read(IMPT_URL("/geo/grelha_h3_r8_centroids.gpkg"))
-# r9
-grid = st_read(IMPT_URL("/geo/grelha_h3_r9.gpkg"))
-h3_index = readRDS_remote(IMPT_URL("/geo/grelha_h3_r9_index.Rds"))
-points_h3 = st_read(IMPT_URL("/geo/grelha_h3_r9_centroids.gpkg"))
-
 
 # Statistic Data ----------------------------------------------------------
 
