@@ -154,6 +154,7 @@ od_jobs_jittered = od_jobs_jittered_buildings
 # add an id to the jittered pairs, so we can join later
 od_jobs_jittered_id = od_jobs_jittered
 od_jobs_jittered_id$id = 1:nrow(od_jobs_jittered_id)
+st_write(od_freguesias_jittered_id, "/data/IMPT/trips/od_freguesias_jt50_buildings.gpkg", delete_dsn = TRUE)
 
 
 #with stplanr
@@ -176,7 +177,8 @@ od_jobs_jittered_OR_geo = st_as_sf(od_jobs_jittered_OR,
 od_jobs_jittered_DE_geo = st_as_sf(od_jobs_jittered_DE,
                                          coords = c("lon", "lat"),
                                          crs = 4326)
-
+st_write(od_freguesias_jittered_OR_geo, "/data/IMPT/trips/od_freguesias_jt50_buildings_OR.gpkg", delete_dsn = TRUE)
+st_write(od_freguesias_jittered_DE_geo, "/data/IMPT/trips/od_freguesias_jt50_buildings_DE.gpkg", delete_dsn = TRUE)
 
 ## POIS
 
