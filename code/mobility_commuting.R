@@ -70,26 +70,51 @@ write.csv(jittering_grid, IMPT_URL(sprintf("%s/jittering_grid.csv", output_dir))
 
 
 # Aggregate by parish and municipality  -------------------------------------------------
-grid_commuting = jittering_grid |> 
-  group_by(id_grid_origin) |> 
-  summarise(
-    # Total trips 
-    trips = sum(trips),
-    # Total travel time
-    across(
-      starts_with("tt_total"), 
-      ~ if (all(is.na(.x))) NA_real_ else sum(.x, na.rm = TRUE)
-    )
-  ) |> 
-  ungroup() |> 
-  mutate(
-    avg_tt_walk = ifelse(is.na(tt_total_walk), NA, round(tt_total_walk / trips, digits=2)),
-    avg_tt_bike = ifelse(is.na(tt_total_walk), NA, round(tt_total_bike / trips, digits=2)), 
-    avg_tt_car = ifelse(is.na(tt_total_walk), NA, round(tt_total_car / trips, digits=2)), 
-    avg_tt_transit_1t = ifelse(is.na(tt_total_walk), NA, round(tt_total_transit_1t / trips, digits=2)),
-    avg_tt_transit_2t = ifelse(is.na(tt_total_walk), NA, round(tt_total_transit_2t / trips, digits=2)),
-    across(starts_with("tt_total"), ~ round(.x, digits=2))
+aggregated_commuting_for_geometry = function(grid) {
+  return (
+    grid |> 
+      summarise(
+        # Count number of grids aggregated
+        nr_grids = n(),
+        
+        nr_grids_na_walk = sum(is.na(tt_total_walk)),
+        nr_grids_na_bike = sum(is.na(tt_total_bike)),
+        nr_grids_na_car = sum(is.na(tt_total_car)),
+        nr_grids_na_transit_1t = sum(is.na(tt_total_transit_1t)),
+        nr_grids_na_transit_2t = sum(is.na(tt_total_transit_2t)),
+        
+        ratio_grids_access_walk = (nr_grids-nr_grids_na_walk) / nr_grids,
+        ratio_grids_access_bike = (nr_grids-nr_grids_na_bike) / nr_grids,
+        ratio_grids_access_car = (nr_grids-nr_grids_na_car) / nr_grids,
+        ratio_grids_access_transit_1t = (nr_grids-nr_grids_na_transit_1t) / nr_grids,
+        ratio_grids_access_transit_2t = (nr_grids-nr_grids_na_transit_2t) / nr_grids,
+        
+        
+        
+        # Total trips 
+        trips = sum(trips),
+        
+        # Total travel time
+        across(starts_with("tt_total"),~ if (all(is.na(.x))) NA_real_ else sum(.x, na.rm = TRUE))
+      ) |> 
+      ungroup() |> 
+      mutate(
+        # Compute average time for each mode
+        avg_tt_walk = ifelse(is.na(tt_total_walk), NA, round(tt_total_walk / trips, digits=2)),
+        avg_tt_bike = ifelse(is.na(tt_total_bike), NA, round(tt_total_bike / trips, digits=2)), 
+        avg_tt_car = ifelse(is.na(tt_total_car), NA, round(tt_total_car / trips, digits=2)), 
+        avg_tt_transit_1t = ifelse(is.na(tt_total_transit_1t), NA, round(tt_total_transit_1t / trips, digits=2)),
+        avg_tt_transit_2t = ifelse(is.na(tt_total_transit_2t), NA, round(tt_total_transit_2t / trips, digits=2)),
+        # Compute weighted time, considering ratio of access
+        weighted_tt_walk = ifelse(is.na(avg_tt_walk), NA, round((1-avg_tt_walk/max(avg_tt_walk)) * ratio_grids_access_walk, digits=2)),
+        # Compute aggregated time for 
+        across(starts_with("tt_total"), ~ round(.x, digits=2))
+      )
   )
+}
+
+grid_commuting = aggregated_commuting_for_geometry(jittering_grid |> group_by(id_grid_origin))
+summary(grid_commuting)
 
 grid_commuting_sf = grid |> select(id, geom) |> left_join(grid_commuting, by=c("id" = "id_grid_origin"))
 # mapview(grid_commuting_sf, zcol = "trips")
@@ -99,27 +124,9 @@ grid_commuting_sf = grid |> select(id, geom) |> left_join(grid_commuting, by=c("
 # mapview(grid_commuting_sf, zcol = "tt_total_transit_2t")
 # mapview(grid_commuting_sf, zcol = "avg_tt_transit_2t")
 # mapview(grid_commuting_sf, zcol = "avg_tt_transit_1t")
+# mapview(grid_commuting_sf, zcol = "nr_grids_na_walk")
 
-freguesia_commuting = jittering_grid |> 
-  group_by(Origin_dicofre24) |> 
-  summarise(
-    # Total trips 
-    trips = sum(trips),
-    # Total travel time
-    across(
-      starts_with("tt_total"), 
-      ~ if (all(is.na(.x))) NA_real_ else sum(.x, na.rm = TRUE)
-    )
-  ) |> 
-  ungroup() |> 
-  mutate(
-    avg_tt_walk = ifelse(is.na(tt_total_walk), NA, round(tt_total_walk / trips, digits=2)),
-    avg_tt_bike = ifelse(is.na(tt_total_walk), NA, round(tt_total_bike / trips, digits=2)), 
-    avg_tt_car = ifelse(is.na(tt_total_walk), NA, round(tt_total_car / trips, digits=2)), 
-    avg_tt_transit_1t = ifelse(is.na(tt_total_walk), NA, round(tt_total_transit_1t / trips, digits=2)),
-    avg_tt_transit_2t = ifelse(is.na(tt_total_walk), NA, round(tt_total_transit_2t / trips, digits=2)),
-    across(starts_with("tt_total"), ~ round(.x, digits=2))
-  )
+freguesia_commuting = aggregated_commuting_for_geometry(jittering_grid |> group_by(Origin_dicofre24))
 
 freguesia_commuting_sf = freguesias |> select(dtmnfr, geom) |> left_join(freguesia_commuting, by=c("dtmnfr" = "Origin_dicofre24"))
 # mapview(freguesia_commuting_sf, zcol = "trips")
@@ -129,35 +136,21 @@ freguesia_commuting_sf = freguesias |> select(dtmnfr, geom) |> left_join(fregues
 # mapview(freguesia_commuting_sf, zcol = "tt_total_transit_2t")
 # mapview(freguesia_commuting_sf, zcol = "PTransit")
 # mapview(freguesia_commuting_sf, zcol = "avg_tt_transit_2t")
+# mapview(freguesia_commuting_sf, zcol = "nr_grids_na_walk")
 
-municipio_commuting = freguesia_commuting |>
-  left_join(freguesias |> select(dtmnfr, municipio), by=c("Origin_dicofre24" = "dtmnfr")) |>
-  group_by(municipio) |> 
-  summarise(
-    # Total trips 
-    trips = sum(trips),
-    # Total travel time
-    across(
-      starts_with("tt_total"), 
-      ~ if (all(is.na(.x))) NA_real_ else sum(.x, na.rm = TRUE)
-    )
-  ) |> 
-  ungroup() |> 
-  mutate(
-    avg_tt_walk = ifelse(is.na(tt_total_walk), NA, round(tt_total_walk / trips, digits=2)),
-    avg_tt_bike = ifelse(is.na(tt_total_walk), NA, round(tt_total_bike / trips, digits=2)), 
-    avg_tt_car = ifelse(is.na(tt_total_walk), NA, round(tt_total_car / trips, digits=2)), 
-    avg_tt_transit_1t = ifelse(is.na(tt_total_walk), NA, round(tt_total_transit_1t / trips, digits=2)),
-    avg_tt_transit_2t = ifelse(is.na(tt_total_walk), NA, round(tt_total_transit_2t / trips, digits=2)),
-    across(starts_with("tt_total"), ~ round(.x, digits=2))
-  )
-
+municipio_commuting = aggregated_commuting_for_geometry(
+  jittering_grid |>
+    left_join(freguesias |> select(dtmnfr, municipio), by=c("Origin_dicofre24" = "dtmnfr")) |>
+    group_by(municipio) 
+)
 municipio_commuting_sf = municipios |> select(municipio, geom) |> left_join(municipio_commuting, by=c("municipio" = "municipio"))
 # mapview(municipio_commuting_sf, zcol = "trips")
 # mapview(municipio_commuting_sf, zcol = "avg_tt_car")
 # mapview(municipio_commuting_sf, zcol = "avg_tt_walk")
+# mapview(municipio_commuting_sf, zcol = "weighted_tt_walk")
 # mapview(municipio_commuting_sf, zcol = "avg_tt_transit_1t")
 # mapview(municipio_commuting_sf, zcol = "avg_tt_transit_2t")
+# mapview(municipio_commuting_sf, zcol = "nr_grids_na_walk")
 
 
 st_write(grid_commuting_sf, IMPT_URL(sprintf("%s/grid_commuting.gpkg", output_dir)), delete_dsn = TRUE)
