@@ -60,6 +60,12 @@ for (i in seq_along(ttm_list)) {
 
 jittering_grid = jittering_grid |>
   mutate(
+    # Signal NAs
+    na_walk = ifelse(is.na(tt_walk), 1, 0),
+    na_bike = ifelse(is.na(tt_bike), 1, 0),
+    na_car = ifelse(is.na(tt_car), 1, 0),
+    na_transit_1t = ifelse(is.na(tt_transit_1t), 1, 0),
+    na_transit_2t = ifelse(is.na(tt_transit_2t), 1, 0),
     # Replace NAs with max value of all other rows
     tt_walk = ifelse(is.na(tt_walk), max(tt_walk, na.rm = TRUE), tt_walk),
     tt_bike = ifelse(is.na(tt_bike), max(tt_bike, na.rm = TRUE), tt_bike),
@@ -82,8 +88,20 @@ aggregated_commuting_for_geometry = function(grid) {
   return (
     grid |> 
       summarise(
-        # Count number of grids aggregated
-        nr_grids = n(),
+        # Count number of jitters aggregated
+        nr_jitters = n(),
+        # Count nr of NAs per mode
+        nr_jitters_na_walk = sum(na_walk),
+        nr_jitters_na_bike = sum(na_bike),
+        nr_jitters_na_car = sum(na_car),
+        nr_jitters_na_transit_1t = sum(na_transit_1t),
+        nr_jitters_na_transit_2t = sum(na_transit_2t),
+        # Total trips na per mode
+        trips_na_walk = sum(ifelse(na_walk == 1, trips, 0)),
+        trips_na_bike = sum(ifelse(na_bike == 1, trips, 0)),
+        trips_na_car = sum(ifelse(na_car == 1, trips, 0)),
+        trips_na_transit_1t = sum(ifelse(na_transit_1t == 1, trips, 0)),
+        trips_na_transit_2t = sum(ifelse(na_transit_2t == 1, trips, 0)),
         # Total trips 
         trips = sum(trips),
         # Total travel time
@@ -91,6 +109,12 @@ aggregated_commuting_for_geometry = function(grid) {
       ) |> 
       ungroup() |> 
       mutate(
+        # Ratio of trips NA per mode
+        PNA_walk = ifelse(trips == 0, NA, round(trips_na_walk / trips, digits=2)),
+        PNA_bike = ifelse(trips == 0, NA, round(trips_na_bike / trips, digits=2)),
+        PNA_car = ifelse(trips == 0, NA, round(trips_na_car / trips, digits=2)),
+        PNA_transit_1t = ifelse(trips == 0, NA, round(trips_na_transit_1t / trips, digits=2)),
+        PNA_transit_2t = ifelse(trips == 0, NA, round(trips_na_transit_2t / trips, digits=2)),
         # Compute average time for each mode
         avg_tt_walk = ifelse(is.na(tt_total_walk), NA, round(tt_total_walk / trips, digits=2)),
         avg_tt_bike = ifelse(is.na(tt_total_bike), NA, round(tt_total_bike / trips, digits=2)), 
@@ -136,6 +160,7 @@ municipio_commuting_sf = municipios |> select(municipio, geom) |> left_join(muni
 # mapview(municipio_commuting_sf, zcol = "trips")
 # mapview(municipio_commuting_sf, zcol = "avg_tt_car")
 # mapview(municipio_commuting_sf, zcol = "avg_tt_walk")
+# mapview(municipio_commuting_sf, zcol = "PNA_walk")
 # mapview(municipio_commuting_sf, zcol = "weighted_tt_walk")
 # mapview(municipio_commuting_sf, zcol = "avg_tt_transit_1t")
 # mapview(municipio_commuting_sf, zcol = "avg_tt_transit_2t")
