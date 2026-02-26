@@ -29,28 +29,30 @@ pois_supermarket = st_read(IMPT_URL("/pois/supermarket.gpkg")) |> mutate(n=1)
 pois_green= st_read(IMPT_URL("/pois/green.gpkg")) |> mutate(n=1)
 pois_recreation = st_read(IMPT_URL("/pois/recreation.gpkg")) |> mutate(n=1)
 pois_schools = st_read(IMPT_URL("/pois/schools.gpkg")) |> mutate(n=1)
-pois_jobs = st_read(IMPT_URL("/pois/pois_jobs_imob_jt50.gpkg")) |> rename(n=trips)
+# pois_jobs_roads = st_read(IMPT_URL("/pois/pois_jobs_imob_jt50.gpkg")) |> rename(n=trips)
+pois_jobs_buildings = st_read(IMPT_URL("/pois/pois_jobs_imob_jt50_buildings.gpkg")) |> rename(n=trips)
+pois_jobs = pois_jobs_buildings
 pois_transit = st_read(IMPT_URL("/pois/transit_stops.gpkg")) |> mutate(n=1)
 
 pois_bus = pois_transit |> filter(agency %in% c("Carris", "Cascais Próxima", "Transportes Colectivos do Barreiro", "Viação Alvorada"))
 pois_mass = pois_transit |> filter(agency %in% c("CP - Comboios de Portugal", "Fertagus", "Metro Transportes do Sul", "Metropolitano de Lisboa, E.P.E.", "TTSL - Transtejo Soflusa"))
-mapview(pois_bus, zcol="agency")
-mapview(pois_mass, zcol="agency")
+# mapview(pois_bus, zcol="agency")
+# mapview(pois_mass, zcol="agency")
 
 pois_list = list(
   # POI type, sf data.frame with points 
-  list("health", pois_health),
-  list("health_primary", pois_health |> filter(type=="Centro de Saúde")),
-  list("health_hospital", pois_health |> filter(type=="Hospital")),
-  list("groceries", pois_supermarket),
-  list("greenspaces", pois_green),
-  list("recreation", pois_recreation),
-  list("schools", pois_schools),
-  list("schools_primary", pois_schools |> filter(grepl("Cycle", type))),
-  list("jobs", pois_jobs),
-  list("transit", pois_transit |> mutate(n=1)),
-  list("transit_bus", pois_bus |> mutate(n=1)),
-  list("transit_mass", pois_mass |> mutate(n=1))
+  # list("health", pois_health),
+  # list("health_primary", pois_health |> filter(type=="Centro de Saúde")),
+  # list("health_hospital", pois_health |> filter(type=="Hospital")),
+  # list("groceries", pois_supermarket),
+  # list("greenspaces", pois_green),
+  # list("recreation", pois_recreation),
+  # list("schools", pois_schools),
+  # list("schools_primary", pois_schools |> filter(grepl("Cycle", type))),
+  list("jobs", pois_jobs)
+  # list("transit", pois_transit |> mutate(n=1)),
+  # list("transit_bus", pois_bus |> mutate(n=1)),
+  # list("transit_mass", pois_mass |> mutate(n=1))
 )
 
 
