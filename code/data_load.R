@@ -18,6 +18,7 @@ IMPT_URL = function(path) {
   if (!startsWith(path, "/")) {
     path = paste0("/", path)
   }
+  local_path = sprintf("%s%s", DATA_LOCATION, path)
   # If data location starts with "http", add api key to url
   if (startsWith(DATA_LOCATION, "http")) {
     # If API_KEY empty or not defined, throw error
@@ -27,12 +28,12 @@ IMPT_URL = function(path) {
     return(sprintf("%s%s?key=%s", DATA_LOCATION, path, API_KEY))
   } else {
     # If local folder does not exist, create, recursively if needed
-    if (!dir.exists(DATA_LOCATION)) {
-      dir.create(DATA_LOCATION, recursive = TRUE)
+    if (!dir.exists(dirname(local_path))) {
+      dir.create(dirname(local_path), recursive = TRUE)
     }
   }
   # Otherwise, return local path
-  return(sprintf("%s%s", DATA_LOCATION, path))
+  return(local_path)
 }
 
 readRDS_remote <- function(file, quiet = TRUE) { # From https://stackoverflow.com/a/66874958
