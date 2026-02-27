@@ -14,6 +14,10 @@ DATA_LOCATION = "/data/IMPT" # When running at server.ushift.pt, use server loca
 API_KEY = Sys.getenv("IMPT_DATA_KEY") # Set it using usethis::edit_r_environ(), followed by CTRL+F10
 
 IMPT_URL = function(path) {
+  # If does not start with "/", add it
+  if (!startsWith(path, "/")) {
+    path = paste0("/", path)
+  }
   # If data location starts with "http", add api key to url
   if (startsWith(DATA_LOCATION, "http")) {
     # If API_KEY empty or not defined, throw error
@@ -22,10 +26,6 @@ IMPT_URL = function(path) {
     }
     return(sprintf("%s%s?key=%s", DATA_LOCATION, path, API_KEY))
   } else {
-    # If does not start with "/", add it
-    if (!startsWith(path, "/")) {
-      path = paste0("/", path)
-    }
     # If local folder does not exist, create, recursively if needed
     if (!dir.exists(DATA_LOCATION)) {
       dir.create(DATA_LOCATION, recursive = TRUE)
