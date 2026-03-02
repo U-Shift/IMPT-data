@@ -197,25 +197,37 @@ ttm_1t = readRDS_remote(IMPT_URL(paste0(ttm_root, "/ttm_transit_120min_202602040
   mutate(from_id = as.integer(from_id), to_id = as.integer(to_id))
 ttm_2t = readRDS_remote(IMPT_URL(paste0(ttm_root, "/ttm_transit_120min_202602040800_2transfers.rds"))) |>
   mutate(from_id = as.integer(from_id), to_id = as.integer(to_id))
-# TODO! Compute for 3 and 4 transfers
+ttm_3t = readRDS_remote(IMPT_URL(paste0(ttm_root, "/ttm_transit_120min_202602040800_3transfers.rds"))) |>
+  mutate(from_id = as.integer(from_id), to_id = as.integer(to_id))
+ttm_4t = readRDS_remote(IMPT_URL(paste0(ttm_root, "/ttm_transit_120min_202602040800_4transfers.rds"))) |>
+  mutate(from_id = as.integer(from_id), to_id = as.integer(to_id))
 summary(ttm_1t)
 summary(ttm_2t)
+summary(ttm_3t)
+summary(ttm_4t)
 
 nrow(ttm_1t)
 nrow(ttm_2t)
+nrow(ttm_3t)
+nrow(ttm_4t)
 
 # 1. Compute transfers for ttm
-ttm_transfers = ttm_2t |> rename(tt_2t = travel_time_p50) |>
+ttm_transfers = ttm_4t |> rename(tt_4t = travel_time_p50) |>
+  left_join(ttm_3t |> rename(tt_3t = travel_time_p50), by = c("from_id", "to_id")) |>
+  left_join(ttm_2t |> rename(tt_2t = travel_time_p50), by = c("from_id", "to_id")) |>
   left_join(ttm_1t |> rename(tt_1t = travel_time_p50), by = c("from_id", "to_id")) |>
   mutate(
     transfers_required = case_when(
-      !is.na(tt_2t) & is.na(tt_1t) ~ 2,
       !is.na(tt_1t) ~ 1,
+      !is.na(tt_2t) ~ 2,
+      !is.na(tt_3t) ~ 3,
+      !is.na(tt_4t) ~ 4,
       TRUE ~ NA_real_
     )
   )
 
 summary(ttm_transfers)
+table(ttm_transfers$transfers_required)
 
 # 2. Add transfers to jittering data
 # Load jittering_grid from section I.
@@ -224,9 +236,9 @@ jittering_grid_transfers = jittering_grid |>
   mutate(na = ifelse(is.na(transfers_required), 1, 0))
 
 nrow(jittering_grid_transfers) # 18997
-nrow(jittering_grid_transfers |> filter(is.na(transfers_required))) # 3137
-sum(jittering_grid_transfers$na) # 3137
-nrow(jittering_grid_transfers |> filter(is.na(transfers_required))) / nrow(jittering_grid_transfers) # 16.5% 
+nrow(jittering_grid_transfers |> filter(is.na(transfers_required))) # 2649
+sum(jittering_grid_transfers$na) # 2649
+nrow(jittering_grid_transfers |> filter(is.na(transfers_required))) / nrow(jittering_grid_transfers) # 13.9%
 
 # Aggregate by grid, parish and municipality
 aggregated_commuting_for_transfers = function(grid) {
