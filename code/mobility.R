@@ -32,7 +32,7 @@ for (i in gtfs_paths) {
   # Create 250m buffers for all PT stops
 all_stops_combined = bind_rows(all_stops) |> st_as_sf()
 all_stops_combined <- all_stops_combined |> select(stop_id, stop_code, stop_name, geometry)
-stops_buffers <- st_buffer(all_stops_combined, dist = 250) #250m buffer around stops
+stops_buffers <- st_buffer(all_stops_combined, dist = 500) #500m buffer around stops
 
   # Evaluate population coverage by PT stop
 census_stops <- census |> select(id, N_INDIVIDUOS, SHAPE_Length, SHAPE_Area, dicofre24, freguesia, municipio, geom)
