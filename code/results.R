@@ -18,3 +18,7 @@ grid_commuting = st_read(IMPT_URL("/mobility_commuting/grid_commuting.gpkg"))
 freguesia_transit = st_read(IMPT_URL("/mobility_transit/freguesias_headways.gpkg"))
 municipio_transit = st_read(IMPT_URL("/mobility_transit/municipios_headways.gpkg"))
 grid_transit = st_read(IMPT_URL("/mobility_transit/grid_headways.gpkg"))
+
+freguesia_transfers = st_read(IMPT_URL("/mobility_commuting/freguesia_transfers.gpkg"))
+municipio_transfers = st_read(IMPT_URL("/mobility_commuting/municipio_transfers.gpkg"))
+grid_transfers = st_read(IMPT_URL("/mobility_commuting/grid_transfers.gpkg"))

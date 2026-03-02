@@ -190,4 +190,89 @@ summary(ttm_dawn)
 summary(ttm_weekend)
 
 
+# III. Number of transfers for key destinations (transit) -------------------------------------------------
+
+ttm_root = "/ttm/ttm_h3_res8"
+ttm_1t = readRDS_remote(IMPT_URL(paste0(ttm_root, "/ttm_transit_120min_202602040800_1transfers.rds"))) |>
+  mutate(from_id = as.integer(from_id), to_id = as.integer(to_id))
+ttm_2t = readRDS_remote(IMPT_URL(paste0(ttm_root, "/ttm_transit_120min_202602040800_2transfers.rds"))) |>
+  mutate(from_id = as.integer(from_id), to_id = as.integer(to_id))
+# TODO! Compute for 3 and 4 transfers
+summary(ttm_1t)
+summary(ttm_2t)
+
+nrow(ttm_1t)
+nrow(ttm_2t)
+
+# 1. Compute transfers for ttm
+ttm_transfers = ttm_2t |> rename(tt_2t = travel_time_p50) |>
+  left_join(ttm_1t |> rename(tt_1t = travel_time_p50), by = c("from_id", "to_id")) |>
+  mutate(
+    transfers_required = case_when(
+      !is.na(tt_2t) & is.na(tt_1t) ~ 2,
+      !is.na(tt_1t) ~ 1,
+      TRUE ~ NA_real_
+    )
+  )
+
+summary(ttm_transfers)
+
+# 2. Add transfers to jittering data
+# Load jittering_grid from section I.
+jittering_grid_transfers = jittering_grid |>
+  left_join(ttm_transfers |> select(from_id, to_id, transfers_required), by = c("id_grid_origin" = "from_id", "id_grid_destination" = "to_id")) |> 
+  mutate(na = ifelse(is.na(transfers_required), 1, 0))
+
+nrow(jittering_grid_transfers) # 18997
+nrow(jittering_grid_transfers |> filter(is.na(transfers_required))) # 3137
+sum(jittering_grid_transfers$na) # 3137
+nrow(jittering_grid_transfers |> filter(is.na(transfers_required))) / nrow(jittering_grid_transfers) # 16.5% 
+
+# Aggregate by grid, parish and municipality
+aggregated_commuting_for_transfers = function(grid) {
+  return (
+    grid |> 
+      summarise(
+        # Count number of jitters aggregated
+        nr_jitters = n(),
+        # Count nr of NAs
+        nr_jitters_na = sum(na),
+        # Transfers average, weighted by trips number
+        weighted_mean_transfers = round(weighted.mean(transfers_required, trips, na.rm=TRUE), digits=2),
+        # Total trips 
+        trips = sum(trips),
+        # Total transfers
+        total_transfers = sum(transfers_required, na.rm = TRUE)
+      ) |> 
+      ungroup() 
+  )
+}
+
+grid_transfers = aggregated_commuting_for_transfers(jittering_grid_transfers |> group_by(id_grid_origin))
+summary(grid_transfers)
+
+grid_transfers_sf = grid |> select(id, geom) |> left_join(grid_commuting, by=c("id" = "id_grid_origin"))
+# mapview(grid_transfers_sf, zcol = "weighted_mean_transfers")
+
+freguesia_transfers = aggregated_commuting_for_transfers(jittering_grid_transfers |> group_by(Origin_dicofre24))
+
+freguesia_transfers_sf = freguesias |> select(dtmnfr, geom) |> left_join(freguesia_commuting, by=c("dtmnfr" = "Origin_dicofre24"))
+# mapview(freguesia_transfers_sf, zcol = "weighted_mean_transfers")
+
+municipio_transfers = aggregated_commuting_for_transfers(
+  jittering_grid_transfers |>
+    left_join(freguesias |> select(dtmnfr, municipio), by=c("Origin_dicofre24" = "dtmnfr")) |>
+    group_by(municipio) 
+)
+municipio_transfers_sf = municipios |> select(municipio, geom) |> left_join(municipio_commuting, by=c("municipio" = "municipio"))
+# mapview(municipio_transfers_sf, zcol = "weighted_mean_transfers")
+
+
+st_write(grid_transfers_sf, IMPT_URL(sprintf("%s/grid_transfers.gpkg", output_dir)), delete_dsn = TRUE)
+write.csv(grid_transfers, IMPT_URL(sprintf("%s/grid_transfers.csv", output_dir)), row.names = FALSE) 
+st_write(freguesia_transfers_sf, IMPT_URL(sprintf("%s/freguesia_transfers.gpkg", output_dir)), delete_dsn = TRUE)
+write.csv(freguesia_transfers, IMPT_URL(sprintf("%s/freguesia_transfers.csv", output_dir)), row.names = FALSE) 
+st_write(municipio_transfers_sf, IMPT_URL(sprintf("%s/municipio_transfers.gpkg", output_dir)), delete_dsn = TRUE)
+write.csv(municipio_transfers, IMPT_URL(sprintf("%s/municipio_transfers.csv", output_dir)), row.names = FALSE)
+
 
