@@ -1,3 +1,4 @@
+# I. Commuting travel time (peak)  -------------------------------------------------
 # Data loading  -------------------------------------------------
 
 output_dir = "mobility_commuting"
@@ -173,3 +174,20 @@ st_write(freguesia_commuting_sf, IMPT_URL(sprintf("%s/freguesia_commuting.gpkg",
 write.csv(freguesia_commuting, IMPT_URL(sprintf("%s/freguesia_commuting.csv", output_dir)), row.names = FALSE) 
 st_write(municipio_commuting_sf, IMPT_URL(sprintf("%s/municipio_commuting.gpkg", output_dir)), delete_dsn = TRUE)
 write.csv(municipio_commuting, IMPT_URL(sprintf("%s/municipio_commuting.csv", output_dir)), row.names = FALSE)
+
+
+
+
+# II. Congestion related travel time (car)  -------------------------------------------------
+
+ttm_root = "/ttm/ttm_h3_res8"
+ttm_peak = readRDS_remote(IMPT_URL(paste0(ttm_root, "/ttm_car_120min_202602040800.rds")))
+ttm_dawn = readRDS_remote(IMPT_URL(paste0(ttm_root, "/ttm_car_120min_202602040300.rds")))
+ttm_weekend = readRDS_remote(IMPT_URL(paste0(ttm_root, "/ttm_car_120min_202602082000.rds")))
+
+summary(ttm_peak)
+summary(ttm_dawn)
+summary(ttm_weekend)
+
+
+
