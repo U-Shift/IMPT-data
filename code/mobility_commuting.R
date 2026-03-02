@@ -89,14 +89,12 @@ aggregated_commuting_for_geometry = function(grid) {
   return (
     grid |> 
       summarise(
-        # Count number of jitters aggregated
-        nr_jitters = n(),
-        # Count nr of NAs per mode
-        nr_jitters_na_walk = sum(na_walk),
-        nr_jitters_na_bike = sum(na_bike),
-        nr_jitters_na_car = sum(na_car),
-        nr_jitters_na_transit_1t = sum(na_transit_1t),
-        nr_jitters_na_transit_2t = sum(na_transit_2t),
+        # Weighted travel time 
+        avg_tt_walk = round(weighted.mean(tt_walk, trips, na.rm=TRUE), digits=2),
+        avg_tt_bike = round(weighted.mean(tt_bike, trips, na.rm=TRUE), digits=2),
+        avg_tt_car = round(weighted.mean(tt_car, trips, na.rm=TRUE), digits=2),
+        avg_tt_transit_1t = round(weighted.mean(tt_transit_1t, trips, na.rm=TRUE), digits=2),
+        avg_tt_transit_2t = round(weighted.mean(tt_transit_2t, trips, na.rm=TRUE), digits=2),
         # Total trips na per mode
         trips_na_walk = sum(ifelse(na_walk == 1, trips, 0)),
         trips_na_bike = sum(ifelse(na_bike == 1, trips, 0)),
@@ -104,9 +102,7 @@ aggregated_commuting_for_geometry = function(grid) {
         trips_na_transit_1t = sum(ifelse(na_transit_1t == 1, trips, 0)),
         trips_na_transit_2t = sum(ifelse(na_transit_2t == 1, trips, 0)),
         # Total trips 
-        trips = sum(trips),
-        # Total travel time
-        across(starts_with("tt_total"),~ if (all(is.na(.x))) NA_real_ else sum(.x, na.rm = TRUE))
+        trips = sum(trips)
       ) |> 
       ungroup() |> 
       mutate(
@@ -116,14 +112,6 @@ aggregated_commuting_for_geometry = function(grid) {
         PNA_car = ifelse(trips == 0, NA, round(trips_na_car / trips, digits=2)),
         PNA_transit_1t = ifelse(trips == 0, NA, round(trips_na_transit_1t / trips, digits=2)),
         PNA_transit_2t = ifelse(trips == 0, NA, round(trips_na_transit_2t / trips, digits=2)),
-        # Compute average time for each mode
-        avg_tt_walk = ifelse(is.na(tt_total_walk), NA, round(tt_total_walk / trips, digits=2)),
-        avg_tt_bike = ifelse(is.na(tt_total_bike), NA, round(tt_total_bike / trips, digits=2)), 
-        avg_tt_car = ifelse(is.na(tt_total_car), NA, round(tt_total_car / trips, digits=2)), 
-        avg_tt_transit_1t = ifelse(is.na(tt_total_transit_1t), NA, round(tt_total_transit_1t / trips, digits=2)),
-        avg_tt_transit_2t = ifelse(is.na(tt_total_transit_2t), NA, round(tt_total_transit_2t / trips, digits=2)),
-        # Compute aggregated time for 
-        across(starts_with("tt_total"), ~ round(.x, digits=2))
       )
   )
 }
