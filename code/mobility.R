@@ -131,26 +131,46 @@ aml_cycleways <- osm_cycleways$osm_lines |> st_as_sf()
 aml_cycleways <- aml_cycleways |> select(osm_id, name, highway, geometry)
 #mapview(aml_cycleways)
 
-  # Disaggregate and measure cycleway length by Freguesia
-cycleways_by_freguesia <- st_join(aml_cycleways, freguesias, left = FALSE)
-cycleways_by_freguesia$length_segment <- st_length(cycleways_by_freguesia |> st_transform(3857)) 
+  # Disaggregate and measure cycleway length by Freguesia (old)
+# cycleways_by_freguesia <- st_join(aml_cycleways, freguesias, left = FALSE)
+# cycleways_by_freguesia$length_segment <- st_length(cycleways_by_freguesia |> st_transform(3857)) 
+# cycleway_length_by_freguesia <- cycleways_by_freguesia |>
+#   group_by(freguesia) |>
+#   summarise(cycleway_length = sum(length_segment))
+# cycleway_length_by_freguesia <- cycleway_length_by_freguesia |>
+#   st_drop_geometry()
+
+
+  # Evaluate cycleway quality by freguesia (old)
+# segregated_cycleways <- st_read("/data/IMPT/mobility/cycle_network_class.gpkg") |> filter(cycle_segregation == "Cycle track or lane")
+# segregated_by_freguesia <- st_join(segregated_cycleways, freguesias, left = FALSE)
+# segregated_by_freguesia$length_segment <- st_length(segregated_by_freguesia)
+# segregated_length_by_freguesia <- segregated_by_freguesia |>
+#   group_by(freguesia) |>
+#   summarise(segregated_cycleway_length = sum(length_segment))
+# segregated_length_by_freguesia <- segregated_length_by_freguesia |>
+#   st_drop_geometry()
+
+  # Updated code
+all_cycleways = st_read("/data/IMPT/mobility/AML_cycle_class.gpkg")
+all_cycleways <- all_cycleways |> select(osm_id, name, highway, cycle_cat, infra5, geom)
+segregated_cycleways <- all_cycleways |> filter(cycle_cat == "strong_ci")
+cycleways_by_freguesia <- st_join(all_cycleways, freguesias, left = FALSE)
+cycleways_by_freguesia$length_segment <- st_length(cycleways_by_freguesia)
 cycleway_length_by_freguesia <- cycleways_by_freguesia |>
   group_by(freguesia) |>
   summarise(cycleway_length = sum(length_segment))
 cycleway_length_by_freguesia <- cycleway_length_by_freguesia |>
   st_drop_geometry()
-
-
-  # Evaluate cycleway quality by freguesia
-segregated_cycleways <- st_read("/data/IMPT/mobility/cycle_network_class.gpkg") |> filter(cycle_segregation == "Cycle track or lane")
 segregated_by_freguesia <- st_join(segregated_cycleways, freguesias, left = FALSE)
 segregated_by_freguesia$length_segment <- st_length(segregated_by_freguesia)
 segregated_length_by_freguesia <- segregated_by_freguesia |>
   group_by(freguesia) |>
-  summarise(segregated_cycleway_length = sum(length_segment))
+  summarise(segregated_length = sum(length_segment))
 segregated_length_by_freguesia <- segregated_length_by_freguesia |>
   st_drop_geometry()
-  
+
+
   
 
 ### Compute ratio of pedpath/cycleway to roads ----
