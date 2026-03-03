@@ -1,12 +1,10 @@
 # Objective: Compute mobility parameters for every mode
-# Done so far:
+# Completed:
   # Car: Ownership rates (in veh_ownership.R)
   # Walking: Existence of infrastructure.
   # Cycling: Existence of infrastructure, Quality of infrastructure.
-# Almost complete:
-  # PT: Availability/coverage, Shared mobility availability
-# Not started:
-  # PT: Night/weekend service.
+  # PT: Availability/coverage, Shared mobility availability.
+
 
 library(gtfstools)
 library(mapview)
@@ -115,20 +113,20 @@ pedpath_length_by_freguesia <- pedpath_length_by_freguesia |>
 
 ### Bicycles ----
   # Get OSM cycleway data for AML
-osm_cycleways <- opq(bbox = municipios |> sf::st_bbox()) |>
-  add_osm_features(features = list(
-    # Dedicated cycle paths
-    "highway" = "cycleway",
-    # Cycle lanes on roads
-    "cycleway" = c("lane", "track", "opposite_lane", "opposite_track", "shared_lane", "share_busway"),
-    "cycleway:left" = c("lane", "track", "shared_lane", "share_busway"),
-    "cycleway:right" = c("lane", "track", "shared_lane", "share_busway"),
-    "cycleway:both" = c("lane", "track", "shared_lane", "share_busway")
-  )) |>
-  osmdata_sf()
-aml_cycleways <- osm_cycleways$osm_lines |> st_as_sf()
+# osm_cycleways <- opq(bbox = municipios |> sf::st_bbox()) |>
+#   add_osm_features(features = list(
+#     # Dedicated cycle paths
+#     "highway" = "cycleway",
+#     # Cycle lanes on roads
+#     "cycleway" = c("lane", "track", "opposite_lane", "opposite_track", "shared_lane", "share_busway"),
+#     "cycleway:left" = c("lane", "track", "shared_lane", "share_busway"),
+#     "cycleway:right" = c("lane", "track", "shared_lane", "share_busway"),
+#     "cycleway:both" = c("lane", "track", "shared_lane", "share_busway")
+#   )) |>
+#   osmdata_sf()
+#aml_cycleways <- osm_cycleways$osm_lines |> st_as_sf()
     # Remove unnecessary columns
-aml_cycleways <- aml_cycleways |> select(osm_id, name, highway, geometry)
+#aml_cycleways <- aml_cycleways |> select(osm_id, name, highway, geometry)
 #mapview(aml_cycleways)
 
   # Disaggregate and measure cycleway length by Freguesia (old)
@@ -166,7 +164,7 @@ segregated_by_freguesia <- st_join(segregated_cycleways, freguesias, left = FALS
 segregated_by_freguesia$length_segment <- st_length(segregated_by_freguesia)
 segregated_length_by_freguesia <- segregated_by_freguesia |>
   group_by(freguesia) |>
-  summarise(segregated_length = sum(length_segment))
+  summarise(segregated_cycleway_length = sum(length_segment))
 segregated_length_by_freguesia <- segregated_length_by_freguesia |>
   st_drop_geometry()
 
