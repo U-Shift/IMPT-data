@@ -255,6 +255,8 @@ summary(ttm_weekend)
 # III. Number of transfers for key destinations (transit) -------------------------------------------------
 
 ttm_root = "/ttm/ttm_h3_res8"
+ttm_0t = readRDS_remote(IMPT_URL(paste0(ttm_root, "/ttm_transit_120min_202602040800_0transfers.rds"))) |>
+  mutate(from_id = as.integer(from_id), to_id = as.integer(to_id))
 ttm_1t = readRDS_remote(IMPT_URL(paste0(ttm_root, "/ttm_transit_120min_202602040800_1transfers.rds"))) |>
   mutate(from_id = as.integer(from_id), to_id = as.integer(to_id))
 ttm_2t = readRDS_remote(IMPT_URL(paste0(ttm_root, "/ttm_transit_120min_202602040800_2transfers.rds"))) |>
@@ -263,11 +265,13 @@ ttm_3t = readRDS_remote(IMPT_URL(paste0(ttm_root, "/ttm_transit_120min_202602040
   mutate(from_id = as.integer(from_id), to_id = as.integer(to_id))
 ttm_4t = readRDS_remote(IMPT_URL(paste0(ttm_root, "/ttm_transit_120min_202602040800_4transfers.rds"))) |>
   mutate(from_id = as.integer(from_id), to_id = as.integer(to_id))
+summary(ttm_0t)
 summary(ttm_1t)
 summary(ttm_2t)
 summary(ttm_3t)
 summary(ttm_4t)
 
+nrow(ttm_0t)
 nrow(ttm_1t)
 nrow(ttm_2t)
 nrow(ttm_3t)
@@ -278,8 +282,10 @@ ttm_transfers = ttm_4t |> rename(tt_4t = travel_time_p50) |>
   left_join(ttm_3t |> rename(tt_3t = travel_time_p50), by = c("from_id", "to_id")) |>
   left_join(ttm_2t |> rename(tt_2t = travel_time_p50), by = c("from_id", "to_id")) |>
   left_join(ttm_1t |> rename(tt_1t = travel_time_p50), by = c("from_id", "to_id")) |>
+  left_join(ttm_0t |> rename(tt_0t = travel_time_p50), by = c("from_id", "to_id")) |>
   mutate(
     transfers_required = case_when(
+      !is.na(tt_0t) ~ 0,
       !is.na(tt_1t) ~ 1,
       !is.na(tt_2t) ~ 2,
       !is.na(tt_3t) ~ 3,
@@ -301,10 +307,6 @@ nrow(jittering_grid_transfers) # 18997
 nrow(jittering_grid_transfers |> filter(is.na(transfers_required))) # 2649
 sum(jittering_grid_transfers$na) # 2649
 nrow(jittering_grid_transfers |> filter(is.na(transfers_required))) / nrow(jittering_grid_transfers) # 13.9%
-
-sum(jittering_grid_transfers$trips) # 815782.4
-sum((jittering_grid_transfers |> filter(is.na(transfers_required)))$trips) # 100794.8
-sum((jittering_grid_transfers |> filter(is.na(transfers_required)))$trips) / sum(jittering_grid_transfers$trips)
 
 # Aggregate by grid, parish and municipality
 aggregated_commuting_for_transfers = function(grid) {
@@ -329,12 +331,12 @@ aggregated_commuting_for_transfers = function(grid) {
 grid_transfers = aggregated_commuting_for_transfers(jittering_grid_transfers |> group_by(id_grid_origin))
 summary(grid_transfers)
 
-grid_transfers_sf = grid |> select(id, geom) |> left_join(grid_commuting, by=c("id" = "id_grid_origin"))
+grid_transfers_sf = grid |> select(id, geom) |> left_join(grid_transfers, by=c("id" = "id_grid_origin"))
 # mapview(grid_transfers_sf, zcol = "weighted_mean_transfers")
 
 freguesia_transfers = aggregated_commuting_for_transfers(jittering_grid_transfers |> group_by(Origin_dicofre24))
 
-freguesia_transfers_sf = freguesias |> select(dtmnfr, geom) |> left_join(freguesia_commuting, by=c("dtmnfr" = "Origin_dicofre24"))
+freguesia_transfers_sf = freguesias |> select(dtmnfr, geom) |> left_join(freguesia_transfers, by=c("dtmnfr" = "Origin_dicofre24"))
 # mapview(freguesia_transfers_sf, zcol = "weighted_mean_transfers")
 
 municipio_transfers = aggregated_commuting_for_transfers(
@@ -342,7 +344,7 @@ municipio_transfers = aggregated_commuting_for_transfers(
     left_join(freguesias |> select(dtmnfr, municipio), by=c("Origin_dicofre24" = "dtmnfr")) |>
     group_by(municipio) 
 )
-municipio_transfers_sf = municipios |> select(municipio, geom) |> left_join(municipio_commuting, by=c("municipio" = "municipio"))
+municipio_transfers_sf = municipios |> select(municipio, geom) |> left_join(municipio_transfers, by=c("municipio" = "municipio"))
 # mapview(municipio_transfers_sf, zcol = "weighted_mean_transfers")
 
 
@@ -352,5 +354,6 @@ st_write(freguesia_transfers_sf, IMPT_URL(sprintf("%s/freguesia_transfers.gpkg",
 write.csv(freguesia_transfers, IMPT_URL(sprintf("%s/freguesia_transfers.csv", output_dir)), row.names = FALSE) 
 st_write(municipio_transfers_sf, IMPT_URL(sprintf("%s/municipio_transfers.gpkg", output_dir)), delete_dsn = TRUE)
 write.csv(municipio_transfers, IMPT_URL(sprintf("%s/municipio_transfers.csv", output_dir)), row.names = FALSE)
+
 
 
