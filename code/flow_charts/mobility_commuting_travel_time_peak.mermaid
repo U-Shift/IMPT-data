@@ -1,0 +1,81 @@
+flowchart TB
+    Start([Start: Mobility Commuting Analysis])
+    
+    %% Input Data
+    subgraph Inputs["Input Data Sources"]
+        OD[Origin-Destination Data<br/>IMOB Travel Survey<br/>Jittered commuting trips<br/>with origin and destination points]
+        TTM[Travel Time Matrix<br/>Multiple modes: walk, bike, car,<br/>transit 0-4 transfers<br/>various walking time limits<br/>Max travel time: 120-240min]
+        Grid[H3 Grid Resolution 8<br/>with centroids]
+    end
+    
+    Start --> Inputs
+    
+    %% Spatial Association
+    Inputs --> SpatialJoin
+    
+    subgraph SpatialJoin["Associate OD Pairs to Grid Cells"]
+        JoinOR[sf::st_join:<br/>Join origin points to grid<br/>get origin grid cell ID]
+        JoinDE[sf::st_join:<br/>Join destination points to grid<br/>get destination grid cell ID]
+        FilterOD[Filter OD pairs<br/>with valid grid associations]
+        JoinOR --> FilterOD
+        JoinDE --> FilterOD
+    end
+    
+    %% Join Travel Times
+    SpatialJoin --> JoinTT
+    
+    subgraph JoinTT["Join Travel Time Matrix for Each Mode"]
+        direction TB
+        LoopMode[For each travel mode<br/>14 mode configurations]
+        JoinTTM[dplyr::left_join:<br/>Match OD grid pairs to TTM<br/>get travel_time_p50]
+        HandleNA[Handle unreachable ODs:<br/>Create NA flag columns<br/>Replace NA with max time 120min<br/>to penalize in aggregation]
+        
+        LoopMode --> JoinTTM
+        JoinTTM --> HandleNA
+        HandleNA -.next mode.-> LoopMode
+    end
+    
+    %% Aggregation
+    JoinTT --> Aggregation
+    
+    subgraph Aggregation["Aggregate by Geographic Unit"]
+        direction TB
+        GeoUnits[Define geographic units:<br/>Grid origin cells<br/>Freguesias parishes<br/>Municípios municipalities]
+        
+        subgraph CalcMetrics["For each geographic unit origin"]
+            direction TB
+            GroupOrigin[Group trips by origin<br/>grid cell, parish, or municipality]
+            WeightedMean[dplyr: Calculate weighted mean<br/>travel time by mode<br/>weighted by number of trips]
+            CountNA[Sum trips where<br/>NA flag = 1<br/>trips not accomplishable]
+            TotalTrips[Sum total trips<br/>originating from unit]
+            PNA[Calculate PNA ratio:<br/>Proportion Not Accomplishable<br/>= trips_NA / total_trips]
+        end
+        
+        GeoUnits --> CalcMetrics
+        CalcMetrics --> Results
+        
+        Results[Results for each mode<br/>across all geographic levels]
+    end
+    
+    %% Output Files
+    Aggregation --> Output
+    
+    subgraph Output["Output Files"]
+        direction TB
+        GridOut[Grid Origin Level:<br/>grid_commuting.gpkg<br/>grid_commuting.csv]
+        FreqOut[Parish Origin Level:<br/>freguesia_commuting.gpkg<br/>freguesia_commuting.csv]
+        MuniOut[Municipality Origin Level:<br/>municipio_commuting.gpkg<br/>municipio_commuting.csv]
+    end
+    
+    Output --> End([End: Commuting Travel Time<br/>Weighted mean travel time<br/>by mode for each origin unit<br/>Total trips and PNA ratio<br/>for unreachable destinations])
+    
+    %% Styling
+    classDef inputStyle fill:#e1f5ff,stroke:#0288d1,stroke-width:2px
+    classDef processStyle fill:#fff3e0,stroke:#f57c00,stroke-width:2px
+    classDef outputStyle fill:#e8f5e9,stroke:#388e3c,stroke-width:2px
+    classDef calcStyle fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
+    
+    class OD,TTM,Grid,Inputs inputStyle
+    class SpatialJoin,JoinTT,Aggregation,CalcMetrics processStyle
+    class Output,GridOut,FreqOut,MuniOut outputStyle
+    class WeightedMean,HandleNA,PNA calcStyle

@@ -1,0 +1,91 @@
+flowchart TB
+    Start([Start: Mobility Costs Analysis])
+    
+    %% Input Data
+    subgraph Inputs["Input Data Sources"]
+        TTM[Travel Time Matrix<br/>5 modes: walk, bike, car,<br/>transit_1t, transit_2t<br/>Time windows: 120min]
+        POIs[Points of Interest<br/>13 types: health, schools,<br/>groceries, jobs, transit, etc.]
+        Grid[H3 Grid Resolution 8<br/>with centroids]
+        Census[Census Data<br/>Population by demographics<br/>kids, young, active, elder, etc.]
+    end
+    
+    Start --> Inputs
+    
+    %% Grid Population Processing
+    TTM --> GridPop
+    POIs --> GridPop
+    Grid --> GridPop
+    Census --> GridPop
+    
+    subgraph GridPop["Grid Population Processing"]
+        Join1[sf::st_join:<br/>Census to Grid cells]
+        Agg1[dplyr: Aggregate demographics<br/>by grid cell]
+        GridPts[Grid centroids with<br/>population data]
+        Join1 --> Agg1 --> GridPts
+    end
+    
+    %% Step 1: Calculate Travel Costs
+    GridPop --> Step1
+    
+    subgraph Step1["Step 1: Calculate Travel Cost to Closest Opportunities per Grid Cell"]
+        direction TB
+        LoopPOI[For each POI category<br/>13 categories]
+        CountPOI[sf::st_join: Count POIs<br/>per grid cell using st_intersects]
+        LoopMode[For each travel mode<br/>5 modes]
+        LoopN[For each n opportunities<br/>n = 1, 2, 3]
+        CalcCost[Calculate travel cost using<br/>accessibility::cost_to_closest<br/>travel time in minutes<br/>to reach n closest opportunities]
+        
+        LoopPOI --> CountPOI
+        CountPOI --> LoopMode
+        LoopMode --> LoopN
+        LoopN --> CalcCost
+        CalcCost -.next n.-> LoopN
+        LoopN -.next mode.-> LoopMode
+        LoopMode -.next POI.-> LoopPOI
+    end
+    
+    %% Step 2: Aggregate to Geographic Units
+    Step1 --> Step2
+    
+    subgraph Step2["Step 2: Aggregate to Parish and Municipality Level"]
+        direction TB
+        GeoUnits[Define geographic units:<br/>Freguesias parishes<br/>Municípios municipalities]
+        
+        subgraph Aggregation["For each POI-Population-Mode-N combination"]
+            direction TB
+            JoinGeo[sf::st_join:<br/>Grid cells to parishes/municipalities]
+            HandleInf[Replace Inf values<br/>with NA<br/>when no opportunity reachable]
+            WeightedMean[dplyr: Calculate weighted mean<br/>of travel costs<br/>weighted by population segment<br/>residents, kids, elder, active]
+            SumPOI[Sum total number of POIs<br/>in geographic unit]
+            Round[Round results to 2 decimals]
+        end
+        
+        GeoUnits --> Aggregation
+        
+        Aggregation --> Results
+        
+        Results[Combine results for all<br/>16 POI-population combinations<br/>across all modes and n values]
+    end
+    
+    %% Output Files
+    Step2 --> Output
+    
+    subgraph Output["Output Files"]
+        direction TB
+        GridOut[Grid Level:<br/>mobility_grid.gpkg<br/>mobility_grid.csv]
+        FreqOut[Parish Level:<br/>mobility_freguesia.gpkg<br/>mobility_freguesia.csv]
+        MuniOut[Municipality Level:<br/>mobility_municipio.gpkg<br/>mobility_municipio.csv]
+    end
+    
+    Output --> End([End: Mobility Cost Indicators<br/>Travel time in minutes<br/>to reach 1, 2, or 3 closest<br/>opportunities by grid, parish,<br/>municipality for multiple<br/>POI types and modes])
+    
+    %% Styling
+    classDef inputStyle fill:#e1f5ff,stroke:#0288d1,stroke-width:2px
+    classDef processStyle fill:#fff3e0,stroke:#f57c00,stroke-width:2px
+    classDef outputStyle fill:#e8f5e9,stroke:#388e3c,stroke-width:2px
+    classDef calcStyle fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
+    
+    class TTM,POIs,Grid,Census,Inputs inputStyle
+    class GridPop,Step1,Step2,Aggregation processStyle
+    class Output,GridOut,FreqOut,MuniOut outputStyle
+    class CalcCost,WeightedMean,HandleInf calcStyle
