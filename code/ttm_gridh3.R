@@ -31,7 +31,6 @@ root_folder = "data" # Set to "/data/IMPT/ when running at server.ushift.pt, or 
 points = points_h3
 nrow(points) # 3686 - this is the res 8 h3 grid, and 25890 for res 9
 grid_name = "h3_res8" # fast to run, but 13.5Million combinations!. takes 17min for each run
-grid_name = "h3_res9" # takes 13min to run within rstudio-server, for transit.
 mode_egress = "WALK"
 max_walk_time = 15 # 20?
 max_lts = 3 # for bike
@@ -40,10 +39,14 @@ max_lts = 3 # for bike
 departure_datetime_HP = as.POSIXct("04-02-2026 08:00:00", format = "%d-%m-%Y %H:%M:%S") 
 departure_datetime_FHP = as.POSIXct("08-02-2026 20:00:00", format = "%d-%m-%Y %H:%M:%S") 
 departure_datetime_night = as.POSIXct("04-02-2026 03:00:00", format = "%d-%m-%Y %H:%M:%S") 
+max_trip_duration_240 = 240 # 4 hours
 max_trip_duration_120 = 120 # 2 hours
 max_trip_duration_60 = 60 # 1 hours
+max_rides_1 = 1 # direct only, no transfers
 max_rides_2 = 2 # 1 transfers
 max_rides_3 = 3 # 2 transfers
+max_rides_4 = 4 # 3 transfers
+max_rides_5 = 5 # 4 transfers
 
 # # manual run for CAR
 # # ttm_car_60min = 
@@ -66,8 +69,8 @@ if(!dir.exists(folder_name)) {
   dir.create(folder_name, recursive = TRUE)
 }
   
-for (mode in c("CAR", "BICYCLE", "WALK", "TRANSIT")) {
-  for (max_trip_duration in c(60, 120)) {
+for (mode in c("TRANSIT")) { # "CAR", "BICYCLE", "WALK", 
+  for (max_trip_duration in c(60,120)) {
     message(paste("Running travel time matrix for mode:", mode, "max trip duration:", max_trip_duration))
     
     # Static parameters
@@ -82,9 +85,9 @@ for (mode in c("CAR", "BICYCLE", "WALK", "TRANSIT")) {
     
     # > Transit has multiple departure times
     departures = c(departure_datetime_HP)
-    if (mode == "TRANSIT") {
-      departures = c(departure_datetime_HP, departure_datetime_FHP, departure_datetime_night)
-    }
+    # if (mode == "TRANSIT") {
+    #   departures = c(departure_datetime_HP, departure_datetime_FHP, departure_datetime_night)
+    # }
     for (departure_datetime in departures) {
       departure_datetime = as.POSIXct(departure_datetime, origin_tz = "Europe/Lisbon")
       args$departure_datetime = departure_datetime
@@ -97,7 +100,7 @@ for (mode in c("CAR", "BICYCLE", "WALK", "TRANSIT")) {
       if (mode == "TRANSIT") {
         args$mode_egress = mode_egress
         args$max_walk_time = max_walk_time
-        max_rides = c(max_rides_2, max_rides_3)
+        max_rides = c(max_rides_1)
       }
       
       for (mr in max_rides) {
@@ -146,3 +149,4 @@ for (folder in list.dirs(folder_name, recursive = FALSE)) {
 # stop r5r ----------------------------------------------------------------
 r5r::stop_r5(r5r_network)
 rJava::.jgc(R.gc = TRUE)
+
