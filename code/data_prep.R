@@ -622,9 +622,35 @@ gtfs_paths <- list.files(IMPT_URL("/gtfs/processed"), pattern="\\.zip$" , full.n
 pois_transit = data.frame()
 pois_transit_headways = data.frame()
 for (i in gtfs_paths) {
-  gtfs <- read_gtfs(i)
-  gtfs = filter_feed_by_date(gtfs, "2026-02-04")
+  message(sprintf("Processing GTFS %s...", i))
+  gtfs_original <- read_gtfs(i)
   
+  gtfs_weekend = filter_feed_by_date(gtfs_original, "2026-02-08")
+  summary(gtfs_weekend)
+  stops_frequency_weekend = get_stop_frequency(gtfs_weekend, start_time="10:00:00", end_time="11:00:00", service_ids=unique(gtfs_weekend$calendar$service_id)) |>
+    group_by(stop_id) |>
+    summarise(frequency_weekend = sum(n_departures))
+  stop_headway_weekend = get_stop_frequency(gtfs_weekend, start_time="10:00:00", end_time="11:00:00", service_ids=unique(gtfs_weekend$calendar$service_id)) |>
+    group_by(stop_id) |> # When multiple stop_id, stick with mean_headway for the one with more n_departures
+    summarise(headway_weekend = mean_headway[which.max(n_departures)])
+  # View(
+  #   GTFShift::get_route_frequency_hourly(gtfs_weekend, date="2026-02-08") |>
+  #   st_drop_geometry() |>
+  #   group_by(hour) |>
+  #   summarize(frequency=sum(frequency)) |>
+  #   arrange(hour)
+  # )
+  
+  
+  gtfs = filter_feed_by_date(gtfs_original, "2026-02-04")
+  summary(gtfs)
+  # View(
+  #   GTFShift::get_route_frequency_hourly(gtfs, date="2026-02-04") |>
+  #     st_drop_geometry() |>
+  #     group_by(hour) |>
+  #     summarize(frequency=sum(frequency)) |>
+  #     arrange(hour)
+  # )
   stops_sf <- stops_as_sf(gtfs$stops) |> select(stop_id, geometry)
   stops_sf$agency = gtfs$agency$agency_name[[1]]
   pois_transit = rbind(pois_transit, stops_sf)
@@ -632,13 +658,19 @@ for (i in gtfs_paths) {
   stops_frequency_peak = get_stop_frequency(gtfs, start_time="08:00:00", end_time="09:00:00", service_ids=unique(gtfs$calendar$service_id)) |>
     group_by(stop_id) |>
     summarise(frequency_peak = sum(n_departures))
-  stops_frequency_day = get_stop_frequency(gtfs, start_time="00:00:00", end_time="23:59:59", service_ids=unique(gtfs$calendar$service_id)) |>
+  stops_frequency_night = get_stop_frequency(gtfs, start_time="22:00:00", end_time="23:00:00", service_ids=unique(gtfs$calendar$service_id)) |>
+    group_by(stop_id) |>
+    summarise(frequency_night = sum(n_departures))
+  stops_frequency_day = get_stop_frequency(gtfs, start_time="00:00:00", end_time="48:00:00", service_ids=unique(gtfs$calendar$service_id)) |>
     group_by(stop_id) |>
     summarise(frequency_day = sum(n_departures))
   
   stop_headway_peak = get_stop_frequency(gtfs, start_time="08:00:00", end_time="09:00:00", service_ids=unique(gtfs$calendar$service_id)) |>
     group_by(stop_id) |> # When multiple stop_id, stick with mean_headway for the one with more n_departures
     summarise(headway_peak = mean_headway[which.max(n_departures)])
+  stop_headway_night = get_stop_frequency(gtfs, start_time="22:00:00", end_time="23:00:00", service_ids=unique(gtfs$calendar$service_id)) |>
+    group_by(stop_id) |> # When multiple stop_id, stick with mean_headway for the one with more n_departures
+    summarise(headway_night = mean_headway[which.max(n_departures)])
   stop_headway_day = get_stop_frequency(gtfs, start_time="00:00:00", end_time="23:59:59", service_ids=unique(gtfs$calendar$service_id)) |>
     group_by(stop_id) |> # When multiple stop_id, stick with mean_headway for the one with more n_departures
     summarise(headway_day = mean_headway[which.max(n_departures)])
@@ -647,8 +679,12 @@ for (i in gtfs_paths) {
     left_join(stops_frequency_peak, by="stop_id") |>
     left_join(stops_frequency_day, by="stop_id") |> 
     left_join(stop_headway_peak, by="stop_id") |> 
-    left_join(stop_headway_day, by="stop_id")
-  
+    left_join(stop_headway_day, by="stop_id") |> 
+    left_join(stops_frequency_weekend, by="stop_id") |>
+    left_join(stop_headway_weekend, by="stop_id") |>
+    left_join(stops_frequency_night, by="stop_id") |>
+    left_join(stop_headway_night, by="stop_id")
+    
   pois_transit_headways = rbind(pois_transit_headways, stops_sf)
 }
 # Filter inside limit_bbox
