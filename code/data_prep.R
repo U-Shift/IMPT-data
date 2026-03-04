@@ -446,10 +446,14 @@ table(pois$group)
 
 # save and load
 st_write(pois, "/data/IMPT/geo/pois_osm2024.gpkg", delete_dsn = TRUE)
-pois = st_read("/data/IMPT/geo/pois_osm2024.gpkg")
-table(pois$type|> as.factor() |> forcats::fct_infreq())
+pois = st_read(IMPT_URL("/geo/pois_osm2024.gpkg"))
+View(data.frame(table(pois$type|> as.factor() |> forcats::fct_infreq())))
+
+# Filter Var1 contains "market"
+data.frame(table(pois$type|> as.factor() |> forcats::fct_infreq())) |> filter(grepl("market", Var1))
 table(pois$group)
 table((pois |> filter(group=="amenity"))$type|> as.factor() |> forcats::fct_infreq())
+View(data.frame(table((pois |> filter(group=="shop"))$type|> as.factor() |> forcats::fct_infreq())))
 
 pois_health = read.csv("https://github.com/carrismetropolitana/datasets/raw/refs/heads/latest/facilities/health_centers/health_centers.csv") |>
   filter(
