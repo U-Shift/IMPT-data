@@ -49,10 +49,11 @@ pois_list = list(
   # list("recreation", pois_recreation),
   # list("schools", pois_schools),
   # list("schools_primary", pois_schools |> filter(grepl("Cycle", type))),
-  list("jobs", pois_jobs)
-  # list("transit", pois_transit |> mutate(n=1)),
-  # list("transit_bus", pois_bus |> mutate(n=1)),
-  # list("transit_mass", pois_mass |> mutate(n=1))
+  list("schools_high", pois_schools |> filter(grepl("High", type))),
+  # list("jobs", pois_jobs)
+  list("transit", pois_transit |> mutate(n=1)),
+  list("transit_bus", pois_bus |> mutate(n=1)),
+  list("transit_mass", pois_mass |> mutate(n=1))
 )
 
 
@@ -66,6 +67,7 @@ grid_population = grid_census |>
             families = sum(N_NUCLEOS_FAMILIARES),
             residents = sum(N_INDIVIDUOS),
             kids = sum(N_INDIVIDUOS_0_14), # 0-14
+            young = sum(N_INDIVIDUOS_15_24), # 15-24
             active = sum(N_INDIVIDUOS_25_64), # 25-64
             elder = sum(N_INDIVIDUOS_65_OU_MAIS), # 65+
             male = sum(N_INDIVIDUOS_H),
@@ -156,6 +158,7 @@ accessibility_measures = list(
   list("health_primary", "elder", accessibility_modes),
   list("health_hospital", "elder", accessibility_modes),
   list("schools_primary", "kids", accessibility_modes),
+  list("schools_high", "young", accessibility_modes),
   list("greenspaces", "residents", accessibility_modes),
   list("recreation", "residents", accessibility_modes),
   list("groceries", "residents", accessibility_modes),
