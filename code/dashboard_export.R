@@ -28,6 +28,7 @@ mun_nuts <- freguesias |>
     .groups = "drop"
   ) |>
   rename(id=group_id)
+# write.csv(mun_nuts, "useful_data/mun_nuts.csv", row.names = FALSE)
 mun_nuts
 municipios <- municipios |>
   left_join(mun_nuts, by = "municipio") |>
