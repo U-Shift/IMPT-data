@@ -77,3 +77,34 @@ names(municipio_accessibility)
 
 store_by_mode(freguesia_accessibility, c("dtmnfr", "nuts"), "freguesia_accessibility", output_dir)
 store_by_mode(municipio_accessibility, c("municipio", "nuts"), "municipio_accessibility", output_dir)
+
+# 3. Mobility
+select_impt_cols_mobility = function(data) {
+  return (
+    data |> 
+      select(
+        id, nuts, 
+        # Travel time (peak)
+        mobility_commuting_avg_tt_bike, mobility_commuting_avg_tt_walk, mobility_commuting_avg_tt_transit_2t_120m_15w, mobility_commuting_avg_tt_car,
+        # Number of transfers for key destinations (transit)
+        mobility_transit_commuting_mean_transfers,
+        # PT Waiting Times
+        mobility_transit_weighted_waiting_time_peak,
+        # Night/weekend service availability
+        mobility_transit_weighted_frequency_reduction_night, mobility_transit_weighted_frequency_reduction_weekend
+      ) |> 
+      st_drop_geometry()
+  )
+}
+
+freguesia_mobility = select_impt_cols_mobility(freguesias_aggregated) |>
+  rename(dtmnfr = id) 
+names(freguesia_mobility)
+municipio_mobility = select_impt_cols_mobility(municipios_aggregated) |>
+  mutate(id=as.integer(id)) |>
+  left_join(mun_nuts |> select(id, municipio), by="id")
+names(municipio_mobility)
+
+store_by_mode(freguesia_mobility, c("dtmnfr", "nuts"), "freguesia_mobility", output_dir)
+store_by_mode(municipio_mobility, c("municipio", "nuts"), "municipio_mobility", output_dir)
+
