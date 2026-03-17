@@ -1,268 +1,273 @@
-# Load relevant data after preparation
-
-library(dplyr)
 library(sf)
+library(dplyr)
 library(tidyr)
+library(stringr)
+library(openxlsx)
 
-#Normalizar minmax_norm <- function(x) {
-minmax_norm <- function(x) {
-  x <- as.numeric(x)
-  rng <- range(x, na.rm = TRUE)
-  if (!is.finite(rng[1]) || !is.finite(rng[2]) || rng[1] == rng[2]) return(rep(0, length(x)))
-  (x - rng[1]) / (rng[2] - rng[1])
-}
+# ----------------------------
+# 0) IMPT URL helper
+# ----------------------------
+DATA_LOCATION <- "/data/IMPT" 
+# DATA_LOCATION <- "https://impt.server.ushift.pt" # se estiveres local
+API_KEY <- Sys.getenv("IMPT_DATA_KEY")
 
-invert_01 <- function(x) 1 - x  # para transformar "maior=piores" em "maior=melhor"
-
-# Data location  ----------------------------------------------------------
-
-DATA_LOCATION = "/data/IMPT" # When running at server.ushift.pt, use server local data
-#DATA_LOCATION = "https://impt.server.ushift.pt" # When running locally, get data from remote server
-# DATA_LOCATION = "data"
-API_KEY = Sys.getenv("IMPT_DATA_KEY") # Set it using usethis::edit_r_environ(), followed by CTRL+F10
-
-IMPT_URL = function(path) {
-  # If data location starts with "http", add api key to url
+IMPT_URL <- function(path) {
   if (startsWith(DATA_LOCATION, "http")) {
-    # If API_KEY empty or not defined, throw error
-    if (API_KEY == "") {
-      stop("IMPT_DATA_KEY env var is not defined. Please set it using usethis::edit_r_environ() and restart R.")
-    }
+    if (API_KEY == "") stop("IMPT_DATA_KEY env var não está definida. Define e reinicia o R.")
     return(sprintf("%s%s?key=%s", DATA_LOCATION, path, API_KEY))
   }
-  # Otherwise, return local path
-  return(sprintf("%s%s", DATA_LOCATION, path))
+  sprintf("%s%s", DATA_LOCATION, path)
 }
 
-readRDS_remote <- function(file, quiet = TRUE) { # From https://stackoverflow.com/a/66874958
-  if (grepl("^http", file, ignore.case = TRUE)) {
-    # temp location
-    file_local <- file.path(tempdir(), basename(file))
-    # download the data set
-    download.file(file, file_local, quiet = quiet, mode = "wb")
-    file <- file_local
-  }
-  readRDS(file)
+# ----------------------------
+# 1) Ler freguesias (2024) e acidentes (IG)
+# ----------------------------
+freguesias <- st_read(IMPT_URL("/geo/freguesias_2024_unique.gpkg"), quiet = TRUE)
+
+acidentes_path <- "~/IMPT-data/13-SegurançaRodoviária.gpkg"
+stopifnot(file.exists(path.expand(acidentes_path)))
+
+ig <- st_read(
+  dsn = acidentes_path,
+  layer = "ANSR_AML_sinistralidade_02 - IG",
+  quiet = TRUE
+)
+
+# ----------------------------
+# 2) Join espacial (pontos -> freguesia nova) + resolver NA por nearest
+# ----------------------------
+ig2 <- st_transform(ig, st_crs(freguesias))
+
+ig_freg <- st_join(
+  ig2,
+  freguesias %>% select(dtmnfr, freguesia),
+  left = TRUE
+)
+
+na_idx <- which(is.na(ig_freg$dtmnfr))
+if (length(na_idx) > 0) {
+  nearest <- st_nearest_feature(ig2[na_idx, ], freguesias)
+  ig_freg$dtmnfr[na_idx] <- freguesias$dtmnfr[nearest]
+  ig_freg$freguesia[na_idx] <- freguesias$freguesia[nearest]
 }
 
-download_remote_file <- function(dir_url, filename, destinatin_folder) {
-  download.file(
-    paste0(stringr::str_split(r5r_location, "\\?")[[1]][[1]], filename, "?", stringr::str_split(r5r_location, "\\?")[[1]][[2]]),
-    file.path(destinatin_folder, filename),
-    mode = "wb"
-  )
-}
-
-# Geo ---------------------------------------------------------------------
-
-# Polygons administrative
-freguesias = st_read(IMPT_URL("/geo/freguesias_2024_unique.gpkg"))
-municipios = st_read(IMPT_URL("/geo/municipios_2024.gpkg"))
-limit = st_read(IMPT_URL("/geo/municipios_union_2024.geojson"))
-limit_bbox = st_read(IMPT_URL("/geo/municipios_union_bbox_2024.geojson"))
-
-# Conversion freguesias
-conversion_dicofre = read.csv("useful_data/dicofre_16_24_conversion.csv")
-conversion_dicofre_all = readRDS("useful_data/dicofre_16_24_conversion_full.Rds")
-conversion_dicofre_weight = readRDS("useful_data/dicofre_16_24_conversion_full_with_weights.Rds")
-
-
-#-----------------------------------------------------------------------------------
-#Accident rates involving cars (taxa anual média)
-
-#TML Data for safety
-gpkg_path <- "13-SegurançaRodoviária.gpkg"
-layer_cars <- "ANSR_AML_sinistralidade - VEÍCULO - Ligeiros"
-
-#Checking freguesias
-freguesias_sf <- st_make_valid(freguesias)
-
-#Read Data for accidents involving car
-car <- st_read(gpkg_path, layer = layer_cars) %>% st_transform(st_crs(freguesias_sf))
-
-#Count number of accidents per year per freguesia
-acc_freg_ano <- st_join(car, freguesias_sf["dtmnfr"], left = FALSE) %>%
+# ----------------------------
+# 3) Variáveis auxiliares (modos, VM30, filtros arruamento/noite)
+# (sem "limpeza" de nomes; só conversão numérica)
+# ----------------------------
+ig_tab <- ig_freg %>%
   st_drop_geometry() %>%
-  count(dtmnfr, Ano, name = "n_car")
-
-#Complete freguesias with zeros
-anos <- sort(unique(acc_freg_ano$Ano))
-acc_freg_ano <- acc_freg_ano %>%
-  complete(dtmnfr = unique(freguesias_sf$dtmnfr), Ano = anos, fill = list(n_car = 0))
-
-# Taxa anual média por freguesia
-taxa_anual_media_freguesia <- acc_freg_ano %>%
-  group_by(Ano) %>%
   mutate(
-    total_ano = sum(n_car),
-    share_ano = ifelse(total_ano > 0, n_car / total_ano, 0)
-  ) %>%                      # <-- ESTE %>% estava a faltar
-  ungroup() %>%
-  group_by(dtmnfr) %>%
+    carro = X_Veículo > 0,
+    bicicleta = X_Velocípe > 0,
+    pedestre = grepl("Atropelamento", Natureza),
+    VM30 = as.numeric(VM.30d),
+    
+    arruamento = grepl("Arruamento", Tipos.Vias, ignore.case = TRUE),
+    noturno = grepl("Noite", Luminosida, ignore.case = TRUE)
+  )
+
+# ==========================================================
+# (1) Nº de acidentes por ANO e por MODO (wide)
+# ==========================================================
+acidentes_ano_modo_wide <- ig_tab %>%
+  group_by(dtmnfr, freguesia, Ano) %>%
   summarise(
-    taxa_anual_media = mean(share_ano, na.rm = TRUE),
+    acid_carro = sum(carro, na.rm = TRUE),
+    acid_bicicleta = sum(bicicleta, na.rm = TRUE),
+    acid_pedestre = sum(pedestre, na.rm = TRUE),
     .groups = "drop"
   ) %>%
-  left_join(
-    freguesias_sf %>% st_drop_geometry() %>% distinct(dtmnfr, freguesia, municipio),
-    by = "dtmnfr"
+  pivot_wider(
+    id_cols = c(dtmnfr, freguesia),
+    names_from = Ano,
+    values_from = c(acid_carro, acid_bicicleta, acid_pedestre),
+    names_glue = "{.value}_{Ano}",
+    values_fill = 0
   ) %>%
-  select(dtmnfr, freguesia, municipio, taxa_anual_media) %>%
-  arrange(desc(taxa_anual_media))
+  arrange(freguesia)
 
-#Aplying min-max to taxa anual média de acidentes envolvendo carros por freguesia
-taxa_anual_media_freguesia <- taxa_anual_media_freguesia %>%
+# ==========================================================
+# (2) Nº de VÍTIMAS MORTAIS (30 dias) por MODO (por freguesia)
+# ==========================================================
+vitimas_mortais_modo <- ig_tab %>%
+  group_by(dtmnfr, freguesia) %>%
+  summarise(
+    VM30_carro = sum(VM30[carro], na.rm = TRUE),
+    VM30_bicicleta = sum(VM30[bicicleta], na.rm = TRUE),
+    VM30_pedestre = sum(VM30[pedestre], na.rm = TRUE),
+    VM30_total = sum(VM30, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  arrange(desc(VM30_total))
+
+# ==========================================================
+# (3) Nº de ACIDENTES em ARRUAMENTOS por MODO (por freguesia)
+# ==========================================================
+acidentes_arruamentos_modo <- ig_tab %>%
+  filter(arruamento) %>%
+  group_by(dtmnfr, freguesia) %>%
+  summarise(
+    acid_arr_carro = sum(carro, na.rm = TRUE),
+    acid_arr_bicicleta = sum(bicicleta, na.rm = TRUE),
+    acid_arr_pedestre = sum(pedestre, na.rm = TRUE),
+    total_arruamento = n(),
+    .groups = "drop"
+  ) %>%
+  arrange(desc(total_arruamento))
+
+# ==========================================================
+# (4) Nº de ACIDENTES NOTURNOS por MODO (por freguesia)
+# ==========================================================
+acidentes_noturnos_modo <- ig_tab %>%
+  filter(noturno) %>%
+  group_by(dtmnfr, freguesia) %>%
+  summarise(
+    acid_noite_carro = sum(carro, na.rm = TRUE),
+    acid_noite_bicicleta = sum(bicicleta, na.rm = TRUE),
+    acid_noite_pedestre = sum(pedestre, na.rm = TRUE),
+    total_noturno = n(),
+    .groups = "drop"
+  ) %>%
+  arrange(desc(total_noturno))
+
+# ----------------------------
+# 4) Exportar Excel (4 folhas)
+# ----------------------------
+wb <- createWorkbook()
+addWorksheet(wb, "Acidentes_ano_modo_WIDE")
+addWorksheet(wb, "Vitimas_mortais_modo")
+addWorksheet(wb, "Arruamentos_modo")
+addWorksheet(wb, "Noturnos_modo")
+
+writeData(wb, "Acidentes_ano_modo_WIDE", acidentes_ano_modo_wide)
+writeData(wb, "Vitimas_mortais_modo", vitimas_mortais_modo)
+writeData(wb, "Arruamentos_modo", acidentes_arruamentos_modo)
+writeData(wb, "Noturnos_modo", acidentes_noturnos_modo)
+
+saveWorkbook(wb, "indicadores_acidentes_por_freguesia_nova.xlsx", overwrite = TRUE)
+
+# ==========================================================
+# (5) ÍNDICE DE GRAVIDADE
+# VM30 / (acidentes com vítimas: mortos + feridos)
+# ==========================================================
+
+indice_gravidade_freg <- ig_freg %>%
+  st_drop_geometry() %>%
   mutate(
-    taxa_anual_media_norm  = minmax_norm(taxa_anual_media),
-    taxa_anual_media_score = invert_01(taxa_anual_media_norm)
-  )
-  
-  # ------------------------
-  # Checks + Top 10
-  # ------------------------
-  summary(taxa_anual_media_freguesia$taxa_anual_media)
-  summary(taxa_anual_media_freguesia$taxa_anual_media_norm)
-  summary(taxa_anual_media_freguesia$taxa_anual_media_score)
-  
-  taxa_anual_media_freguesia %>%
-    arrange(desc(taxa_anual_media)) %>%
-    select(dtmnfr, freguesia, municipio, taxa_anual_media, taxa_anual_media_norm, taxa_anual_media_score) %>%
-    head(10)
-  
-#------------------------------------------------------------------------------------------
+    VM30 = as.numeric(VM.30d),
+    FG30 = as.numeric(FG.30d),
+    FL30 = as.numeric(FL.30d),
+    acidente_com_vitimas = (VM30 + FG30 + FL30) > 0
+  ) %>%
+  group_by(dtmnfr, freguesia) %>%
+  summarise(
+    VM30_total = sum(VM30, na.rm = TRUE),
+    acidentes_com_vitimas = sum(acidente_com_vitimas, na.rm = TRUE),
+    indice_gravidade = VM30_total / acidentes_com_vitimas,
+    .groups = "drop"
+  ) %>%
+  arrange(desc(indice_gravidade))
 
-#Pedestrian accident rates (taxa anual média)
-  
-  layer_ped <- "ANSR_AML_sinistralidade - ATROPELAMENTOS"
-  
-  # Read pedestrian accident points and align CRS
-  ped <- st_read(gpkg_path, layer = layer_ped) %>%
-    st_transform(st_crs(freguesias_sf))
-  
-  # Spatially assign each pedestrian accident to a parish (dtmnfr)
-  ped_w <- st_join(ped, freguesias_sf["dtmnfr"], left = FALSE)
-  
-  # Count pedestrian accidents by parish-year
-  ped_by_parish_year <- ped_w %>%
-    st_drop_geometry() %>%
-    count(dtmnfr, Ano, name = "n_ped")
-  
-  # Years present in the dataset
-  years <- sort(unique(ped_by_parish_year$Ano))
-  
-  # Restrict to parishes that actually appear in the pedestrian dataset (AML-only)
-  aml_parishes <- ped_w %>%
-    st_drop_geometry() %>%
-    distinct(dtmnfr)
-  
-  # Complete missing parish-year combinations with zeros
-  ped_by_parish_year <- ped_by_parish_year %>%
-    complete(
-      dtmnfr = aml_parishes$dtmnfr,
-      Ano    = years,
-      fill   = list(n_ped = 0)
-    )
-  
-  # Compute yearly share per parish, then average across years
-  ped_avg_annual_share_parish <- ped_by_parish_year %>%
-    group_by(Ano) %>%
-    mutate(
-      total_year = sum(n_ped),
-      share_year = ifelse(total_year > 0, n_ped / total_year, 0)
-    ) %>%
-    ungroup() %>%
-    group_by(dtmnfr) %>%
-    summarise(avg_annual_share_ped = mean(share_year), .groups = "drop") %>%
-    left_join(
-      freguesias_sf %>% st_drop_geometry() %>% distinct(dtmnfr, freguesia, municipio),
-      by = "dtmnfr"
-    ) %>%
-    mutate(
-      # 0-1 normalization of the average annual share (higher = worse)
-      avg_annual_share_ped_norm = minmax_norm(avg_annual_share_ped),
-      
-      # Optional: inverted score so that higher = better (lower accident share)
-      avg_annual_share_ped_score = invert_01(avg_annual_share_ped_norm)
-    ) %>%
-    select(
-      dtmnfr, freguesia, municipio,
-      avg_annual_share_ped,
-      avg_annual_share_ped_norm,
-      avg_annual_share_ped_score
-    ) %>%
-    arrange(desc(avg_annual_share_ped))
-  
-  # Final result
-  ped_avg_annual_share_parish
-  
-#------------------------------------------------------------------------------------------
+indice_gravidade_freg
+write.xlsx(
+  indice_gravidade_freg,
+  file = "indice_gravidade_por_freguesia.xlsx",
+  rowNames = FALSE
+)
 
-#Cyclist accident rates (taxa anual média)
-  
-  layer_bike <- "ANSR_AML_sinistralidade - VEÍCULO - Velocipedes"
-  
-  # Read bicycle accident points and align CRS
-  bike <- st_read(gpkg_path, layer = layer_bike) %>%
-    st_transform(st_crs(freguesias_sf))
-  
-  # Spatially assign each bicycle accident to a parish (dtmnfr)
-  bike_w <- st_join(bike, freguesias_sf["dtmnfr"], left = FALSE)
-  
-  # Count bicycle accidents by parish-year
-  bike_by_parish_year <- bike_w %>%
-    st_drop_geometry() %>%
-    count(dtmnfr, Ano, name = "n_bike")
-  
-  # Years present in the dataset
-  years <- sort(unique(bike_by_parish_year$Ano))
-  
-  # Restrict to parishes that appear in the bicycle dataset (AML-only)
-  aml_parishes <- bike_w %>%
-    st_drop_geometry() %>%
-    distinct(dtmnfr)
-  
-  # Complete missing parish-year combinations with zeros
-  bike_by_parish_year <- bike_by_parish_year %>%
-    complete(
-      dtmnfr = aml_parishes$dtmnfr,
-      Ano    = years,
-      fill   = list(n_bike = 0)
-    )
-  
-  # Compute yearly share per parish, then average across years, then normalize
-  bike_avg_annual_share_parish <- bike_by_parish_year %>%
-    group_by(Ano) %>%
-    mutate(
-      total_year = sum(n_bike),
-      share_year = ifelse(total_year > 0, n_bike / total_year, 0)
-    ) %>%
-    ungroup() %>%
-    group_by(dtmnfr) %>%
-    summarise(avg_annual_share_bike = mean(share_year), .groups = "drop") %>%
-    left_join(
-      freguesias_sf %>% st_drop_geometry() %>% distinct(dtmnfr, freguesia, municipio),
-      by = "dtmnfr"
-    ) %>%
-    mutate(
-      # 0-1 normalization of the average annual share (higher = worse)
-      avg_annual_share_bike_norm  = minmax_norm(avg_annual_share_bike),
-      
-      # Optional: inverted score so that higher = better (lower accident share)
-      avg_annual_share_bike_score = invert_01(avg_annual_share_bike_norm)
-    ) %>%
-    select(
-      dtmnfr, freguesia, municipio,
-      avg_annual_share_bike,
-      avg_annual_share_bike_norm,
-      avg_annual_share_bike_score
-    ) %>%
-    arrange(desc(avg_annual_share_bike))
-  
-  # Final result
-  bike_avg_annual_share_parish  
-  
-#------------------------------------------------------------------------------------------
-  
-#
-  
-  
+# ==========================================================
+# (X) VM30 / (todas as vítimas) por MODO e por FREGUESIA
+# ==========================================================
+vm30_sobre_todas_vitimas_modo_freg <- ig_freg %>%
+  st_drop_geometry() %>%
+  mutate(
+    # modos (mantém a tua definição)
+    carro     = X_Veículo  > 0,
+    bicicleta = X_Velocípe > 0,
+    pedestre  = grepl("Atropelamento", Natureza),
+    
+    # vítimas (30 dias)
+    VM30 = as.numeric(VM.30d),
+    FG30 = as.numeric(FG.30d),
+    FL30 = as.numeric(FL.30d),
+    
+    # total de vítimas no acidente
+    total_vitimas_30 = VM30 + FG30 + FL30
+  ) %>%
+  group_by(dtmnfr, freguesia) %>%
+  summarise(
+    # --- CARRO ---
+    VM30_carro = sum(VM30[carro], na.rm = TRUE),
+    vitimas_carro = sum(total_vitimas_30[carro], na.rm = TRUE),
+    indice_carro = ifelse(vitimas_carro > 0, VM30_carro / vitimas_carro, NA_real_),
+    
+    # --- BICICLETA ---
+    VM30_bicicleta = sum(VM30[bicicleta], na.rm = TRUE),
+    vitimas_bicicleta = sum(total_vitimas_30[bicicleta], na.rm = TRUE),
+    indice_bicicleta = ifelse(vitimas_bicicleta > 0, VM30_bicicleta / vitimas_bicicleta, NA_real_),
+    
+    # --- PEDESTRE ---
+    VM30_pedestre = sum(VM30[pedestre], na.rm = TRUE),
+    vitimas_pedestre = sum(total_vitimas_30[pedestre], na.rm = TRUE),
+    indice_pedestre = ifelse(vitimas_pedestre > 0, VM30_pedestre / vitimas_pedestre, NA_real_),
+    
+    .groups = "drop"
+  ) %>%
+  arrange(freguesia)
+
+vm30_sobre_todas_vitimas_modo_freg
+write.xlsx(
+  vm30_sobre_todas_vitimas_modo_freg,
+  file = "indice_VM30_sobre_todas_vitimas_por_modo_freguesia.xlsx",
+  rowNames = FALSE
+)
+
+
+#iteração-----------------------------------------------------------------------
+# ==========================================================
+# Índice de gravidade: VM30 / (VM30 + FG30 + FL30)
+# por MODO e por FREGUESIA
+# ==========================================================
+indice_gravidade_classico_modo_freg <- ig_freg %>%
+  st_drop_geometry() %>%
+  mutate(
+    # modos (mantém a tua definição)
+    carro     = X_Veículo  > 0,
+    bicicleta = X_Velocípe > 0,
+    pedestre  = grepl("Atropelamento", Natureza),
+    
+    # vítimas a 30 dias
+    VM30 = as.numeric(VM.30d),
+    FG30 = as.numeric(FG.30d),
+    FL30 = as.numeric(FL.30d),
+    
+    total_vitimas_30 = VM30 + FG30 + FL30
+  ) %>%
+  group_by(dtmnfr, freguesia) %>%
+  summarise(
+    # --- CARRO ---
+    VM30_carro = sum(VM30[carro], na.rm = TRUE),
+    vitimas_carro = sum(total_vitimas_30[carro], na.rm = TRUE),
+    IG_carro = ifelse(vitimas_carro > 0, VM30_carro / vitimas_carro, NA_real_),
+    
+    # --- BICICLETA ---
+    VM30_bicicleta = sum(VM30[bicicleta], na.rm = TRUE),
+    vitimas_bicicleta = sum(total_vitimas_30[bicicleta], na.rm = TRUE),
+    IG_bicicleta = ifelse(vitimas_bicicleta > 0, VM30_bicicleta / vitimas_bicicleta, NA_real_),
+    
+    # --- PEDESTRE ---
+    VM30_pedestre = sum(VM30[pedestre], na.rm = TRUE),
+    vitimas_pedestre = sum(total_vitimas_30[pedestre], na.rm = TRUE),
+    IG_pedestre = ifelse(vitimas_pedestre > 0, VM30_pedestre / vitimas_pedestre, NA_real_),
+    
+    # --- TOTAL (todos os modos juntos) ---
+    VM30_total = sum(VM30, na.rm = TRUE),
+    vitimas_total = sum(total_vitimas_30, na.rm = TRUE),
+    IG_total = ifelse(vitimas_total > 0, VM30_total / vitimas_total, NA_real_),
+    
+    .groups = "drop"
+  ) %>%
+  arrange(freguesia)
+
+indice_gravidade_classico_modo_freg
