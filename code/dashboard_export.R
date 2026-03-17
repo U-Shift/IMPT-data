@@ -64,19 +64,36 @@ impt_pca_car = read.csv(IMPT_URL("results_aggregated/20260312/IMPT_PCA_and_Entro
 
 freguesias_aggregated = freguesias |> 
   left_join(
-    impt_pca_sf |> 
+    impt_pca |> 
       mutate(dtmnfr = as.character(dtmnfr)) |>
-      st_drop_geometry() |> 
-      select(
-        dtmnfr, 
-        starts_with("Accessibility"), 
-        starts_with("Affordability"), 
-        starts_with("Mobility"), 
-        starts_with("Safety"), 
-        starts_with("IMPT")
-      ), 
-    by=c("id"="dtmnfr")
+      st_drop_geometry()
+    ,by=c("id"="dtmnfr")
+  ) |> 
+  left_join(
+    impt_pca_bike |> 
+      mutate(dtmnfr = as.character(dtmnfr)) |>
+      st_drop_geometry()
+    ,by=c("id"="dtmnfr")
+  ) |> 
+  left_join(
+    impt_pca_walk |> 
+      mutate(dtmnfr = as.character(dtmnfr)) |>
+      st_drop_geometry()
+    ,by=c("id"="dtmnfr")
+  ) |> 
+  left_join(
+    impt_pca_pt |> 
+      mutate(dtmnfr = as.character(dtmnfr)) |>
+      st_drop_geometry()
+    ,by=c("id"="dtmnfr")
+  ) |> 
+  left_join(
+    impt_pca_car |> 
+      mutate(dtmnfr = as.character(dtmnfr)) |>
+      st_drop_geometry()
+    ,by=c("id"="dtmnfr")
   )
+names(freguesias_aggregated)
 
 
 # 3.2 Merge with dimensions indicators  -------------------------------------------------
@@ -204,6 +221,14 @@ municipios_aggregated = municipios |>
     by = "id"
   )
 names(municipios_aggregated)
+
+# Normalize data (round all numeric values to 2 digits)
+grid_aggregated = grid_aggregated |> 
+  mutate(across(where(is.numeric), ~ round(., 2)))
+freguesias_aggregated = freguesias_aggregated |> 
+  mutate(across(where(is.numeric), ~ round(., 2)))
+municipios_aggregated = municipios_aggregated |> 
+  mutate(across(where(is.numeric), ~ round(., 2)))
 
 # 4. Export to geojson -------------------------------------------------
 output_dir = "dashboard_data"
