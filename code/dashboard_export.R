@@ -13,43 +13,74 @@ freguesias = freguesias |>
   rename(
     id = dtmnfr,
     name = freguesia,
-    nuts = nuts2
+    region_id = nuts2
   ) |>
   select(-area_ha)
 freguesias
-# mapview(freguesias, zcol="nuts")
+# mapview(freguesias, zcol="group_id")
 
-mun_nuts <- freguesias |>
-  st_drop_geometry() |>
-  group_by(group_id) |>
-  summarise(
-    nuts = first(nuts),
-    municipio = first(municipio),
-    .groups = "drop"
-  ) |>
-  rename(id=group_id)
+# mun_nuts <- freguesias |>
+#   st_drop_geometry() |>
+#   group_by(group_id) |>
+#   summarise(
+#     nuts = first(nuts),
+#     municipio = first(municipio),
+#     .groups = "drop"
+#   ) |>
+#   rename(id=group_id)
 # write.csv(mun_nuts, "useful_data/mun_nuts.csv", row.names = FALSE)
+mun_nuts = read.csv("useful_data/mun_nuts.csv")
 mun_nuts
 municipios <- municipios |>
   left_join(mun_nuts, by = "municipio") |>
-  rename(name=municipio)
+  rename(name=municipio, region_id=nuts)
 municipios
 # mapview(municipios, zcol="nuts")
 freguesias = freguesias |> select(-municipio)
 
 grid_centroids = st_centroid(grid)
-grid_nuts = st_join(grid_centroids, freguesias |> select(id, nuts) |> rename(group_id=id), join = st_within) |>
+grid_nuts = st_join(grid_centroids, freguesias |> select(id, region_id) |> rename(group_id=id), join = st_within) |>
   st_drop_geometry()
 grid_nuts
 grid = grid |>
   left_join(grid_nuts, by = "id") |>
-  filter(!is.na(nuts)) |>
+  filter(!is.na(region_id)) |>
   mutate(name=id)
 grid
 # mapview(grid, zcol="nuts")
 
+# 3.1 Merge with global results  -------------------------------------------------
+# Attention! Run results_visualizer.R before running this section, to have the global results dataframes available in the environment
 
-# 3. Merge with several layers  -------------------------------------------------
+impt_pca = read.csv(IMPT_URL("results_aggregated/IMPT_PCA_and_Entropy_Scores.csv"))
+impt_pca_bike = read.csv(IMPT_URL("results_aggregated/20260312/IMPT_PCA_and_Entropy_Scores_bike.csv")) |>
+  rename_with(~ paste0(., "_bike"), ends_with("_Index"))
+impt_pca_walk = read.csv(IMPT_URL("results_aggregated/20260312/IMPT_PCA_and_Entropy_Scores_walk.csv")) |> 
+  rename_with(~ paste0(., "_walk"), ends_with("_Index"))
+impt_pca_pt = read.csv(IMPT_URL("results_aggregated/20260312/IMPT_PCA_and_Entropy_Scores_pt.csv")) |> 
+  rename_with(~ paste0(., "_pt"), ends_with("_Index"))
+impt_pca_car = read.csv(IMPT_URL("results_aggregated/20260312/IMPT_PCA_and_Entropy_Scores_car.csv")) |> 
+  rename_with(~ paste0(., "_car"), ends_with("_Index"))
+
+freguesias_aggregated = freguesias |> 
+  left_join(
+    impt_pca_sf |> 
+      mutate(dtmnfr = as.character(dtmnfr)) |>
+      st_drop_geometry() |> 
+      select(
+        dtmnfr, 
+        starts_with("Accessibility"), 
+        starts_with("Affordability"), 
+        starts_with("Mobility"), 
+        starts_with("Safety"), 
+        starts_with("IMPT")
+      ), 
+    by=c("id"="dtmnfr")
+  )
+
+
+# 3.2 Merge with dimensions indicators  -------------------------------------------------
+# Attention! Run results.R before running this section, to have the indicators dataframes available in the environment
 grid_original = grid
 grid_original
 # grid = grid_original
@@ -89,7 +120,7 @@ grid_aggregated = grid |>
   )
 names(grid_aggregated)
 
-freguesias_aggregated = freguesias |> 
+freguesias_aggregated = freguesias_aggregated |> 
   left_join(
     freguesia_accessibility |> 
       st_drop_geometry() |> 
@@ -173,7 +204,6 @@ municipios_aggregated = municipios |>
     by = "id"
   )
 names(municipios_aggregated)
-
 
 # 4. Export to geojson -------------------------------------------------
 output_dir = "dashboard_data"
