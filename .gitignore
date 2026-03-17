@@ -54,3 +54,8 @@ rsconnect/
 *.html
 
 data/
+
+
+*.gpkg
+*.xlsx
+raw/*
