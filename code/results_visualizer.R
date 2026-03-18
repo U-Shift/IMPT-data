@@ -2,10 +2,10 @@ library(mapview)
 freguesias # Read from data_load.R
 
 # IMPT Equal Weights
-impt_ew = read.csv(IMPT_URL("results_aggregated/IMPT_Equal_Weights.csv"))
+impt_ew = read.csv(IMPT_URL("results_aggregated/20260311/IMPT_Equal_Weights.csv"))
 
 # IMPT PCA and Entropy scores
-impt_pca = read.csv(IMPT_URL("results_aggregated/IMPT_PCA_and_Entropy_Scores.csv"))
+impt_pca = read.csv(IMPT_URL("results_aggregated/20260311/IMPT_PCA_and_Entropy_Scores.csv"))
 impt_pca_sf = freguesias |>
   select(-nuts2, -area_ha) |>
   mutate(dtmnfr = as.integer(dtmnfr)) |>

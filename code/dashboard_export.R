@@ -52,7 +52,7 @@ grid
 # 3.1 Merge with global results  -------------------------------------------------
 # Attention! Run results_visualizer.R before running this section, to have the global results dataframes available in the environment
 
-impt_pca = read.csv(IMPT_URL("results_aggregated/IMPT_PCA_and_Entropy_Scores.csv"))
+impt_pca = read.csv(IMPT_URL("results_aggregated/20260311/IMPT_PCA_and_Entropy_Scores.csv"))
 impt_pca_bike = read.csv(IMPT_URL("results_aggregated/20260312/IMPT_PCA_and_Entropy_Scores_bike.csv")) |>
   rename_with(~ paste0(., "_bike"), ends_with("_Index"))
 impt_pca_walk = read.csv(IMPT_URL("results_aggregated/20260312/IMPT_PCA_and_Entropy_Scores_walk.csv")) |> 
