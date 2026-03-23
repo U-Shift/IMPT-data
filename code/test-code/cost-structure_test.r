@@ -77,6 +77,10 @@ fare_single$fares_per_type <- fare_single$fares_per_type |>
         allow_same_route_transfer = TRUE
     )
 
+# save fare rules to file
+r5r::write_fare_structure(fare_single, file_path = "data/r5r/fares_single.zip")
+fare_single <- r5r::read_fare_structure("data/r5r/fares_single.zip")
+
 
 ### Scenario B: Monthly Pass
 # Calculation based on operator data:
@@ -102,6 +106,10 @@ fare_pass$fares_per_type <- fare_pass$fares_per_type |>
         allow_same_route_transfer = TRUE
     )
 
+# save fare rules to file
+r5r::write_fare_structure(fare_pass, file_path = "data/r5r/fares_pass.zip")
+fare_pass <- r5r::read_fare_structure("data/r5r/fares_pass.zip")
+
 
 ### Note on Non-PT mode costs (Car, Bike, Walk)
 # r5r's setup_fare_structure only applies to transit (PT) legs.
@@ -111,12 +119,12 @@ fare_pass$fares_per_type <- fare_pass$fares_per_type |>
 # EXAMPLE using detailed_itineraries():
 #
 # itineraries <- detailed_itineraries(...)
-# itineraries_with_cost <- itineraries |> 
+# itineraries_with_cost <- itineraries |>
 #   mutate(
 #     monetary_cost = case_when(
 #       mode == "CAR" ~ (distance / 1000) * 0.39 + (duration / 60) * 2 + 2, # distance(km) * 0.39€ + time(h) * 2€ + 2€ toll
-#       mode == "BICYCLE" ~ 1,      # 1€ flat fee (e.g. GIRA bikeshare)
-#       mode == "WALK" ~ 0.5,       # 0.5€ flat cost (value of effort/shoe wear)
+#       mode == "BICYCLE" ~ 0.25,      # 0.25€ flat fee (e.g. GIRA bikeshare, maintnance)
+#       mode == "WALK" ~ 0.1,       # 0.1€ flat cost (value of effort/shoe wear)
 #       TRUE ~ as.numeric(fare)     # for PT modes, r5r will calculate the fare
 #     )
 #   )
