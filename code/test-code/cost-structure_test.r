@@ -53,11 +53,14 @@ r5r_lisboa <- r5r::build_network(data_path = "data/r5r/")
 transit_net <- transit_network_to_sf(r5r_lisboa)
 
 
-### Scenario A: Single tickets (Prepaid/Zapping)
-# Based on the data, prepaid tickets cost ~1.72€ and allow 60-min transfers limits.
-# We'll set 1.72€ as the base public transport fare with no added cost for transfers.
+### Scenario A: Single tickets (Prepaid/On-board)
+# Calculation based on Carris Lisbon Data:
+# - Total single ticket validations = 17,424,000
+# - Total single ticket revenue = 33,278(k) € = 33,278,000 €
+# - Average cost per single ticket = 33,278,000 / 17,424,000 = ~1.91 €
+# (While Zapping is 1.72-1.90, blending the 10.7% on-board revenue at 2.30€ puts the overall average at 1.91€)
 fare_single <- setup_fare_structure(r5r_lisboa,
-    base_fare = 1.72,
+    base_fare = 1.91,
     by = "MODE"
 )
 
@@ -65,7 +68,7 @@ fare_single <- setup_fare_structure(r5r_lisboa,
 fare_single$fares_per_transfer <- fare_single$fares_per_transfer |>
     mutate(fare = 0) # No extra cost for transferring
 
-# Set transfer time to 60 minutes (this matches Zapping for Carris & Metro)
+# Set transfer time to 60 minutes
 fare_single$transfer_time_allowance <- 60
 
 fare_single$fares_per_type <- fare_single$fares_per_type |>
@@ -76,15 +79,18 @@ fare_single$fares_per_type <- fare_single$fares_per_type |>
 
 
 ### Scenario B: Monthly Pass
-# For monthly pass holders, calculating the apportioned average cost per journey.
-# Assuming a 40€ pass and an average of ~44 trips per month, the apportioned 
-# cost per journey is approximately 0.90€. We will use this as the base fare.
+# Calculation based on operator data:
+# 1. Total Pass Revenue: (5063510 * 40€) + (887190 * 30€) + (1103782 * 20€) + (243784 * 80€) + (3425013 * 0€) = 270,734,460 €
+# 2. Total Pass Recharges (months): 10,723,279
+# 3. Average Paid per Pass Month: 270,734,460 € / 10,723,279 = ~25.25 €
+# 4. Approximating 44 journeys/month (2 trips a day * 22 working days), the cost per journey = 25.25 € / 44 = ~0.57 €
+# (Note: the 3.4M free young passes significantly decrease the base average cost paid per user).
 fare_pass <- setup_fare_structure(r5r_lisboa,
-    base_fare = 0.90,
+    base_fare = 0.57,
     by = "MODE"
 )
 
-# Transfers within the journey are considered part of the same 0.90€ average cost
+# Transfers within the journey are considered part of the same 0.57€ average cost
 fare_pass$fares_per_transfer <- fare_pass$fares_per_transfer |>
     mutate(fare = 0)
 
