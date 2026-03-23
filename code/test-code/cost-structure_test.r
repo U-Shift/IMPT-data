@@ -49,8 +49,24 @@ library(sf)
 library(tidyr)
 
 # Load r5r Lisbon data, that includes all the GTFS
-r5r_lisboa <- r5r::build_network(data_path = "data/r5r/")
-transit_net <- transit_network_to_sf(r5r_lisboa)
+# r5r
+r5r_location = IMPT_URL("/geo/r5r/")
+# Download files for network previously built to temp dir, for local use
+r5r_temp_dir = tempdir()
+download_remote_file(r5r_location, "network.dat", r5r_temp_dir)
+download_remote_file(r5r_location, "network_settings.json", r5r_temp_dir)
+download_remote_file(r5r_location, "GLPS_DEM_COPERNICUS_30_DEM_2026.tif", r5r_temp_dir)
+# List files in r5r_temp_dir
+list.files(r5r_temp_dir)
+
+# r5r_network = r5r::build_network(r5r_location, verbose = FALSE)
+r5r_network = r5r::build_network(r5r_temp_dir, verbose = FALSE)
+
+# Attention! Stop here. Run the code below only when you have finished using r5r, to free up memory :)
+r5r::stop_r5(r5r_network)
+rJava::.jgc(R.gc = TRUE)
+
+# transit_net <- transit_network_to_sf(r5r_network)
 
 
 ### Scenario A: Single tickets (Prepaid/On-board)
@@ -59,7 +75,7 @@ transit_net <- transit_network_to_sf(r5r_lisboa)
 # - Total single ticket revenue = 33,278(k) € = 33,278,000 €
 # - Average cost per single ticket = 33,278,000 / 17,424,000 = ~1.91 €
 # (While Zapping is 1.72-1.90, blending the 10.7% on-board revenue at 2.30€ puts the overall average at 1.91€)
-fare_single <- setup_fare_structure(r5r_lisboa,
+fare_single <- setup_fare_structure(r5r_network,
     base_fare = 1.91,
     by = "MODE"
 )
@@ -78,8 +94,36 @@ fare_single$fares_per_type <- fare_single$fares_per_type |>
     )
 
 # save fare rules to file
-r5r::write_fare_structure(fare_single, file_path = "data/r5r/fares_single.zip")
-fare_single <- r5r::read_fare_structure("data/r5r/fares_single.zip")
+r5r::write_fare_structure(fare_single, file_path = IMPT_URL("geo/r5r/fares_single.zip"))
+fare_stucture_single_file = tempfile(fileext = ".zip")
+download.file(IMPT_URL("geo/r5r/fares_single.zip"), fare_stucture_single_file, mode = "wb")
+fare_single <- r5r::read_fare_structure(fare_stucture_single_file)
+
+### Scenario A2: Single tickets (Prepaid/On-board) without free transfer
+# Same assumptions as previous
+fare_single_2 <- setup_fare_structure(r5r_network,
+                                    base_fare = 1.91,
+                                    by = "MODE"
+)
+
+# Transfers within PT are included in the 60 min window (0 extra cost)
+fare_single_2$fares_per_transfer <- fare_single_2$fares_per_transfer |>
+  mutate(fare = 1.91) # No extra cost for transferring
+
+# Set transfer time to 60 minutes
+fare_single_2$transfer_time_allowance <- 60
+
+fare_single_2$fares_per_type <- fare_single_2$fares_per_type |>
+  mutate(
+    unlimited_transfers = case_when(type %in% c("SUBWAY", "TRAM") ~ TRUE, TRUE ~ FALSE), # Allow unlimited transfers for subway and tram, but not for bus and ferry, to reflect the fact that bus single tickets are only valid for 1 ride, while subway/tram are valid for 60min with unlimited transfers.
+    allow_same_route_transfer = TRUE
+  )
+
+# save fare rules to file
+r5r::write_fare_structure(fare_single_2, file_path = IMPT_URL("geo/r5r/fares_single_2.zip"))
+fare_stucture_single_2_file = tempfile(fileext = ".zip")
+download.file(IMPT_URL("geo/r5r/fares_single.zip"), fare_stucture_single_2_file, mode = "wb")
+fare_single_2 <- r5r::read_fare_structure(fare_stucture_single_2_file)
 
 
 ### Scenario B: Monthly Pass
@@ -89,7 +133,7 @@ fare_single <- r5r::read_fare_structure("data/r5r/fares_single.zip")
 # 3. Average Paid per Pass Month: 270,734,460 € / 10,723,279 = ~25.25 €
 # 4. Approximating 44 journeys/month (2 trips a day * 22 working days), the cost per journey = 25.25 € / 44 = ~0.57 €
 # (Note: the 3.4M free young passes significantly decrease the base average cost paid per user).
-fare_pass <- setup_fare_structure(r5r_lisboa,
+fare_pass <- setup_fare_structure(r5r_network,
     base_fare = 0.57,
     by = "MODE"
 )
@@ -107,9 +151,10 @@ fare_pass$fares_per_type <- fare_pass$fares_per_type |>
     )
 
 # save fare rules to file
-r5r::write_fare_structure(fare_pass, file_path = "data/r5r/fares_pass.zip")
-fare_pass <- r5r::read_fare_structure("data/r5r/fares_pass.zip")
-
+r5r::write_fare_structure(fare_pass, file_path = IMPT_URL("geo/r5r/fares_pass.zip"))
+fare_stucture_pass_file = tempfile(fileext = ".zip")
+download.file(IMPT_URL("geo/r5r/fares_pass.zip"), fare_stucture_pass_file, mode = "wb")
+fare_pass <- r5r::read_fare_structure(fare_stucture_pass_file)
 
 ### Note on Non-PT mode costs (Car, Bike, Walk)
 # r5r's setup_fare_structure only applies to transit (PT) legs.

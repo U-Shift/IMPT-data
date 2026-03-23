@@ -25,6 +25,19 @@ library(tidyverse)
 # load network, variable r5r_network using data_load.R
 r5r_network
 
+# load fare structures for PT
+fare_stucture_pass_file = tempfile(fileext = ".zip")
+download.file(IMPT_URL("geo/r5r/fares_pass.zip"), fare_stucture_pass_file, mode = "wb")
+fare_pass <- r5r::read_fare_structure(fare_stucture_pass_file)
+
+fare_stucture_single_file = tempfile(fileext = ".zip")
+download.file(IMPT_URL("geo/r5r/fares_single.zip"), fare_stucture_single_file, mode = "wb")
+fare_single <- r5r::read_fare_structure(fare_stucture_single_file)
+
+fare_stucture_single_2_file = tempfile(fileext = ".zip")
+download.file(IMPT_URL("geo/r5r/fares_single.zip"), fare_stucture_single_2_file, mode = "wb")
+fare_single_2 <- r5r::read_fare_structure(fare_stucture_single_2_file)
+
 # set r5r parameters
 # root_folder = "/data/IMPT"
 root_folder = "data" # Set to "/data/IMPT/ when running at server.ushift.pt, or "data" when running locally
@@ -64,7 +77,7 @@ max_rides_5 = 5 # 4 transfers
 # run for different modes -------------------------------------------------
 
 # main()
-folder_name = sprintf("%s/ttm/ttm_%s", root_folder, tolower(grid_name))
+folder_name = sprintf("%s/ttm/ttm_%s_fare", root_folder, tolower(grid_name))
 if(!dir.exists(folder_name)) {
   dir.create(folder_name, recursive = TRUE)
 }
@@ -85,9 +98,9 @@ for (mode in c("TRANSIT")) { # "CAR", "BICYCLE", "WALK",
     
     # > Transit has multiple departure times
     departures = c(departure_datetime_HP)
-    # if (mode == "TRANSIT") {
-    #   departures = c(departure_datetime_HP, departure_datetime_FHP, departure_datetime_night)
-    # }
+    if (mode == "TRANSIT") {
+      departures = c(departure_datetime_HP, departure_datetime_FHP, departure_datetime_night)
+    }
     for (departure_datetime in departures) {
       departure_datetime = as.POSIXct(departure_datetime, origin_tz = "Europe/Lisbon")
       args$departure_datetime = departure_datetime
@@ -97,35 +110,55 @@ for (mode in c("TRANSIT")) { # "CAR", "BICYCLE", "WALK",
       }
       # > Transit has multiple max rides
       max_rides = c(NA)
+      fare_structures = c(NA)
+      max_fares = c(NA)
       if (mode == "TRANSIT") {
         args$mode_egress = mode_egress
         args$max_walk_time = max_walk_time
-        max_rides = c(max_rides_1)
+        max_rides = c(max_rides_1, max_rides_2, max_rides_3, max_rides_4, max_rides_5)
+        fare_structures = list("single" = fare_single, "pass" = fare_pass, "single_2" = fare_single_2)
+        max_fares = c(2,5,10)
       }
       
       for (mr in max_rides) {
-        if (!is.na(mr)) {
-          args$max_rides = mr
+        for (fs in names(fare_structures)) {
+          for (mf in max_fares) {
+            if (!is.na(mf)) {
+              args$max_fare = mf
+            }
+            if (!is.na(fs)) {
+              args$fare_structure = fare_structures[[fs]]
+            }
+            if (!is.na(mr)) {
+              args$max_rides = mr
+            }
+            
+            output_csv = sprintf("%s/ttm_%s_%dmin_%s", folder_name, tolower(mode), max_trip_duration, strftime(departure_datetime, "%Y%m%d%H%M", tz = "Europe/Lisbon"))
+            if (!is.na(mr)) {
+              output_csv = sprintf("%s_%dtransfers", output_csv, mr-1)
+            }
+            if (!is.na(fs)) {
+              output_csv = sprintf("%s_%s_fare", output_csv, fs)
+            }
+            if (!is.na(mf)) {
+              output_csv = sprintf("%s_maxfare%d", output_csv, mf)
+            }
+            if(!dir.exists(output_csv)) {
+              dir.create(output_csv, recursive = TRUE)
+            }
+            
+            args$output_dir = output_csv
+            message("Running ttm... Storing output to ", output_csv)
+            do.call(travel_time_matrix, args)
+            message("Done :) Next mode...")
+          }
         }
-        
-        output_csv = sprintf("%s/ttm_%s_%dmin_%s", folder_name, tolower(mode), max_trip_duration, strftime(departure_datetime, "%Y%m%d%H%M", tz = "Europe/Lisbon"))
-        if (!is.na(mr)) {
-          output_csv = sprintf("%s_%dtransfers", output_csv, mr-1)
-        }
-        if(!dir.exists(output_csv)) {
-          dir.create(output_csv, recursive = TRUE)
-        }
-        
-        args$output_dir = output_csv
-        message("Running ttm... Storing output to ", output_csv)
-        do.call(travel_time_matrix, args)
-        message("Done :) Next mode...")
       }
     }
   }
 }
 
-# aggregate csvs into single rds --------------------------------------------------------------
+# aggregate CSVs into single rds --------------------------------------------------------------
 
 for (folder in list.dirs(folder_name, recursive = FALSE)) {
   message("Aggregating CSVs in folder: ", folder)
