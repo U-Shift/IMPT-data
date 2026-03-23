@@ -179,7 +179,52 @@ for (folder in list.dirs(folder_name, recursive = FALSE)) {
   message("Finished aggregating and cleaning up for folder: ", folder)
 }
 
+# translate ttm into cost matrixes for PT --------------------------------------------------------------
+
+## For transit, for each max_trip_duration, departure_datetime and fare type,
+## left join progressively higher number of transfers to obtain travel cost matrix
+
+max_trip_durations = c(60,120)
+departure_datetimes = c(departure_datetime_HP, departure_datetime_FHP, departure_datetime_night)
+max_rides = c(max_rides_1, max_rides_2, max_rides_3, max_rides_4, max_rides_5)
+
+fare_structures = list("single" = fare_single, "pass" = fare_pass, "single_2" = fare_single_2)
+max_fares = c(2,5,10)
+
+
+for (max_trip_duration in max_trip_durations) {
+  for (departure_datetime in departure_datetimes) {
+    for (mr in max_rides) {
+      # Common attributes
+      # ttm_transit_60min_202602040800_0transfers.rds
+      
+      # Fare variation
+      for (fs in names(fare_structures)) {
+        ttm_with_cost = NA
+        fare_structure = fare_structures[[fs]]
+        for(mf in max_fares) {
+          output_rds = sprintf("%s/ttm_%s_%dmin_%s_%dtransfers_%s_fare_maxfare%d.rds", 
+                         folder_name, 
+                         tolower(mode), max_trip_duration, strftime(departure_datetime, "%Y%m%d%H%M", tz = "Europe/Lisbon"),
+                         mr-1, fs, mf
+                       )
+          ttm = readRDS(output_rds) |> mutate(cost=mf)
+          if(is.na(ttm_with_cost)) {
+            ttm_with_cost = ttm 
+          } else {
+            # TODO!
+          }
+        }
+      }
+    }
+  }
+}
+
+
 # stop r5r ----------------------------------------------------------------
 r5r::stop_r5(r5r_network)
 rJava::.jgc(R.gc = TRUE)
+
+
+
 
