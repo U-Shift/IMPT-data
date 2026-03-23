@@ -446,7 +446,14 @@ table(pois$group)
 
 # save and load
 st_write(pois, "/data/IMPT/geo/pois_osm2024.gpkg", delete_dsn = TRUE)
-pois = st_read("/data/IMPT/geo/pois_osm2024.gpkg")
+pois = st_read(IMPT_URL("/geo/pois_osm2024.gpkg"))
+View(data.frame(table(pois$type|> as.factor() |> forcats::fct_infreq())))
+
+# Filter Var1 contains "market"
+data.frame(table(pois$type|> as.factor() |> forcats::fct_infreq())) |> filter(grepl("market", Var1))
+table(pois$group)
+table((pois |> filter(group=="amenity"))$type|> as.factor() |> forcats::fct_infreq())
+View(data.frame(table((pois |> filter(group=="shop"))$type|> as.factor() |> forcats::fct_infreq())))
 
 pois_health = read.csv("https://github.com/carrismetropolitana/datasets/raw/refs/heads/latest/facilities/health_centers/health_centers.csv") |>
   filter(
@@ -466,14 +473,42 @@ pois_health = read.csv("https://github.com/carrismetropolitana/datasets/raw/refs
     )
   ) |>
   st_as_sf(coords = c("lon", "lat"), crs = 4326)
-
 mapview(pois_health, zcol="type")
+st_write(pois_health, IMPT_URL("/pois/healthcare.gpkg"), delete_dsn = TRUE)
 
-st_write(pois_health, "/data/IMPT/pois/healthcare.gpkg", delete_dsn = TRUE)
+pois_schools = read.csv("https://github.com/carrismetropolitana/datasets/raw/refs/heads/latest/facilities/schools/schools.csv") |>
+  mutate(
+    type = case_when(
+      pre_school == 1 ~ "Pre-school",
+      basic_1 == 1 ~ "1st Cycle",
+      basic_2 == 1 ~ "2nd Cycle",
+      basic_3 == 1 ~ "3rd Cycle",
+      high_school == 1 ~ "High School",
+      professional == 1 ~ "High School",
+      university == 1 ~ "University",
+      TRUE ~ "Other"
+    )
+  ) |>
+  st_as_sf(coords = c("lon", "lat"), crs = 4326)
+mapview(pois_schools, zcol="type")
+st_write(pois_schools, IMPT_URL("/pois/schools.gpkg"), delete_dsn = TRUE)
 
-# TODO!
-# Pharmacies: Get data source 
-# Schools: Use https://github.com/carrismetropolitana/datasets/blob/latest/facilities/schools/schools.csv
+pois_green = pois |> filter(group == "leisure" & type %in% c("park", "garden")) # include playgrouds?
+mapview(pois_green, zcol="type")
+st_write(pois_green, IMPT_URL("/pois/green.gpkg"), delete_dsn = TRUE)
+
+pois_supermarket= pois |> filter(type == "supermarket" | type == "convenience")
+mapview(pois_supermarket, zcol="type")
+st_write(pois_supermarket, IMPT_URL("/pois/supermarket.gpkg"), delete_dsn = TRUE)
+
+pois_recreation = pois |> filter(type %in% c(
+  # amenity
+  "library", "theatre", "cinema", "restaurant", "cafe", "bar", "pub",
+  # sport
+  "pitch", "fitness_station", "swimming_pool", "sports_centre", "fitness_center"
+))
+mapview(pois_recreation, zcol="type")
+st_write(pois_recreation, IMPT_URL("/pois/recreation.gpkg"), delete_dsn = TRUE)
 
 # GTFS data ---------------------------------------------------------------
 
@@ -581,6 +616,93 @@ for(i in 1:nrow(gtfs_db)){
   tidytransit::write_gtfs(gtfs_imported, paste0("/data/IMPT/geo/r5r/gtfs_", gsub(" ", "_", tolower(operator)), ".zip"))
 }
 
+# Get all AML PT stops 
+library(tidytransit)
+gtfs_paths <- list.files(IMPT_URL("/gtfs/processed"), pattern="\\.zip$" , full.names = TRUE)
+pois_transit = data.frame()
+pois_transit_headways = data.frame()
+for (i in gtfs_paths) {
+  message(sprintf("Processing GTFS %s...", i))
+  gtfs_original <- read_gtfs(i)
+  
+  gtfs_weekend = filter_feed_by_date(gtfs_original, "2026-02-08")
+  summary(gtfs_weekend)
+  stops_frequency_weekend = get_stop_frequency(gtfs_weekend, start_time="10:00:00", end_time="11:00:00", service_ids=unique(gtfs_weekend$calendar$service_id)) |>
+    group_by(stop_id) |>
+    summarise(frequency_weekend = sum(n_departures))
+  stop_headway_weekend = get_stop_frequency(gtfs_weekend, start_time="10:00:00", end_time="11:00:00", service_ids=unique(gtfs_weekend$calendar$service_id)) |>
+    group_by(stop_id) |> # When multiple stop_id, stick with mean_headway for the one with more n_departures
+    summarise(headway_weekend = mean_headway[which.max(n_departures)])
+  # View(
+  #   GTFShift::get_route_frequency_hourly(gtfs_weekend, date="2026-02-08") |>
+  #   st_drop_geometry() |>
+  #   group_by(hour) |>
+  #   summarize(frequency=sum(frequency)) |>
+  #   arrange(hour)
+  # )
+  
+  
+  gtfs = filter_feed_by_date(gtfs_original, "2026-02-04")
+  summary(gtfs)
+  # View(
+  #   GTFShift::get_route_frequency_hourly(gtfs, date="2026-02-04") |>
+  #     st_drop_geometry() |>
+  #     group_by(hour) |>
+  #     summarize(frequency=sum(frequency)) |>
+  #     arrange(hour)
+  # )
+  stops_sf <- stops_as_sf(gtfs$stops) |> select(stop_id, geometry)
+  stops_sf$agency = gtfs$agency$agency_name[[1]]
+  pois_transit = rbind(pois_transit, stops_sf)
+  
+  stops_frequency_peak = get_stop_frequency(gtfs, start_time="08:00:00", end_time="09:00:00", service_ids=unique(gtfs$calendar$service_id)) |>
+    group_by(stop_id) |>
+    summarise(frequency_peak = sum(n_departures))
+  stops_frequency_night = get_stop_frequency(gtfs, start_time="22:00:00", end_time="23:00:00", service_ids=unique(gtfs$calendar$service_id)) |>
+    group_by(stop_id) |>
+    summarise(frequency_night = sum(n_departures))
+  stops_frequency_day = get_stop_frequency(gtfs, start_time="00:00:00", end_time="48:00:00", service_ids=unique(gtfs$calendar$service_id)) |>
+    group_by(stop_id) |>
+    summarise(frequency_day = sum(n_departures))
+  
+  stop_headway_peak = get_stop_frequency(gtfs, start_time="08:00:00", end_time="09:00:00", service_ids=unique(gtfs$calendar$service_id)) |>
+    group_by(stop_id) |> # When multiple stop_id, stick with mean_headway for the one with more n_departures
+    summarise(headway_peak = mean_headway[which.max(n_departures)])
+  stop_headway_night = get_stop_frequency(gtfs, start_time="22:00:00", end_time="23:00:00", service_ids=unique(gtfs$calendar$service_id)) |>
+    group_by(stop_id) |> # When multiple stop_id, stick with mean_headway for the one with more n_departures
+    summarise(headway_night = mean_headway[which.max(n_departures)])
+  stop_headway_day = get_stop_frequency(gtfs, start_time="00:00:00", end_time="23:59:59", service_ids=unique(gtfs$calendar$service_id)) |>
+    group_by(stop_id) |> # When multiple stop_id, stick with mean_headway for the one with more n_departures
+    summarise(headway_day = mean_headway[which.max(n_departures)])
+  
+  stops_sf = stops_sf |>
+    left_join(stops_frequency_peak, by="stop_id") |>
+    left_join(stops_frequency_day, by="stop_id") |> 
+    left_join(stop_headway_peak, by="stop_id") |> 
+    left_join(stop_headway_day, by="stop_id") |> 
+    left_join(stops_frequency_weekend, by="stop_id") |>
+    left_join(stop_headway_weekend, by="stop_id") |>
+    left_join(stops_frequency_night, by="stop_id") |>
+    left_join(stop_headway_night, by="stop_id")
+    
+  pois_transit_headways = rbind(pois_transit_headways, stops_sf)
+}
+# Filter inside limit_bbox
+pois_transit = pois_transit |> st_filter(limit_bbox)
+table(pois_transit$agency)
+summary(pois_transit)
+# mapview(pois_transit, zcol="agency")
+st_write(pois_transit, IMPT_URL("/pois/transit_stops.gpkg"), delete_dsn = TRUE)
+
+pois_transit_headways = pois_transit_headways |> st_filter(limit_bbox)
+table(pois_transit_headways$agency)
+summary(pois_transit_headways)
+st_write(pois_transit_headways, IMPT_URL("/mobility_transit/transit_stops_headways.gpkg"), delete_dsn = TRUE)
+# mapview(pois_transit, zcol="headway_peak")
+# mapview(pois_transit, zcol="headway_day")
+# table((pois_transit |> filter(is.na(frequency_day)))$agency)
+# table((pois_transit |> filter(is.na(frequency_peak)))$agency)
+# View(pois_transit |> filter(is.na(frequency_day)))
 
 # DEM elevation -----------------------------------------------------------
 
@@ -697,8 +819,8 @@ library(h3jsr)
 # 
 # Resolution: https://h3geo.org/docs/core-library/restable/
 # h3_res = 10 # 150m diameter
-# h3_res = 9 # 400m diameter
-h3_res = 8 # 1060m diameter - use for the MVP
+h3_res = 9 # 400m diameter
+# h3_res = 8 # 1060m diameter - use for the MVP
 
 GRID_h3 = limit |>
   polygon_to_cells(res = h3_res, simple = FALSE)
@@ -713,11 +835,11 @@ h3_index = GRID_h3 |> st_drop_geometry() # save h3_address for later
 
 mapview(GRID_h3)
 
-st_write(GRID_h3 |> select(id), "/data/IMPT/geo/grelha_h3_r8.gpkg", delete_dsn = TRUE)
-saveRDS(h3_index, "/data/IMPT/geo/grelha_h3_r8_index.Rds")
-# st_write(GRID_h3 |> select(id), "/data/IMPT/geo/grelha_h3_r9.gpkg", delete_dsn = TRUE)
-# saveRDS(h3_index, "/data/IMPT/geo/grelha_h3_r9_index.Rds")
-GRID_h3_9 = st_read("/data/IMPT/geo/grelha_h3_r9.gpkg")
+# st_write(GRID_h3 |> select(id), "/data/IMPT/geo/grelha_h3_r8.gpkg", delete_dsn = TRUE)
+# saveRDS(h3_index, "/data/IMPT/geo/grelha_h3_r8_index.Rds")
+st_write(GRID_h3 |> select(id), "/data/IMPT/geo/grelha_h3_r9.gpkg", delete_dsn = TRUE)
+saveRDS(h3_index, "/data/IMPT/geo/grelha_h3_r9_index.Rds")
+
 
 
 # # Hex manual
@@ -744,5 +866,6 @@ GRID_h3_9 = st_read("/data/IMPT/geo/grelha_h3_r9.gpkg")
 GRID_h3_centroids = st_centroid(GRID_h3) |> 	
   select(id, h3_address)
 
-st_write(GRID_h3_centroids, "/data/IMPT/geo/grelha_h3_r8_centroids.gpkg", delete_dsn = TRUE)
+
+# st_write(GRID_h3_centroids, "/data/IMPT/geo/grelha_h3_r8_centroids.gpkg", delete_dsn = TRUE)
 # st_write(GRID_h3_centroids, "/data/IMPT/geo/grelha_h3_r9_centroids.gpkg", delete_dsn = TRUE)

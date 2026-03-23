@@ -1,11 +1,15 @@
 library(tidyverse)
 library(sf)
+# re-install odjitter in cargo (v0.2.1) to consider weitghs for buildings, in terminal:
+# cargo install --git https://github.com/itsleeds/odjitter
+# remotes::install_github("itsleeds/odjitter", subdir = "r")
 library(odjitter)
 library(stplanr)
 
 
 # load imob data
-IMOB = readRDS("data/IMOB_trips.Rds")
+# IMOB = readRDS("data/IMOB_trips.Rds")
+IMOB = readRDS("/data/IMPT/trips/IMOB_trips.Rds")
 names(IMOB)
 
 table(IMOB$D0500_Dsg)
@@ -112,19 +116,45 @@ OD_jobs = OD_all_new |>
 sum(OD_jobs$trips) #839142
 summary(OD_jobs$trips) #median 30 or 43
 
-# jitter in freguesias
+# jitter in freguesias - choose road network or builgings, not both!
 
-od_jobs_jittered = odjitter::jitter(  
+# with road network
+road_network = st_read("/data/IMPT/geo/IMPT_Road_network.gpkg")
+
+od_jobs_jittered = odjitter::jitter(
   od = OD_jobs,
   zones = freguesias,
-  subpoints = road_network, 
+  subpoints = road_network,
   disaggregation_key = "trips",
-  disaggregation_threshold = 50
+  disaggregation_threshold = 50,
+  rng_seed = 42
 )
+
+
+# with buildings, weighted by construction area (ABC)
+buildings = st_read("/data/IMPT/pois/lisbon_metro_buildings_height.geojson")
+buildings = buildings |>
+  mutate(volume = height * footprint_m2) |>  # volume
+  rename(weight = volume)
+
+
+od_jobs_jittered_buildings = odjitter::jitter(
+  od = OD_jobs,
+  zones = freguesias,
+  subpoints_origins = buildings,
+  subpoints_destinations = buildings,
+  weight_key_destinations = "weight",
+  disaggregation_key = "trips",
+  disaggregation_threshold = 50,
+  rng_seed = 42 # deterministic randomization
+)
+od_jobs_jittered = od_jobs_jittered_buildings
+
 
 # add an id to the jittered pairs, so we can join later
 od_jobs_jittered_id = od_jobs_jittered
 od_jobs_jittered_id$id = 1:nrow(od_jobs_jittered_id)
+sf::st_write(od_jobs_jittered_id, "/data/IMPT/trips/od_jobs_jt50_buildings.gpkg", delete_dsn = TRUE)
 
 
 #with stplanr
@@ -148,15 +178,22 @@ od_jobs_jittered_DE_geo = st_as_sf(od_jobs_jittered_DE,
                                          coords = c("lon", "lat"),
                                          crs = 4326)
 
+sf::st_write(od_jobs_jittered_OR_geo, "/data/IMPT/trips/od_jobs_jt50_buildings_OR.gpkg", delete_dsn = TRUE)
+sf::st_write(od_jobs_jittered_DE_geo, "/data/IMPT/trips/od_jobs_jt50_buildings_DE.gpkg", delete_dsn = TRUE)
 
 ## POIS
 
 pois_jobs = od_jobs_jittered_DE_geo |>
   left_join(od_jobs_jittered_id |> st_drop_geometry() |> select(id, trips))
 
-mapview::mapview(pois_jobs)
+pois_jobs_check = pois_jobs |> 
+  group_by(geometry) |> 
+  summarize(trips = sum(trips))
 
-st_write(pois_jobs, "data/pois/pois_jobs_imob_jt50.gpkg", delete_dsn = TRUE)
+mapview::mapview(pois_jobs_check, zcol = "trips")
+
+# st_write(pois_jobs, "data/pois/pois_jobs_imob_jt50.gpkg", delete_dsn = TRUE)
+# st_write(pois_jobs, "/data/IMPT/pois/pois_jobs_imob_jt50_buildings.gpkg", delete_dsn = TRUE)
 
 
 ## Save OD mode and trip purpose for other ttm statistics?

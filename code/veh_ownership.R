@@ -198,15 +198,15 @@ vehicles_hh <- vehicles_hh  |>
 
 # now replace the dicofres new
 
-vehicles_by_dicofre_new <- vehicles_hh %>%
+vehicles_by_dicofre_new <- vehicles_hh |>
   # join with conversion table on old dicofre
-  left_join(conversion_dicofre_weight, by = c("dicofre_home" = "dtmnfr16")) %>%
+  left_join(conversion_dicofre_weight, by = c("dicofre_home" = "dtmnfr16")) |>
   # scale only the household weight according to area weight
-  mutate(hh_weight_new = hh_weight * weight) %>%
+  mutate(hh_weight_new = hh_weight * weight) |>
   # rename the new dicofre
-  rename(dicofre_home_new = dtmnfr24) %>%
+  rename(dicofre_home_new = dtmnfr24) |>
   # group by new dicofre
-  group_by(dicofre_home_new) %>%
+  group_by(dicofre_home_new) |>
   summarise(
     n_households = n(),                      # number of original households contributing
     hh_weight    = sum(hh_weight_new),       # sum of weighted households

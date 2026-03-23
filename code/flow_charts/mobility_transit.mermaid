@@ -1,0 +1,71 @@
+flowchart TB
+    Start([Start: Transit Frequency and Waiting Time Analysis])
+
+    subgraph Inputs["Input Data Sources"]
+        GTFS[GTFS schedules]
+        Stops[Transit stops geometry]
+        Census[Census population points centroids]
+        Geos[Geographic units: Grid, Freguesias, Municípios]
+    end
+
+    Start --> Inputs
+
+    subgraph Precompute["Stop-Level Service Computation"]
+        Periods[Analysis periods:<br/>Wed 2026-02-04 full day<br/>Wed peak 08:00-09:00<br/>Wed night 22:00-23:00<br/>Sun 2026-02-08 10:00-11:00]
+        StopFreq[tidytransit::get_stop_frequency<br/>per stop and period]
+        MetricsStop[Stop-level outputs:<br/>frequency departures<br/>headway in seconds]
+        Periods --> StopFreq --> MetricsStop
+    end
+
+    Inputs --> Precompute
+
+    subgraph PopServed["Population Served by Stops"]
+        Buffer[sf::st_buffer 500m around each stop]
+        Intersect[sf::st_intersection with census centroids]
+        SumPop[dplyr::summarise population_served per stop]
+        JoinPop[dplyr::left_join population_served to stop metrics]
+        Clean[Filter valid stops and replace missing frequency with 0]
+        Buffer --> Intersect --> SumPop --> JoinPop --> Clean
+    end
+
+    Precompute --> PopServed
+
+    subgraph Aggregate["Aggregate by Geographic Unit"]
+        direction TB
+        JoinGeo[sf::st_join stops to each geography]
+        Group[dplyr::group_by origin unit id]
+
+        subgraph AggMetrics["For each unit and period"]
+            WHeadway[Weighted headway in seconds<br/>dplyr::weighted.mean by population_served]
+            WFreq[Weighted frequency<br/>dplyr::weighted.mean by population_served]
+            Waiting[Weighted waiting time in minutes<br/>weighted_headway / 2 / 60]
+            TotFreq[Total frequency sum]
+            TotPop[Total population served]
+            NStops[Total number of stops]
+            RedNight[Frequency reduction night %<br/>total and weighted]
+            RedWeekend[Frequency reduction weekend %<br/>total and weighted]
+        end
+
+        JoinGeo --> Group --> AggMetrics
+    end
+
+    PopServed --> Aggregate
+
+    subgraph Outputs["Output Files"]
+        GridOut[grid_headways.gpkg and grid_headways.csv]
+        FregOut[freguesias_headways.gpkg and freguesias_headways.csv]
+        MuniOut[municipios_headways.gpkg and municipios_headways.csv]
+    end
+
+    Aggregate --> Outputs
+    Outputs --> End([End: Transit accessibility service indicators<br/>frequency, headway, waiting time,<br/>population served, stop count,<br/>night/weekend reductions])
+
+    classDef inputStyle fill:#e1f5ff,stroke:#0288d1,stroke-width:2px
+    classDef processStyle fill:#fff3e0,stroke:#f57c00,stroke-width:2px
+    classDef calcStyle fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
+    classDef outputStyle fill:#e8f5e9,stroke:#388e3c,stroke-width:2px
+
+    class GTFS,Stops,Census,Geos,Inputs inputStyle
+    class Precompute,PopServed,Aggregate processStyle
+    class StopFreq,WHeadway,WFreq,Waiting,RedNight,RedWeekend calcStyle
+    class Outputs,GridOut,FregOut,MuniOut outputStyle

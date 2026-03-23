@@ -1,17 +1,23 @@
-# Nota: Alguns passos deste código demoram muito tempo a correr
-# (nomeadamente os relacionados com a rede viária e pedonal total da AML)
-# seria útil arranjar maneira de agregar mais os dados do OSM
-# ou na road_network do ficheiro data_load (= st_read(IMPT_URL("/geo/IMPT_Road_network.gpkg")) 
-# antes de correr tudo
+# Objective: Compute mobility parameters for every mode
+# Completed:
+  # Car: Ownership rates (in veh_ownership.R)
+  # Walking: Existence of infrastructure.
+  # Cycling: Existence of infrastructure, Quality of infrastructure.
+  # PT: Availability/coverage, Shared mobility availability.
+
 
 library(gtfstools)
 library(mapview)
 library(osmdata)
+library(sf)
 library(igraph)
 library(tidygraph)
+library(tidytransit)
 library(sfnetworks)
 
-# Get all AML PT stops ----
+### Availability/coverage of public transportation ----
+
+  # Start by getting all PT stops in AML
 gtfs_paths <- list.files(IMPT_URL("/gtfs/processed"), pattern="\\.zip$" , full.names = TRUE)
 all_stops <- list()
 for (i in gtfs_paths) {
@@ -19,10 +25,41 @@ for (i in gtfs_paths) {
   stops_sf <- stops_as_sf(gtfs$stops)
   all_stops[[i]] <- stops_sf
 }
-mapview(all_stops)
+#mapview(all_stops)
+
+  # Create 250m buffers for all PT stops
+all_stops_combined = bind_rows(all_stops) |> st_as_sf()
+all_stops_combined <- all_stops_combined |> select(stop_id, stop_code, stop_name, geometry)
+stops_buffers <- st_buffer(all_stops_combined, dist = 500) #500m buffer around stops
+
+  # Evaluate population coverage by PT stop
+census_stops <- census |> select(id, N_INDIVIDUOS, SHAPE_Length, SHAPE_Area, dicofre24, freguesia, municipio, geom)
+census_stops$reachable_stops <- lengths(st_intersects(census_stops, stops_buffers))
+census_stops$has_stops <- census_stops$reachable_stops>0
+census_stops$pop_near_stops <- census_stops$N_INDIVIDUOS * census_stops$has_stops
+freguesias_by_stops <- census_stops |>
+  st_drop_geometry() |>  # Drop geometry for aggregation
+  group_by(freguesia) |>
+  summarise(
+    total_points = n(),
+    served_population = sum(pop_near_stops),
+    freguesia_population = sum(N_INDIVIDUOS),
+    ratio_served_population = (served_population / freguesia_population)
+  )
+
+### Shared Mobility Availability ----
+  # Grid from data_load.R
+grid_shared_mob = grid
+freguesias_shared_mob = freguesias
+aml_shared_mobility = st_read(IMPT_URL("/BaseDados_PMMUS/11-ModosPartilhados/11 - ModosPartilhados.gpkg"), layer = "Pontos-partilha_amL") |>
+  st_transform(st_crs(grid_shared_mob))
+  # Get number of shared mobility locations by grid hexagon and freguesia
+grid_shared_mob$shared_mobility_points <- lengths(st_intersects(grid_shared_mob, aml_shared_mobility))
+freguesias_shared_mob$shared_mobility_points <- lengths(st_intersects(freguesias_shared_mob, aml_shared_mobility))
 
 
-# Roads ----
+
+### Roads ----
   # Get all road infrastructure OSM data for AML
 osm_roads <- opq(bbox = municipios |> sf::st_bbox()) |>
   # Highways with tags "service", "track" and "road" are excluded
@@ -31,16 +68,14 @@ osm_roads <- opq(bbox = municipios |> sf::st_bbox()) |>
                   "primary_link", "secondary_link", "tertiary_link", "living_street")
   ) |>
   osmdata_sf()
-aml_roads <- osm_roads$osm_lines |>
-  st_as_sf()
+aml_roads <- osm_roads$osm_lines |> st_as_sf()
   # Remove unnecessary columns
-aml_roads <- aml_roads |>
-  select(osm_id, name, highway, geometry)
+aml_roads <- aml_roads |> select(osm_id, name, highway, geometry)
 #mapview(aml_roads)
 
 # Disaggregate and measure road length by Freguesia
 roads_by_freguesia <- st_join(aml_roads, freguesias, left = FALSE)
-roads_by_freguesia$length_segment <- st_length(roads_by_freguesia)
+roads_by_freguesia$length_segment <- st_length(roads_by_freguesia |> st_transform(3857))
 road_length_by_freguesia <- roads_by_freguesia |>
   group_by(freguesia) |>
   summarise(road_length = sum(length_segment))
@@ -48,7 +83,7 @@ road_length_by_freguesia <- road_length_by_freguesia |>
   st_drop_geometry()
 
 
-# Pedestrians ----
+### Pedestrians ----
   # Get OSM pedestrian infrastructure data for AML
 osm_pedpaths <- opq(bbox = municipios |> sf::st_bbox()) |>
   add_osm_features(list(
@@ -61,16 +96,14 @@ osm_pedpaths <- opq(bbox = municipios |> sf::st_bbox()) |>
     "sidewalk" = c("both", "left", "right")
     )) |>
   osmdata_sf()
-aml_pedpaths <- osm_pedpaths$osm_lines |>
-  st_as_sf()
+aml_pedpaths <- osm_pedpaths$osm_lines |> st_as_sf()
   # Remove unnecessary columns
-aml_pedpaths <- aml_pedpaths |>
-  select(osm_id, name, highway, sidewalk, geometry)
+aml_pedpaths <- aml_pedpaths |> select(osm_id, name, highway, sidewalk, geometry)
 #mapview(aml_pedpaths)
 
 # Disaggregate and measure pedpath length by Freguesia
 pedpaths_by_freguesia <- st_join(aml_pedpaths, freguesias, left = FALSE)
-pedpaths_by_freguesia$length_segment <- st_length(pedpaths_by_freguesia)
+pedpaths_by_freguesia$length_segment <- st_length(pedpaths_by_freguesia |> st_transform(3857))
 pedpath_length_by_freguesia <- pedpaths_by_freguesia |>
   group_by(freguesia) |>
   summarise(pedpath_length = sum(length_segment))
@@ -78,38 +111,55 @@ pedpath_length_by_freguesia <- pedpath_length_by_freguesia |>
   st_drop_geometry()
 
 
-# Bicycles ----
+### Bicycles ----
   # Get OSM cycleway data for AML
-osm_cycleways <- opq(bbox = municipios |> sf::st_bbox()) |>
-  add_osm_features(features = list(
-    # Dedicated cycle paths
-    "highway" = "cycleway",
-    # Cycle lanes on roads
-    "cycleway" = c("lane", "track", "opposite_lane", "opposite_track", "shared_lane", "share_busway"),
-    "cycleway:left" = c("lane", "track", "shared_lane", "share_busway"),
-    "cycleway:right" = c("lane", "track", "shared_lane", "share_busway"),
-    "cycleway:both" = c("lane", "track", "shared_lane", "share_busway")
-  )) |>
-  osmdata_sf()
-aml_cycleways <- osm_cycleways$osm_lines |>
-  st_as_sf()
+# osm_cycleways <- opq(bbox = municipios |> sf::st_bbox()) |>
+#   add_osm_features(features = list(
+#     # Dedicated cycle paths
+#     "highway" = "cycleway",
+#     # Cycle lanes on roads
+#     "cycleway" = c("lane", "track", "opposite_lane", "opposite_track", "shared_lane", "share_busway"),
+#     "cycleway:left" = c("lane", "track", "shared_lane", "share_busway"),
+#     "cycleway:right" = c("lane", "track", "shared_lane", "share_busway"),
+#     "cycleway:both" = c("lane", "track", "shared_lane", "share_busway")
+#   )) |>
+#   osmdata_sf()
+#aml_cycleways <- osm_cycleways$osm_lines |> st_as_sf()
     # Remove unnecessary columns
-aml_cycleways <- aml_cycleways |>
-  select(osm_id, name, highway, geometry)
+#aml_cycleways <- aml_cycleways |> select(osm_id, name, highway, geometry)
 #mapview(aml_cycleways)
 
-  # Disaggregate and measure cycleway length by Freguesia
-cycleways_by_freguesia <- st_join(aml_cycleways, freguesias, left = FALSE)
+  # Disaggregate and measure cycleway length by Freguesia (old)
+# cycleways_by_freguesia <- st_join(aml_cycleways, freguesias, left = FALSE)
+# cycleways_by_freguesia$length_segment <- st_length(cycleways_by_freguesia |> st_transform(3857)) 
+# cycleway_length_by_freguesia <- cycleways_by_freguesia |>
+#   group_by(freguesia) |>
+#   summarise(cycleway_length = sum(length_segment))
+# cycleway_length_by_freguesia <- cycleway_length_by_freguesia |>
+#   st_drop_geometry()
+
+
+  # Evaluate cycleway quality by freguesia (old)
+# segregated_cycleways <- st_read("/data/IMPT/mobility/cycle_network_class.gpkg") |> filter(cycle_segregation == "Cycle track or lane")
+# segregated_by_freguesia <- st_join(segregated_cycleways, freguesias, left = FALSE)
+# segregated_by_freguesia$length_segment <- st_length(segregated_by_freguesia)
+# segregated_length_by_freguesia <- segregated_by_freguesia |>
+#   group_by(freguesia) |>
+#   summarise(segregated_cycleway_length = sum(length_segment))
+# segregated_length_by_freguesia <- segregated_length_by_freguesia |>
+#   st_drop_geometry()
+
+  # Updated code
+all_cycleways = st_read("/data/IMPT/mobility/AML_cycle_class.gpkg")
+all_cycleways <- all_cycleways |> select(osm_id, name, highway, cycle_cat, infra5, geom)
+segregated_cycleways <- all_cycleways |> filter(cycle_cat == "strong_ci")
+cycleways_by_freguesia <- st_join(all_cycleways, freguesias, left = FALSE)
 cycleways_by_freguesia$length_segment <- st_length(cycleways_by_freguesia)
 cycleway_length_by_freguesia <- cycleways_by_freguesia |>
   group_by(freguesia) |>
   summarise(cycleway_length = sum(length_segment))
 cycleway_length_by_freguesia <- cycleway_length_by_freguesia |>
   st_drop_geometry()
-
-
-  # Evaluate cycleway quality by freguesia
-segregated_cycleways <- cycle_net_pt |> filter(cycle_segregation == "Cycle track or lane")
 segregated_by_freguesia <- st_join(segregated_cycleways, freguesias, left = FALSE)
 segregated_by_freguesia$length_segment <- st_length(segregated_by_freguesia)
 segregated_length_by_freguesia <- segregated_by_freguesia |>
@@ -117,10 +167,11 @@ segregated_length_by_freguesia <- segregated_by_freguesia |>
   summarise(segregated_cycleway_length = sum(length_segment))
 segregated_length_by_freguesia <- segregated_length_by_freguesia |>
   st_drop_geometry()
-  
+
+
   
 
-# Compute ratio of pedpath/cycleway to roads ----
+### Compute ratio of pedpath/cycleway to roads ----
 freguesias_by_infrastructure <- freguesias |>
   left_join(road_length_by_freguesia, by = "freguesia") |>
   left_join(pedpath_length_by_freguesia, by = "freguesia") |>
@@ -140,30 +191,10 @@ mapview(freguesias_by_infrastructure, zcol = "cycleway_to_road_ratio")
 mapview(freguesias_by_infrastructure, zcol = "cycling_quality_ratio")
 
 
-# Attempt to measure network continuity ----
-  # Bicycles
-cycling_network_graph <- as_sfnetwork(aml_cycleways, directed = FALSE)
-cycling_edges <- cycling_network_graph |> activate("edges") |> st_as_sf() |> summarise(n = n()) |> pull(n)
-cycling_nodes <- cycling_network_graph |> activate("nodes") |> st_as_sf() |> summarise(n = n()) |> pull(n)
-cycling_components <-  cycling_network_graph |>
-  activate("nodes") |>
-  mutate(component = group_components()) |>
-  pull(component) |>
-  unique() |>
-  length()
-cycling_R <- cycling_edges - cycling_nodes + cycling_components
-
-plot(cycling_network_graph, 
-     main = "Cycling Network",
-     col = "blue", 
-     lwd = 0.5)
-
 
 # Save results ----
+st_write(freguesias_by_infrastructure, "/data/IMPT/mobility/freguesias_infrastructure_ratio.gpkg", delete_dsn = TRUE)
+st_write(grid_shared_mob, "/data/IMPT/mobility/grid_shared_mobility.gpkg", delete_dsn = TRUE)
+saveRDS(freguesias_shared_mob, "/data/IMPT/mobility/freguesias_shared_mobility.rds")
 saveRDS(freguesias_by_infrastructure |> st_drop_geometry(), "/data/IMPT/mobility/freguesias_infrastructure_ratio.rds")
-
-
-
-# Next steps:
-# 1. Compute continuity of walking/cycling infrastructure 
-# (use Speedwalk? (https://a-b-street.github.io/speedwalk/))
+saveRDS(freguesias_by_stops |> st_drop_geometry(), "/data/IMPT/mobility/freguesias_stops_coverage.rds")

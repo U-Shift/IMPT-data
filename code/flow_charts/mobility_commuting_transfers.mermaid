@@ -1,0 +1,83 @@
+flowchart TB
+    Start([Start: Transit Transfers Analysis])
+    
+    %% Input Data
+    subgraph Inputs["Input Data Sources"]
+        TTM_Multi[Travel Time Matrix<br/>Public Transit<br/>5 transfer configurations:<br/>0, 1, 2, 3, 4 transfers<br/>120min max travel time<br/>15min max walk]
+        OD[Origin-Destination Data<br/>IMOB Jittered commuting trips<br/>with grid cell associations<br/>from Section I]
+        Grid[H3 Grid Resolution 8]
+    end
+    
+    Start --> Inputs
+    
+    %% Determine Minimum Transfers
+    Inputs --> DetermineTransfers
+    
+    subgraph DetermineTransfers["Determine Minimum Transfers Required"]
+        direction TB
+        JoinTTMs[dplyr::left_join:<br/>Join all 5 TTMs by OD pairs<br/>0t, 1t, 2t, 3t, 4t]
+        CascadeLogic[dplyr::case_when:<br/>Determine minimum transfers<br/>0 if 0t has value<br/>1 if 1t has value<br/>... up to 4 transfers<br/>NA if no TTM has value]
+        TransferMatrix[Create unified transfer matrix<br/>with transfers_required column<br/>for each grid OD pair]
+        
+        JoinTTMs --> CascadeLogic
+        CascadeLogic --> TransferMatrix
+    end
+    
+    %% Join with Jittering Data
+    DetermineTransfers --> JoinJitter
+    
+    subgraph JoinJitter["Associate Transfers to Jittered ODs"]
+        direction TB
+        JoinOD[dplyr::left_join:<br/>Join transfers_required to<br/>jittered OD pairs by grid cells]
+        FlagNA[Create NA flag:<br/>1 if transfers unreachable<br/>0 if accomplishable]
+        Stats[Coverage: 86.1% OD pairs<br/>87.65% of total trips<br/>with transfer data]
+        
+        JoinOD --> FlagNA
+        FlagNA --> Stats
+    end
+    
+    %% Aggregation
+    JoinJitter --> Aggregation
+    
+    subgraph Aggregation["Aggregate by Geographic Unit"]
+        direction TB
+        GeoUnits[Define geographic units:<br/>Grid origin cells<br/>Freguesias parishes<br/>Municípios municipalities]
+        
+        subgraph CalcMetrics["For each geographic unit origin"]
+            direction TB
+            GroupOrigin[Group trips by origin<br/>grid cell, parish, or municipality]
+            CountJitters[Count number of<br/>jittered ODs]
+            CountNA[Count jittered ODs with<br/>NA flag transfers not accomplishable]
+            WeightedMean[dplyr: Calculate weighted mean<br/>transfers required<br/>weighted by number of trips]
+            TotalTrips[Sum total trips<br/>originating from unit]
+            TotalTransfers[Sum total transfers<br/>across all trips]
+        end
+        
+        GeoUnits --> CalcMetrics
+        CalcMetrics --> Results
+        
+        Results[Results for each<br/>geographic level]
+    end
+    
+    %% Output Files
+    Aggregation --> Output
+    
+    subgraph Output["Output Files"]
+        direction TB
+        GridOut[Grid Origin Level:<br/>grid_transfers.gpkg<br/>grid_transfers.csv]
+        FreqOut[Parish Origin Level:<br/>freguesia_transfers.gpkg<br/>freguesia_transfers.csv]
+        MuniOut[Municipality Origin Level:<br/>municipio_transfers.gpkg<br/>municipio_transfers.csv]
+    end
+    
+    Output --> End([End: Transit Transfer Indicators<br/>Minimum transfers required<br/>for commuting destinations<br/>Weighted mean by trips<br/>Coverage statistics])
+    
+    %% Styling
+    classDef inputStyle fill:#e1f5ff,stroke:#0288d1,stroke-width:2px
+    classDef processStyle fill:#fff3e0,stroke:#f57c00,stroke-width:2px
+    classDef outputStyle fill:#e8f5e9,stroke:#388e3c,stroke-width:2px
+    classDef calcStyle fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
+    
+    class TTM_Multi,OD,Grid,Inputs inputStyle
+    class DetermineTransfers,JoinJitter,Aggregation,CalcMetrics processStyle
+    class Output,GridOut,FreqOut,MuniOut outputStyle
+    class CascadeLogic,WeightedMean,CountNA calcStyle
