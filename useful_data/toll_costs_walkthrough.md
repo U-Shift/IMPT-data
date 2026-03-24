@@ -2,14 +2,25 @@
 
 ## Overview
 
-This builds a `toll_costs_car_od.csv` with the toll cost (€, Classe 1, 2026) for each `from_id`/`to_id` pair in your r5r car itineraries. It works by matching the `osm_link_ids` column from `detailed_itineraries()` against a hand-curated lookup of OSM toll node IDs.
+This builds a `toll_costs_car_od.csv` with the toll cost (€, Classe 1, 2026) for each `from_id`/`to_id` pair in your r5r car itineraries. It works by matching the `osm_link_ids` column from `detailed_itineraries()` against a curated lookup of OSM **way** IDs for toll infrastructure.
 
-## Files Created
+## Files
 
 | File | Purpose |
 |------|---------|
-| [toll_costs_car.R](file:///media/rosa/Dados/GIS/IMPT-data/code/toll_costs_car.R) | Main R script — runs on your itinerary RDS files |
-| [toll_plazas_aml_2026.csv](file:///media/rosa/Dados/GIS/IMPT-data/useful_data/toll_plazas_aml_2026.csv) | Reference table: plaza → OSM nodes → cost |
+| `code/toll_costs_car.R` | Main R script — reads your r5r RDS, outputs `toll_costs_car_od.csv` |
+| `useful_data/toll_plazas_aml_2026.csv` | **Source of truth** — plaza → OSM way IDs → 2026 cost. Edit here to add/fix ways. |
+
+## Why OSM Way IDs (not node IDs)?
+
+r5r's `detailed_itineraries(osm_link_ids = TRUE)` returns OSM **way** IDs (road edges), not node IDs. The correct identifiers to match against are therefore the ways that represent the toll infrastructure:
+
+| Way ID | Name | Tags |
+|--------|------|------|
+| `22286596` | Ponte 25 de Abril | `ref=A 2`, `toll=yes`, `oneway=yes` |
+| `405372511` | Ponte Vasco da Gama | `ref=PVG;IP 1`, `toll=yes`, `oneway=yes` |
+
+Because both bridge ways are `oneway=yes` (S→N), r5r will only route through them in the payable direction — **no extra directional logic is needed**.
 
 ## Toll System: How It Works
 
@@ -17,82 +28,89 @@ The Portuguese motorway system in AML has two types:
 
 | Type | How charged | Roads in AML |
 |------|-------------|-------------|
-| **Open** (pórtico) | Fixed fee each time you cross the gantry | Ponte 25 de Abril, Ponte Vasco da Gama, A8 (Loures-CREL), A16 |
-| **Closed** (cabine/praça) | Fee based on **entry + exit** points | A1, A2, A5, A9 (CREL), A12 |
-
-> [!IMPORTANT]
-> Both bridges charge only **south → north** (Setúbal/Almada direction → Lisboa). If your r5r route crosses the bridge nodes going N→S, **no toll applies**. The script doesn't currently filter by direction — see the note below.
+| **Open** (pórtico/free-flow) | Fixed fee each time a tagged bridge/gantry way is traversed | Ponte 25 de Abril, Ponte Vasco da Gama, A8 (Loures–CREL), A16 |
+| **Closed** (praça/cabine) | Fee based on **entry + exit** plaza pair (cumulative per section) | A1, A2, A5, A9 (CREL), A12 |
 
 ## 2026 Prices (Classe 1 = common car)
 
+Source: [ACP Preços Portagens 2026](https://www.acp.pt/ResourcesUser/ACP/docs/Viagens_e_Lazer/Estrada_fora/Precos-Portagens-2026.pdf)
+
 ### Open tolls
-| Plaza | Cost |
-|-------|------|
-| Ponte 25 de Abril (S→N) | **2.25 €** |
-| Ponte Vasco da Gama (S→N) | **3.40 €** |
-| A8 CREL–Lousa gantry | **0.75 €** |
-| A16/IC30 gantry | **0.85 €** |
 
-### Closed tolls (cumulative from entry point, Classe 1)
+| Plaza ID | Way ID(s) | Cost |
+|----------|-----------|------|
+| `p25abril_sl` | `22286596` | **2.25 €** |
+| `pvascogama_sl` | `405372511` | **3.40 €** |
+| `a8_crel_lousa` | `1433748419` … | **0.75 €** |
+| `a16_gantry` | `1422902996` … | **0.85 €** |
 
-**A9 (CREL)** — from Estádio Nacional (A5/A9):
-| Exit | Cost |
-|------|------|
-| → Queluz | 0.35 € |
-| → A9/A16 | 0.65 € |
-| → Radial Pontinha | 1.00 € |
-| → A8/A9 | 1.40 € |
-| → Bucelas | 1.75 € |
-| → A9/A10 | 2.65 € |
-| → Alverca | 3.00 € |
+### Closed tolls — cumulative costs from entry point (Classe 1)
 
-**A5** — from Cruz Quebrada (Lisbon end):
-| Exit | Cost |
-|------|------|
-| → Oeiras | 0.40 € |
-| → A16 junction | 0.70 € |
-| → Estoril | 1.30 € |
-| → Cascais | 1.60 € |
+**A9 (CREL)** — from `a9_estadio` (Estádio Nacional / A5 junction):
 
-**A2** — from Fogueteiro (Almada):
-| Exit | Cost |
-|------|------|
-| → Coina | 0.90 € |
-| → Palmela | 1.75 € |
+| Exit plaza | Cost |
+|------------|------|
+| `a9_queluz` | 0.35 € |
+| `a9_a16_pontinha` | 0.65 € |
+| `a9_radial_pontinha` | 1.00 € |
+| `a9_a8_junction` | 1.40 € |
+| `a9_bucelas` | 1.75 € |
+| `a9_a10_junction` | 2.65 € |
+| `a9_alverca` | 3.00 € |
 
-**A1** — from Alverca:
-| Exit | Cost |
-|------|------|
-| → V.Franca de Xira II | 0.50 € |
+**A5** — from `a5_cruz_quebrada` (Cruz Quebrada / Lisbon end):
 
-**A12** — from Montijo:
-| Exit | Cost |
-|------|------|
-| → Pinhal Novo | 1.10 € |
-| → A2/A12 junction | 2.10 € |
-| → Setúbal | 2.45 € |
+| Exit plaza | Cost |
+|------------|------|
+| `a5_oeiras` | 0.40 € |
+| `a5_a16_junction` | 0.70 € |
+| `a5_estoril` | 1.10 € |
+| `a5_cascais` | 1.60 € |
+
+**A2** — from `a2_fogueteiro` (Fogueteiro / Almada):
+
+| Exit plaza | Cost |
+|------------|------|
+| `a2_coina` | 0.90 € |
+| `a2_palmela` | 1.75 € |
+
+**A1** — from `a1_alverca`:
+
+| Exit plaza | Cost |
+|------------|------|
+| `a1_vfxira_ii` | 0.50 € |
+
+**A12** — from `a12_montijo`:
+
+| Exit plaza | Cost |
+|------------|------|
+| `a12_pinhal_novo` | 1.10 € |
+| `a12_a2jct` | 2.10 € |
+| `a12_setubal` | 2.45 € |
 
 ## How to Run
 
-1. **Adjust the input path** in [toll_costs_car.R](file:///media/rosa/Dados/GIS/IMPT-data/code/toll_costs_car.R):
+1. **Adjust the input path** in `code/toll_costs_car.R`:
    ```r
    itinerary_rds_path <- IMPT_URL("/mobility_fare_costs/itinerary_car_60min.rds")
    ```
-   This should point to the RDS produced by your [mobility_costs_money.R](file:///media/rosa/Dados/GIS/IMPT-data/code/mobility_costs_money.R) script.
+   This should point to the RDS produced by `code/mobility_costs_money.R`.
 
-2. **Run the script** (after loading `r5r_network` and setting `IMPT_URL`):
+2. The script reads `toll_plazas_aml_2026.csv` automatically via `IMPT_URL("/useful_data/toll_plazas_aml_2026.csv")`.
+
+3. **Run** (after `r5r_network` and `IMPT_URL` are set):
    ```r
    source("code/toll_costs_car.R")
    ```
 
-3. **Output**: `toll_costs_car_od.csv` saved to `IMPT_URL("/mobility_fare_costs/")`:
+4. **Output** saved to `IMPT_URL("/mobility_fare_costs/toll_costs_car_od.csv")`:
    ```
    from_id, to_id, toll_cost_eur
    ```
 
-## Integration with mobility_costs_money.R
+## Integration with `mobility_costs_money.R`
 
-After computing tolls, merge into your itinerary and add the per-km cost:
+After computing tolls, merge into your itinerary:
 
 ```r
 cost_per_km <- 0.4  # €/km (Portaria 1553-D/2008)
@@ -106,35 +124,29 @@ itineraries_with_cost <- itineraries %>%
   )
 ```
 
-## Known Limitations & Future Work
+## Adding or Correcting Toll Ways
 
-> [!NOTE]
-> **Directional tolls**: Bridges are S→N only, but the script doesn't currently filter by travel direction. If needed, add a check on whether the route's origin is south of the bridge (lat < 38.70 for A2 Almada, lat < 38.67 for A12 Alcochete).
+To add a missing toll way, edit `useful_data/toll_plazas_aml_2026.csv`:
 
-> [!NOTE]
-> **OSM node completeness**: Not all toll booth nodes are perfectly tagged in OSM for AML. Some sections (especially A8 beyond Lousa, and A9 spur towards Arruda/Benavente) may have incomplete coverage. Check [toll_plazas_aml_2026.csv](file:///media/rosa/Dados/GIS/IMPT-data/useful_data/toll_plazas_aml_2026.csv) and add missing nodes as needed.
-
-> [!TIP]
-> **Verify with Via Verde simulator**: Cross-check computed costs against https://www.viaverde.pt/particulares/via-verde/onde-e-quanto-se-paga/simulador-de-portagens for specific origin–destination pairs.
+1. Find the way ID on [openstreetmap.org](https://www.openstreetmap.org) — look for `toll=yes` ways on the relevant motorway
+2. Add the way ID to the `osm_way_ids` column (semicolon-separated) of the correct plaza row
+3. Re-run `toll_costs_car.R` — the script reads the CSV fresh each time, no code changes needed
 
 > [!TIP]
-> **r5r osm_link_ids format**: The column contains OSM **way** IDs (edges), not node IDs. If you need to match against **nodes**, use r5r's `street_network_to_sf()` to build a node-edge mapping, then convert.  
-> Alternatively, query the OSM ways that contain each toll node (done above via Overpass) and use **way IDs** instead — see the bonus section below.
+> To find way IDs for a given plaza, use [Overpass Turbo](https://overpass-turbo.eu):
+> ```
+> way["toll"="yes"]["ref"="A 9"](38.3,-9.5,38.9,-8.7);
+> out body;
+> ```
+> Replace `"A 9"` with your target road ref, then cross-reference with the map.
 
-## Bonus: Matching by Way IDs Instead of Node IDs
+## Known Limitations
 
-If `osm_link_ids` returns way IDs (edges) rather than nodes, use this approach instead:
+> [!NOTE]
+> **Closed system way coverage**: Way IDs listed per plaza correspond to segments at or near the toll collection point. Since r5r may route via adjacent or parallel ways, several nearby way IDs are listed per plaza (see the CSV) to improve robustness.
 
-```r
-# Query toll ways from OSM (the ways containing toll nodes)
-toll_ways <- tribble(
-  ~way_id,       ~plaza_id,
-  "1042078066",  "pvascogama_sl",  # A12 with Vasco da Gama nodes
-  "1042078306",  "a2_fogueteiro",  # A2 fogueteiro section
-  # ... etc (see OSM query output for full list)
-)
+> [!NOTE]
+> **A8 (Loures–CREL is free)**: The Loures–CREL section costs 0.00 €. Only the CREL–Lousa section (0.75 €) is charged. This is correctly reflected in the CSV.
 
-# Then in compute_toll_cost(), match osm_ids against toll_ways$way_id
-```
-
-The Overpass query results above already list which way IDs contain which toll nodes.
+> [!TIP]
+> **Verify with Via Verde**: Cross-check computed costs against the [Via Verde toll simulator](https://www.viaverde.pt/particulares/via-verde/onde-e-quanto-se-paga/simulador-de-portagens) for specific OD pairs.

@@ -1,20 +1,26 @@
 # Compute toll costs for car trips between OD pairs (AML)
 # Uses the osm_link_ids output from r5r's detailed_itineraries()
-# 
+#
 # Context:
 #   - Routes were estimated with r5r (mode = "CAR") with osm_link_ids = TRUE
-#   - This script takes the resulting RDS files and appends a toll_cost_eur column
+#   - r5r returns OSM *way* IDs (road segment edges) in osm_link_ids, NOT node IDs
 #   - Toll prices are for 2026, Classe 1 (common car / ligeiro)
 #   - Source: https://www.acp.pt/ResourcesUser/ACP/docs/Viagens_e_Lazer/Estrada_fora/Precos-Portagens-2026.pdf
 #
-# OSM toll node identification strategy:
-#   - Open systems (gantry/pórtico): fixed fee per node crossed, regardless of entry/exit
-#   - Closed systems (entry/exit booths): fee depends on the pair of nodes (entry + exit)
-#   - Bridges: one-directional toll (paid only south→north)
+# OSM toll way identification strategy:
+#   - Open systems (pórtico/gantry): fixed fee each time a tagged way is traversed
+#     e.g. way 22286596 = Ponte 25 de Abril deck (A2, toll=yes, oneway=yes S→N)
+#          way 405372511 = Ponte Vasco da Gama deck (A12, toll=yes)
+#   - Closed systems (praça/cabine): fee depends on entry + exit plaza (cumulative sections)
+#   - Bridges: one-directional — only charged S→N. The oneway=yes tag on the OSM way
+#     means r5r will only route through it in the payable direction, so no extra filtering needed.
+#
+# Lookup table source: useful_data/toll_plazas_aml_2026.csv
+#   (edit that file to add/correct way IDs — change is immediately picked up here)
 #
 # Output:
 #   - CSV with columns: from_id, to_id, toll_cost_eur
-#   - Saved to: data/r5r/toll_costs_car_od.csv
+#   - Saved to: IMPT_URL("/mobility_fare_costs/toll_costs_car_od.csv")
 
 library(dplyr)
 library(purrr)
@@ -23,50 +29,33 @@ library(stringr)
 
 
 # =============================================================================
-# 1. TOLL NODE DEFINITIONS (2026, Classe 1)
+# 1. LOAD TOLL PLAZA DEFINITIONS FROM CSV
 # =============================================================================
+# Source of truth: useful_data/toll_plazas_aml_2026.csv
+# Columns: plaza_id, system, road, cost_eur_2026, notes, osm_way_ids (semicolon-separated)
 #
-# Identification method: OSM nodes tagged barrier=toll_booth or highway=toll_gantry
-# in the AML bounding box, matched against parent way road refs from Overpass API.
+# Key entries:
+#   way 22286596  = Ponte 25 de Abril deck (A2, ref='A 2', toll=yes, oneway=yes S→N)
+#   way 405372511 = Ponte Vasco da Gama deck (A12, ref='PVG;IP 1', toll=yes, oneway=yes S→N)
 #
-# Node clusters (multiple booths at same plaza) are listed individually —
-# a route that crosses ANY node in a cluster is charged once for that plaza.
-#
-# Sources:
-#   - OSM Overpass API (AML bbox: 38.3,-9.5,38.9,-8.7)
-#   - ACP Toll Price Sheet 2026
+# Why way IDs, not node IDs?
+#   r5r's detailed_itineraries(osm_link_ids = TRUE) returns OSM *way* IDs (edges),
+#   not node IDs. The bridge/gantry ways are what appears in the route edge sequence.
 
-# ---- 1a. OPEN SYSTEM TOLLS (fixed fee per gantry crossed) -------------------
-#
-# These are free-flow gantries (pórticos) where you always pay the same amount
-# regardless of where you entered/exited the road.
-
-open_tolls <- tribble(
-  ~toll_id,            ~osm_ids,                                                                  ~road,  ~description,                         ~cost_eur_2026,
-  # --- Ponte 25 de Abril (A2/IC20) — only S→N direction ---
-  # OSM nodes at the Almada/Lisboa toll plaza (south side of bridge)
-  "ponte_25abril",     list(c(3976984881, 3976984936, 3976992613, 6540527800)),                    "A2",  "Ponte 25 de Abril (S>N, Classe 1)",  2.25,
-  # --- Ponte Vasco da Gama (A12) — only S→N direction ---
-  # OSM nodes at the Alcochete toll plaza  
-  "ponte_vasco_gama",  list(c(25416674, 25416732, 25416733, 25416741, 25416757,
-                               9645967350, 9645967356, 9645976622, 9645976624,
-                               9645976627, 9645976631, 320145299)),                               "A12", "Ponte Vasco da Gama (S>N, Classe 1)", 3.40,
-  # --- A8 open gantry: Loures (portal entry into tolled section) ---
-  # The section Loures-CREL is free (0.00 €); CREL-Lousa costs 0.75 €
-  # OSM: nodes 25432058, 25432059, 13176703747, 13176703799 (at A8/Loures, near CREL junction)
-  "a8_crel_lousa",     list(c(25432058, 25432059, 13176703747, 13176703799)),                     "A8",  "A8: CREL-Lousa gantry (Classe 1)",   0.75,
-  # --- A16 (IC30) gantry — Circular Exterior ---
-  # Single open-system gantry node near Cascais/Sintra
-  # OSM node 469970704 (lat=38.778, lon=-9.364) near Malveira da Serra / A16
-  "a16_gantry",        list(c(469970704, 889028787)),                                            "A16", "A16/IC30 gantry (Classe 1)",           0.85
+toll_plazas_raw <- read_csv(
+  IMPT_URL("/useful_data/toll_plazas_aml_2026.csv"),  # adjust if running locally
+  col_types = cols(.default = "c")
 )
 
-# Flatten to a lookup: osm_node_id → toll record
-open_toll_lookup <- open_tolls %>%
-  mutate(osm_ids = map(osm_ids, ~ as.character(.x))) %>%
-  unnest(osm_ids) %>%
-  rename(osm_node_id = osm_ids) %>%
-  distinct(osm_node_id, .keep_all = TRUE) # keep first match if node in multiple clusters
+# Expand semicolon-separated way IDs into one row per way
+toll_plazas <- toll_plazas_raw %>%
+  mutate(
+    cost_eur_2026  = as.numeric(cost_eur_2026),
+    osm_way_id_vec = str_split(osm_way_ids, ";")
+  ) %>%
+  unnest(osm_way_id_vec) %>%
+  mutate(osm_way_id = str_trim(osm_way_id_vec)) %>%
+  select(plaza_id, system, road, cost_eur_2026, notes, osm_way_id)
 
 
 # ---- 1b. CLOSED SYSTEM TOLLS (fee depends on entry + exit node pair) --------
@@ -160,93 +149,36 @@ open_toll_lookup <- open_tolls %>%
 
 
 # =============================================================================
-# 2. NODE CLUSTERS: Plaza-level grouping
+# 2. COST MATRIX FOR CLOSED SYSTEMS
 # =============================================================================
-# Each toll plaza may have multiple OSM nodes (one per lane/direction).
-# We group them into plazas and assign a plaza_id, concession, and system type.
+# Cumulative costs from the "entry reference" plaza for each closed-system road.
+# Costs come from ACP PDF 2026, Classe 1.
 
-toll_plazas <- tribble(
-  ~plaza_id,               ~system,   ~road,  ~osm_node_ids,                                                           ~notes,
-  # OPEN SYSTEM
-  "p25abril_sl",           "open",    "A2",   c(3976984881,3976984936,3976992613,6540527800),                           "Ponte 25 Abril - S→N only",
-  "pvascogama_sl",         "open",    "A12",  c(25416674,25416732,25416733,25416741,25416757,
-                                                 9645967350,9645967356,9645976622,9645976624,
-                                                 9645976627,9645976631,320145299),                                       "Ponte Vasco da Gama - S→N only",
-  "a8_loures_crel",        "open",    "A8",   c(25432058,25432059,13176703747,13176703799),                              "A8 Loures/CREL gantry",
-  "a16_gantry1",           "open",    "A16",  c(469970704,889028787),                                                   "A16/IC30 gantry (Malveira da Serra area)",
-  # CLOSED SYSTEM - A9 (CREL)
-  "a9_estadio",            "closed",  "A9",   c(256516965,256517355,256517436,26233726,26233728,1701437326),             "A9 Estádio Nacional / A5 junction",
-  "a9_queluz",             "closed",  "A9",   c(517256487,522464085,1935980350,2812434001),                              "A9 Queluz",
-  "a9_radial_pontinha",    "closed",  "A9",   c(4879400075,4879400082),                                                  "A9 Radial Pontinha",
-  "a9_a16_pontinha",       "closed",  "A9",   c(256507539,256507739),                                                   "A9 / A16-Radial Pontinha junction",
-  "a9_a8_junction",        "closed",  "A9",   c(2134394163,2134394258),                                                  "A9 / A8 junction (Loures)",
-  "a9_bucelas",            "closed",  "A9",   c(9648622694,9648622698,256514707,256514835),                              "A9 Bucelas (Zambujal)",
-  "a9_a10_junction",       "closed",  "A9",   c(9102294799),                                                             "A9 / A10 junction",
-  "a9_alverca",            "closed",  "A9",   c(7662471386),                                                             "A9 Alverca / A1 area",
-  # CLOSED SYSTEM - A1
-  "a1_alverca",            "closed",  "A1",   c(9706740785,9706740786,9706780314,9706780321,9706780325,9706780336,
-                                                 256503732,256503978,256504255,256504385),                               "A1 Alverca / A1/A9 junction",
-  "a1_vfxira_ii",          "closed",  "A1",   c(25391082,25391083,9879369305,9879369309,9879369308),                    "A1 V.Franca de Xira II",
-  # CLOSED SYSTEM - A2
-  "a2_fogueteiro",         "closed",  "A2",   c(6806187905,6806187906,1663258848,1663259020),                           "A2 Fogueteiro (Almada)",
-  "a2_a2_coina_approx",    "closed",  "A2",   c(6806187907,6806187908),                                                  "A2 approach/Coina gantry",
-  "a2_palmela",            "closed",  "A2",   c(196194889,196194932,9589545274,9589545277),                              "A2 Palmela",
-  # CLOSED SYSTEM - A5 (Costa do Estoril)
-  "a5_cruz_quebrada",      "closed",  "A5",   c(258179637,9588718278),                                                   "A5 Cruz Quebrada entry gantry",
-  "a5_oeiras_area",        "closed",  "A5",   c(3950368056,3950368949,3950369214,3950369827,3950370201,3950370324),      "A5 Oeiras/Carnaxide area",
-  "a5_estoril_cascais",    "closed",  "A5",   c(3751374533,3751374537),                                                  "A5 Estoril/Cascais end",
-  "a5_a16_junction",       "closed",  "A5",   c(2327143697,2327143698),                                                   "A5 / A16 junction (Queluz area)",
-  "a5_cascais_end",        "closed",  "A5",   c(3751410594,3751417874),                                                   "A5 Cascais terminus",
-  # CLOSED SYSTEM - A12 (Sul do Tejo)
-  "a12_montijo",           "closed",  "A12",  c(9356336688,9356336714,25417818),                                         "A12 Montijo",
-  "a12_pinhal_novo",       "closed",  "A12",  c(320145299,25416674),                                                     "A12 Pinhal Novo",  # shared with Vasco da Gama approach
-  "a12_palmela_jct",       "closed",  "A12",  c(196095945),                                                              "A12 / A2 junction area",
-  "a12_setubal",           "closed",  "A12",  c(205038698,205040715,9593023707,9593023710,
-                                                 13668306412,13668306426,13668306431,13668306446),                       "A12 Setúbal",
-  # CLOSED SYSTEM - A13
-  "a13_santo_estevao",     "closed",  "A13",  c(957525479,1106195967,12958839328,12958839329,12958839330),               "A13 Santo Estêvão"
-) %>%
-  mutate(osm_node_ids = map(osm_node_ids, as.character))
+# A9 (CREL) — order from Estádio Nacional (A5/A9) northward:
+a9_order   <- c("a9_estadio","a9_queluz","a9_a16_pontinha","a9_radial_pontinha",
+                "a9_a8_junction","a9_bucelas","a9_a10_junction","a9_alverca")
+a9_cumcost <- c(0, 0.35, 0.65, 1.00, 1.40, 1.75, 2.65, 3.00)
 
-
-# =============================================================================
-# 3. COST LOOKUP TABLES
-# =============================================================================
-
-# ---- 3a. Open toll costs (fixed per plaza) -----------------------------------
-open_plaza_costs <- tribble(
-  ~plaza_id,           ~cost_eur_2026,
-  "p25abril_sl",        2.25,   # Ponte 25 de Abril S→N (Classe 1, 2026)
-  "pvascogama_sl",      3.40,   # Ponte Vasco da Gama S→N (Classe 1, 2026)
-  "a8_loures_crel",     0.75,   # A8 CREL-Lousa section
-  "a16_gantry1",        0.85    # A16/IC30 gantry (approximated from ACP PDF)
-  # Note: Loures-CREL section on A8 is 0.00€
-)
-
-# ---- 3b. Closed system matrix (entry_plaza → exit_plaza = cumulative cost) --
-# Costs are CUMULATIVE (sum of sections traversed), Classe 1, 2026.
-# Matrix is directional (from smaller section index to larger = positive direction).
-# Negative/reverse direction: same cost (tolls apply both ways on closed systems).
-#
-# A9 (CREL) — order: estadio > queluz > a16_pontinha > radial_pontinha > a8_jct > bucelas > a10_jct > alverca
-a9_order <- c("a9_estadio","a9_queluz","a9_a16_pontinha","a9_radial_pontinha","a9_a8_junction","a9_bucelas","a9_a10_junction","a9_alverca")
-a9_cumcost <- c(0, 0.35, 0.65, 1.00, 1.40, 1.75, 2.65, 3.00)  # cumulative from estadio
-
-# A1 — order: alverca > vfxira_ii
-a1_order <- c("a1_alverca","a1_vfxira_ii")
+# A1 — from Alverca northward:
+a1_order   <- c("a1_alverca","a1_vfxira_ii")
 a1_cumcost <- c(0, 0.50)
 
-# A2 — order: fogueteiro > coina_approx > palmela
-a2_order <- c("a2_fogueteiro","a2_a2_coina_approx","a2_palmela")
+# A2 — from Fogueteiro southward:
+a2_order   <- c("a2_fogueteiro","a2_coina","a2_palmela")
 a2_cumcost <- c(0, 0.90, 1.75)
 
-# A5 — order: cruz_quebrada (Lisbon end) > oeiras > a16_jct > estoril_cascais > cascais_end
-a5_order <- c("a5_cruz_quebrada","a5_oeiras_area","a5_a16_junction","a5_estoril_cascais","a5_cascais_end")
-a5_cumcost <- c(0, 0.40, 0.70, 1.30, 1.60)  # Lisbon→Cascais direction
+# A5 — from Cruz Quebrada (Lisbon end) westward to Cascais:
+a5_order   <- c("a5_cruz_quebrada","a5_oeiras","a5_a16_junction","a5_estoril","a5_cascais")
+a5_cumcost <- c(0, 0.40, 0.70, 1.10, 1.60)
 
-# A12 — order: montijo > pinhal_novo > palmela_jct > setubal
-a12_order <- c("a12_montijo","a12_pinhal_novo","a12_palmela_jct","a12_setubal")
+# A12 — from Montijo toward Setúbal:
+a12_order   <- c("a12_montijo","a12_pinhal_novo","a12_a2jct","a12_setubal")
 a12_cumcost <- c(0, 1.10, 2.10, 2.45)
+
+
+# =============================================================================
+# 3. BUILD LOOKUP TABLES
+# =============================================================================
 
 build_closed_matrix <- function(order_vec, cumcost_vec) {
   expand.grid(entry = order_vec, exit_ = order_vec) %>%
@@ -270,95 +202,98 @@ closed_cost_matrix <- bind_rows(
   build_closed_matrix(a12_order, a12_cumcost)
 )
 
-# Concession grouping (used to restrict closed-system lookups to same road)
+# Separate open and closed way lookups
+open_way_lookup <- toll_plazas %>%
+  filter(system == "open") %>%
+  select(plaza_id, osm_way_id)
+
+closed_way_lookup <- toll_plazas %>%
+  filter(system == "closed") %>%
+  select(plaza_id, osm_way_id)
+
+# Open plaza → cost table
+open_plaza_costs <- toll_plazas %>%
+  filter(system == "open") %>%
+  distinct(plaza_id, cost_eur_2026)
+
+# Plaza → road mapping (for closed system grouping)
 plaza_to_road <- toll_plazas %>%
-  select(plaza_id, road, system)
+  distinct(plaza_id, road, system)
 
 
 # =============================================================================
 # 4. MAIN FUNCTION: compute toll cost for a single itinerary
 # =============================================================================
 
-#' Compute the toll cost for a set of OSM node IDs traversed in a trip
+#' Compute the toll cost for a set of OSM way IDs traversed in a trip
 #'
-#' @param osm_ids Character vector of OSM node/link IDs from r5r detailed_itineraries
-#' @param open_lookup  Tibble mapping osm_node_id → plaza_id (open system)
-#' @param closed_lookup Tibble mapping osm_node_id → plaza_id (closed system)
+#' @param osm_way_ids  Character vector of OSM way IDs from r5r detailed_itineraries
+#'                     (the osm_link_ids column, split by comma)
+#' @param open_lookup  Tibble mapping osm_way_id → plaza_id (open system)
+#' @param closed_lookup Tibble mapping osm_way_id → plaza_id (closed system)
 #' @param open_costs   Tibble: plaza_id → cost_eur_2026
 #' @param closed_matrix Tibble: entry_plaza, exit_plaza → cost_eur_2026
 #' @param plaza_road   Tibble: plaza_id → road
 #' @return Numeric: total toll cost in EUR
-compute_toll_cost <- function(osm_ids,
+compute_toll_cost <- function(osm_way_ids,
                                open_lookup, closed_lookup,
                                open_costs, closed_matrix, plaza_road) {
   total <- 0
-  osm_ids <- as.character(osm_ids)
-  
+  osm_way_ids <- as.character(osm_way_ids)
+
   # ---- OPEN SYSTEM ----
-  # Identify open plazas crossed (each charged once, regardless of repetition)
+  # Charge once per open plaza whose tagged way appears in the route.
+  # (Bridge ways like 22286596 are oneway=yes S→N, so r5r only uses them
+  #  in the payable direction — no extra directional filter needed.)
   open_plazas_crossed <- open_lookup %>%
-    filter(osm_node_id %in% osm_ids) %>%
+    filter(osm_way_id %in% osm_way_ids) %>%
     pull(plaza_id) %>%
     unique()
-  
+
   open_cost <- open_costs %>%
     filter(plaza_id %in% open_plazas_crossed) %>%
     summarise(total = sum(cost_eur_2026, na.rm = TRUE)) %>%
     pull(total)
-  
+
   total <- total + open_cost
-  
+
   # ---- CLOSED SYSTEM ----
-  # Identify closed plazas crossed in ORDER of appearance in route
+  # Find the first and last plaza on each road/concession, then look up the cost.
   closed_matched <- closed_lookup %>%
-    filter(osm_node_id %in% osm_ids)
-  
+    filter(osm_way_id %in% osm_way_ids)
+
   if (nrow(closed_matched) >= 2) {
-    # Preserve order of first occurrence of each plaza in the route
-    osm_position <- tibble(osm_node_id = osm_ids, position = seq_along(osm_ids))
-    
+    # Position in route order (first occurrence of each way)
+    way_position <- tibble(osm_way_id = osm_way_ids, position = seq_along(osm_way_ids))
+
     crossed_ordered <- closed_matched %>%
-      left_join(osm_position, by = "osm_node_id") %>%
+      left_join(way_position, by = "osm_way_id") %>%
       group_by(plaza_id) %>%
       slice_min(position, with_ties = FALSE) %>%
       ungroup() %>%
       left_join(plaza_road, by = "plaza_id") %>%
       arrange(position)
-    
-    # For each road/concession, charge based on first and last plaza on that road
+
     closed_cost <- crossed_ordered %>%
       group_by(road) %>%
       summarise(
         entry_plaza = first(plaza_id),
         exit_plaza  = last(plaza_id),
-        .groups = "drop"
+        .groups     = "drop"
       ) %>%
-      filter(entry_plaza != exit_plaza) %>%  # only if actually traversed a section
-      left_join(closed_matrix, by = c("entry_plaza","exit_plaza")) %>%
+      filter(entry_plaza != exit_plaza) %>%
+      left_join(closed_matrix, by = c("entry_plaza", "exit_plaza")) %>%
       summarise(total = sum(cost_eur_2026, na.rm = TRUE)) %>%
       pull(total)
-    
+
     total <- total + closed_cost
   }
-  
+
   return(total)
 }
 
 
-# =============================================================================
-# 5. BUILD LOOKUP TABLES for use in compute_toll_cost()
-# =============================================================================
-
-# Flatten plaza → node lookup (separate for open and closed)
-open_node_lookup <- toll_plazas %>%
-  filter(system == "open") %>%
-  unnest(osm_node_ids) %>%
-  select(plaza_id, osm_node_id = osm_node_ids)
-
-closed_node_lookup <- toll_plazas %>%
-  filter(system == "closed") %>%
-  unnest(osm_node_ids) %>%
-  select(plaza_id, osm_node_id = osm_node_ids)
+# (Lookup tables already built in Section 3 above)
 
 
 # =============================================================================
@@ -375,27 +310,27 @@ itinerary_rds_path <- IMPT_URL("/mobility_fare_costs/itinerary_car_60min.rds")  
 message("Loading itinerary data...")
 itineraries <- readRDS(itinerary_rds_path)
 
-# The osm_link_ids column in r5r output is a comma-separated string of OSM IDs.
+# The osm_link_ids column in r5r output is a comma-separated string of OSM way IDs.
 # Parse and compute toll for each OD pair.
 
 message("Computing toll costs per OD pair...")
 od_toll_costs <- itineraries %>%
   # Parse the osm_link_ids string into a vector for each row
   mutate(
-    osm_ids_vec = map(osm_link_ids, ~ {
+    osm_way_ids_vec = map(osm_link_ids, ~ {
       if (is.na(.x) || .x == "") return(character(0))
       str_split(.x, ",")[[1]] %>% str_trim()
     })
   ) %>%
-  # Compute toll cost for each row (segment of itinerary)
+  # Compute toll cost for each row (one leg/segment of the itinerary)
   mutate(
-    toll_cost_eur = map_dbl(osm_ids_vec, ~ compute_toll_cost(
-      osm_ids      = .x,
-      open_lookup  = open_node_lookup,
-      closed_lookup = closed_node_lookup,
-      open_costs   = open_plaza_costs,
+    toll_cost_eur = map_dbl(osm_way_ids_vec, ~ compute_toll_cost(
+      osm_way_ids   = .x,
+      open_lookup   = open_way_lookup,
+      closed_lookup = closed_way_lookup,
+      open_costs    = open_plaza_costs,
       closed_matrix = closed_cost_matrix,
-      plaza_road   = plaza_to_road
+      plaza_road    = plaza_to_road
     ))
   ) %>%
   # Aggregate to OD pair level (sum all segments/legs of the trip)
