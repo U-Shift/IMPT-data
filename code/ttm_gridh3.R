@@ -184,6 +184,8 @@ for (folder in list.dirs(folder_name, recursive = FALSE)) {
 ## For transit, for each max_trip_duration, departure_datetime and fare type,
 ## left join progressively higher number of transfers to obtain travel cost matrix
 
+folder_name = sprintf("%s/mobility_fare_costs", root_folder)
+
 max_trip_durations = c(60,120)
 departure_datetimes = c(departure_datetime_HP, departure_datetime_FHP, departure_datetime_night)
 max_rides = c(max_rides_1, max_rides_2, max_rides_3, max_rides_4, max_rides_5)
@@ -212,9 +214,21 @@ for (max_trip_duration in max_trip_durations) {
           if(is.na(ttm_with_cost)) {
             ttm_with_cost = ttm 
           } else {
-            # TODO!
+            # bind ttm rows to ttm_with_cost, filtering ttm so that there is no matching (from_id, to_id)
+            ttm_with_cost = bind_rows(
+              ttm_with_cost,
+              ttm |> anti_join(ttm_with_cost, by = c("from_id", "to_id"))
+            )
           }
         }
+        
+        # Store travel cost matrix 
+        cost_matrix_rds = sprintf("%s/cost_matrix_%s_%dmin_%s_%dtransfers_%s_fare.rds", 
+          folder_name, 
+          tolower(mode), max_trip_duration, strftime(departure_datetime, "%Y%m%d%H%M", tz = "Europe/Lisbon"),
+          mr-1, fs
+        )
+        saveRDS(ttm_with_cost, cost_matrix_rds)
       }
     }
   }
