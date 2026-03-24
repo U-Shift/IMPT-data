@@ -4,7 +4,10 @@
 # > r5r_network, root_folder, points
 
 mode = "CAR"
-folder_name = sprintf("%s/mobility_fare_costs", root_folder)
+folder_name = sprintf("%s/mobility_itineraries", root_folder)
+if(!dir.exists(folder_name)) {
+  dir.create(folder_name, recursive = TRUE)
+}
 
 for (max_trip_duration in c(60,120)) {
   message(paste("Running detailed itinerary for mode:", mode, "max trip duration:", max_trip_duration))
@@ -16,12 +19,15 @@ for (max_trip_duration in c(60,120)) {
   args$destinations = points
   
   # Varying parameters
-  args$mode = mode
+  args$mode = c(mode)
   args$max_trip_duration = max_trip_duration 
 
   args$verbose = FALSE
-  args$drop_geometry = TRUE # To make it more efficient
+  args$drop_geometry = FALSE # To set osm_link_ids to `TRUE`, the parameter 'drop_geometry' must also be `FALSE` 
   args$osm_link_ids = TRUE
+  args$all_to_all = TRUE # Run between all origins and destinations, not just between pairs of points with the same id
+  
+  args$verbose = FALSE # For debug 
         
   output_csv = sprintf("%s/itinerary_%s_%dmin", folder_name, tolower(mode), max_trip_duration)
   if(!dir.exists(output_csv)) {

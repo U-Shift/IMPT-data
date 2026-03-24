@@ -184,7 +184,11 @@ for (folder in list.dirs(folder_name, recursive = FALSE)) {
 ## For transit, for each max_trip_duration, departure_datetime and fare type,
 ## left join progressively higher number of transfers to obtain travel cost matrix
 
-folder_name = sprintf("%s/mobility_fare_costs", root_folder)
+folder_name
+folder_name_costs = sprintf("%s/mobility_fare_costs", root_folder)
+if(!dir.exists(folder_name_costs)) {
+  dir.create(folder_name_costs, recursive = TRUE)
+}
 
 max_trip_durations = c(60,120)
 departure_datetimes = c(departure_datetime_HP, departure_datetime_FHP, departure_datetime_night)
@@ -202,6 +206,7 @@ for (max_trip_duration in max_trip_durations) {
       
       # Fare variation
       for (fs in names(fare_structures)) {
+        message(paste("Processing cost matrix for max trip duration:", max_trip_duration, "departure datetime:", departure_datetime, "max rides:", mr-1, "fare structure:", fs))
         ttm_with_cost = NA
         fare_structure = fare_structures[[fs]]
         for(mf in max_fares) {
@@ -211,7 +216,7 @@ for (max_trip_duration in max_trip_durations) {
                          mr-1, fs, mf
                        )
           ttm = readRDS(output_rds) |> mutate(cost=mf)
-          if(is.na(ttm_with_cost)) {
+          if(any(is.na(ttm_with_cost))) {
             ttm_with_cost = ttm 
           } else {
             # bind ttm rows to ttm_with_cost, filtering ttm so that there is no matching (from_id, to_id)
@@ -224,7 +229,7 @@ for (max_trip_duration in max_trip_durations) {
         
         # Store travel cost matrix 
         cost_matrix_rds = sprintf("%s/cost_matrix_%s_%dmin_%s_%dtransfers_%s_fare.rds", 
-          folder_name, 
+          folder_name_costs, 
           tolower(mode), max_trip_duration, strftime(departure_datetime, "%Y%m%d%H%M", tz = "Europe/Lisbon"),
           mr-1, fs
         )
