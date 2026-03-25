@@ -1,16 +1,16 @@
 plaza_id,system,road,cost_eur_2026,notes,osm_way_ids,osm_gantry_nodes
 p25abril_sl,open,A2,2.25,Ponte 25 de Abril S→N (Classe 1 2026),"22286596",
 pvascogama_sl,open,A12,3.40,Ponte Vasco da Gama S→N (Classe 1 2026),"405372511",
-a8_crel_lousa,open,A8,0.75,A8 CREL–Lousa gantry (Classe 1 2026),"",
-a16_gantry,open,A16,0.85,A16/IC30 gantry (Classe 1 2026),"",
-a9_estadio,closed,A9,0.00,A9 Estádio Nacional/A5 junction — entry reference point (cumul. from here),"","256516965;256517355;256517436"
-a9_queluz,closed,A9,0.35,A9 Queluz (0.35 € from Estádio Nacional),"","517256487;522464085;1935980350;2812434001"
-a9_a16_pontinha,closed,A9,0.65,A9/A16 junction Radial Pontinha (0.65 € cumul.),"","256507539;256507739"
-a9_radial_pontinha,closed,A9,1.00,A9 Radial da Pontinha (1.00 € cumul.),"","4879400075;4879400082"
-a9_a8_junction,closed,A9,1.40,A9/A8 junction Loures (1.40 € cumul.),"","2134394163;2134394258"
-a9_bucelas,closed,A9,1.75,A9 Bucelas/Zambujal (1.75 € cumul.),"","9648622694;9648622698;256514707;256514835"
-a9_a10_junction,closed,A9,2.65,A9/A10 junction (2.65 € cumul.),"","9102294799"
-a9_alverca,closed,A9,3.00,A9 Alverca/A1 end (3.00 € cumul.),"","7662471386" # WRONG
+a8_crel_lousa,open,A8,0.75,A8 CREL–Lousa gantry (Classe 1 2026),"735247677;735247679",
+a16_gantry,open,A16,0.85,A16/IC30 gantry (Classe 1 2026),"223838757;223700979",
+a9_estadio,closed,A9,0.00,A9 Estádio Nacional/A5 junction — entry reference point (cumul. from here),"402781538;402781542","256516965;256517355;256517436"
+a9_queluz,closed,A9,0.35,A9 Queluz (0.35 € from Estádio Nacional),"419037510;419037511;419037520;419037543","517256487;522464085;1935980350;2812434001"
+a9_a16_pontinha,closed,A9,0.65,A9/A16 junction Radial Pontinha (0.65 € cumul.),"1422902996;41845651",""
+a9_radial_pontinha,closed,A9,1.00,A9 Radial da Pontinha (1.00 € cumul.),"365396665;365396659",""
+a9_a8_junction,closed,A9,1.40,A9/A8 junction Loures (1.40 € cumul.),"737337473;406016171",""
+a9_bucelas,closed,A9,1.75,A9 Bucelas/Zambujal (1.75 € cumul.),"365396657;365396669;","9648622694;9648622698;256514707;256514835"
+a9_a10_junction,closed,A9,2.65,A9/A10 junction (2.65 € cumul.),"1364594979;1198895695",""
+a9_alverca,closed,A9,3.00,A9 Alverca/A1 end (3.00 € cumul.),"8054294;29103848",""
 a1_alverca,closed,A1,0.00,A1 Alverca/A9 junction — entry reference point,"328133893;8054296;22940979;23687559","9706780314;9706780321"
 a1_vfxira_ii,closed,A1,0.50,A1 V.Franca de Xira II (0.50 € from Alverca),"398035551;1077488583","25391082;25391083;9879369305;9879369309"
 a2_fogueteiro,closed,A2,0.00,A2 Fogueteiro/Almada — entry reference point,"193775404;193775406;994095381;994095382","6806187905;6806187906;1663258848;1663259020"
