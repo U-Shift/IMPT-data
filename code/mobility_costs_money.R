@@ -1,7 +1,10 @@
 # Compute detailed itineraries -------------------------------------------------
 
 # Start by loading r5r and the following variables from ttm_gridh3.R
-# > r5r_network, root_folder, points
+# > r5r_network, root_folder
+
+# Also, from mobility_commuting.R
+# > od_freguesias_jittered_OR_geo, od_freguesias_jittered_DE_geo
 
 mode = "CAR"
 folder_name = sprintf("%s/mobility_itineraries", root_folder)
@@ -9,14 +12,14 @@ if(!dir.exists(folder_name)) {
   dir.create(folder_name, recursive = TRUE)
 }
 
-for (max_trip_duration in c(60,120)) {
+for (max_trip_duration in c(60)) {
   message(paste("Running detailed itinerary for mode:", mode, "max trip duration:", max_trip_duration))
   
   # Static parameters
   args = list()
   args$r5r_network = r5r_network
-  args$origins = points
-  args$destinations = points
+  args$origins = od_freguesias_jittered_OR_geo
+  args$destinations = od_freguesias_jittered_DE_geo
   
   # Varying parameters
   args$mode = c(mode)
@@ -25,7 +28,7 @@ for (max_trip_duration in c(60,120)) {
   args$verbose = FALSE
   args$drop_geometry = FALSE # To set osm_link_ids to `TRUE`, the parameter 'drop_geometry' must also be `FALSE` 
   args$osm_link_ids = TRUE
-  args$all_to_all = TRUE # Run between all origins and destinations, not just between pairs of points with the same id
+  args$all_to_all = FALSE # Run only between each origin and its corresponding destination (same index in the list)
   
   args$verbose = FALSE # For debug 
         
@@ -41,6 +44,27 @@ for (max_trip_duration in c(60,120)) {
 }
 
 # Aggregate CSVs into single rds --------------------------------------------------------------
+library(tidyverse)
+
+# Define a function to handle the "smart" splitting
+read_custom_csv <- function(file_path) {
+  lines <- read_lines(file_path)
+  
+  # The fix: We use a more explicit set for the lookahead.
+  # This looks for commas NOT followed by a closing paren or bracket 
+  # without an opening one appearing first.
+  split_pattern <- ",(?![^\\(\\[]*[\\)\\]])"
+  
+  data <- str_split(lines, split_pattern) %>% 
+    map_dfr(~ as_tibble_row(set_names(.x, paste0("V", seq_along(.x)))))
+  
+  colnames(data) <- as.character(data[1, ])
+  data <- data[-1, ] |>
+    type_convert() |>
+    select(-geometry)
+  
+  return(data)
+}
 
 for (folder in list.dirs(folder_name, recursive = FALSE)) {
   message("Aggregating CSVs in folder: ", folder)
@@ -49,7 +73,7 @@ for (folder in list.dirs(folder_name, recursive = FALSE)) {
   csv_files <- list.files(path = folder, pattern = "\\.csv$", full.names = TRUE)
   
   # Read and combine all CSV files into one data frame
-  ttm_combined <- map_dfr(csv_files, read_csv, show_col_types = FALSE)
+  ttm_combined <- map_dfr(csv_files, read_custom_csv)
   
   # Save the combined data frame as an RDS file
   rds_file_path <- paste0(folder, ".rds")
@@ -60,6 +84,15 @@ for (folder in list.dirs(folder_name, recursive = FALSE)) {
   
   message("Finished aggregating and cleaning up for folder: ", folder)
 }
+
+
+# |>
+#   mutate(
+#     # Remove "[" and "]" and split by ",", casting to int
+#     osm_id_list_int = str_remove_all(osm_id_list, "\\[|\\]") |>
+#       str_split(",") |>
+#       map(~ as.integer(.x))
+#   )
 
 # For each rds, assign costs -------------------------------------------------
 
