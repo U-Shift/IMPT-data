@@ -13,7 +13,9 @@ sum(od_freguesias_jittered50$trips) # 839142.1
 
 od_freguesias_jittered_OR_geo = st_read(IMPT_URL("/trips/od_jobs_jt50_buildings_OR.gpkg")) # points origin
 # mapview(od_freguesias_jittered_OR_geo)
+nrow(od_freguesias_jittered_OR_geo)
 od_freguesias_jittered_DE_geo = st_read(IMPT_URL("/trips/od_jobs_jt50_buildings_DE.gpkg")) # points destination
+nrow(od_freguesias_jittered_DE_geo)
 
 # ttms 
 ttm_list = list(

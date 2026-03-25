@@ -22,3 +22,10 @@ grid_transit = st_read(IMPT_URL("/mobility_transit/grid_headways.gpkg"))
 freguesia_transfers = st_read(IMPT_URL("/mobility_commuting/freguesia_transfers.gpkg"))
 municipio_transfers = st_read(IMPT_URL("/mobility_commuting/municipio_transfers.gpkg"))
 grid_transfers = st_read(IMPT_URL("/mobility_commuting/grid_transfers.gpkg"))
+
+
+# Affordability  -----------------------------------------------------------
+
+freguesia_affordability_car = st_read(IMPT_URL("/mobility_money_costs/freguesia_commuting_money_car.gpkg"))
+municipio_affordability_car = st_read(IMPT_URL("/mobility_money_costs/municipio_commuting_money_car.gpkg"))
+grid_affordability_car = st_read(IMPT_URL("/mobility_money_costs/grid_commuting_money_car.gpkg"))
