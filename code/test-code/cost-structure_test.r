@@ -1,7 +1,7 @@
 # Define cost structure for AML, with 2 scenarios (per trip or woth PT pass)
 # https://ipeagit.github.io/r5r/reference/setup_fare_structure.html
 # https://u-shift.github.io/Traffic-Simulation-Models/pareto.html
-# https://ipeagit.github.io/r5r/articles/fare_structure.html
+# Detailed docs (very useful!) https://ipeagit.github.io/r5r/articles/fare_structure.html
 
 # Use the real single fare costs (carris, metro, cm, fluvial), instead of the PT monthly pass.
 # Use 8€ for car trips (uber?)
@@ -42,7 +42,7 @@
 
 
 ##### R
-options(java.parameters = "-Xmx64G") # RAM to 16GB
+options(java.parameters = "-Xmx96G") # RAM to 16GB
 library(r5r)
 library(dplyr)
 library(sf)
@@ -80,17 +80,19 @@ fare_single <- setup_fare_structure(r5r_network,
     by = "MODE"
 )
 
+fare_single$max_discounted_transfers <- 0 # No discounted transfers, as single tickets are only valid for 1 ride (no transfers allowed)
+
 # Transfers within PT are included in the 60 min window (0 extra cost)
 fare_single$fares_per_transfer <- fare_single$fares_per_transfer |>
-    mutate(fare = 0) # No extra cost for transferring
+    mutate(fare = case_when(first_leg==second_leg ~ 0, TRUE ~ 1.91)) # No extra cost for transferring
 
 # Set transfer time to 60 minutes
 fare_single$transfer_time_allowance <- 60
 
 fare_single$fares_per_type <- fare_single$fares_per_type |>
     mutate(
-        unlimited_transfers = TRUE,
-        allow_same_route_transfer = TRUE
+      unlimited_transfers = TRUE, # case_when(type %in% c("SUBWAY", "TRAM") ~ TRUE, TRUE ~ FALSE), # Allow unlimited transfers for subway and tram, but not for bus and ferry, to reflect the fact that bus single tickets are only valid for 1 ride, while subway/tram are valid for 60min with unlimited transfers.
+      allow_same_route_transfer = TRUE
     )
 
 # save fare rules to file
@@ -98,32 +100,6 @@ r5r::write_fare_structure(fare_single, file_path = IMPT_URL("geo/r5r/fares_singl
 fare_stucture_single_file = tempfile(fileext = ".zip")
 download.file(IMPT_URL("geo/r5r/fares_single.zip"), fare_stucture_single_file, mode = "wb")
 fare_single <- r5r::read_fare_structure(fare_stucture_single_file)
-
-### Scenario A2: Single tickets (Prepaid/On-board) without free transfer
-# Same assumptions as previous
-fare_single_2 <- setup_fare_structure(r5r_network,
-                                    base_fare = 1.91,
-                                    by = "MODE"
-)
-
-# Transfers within PT are included in the 60 min window (0 extra cost)
-fare_single_2$fares_per_transfer <- fare_single_2$fares_per_transfer |>
-  mutate(fare = 1.91) # No extra cost for transferring
-
-# Set transfer time to 60 minutes
-fare_single_2$transfer_time_allowance <- 60
-
-fare_single_2$fares_per_type <- fare_single_2$fares_per_type |>
-  mutate(
-    unlimited_transfers = case_when(type %in% c("SUBWAY", "TRAM") ~ TRUE, TRUE ~ FALSE), # Allow unlimited transfers for subway and tram, but not for bus and ferry, to reflect the fact that bus single tickets are only valid for 1 ride, while subway/tram are valid for 60min with unlimited transfers.
-    allow_same_route_transfer = TRUE
-  )
-
-# save fare rules to file
-r5r::write_fare_structure(fare_single_2, file_path = IMPT_URL("geo/r5r/fares_single_2.zip"))
-fare_stucture_single_2_file = tempfile(fileext = ".zip")
-download.file(IMPT_URL("geo/r5r/fares_single.zip"), fare_stucture_single_2_file, mode = "wb")
-fare_single_2 <- r5r::read_fare_structure(fare_stucture_single_2_file)
 
 
 ### Scenario B: Monthly Pass
@@ -138,9 +114,11 @@ fare_pass <- setup_fare_structure(r5r_network,
     by = "MODE"
 )
 
+fare_pass$fare_cap = 0.57 # Monthly pass
+
 # Transfers within the journey are considered part of the same 0.57€ average cost
 fare_pass$fares_per_transfer <- fare_pass$fares_per_transfer |>
-    mutate(fare = 0)
+    mutate(fare = 0.57)
 
 fare_pass$transfer_time_allowance <- 120 # Setting a generous transfer time (e.g., 2 hours)
 

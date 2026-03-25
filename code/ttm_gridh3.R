@@ -1,4 +1,4 @@
-options(java.parameters = '-Xmx64G') # RAM to 16GB
+options(java.parameters = '-Xmx96G') # RAM to 16GB
 library(r5r)
 
 # r5r
@@ -33,10 +33,6 @@ fare_pass <- r5r::read_fare_structure(fare_stucture_pass_file)
 fare_stucture_single_file = tempfile(fileext = ".zip")
 download.file(IMPT_URL("geo/r5r/fares_single.zip"), fare_stucture_single_file, mode = "wb")
 fare_single <- r5r::read_fare_structure(fare_stucture_single_file)
-
-fare_stucture_single_2_file = tempfile(fileext = ".zip")
-download.file(IMPT_URL("geo/r5r/fares_single.zip"), fare_stucture_single_2_file, mode = "wb")
-fare_single_2 <- r5r::read_fare_structure(fare_stucture_single_2_file)
 
 # set r5r parameters
 # root_folder = "/data/IMPT"
