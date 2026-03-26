@@ -90,7 +90,7 @@ for (folder in dirs) {
 # For each itinerary, compute costs -------------------------------------------------
 
 
-fare_base_file = "itinerary_pt_120min_"
+fare_base_file = "itinerary_transit_120min_"
 fares = list("pass_fare", "single_fare")
 
 for (fare in fares) {
@@ -149,7 +149,14 @@ for (fare in fares) {
           # 3. Total trips for the group
           trips = round(sum(trips), digits=2)
         ) |> 
-        ungroup()
+        ungroup() |>
+        mutate(
+          # When total_money is 0, set variables to NA
+          total_money = ifelse(total_money == 0, NA, total_money),
+          avg_tt = ifelse(total_money == 0, NA, avg_tt),
+          avg_distance = ifelse(total_money == 0, NA, avg_distance),
+          trips = ifelse(total_money == 0, NA, trips)
+        )
     )
   }
   

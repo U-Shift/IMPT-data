@@ -17,6 +17,12 @@ nrow(od_freguesias_jittered_OR_geo)
 od_freguesias_jittered_DE_geo = st_read(IMPT_URL("/trips/od_jobs_jt50_buildings_DE.gpkg")) # points destination
 nrow(od_freguesias_jittered_DE_geo)
 
+# Fill transparent, only border, tick
+# mapview(grid) +
+# mapview(municipios, col.regions="grey", alpha.regions=0.1, layer.name="Municipios") +
+#   mapview(freguesias, col.regions="grey", alpha.regions=0.1, layer.name="Freguesias") +
+#  mapview(od_freguesias_jittered_OR_geo, color="red") + mapview(od_freguesias_jittered_DE_geo, color="blue")
+
 # ttms 
 ttm_list = list(
   # Mode, Travel time matrix file, Time cutoffs to consider
