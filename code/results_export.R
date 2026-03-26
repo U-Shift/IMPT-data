@@ -1,14 +1,16 @@
 # This script generates simplified versions of each dimension, with only the indicators used to compute the IMPT
 
-# 1. Load aggregated data
-output_dir = "results_data"
+# 1. Load aggregated data  ------------------------------------------------
+# >> When adding new data, make sure it has ben aggregated previously by dashboard_export.R!
 
-grid_aggregated = st_read(IMPT_URL(paste(output_dir, "grid_aggregated.geojson", sep="/")))
-freguesias_aggregated = st_read(IMPT_URL(paste(output_dir, "freguesias_aggregated.geojson", sep="/")))
-municipios_aggregated = st_read(IMPT_URL(paste(output_dir, "municipios_aggregated.geojson", sep="/")))
+data_dir = "dashboard_data"
+grid_aggregated = st_read(IMPT_URL(paste(data_dir, "grid_aggregated.geojson", sep="/")))
+freguesias_aggregated = st_read(IMPT_URL(paste(data_dir, "freguesias_aggregated.geojson", sep="/")))
+municipios_aggregated = st_read(IMPT_URL(paste(data_dir, "municipios_aggregated.geojson", sep="/")))
 mun_nuts = read.csv("useful_data/mun_nuts.csv") 
 
 # UTILS
+output_dir = "results_data"
 store_by_mode = function(data, cols, data_name, destination_folder) {
   modes = list("walk", "bike", "car", "transit")
   write.csv(
@@ -29,12 +31,13 @@ store_by_mode = function(data, cols, data_name, destination_folder) {
   }
 }
 
-# 2. Accessibility
+
+# 2. Accessibility --------------------------------------------------------
 select_impt_cols_accessibility = function(data) {
   return (
     data |> 
       select(
-        id, nuts, 
+        id, region_id, 
         # Number of opportunities reachable within threshold (travel time)
         # - Healthcare (15 Walk-Cycle; 30 min PT-CAR)
         access_health_walk_15min_residents, access_health_bike_15min_residents, access_health_transit_2t_30min_residents, access_health_car_30min_residents,
@@ -61,29 +64,31 @@ select_impt_cols_accessibility = function(data) {
         # - Groceries and basic shopping (3 opportunities)
         mobility_cost_groceries_walk_n3_residents, mobility_cost_groceries_bike_n3_residents, mobility_cost_groceries_transit_2t_n3_residents, mobility_cost_groceries_car_n3_residents,
         # - Jobs (3 opportunities)
-        mobility_cost_jobs_walk_n3_active, mobility_cost_jobs_bike_n3_active, mobility_cost_jobs_transit_2t_n3_active, mobility_cost_jobs_car_n3_active,
+        mobility_cost_jobs_walk_n3_active, mobility_cost_jobs_bike_n3_active, mobility_cost_jobs_transit_2t_n3_active, mobility_cost_jobs_car_n3_active
       ) |> 
       st_drop_geometry()
   )
 }
 
 freguesia_accessibility = select_impt_cols_accessibility(freguesias_aggregated) |>
-  rename(dtmnfr = id) 
+  rename(dtmnfr = id, nuts=region_id) 
 names(freguesia_accessibility)
 municipio_accessibility = select_impt_cols_accessibility(municipios_aggregated) |>
   mutate(id=as.integer(id)) |>
-  left_join(mun_nuts |> select(id, municipio), by="id")
+  left_join(mun_nuts |> select(id, municipio), by="id") |>
+  rename(nuts=region_id)
 names(municipio_accessibility)
 
 store_by_mode(freguesia_accessibility, c("dtmnfr", "nuts"), "freguesia_accessibility", output_dir)
 store_by_mode(municipio_accessibility, c("municipio", "nuts"), "municipio_accessibility", output_dir)
 
-# 3. Mobility
+
+# 3. Mobility -------------------------------------------------------------
 select_impt_cols_mobility = function(data) {
   return (
     data |> 
       select(
-        id, nuts, 
+        id, region_id, 
         # Travel time (peak)
         mobility_commuting_avg_tt_bike, mobility_commuting_avg_tt_walk, mobility_commuting_avg_tt_transit_2t_120m_15w, mobility_commuting_avg_tt_car,
         # Number of transfers for key destinations (transit)
@@ -98,13 +103,41 @@ select_impt_cols_mobility = function(data) {
 }
 
 freguesia_mobility = select_impt_cols_mobility(freguesias_aggregated) |>
-  rename(dtmnfr = id) 
+  rename(dtmnfr = id, nuts=region_id) 
 names(freguesia_mobility)
 municipio_mobility = select_impt_cols_mobility(municipios_aggregated) |>
   mutate(id=as.integer(id)) |>
-  left_join(mun_nuts |> select(id, municipio), by="id")
+  left_join(mun_nuts |> select(id, municipio), by="id") |>
+  rename(nuts=region_id)
 names(municipio_mobility)
 
 store_by_mode(freguesia_mobility, c("dtmnfr", "nuts"), "freguesia_mobility", output_dir)
 store_by_mode(municipio_mobility, c("municipio", "nuts"), "municipio_mobility", output_dir)
 
+
+# 4. Affordability --------------------------------------------------------
+select_impt_cols_affordability = function(data) {
+  return (
+    data |> 
+      select(
+        id, region_id, 
+        # Affordability (total money cost of commuting)
+        affordability_car_total_money, affordability_pt_single_fare_total_money, affordability_pt_pass_total_money
+      ) |> 
+      st_drop_geometry() |>
+      # In col names, replace "_pt_", with "_transit_"
+      rename_with(~ gsub("_pt_", "_transit_", .x))
+  )
+}
+
+freguesia_affordability = select_impt_cols_affordability(freguesias_aggregated) |>
+  rename(dtmnfr = id, nuts=region_id)
+names(freguesia_affordability)
+municipio_affordability = select_impt_cols_affordability(municipios_aggregated) |>
+  mutate(id=as.integer(id)) |>
+  left_join(mun_nuts |> select(id, municipio), by="id") |>
+  rename(nuts=region_id)
+names(municipio_affordability)
+
+store_by_mode(freguesia_affordability, c("dtmnfr", "nuts"), "freguesia_affordability", output_dir)
+store_by_mode(municipio_affordability, c("municipio", "nuts"), "municipio_affordability", output_dir)

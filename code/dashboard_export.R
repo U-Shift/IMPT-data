@@ -134,6 +134,24 @@ grid_aggregated = grid |>
       select(id, weighted_mean_transfers) |>
       rename(mobility_transit_commuting_mean_transfers=weighted_mean_transfers),
     by = "id"
+  ) |> 
+  left_join(
+    grid_affordability_car |> 
+      st_drop_geometry() |>
+      rename_with(~ paste0("affordability_car_", .), -id),
+    by="id"
+  ) |>
+  left_join(
+    grid_affordability_pt_single_fare |> 
+      st_drop_geometry() |>
+      rename_with(~ paste0("affordability_pt_single_fare_", .), -id),
+    by="id"
+  ) |>
+  left_join(
+    grid_affordability_pt_pass |> 
+      st_drop_geometry() |>
+      rename_with(~ paste0("affordability_pt_pass_", .), -id),
+    by="id"
   )
 names(grid_aggregated)
 
@@ -174,7 +192,32 @@ freguesias_aggregated = freguesias_aggregated |>
       select(id, weighted_mean_transfers) |>
       rename(mobility_transit_commuting_mean_transfers=weighted_mean_transfers),
     by = "id"
+  ) |>
+  left_join(
+    freguesia_affordability_car |> 
+      st_drop_geometry() |>
+      rename(id=dtmnfr) |>
+      mutate(id=as.character(id)) |>
+      rename_with(~ paste0("affordability_car_", .), -id),
+    by="id"
+  ) |>
+  left_join(
+    freguesia_affordability_pt_single_fare |> 
+      st_drop_geometry() |>
+      rename(id=dtmnfr) |>
+      mutate(id=as.character(id)) |>
+      rename_with(~ paste0("affordability_pt_single_fare_", .), -id),
+    by="id"
+  ) |>
+  left_join(
+    freguesia_affordability_pt_pass |> 
+      st_drop_geometry() |>
+      rename(id=dtmnfr) |>
+      mutate(id=as.character(id)) |>
+      rename_with(~ paste0("affordability_pt_pass_", .), -id),
+    by="id"
   )
+names(freguesias_aggregated)
 
 
 municipios_aggregated = municipios |> 
@@ -219,6 +262,30 @@ municipios_aggregated = municipios |>
       select(id, weighted_mean_transfers) |>
       rename(mobility_transit_commuting_mean_transfers=weighted_mean_transfers),
     by = "id"
+  ) |>
+  left_join(
+    municipio_affordability_car |> 
+      st_drop_geometry() |> 
+      left_join(mun_nuts |> select(id, municipio), by="municipio") |>
+      select(-municipio) |>
+      rename_with(~ paste0("affordability_car_", .), -id),
+    by="id"
+  ) |>
+  left_join(
+    municipio_affordability_pt_single_fare |> 
+      st_drop_geometry() |> 
+      left_join(mun_nuts |> select(id, municipio), by="municipio") |>
+      select(-municipio) |>
+      rename_with(~ paste0("affordability_pt_single_fare_", .), -id),
+    by="id"
+  ) |>
+  left_join(
+    municipio_affordability_pt_pass |> 
+      st_drop_geometry() |> 
+      left_join(mun_nuts |> select(id, municipio), by="municipio") |>
+      select(-municipio) |>
+      rename_with(~ paste0("affordability_pt_pass_", .), -id),
+    by="id"
   )
 names(municipios_aggregated)
 
