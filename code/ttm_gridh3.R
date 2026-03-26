@@ -26,13 +26,13 @@ library(tidyverse)
 r5r_network
 
 # load fare structures for PT
-fare_stucture_pass_file = tempfile(fileext = ".zip")
-download.file(IMPT_URL("geo/r5r/fares_pass.zip"), fare_stucture_pass_file, mode = "wb")
-fare_pass <- r5r::read_fare_structure(fare_stucture_pass_file)
-
-fare_stucture_single_file = tempfile(fileext = ".zip")
-download.file(IMPT_URL("geo/r5r/fares_single.zip"), fare_stucture_single_file, mode = "wb")
-fare_single <- r5r::read_fare_structure(fare_stucture_single_file)
+# fare_stucture_pass_file = tempfile(fileext = ".zip")
+# download.file(IMPT_URL("geo/r5r/fares_pass.zip"), fare_stucture_pass_file, mode = "wb")
+# fare_pass <- r5r::read_fare_structure(fare_stucture_pass_file)
+# 
+# fare_stucture_single_file = tempfile(fileext = ".zip")
+# download.file(IMPT_URL("geo/r5r/fares_single.zip"), fare_stucture_single_file, mode = "wb")
+# fare_single <- r5r::read_fare_structure(fare_stucture_single_file)
 
 # set r5r parameters
 # root_folder = "/data/IMPT"
@@ -73,7 +73,7 @@ max_rides_5 = 5 # 4 transfers
 # run for different modes -------------------------------------------------
 
 # main()
-folder_name = sprintf("%s/ttm/ttm_%s_fare", root_folder, tolower(grid_name))
+folder_name = sprintf("%s/ttm/ttm_%s", root_folder, tolower(grid_name))
 if(!dir.exists(folder_name)) {
   dir.create(folder_name, recursive = TRUE)
 }
@@ -112,8 +112,8 @@ for (mode in c("TRANSIT")) { # "CAR", "BICYCLE", "WALK",
         args$mode_egress = mode_egress
         args$max_walk_time = max_walk_time
         max_rides = c(max_rides_1, max_rides_2, max_rides_3, max_rides_4, max_rides_5)
-        fare_structures = list("single" = fare_single, "pass" = fare_pass, "single_2" = fare_single_2)
-        max_fares = c(2,5,10)
+        # fare_structures = list("single" = fare_single, "pass" = fare_pass, "single_2" = fare_single_2)
+        # max_fares = c(2,5,10)
       }
       
       for (mr in max_rides) {
@@ -179,61 +179,61 @@ for (folder in list.dirs(folder_name, recursive = FALSE)) {
 
 ## For transit, for each max_trip_duration, departure_datetime and fare type,
 ## left join progressively higher number of transfers to obtain travel cost matrix
-
-folder_name
-folder_name_costs = sprintf("%s/mobility_fare_costs", root_folder)
-if(!dir.exists(folder_name_costs)) {
-  dir.create(folder_name_costs, recursive = TRUE)
-}
-
-max_trip_durations = c(60,120)
-departure_datetimes = c(departure_datetime_HP, departure_datetime_FHP, departure_datetime_night)
-max_rides = c(max_rides_1, max_rides_2, max_rides_3, max_rides_4, max_rides_5)
-
-fare_structures = list("single" = fare_single, "pass" = fare_pass, "single_2" = fare_single_2)
-max_fares = c(2,5,10)
-
-
-for (max_trip_duration in max_trip_durations) {
-  for (departure_datetime in departure_datetimes) {
-    for (mr in max_rides) {
-      # Common attributes
-      # ttm_transit_60min_202602040800_0transfers.rds
-      
-      # Fare variation
-      for (fs in names(fare_structures)) {
-        message(paste("Processing cost matrix for max trip duration:", max_trip_duration, "departure datetime:", departure_datetime, "max rides:", mr-1, "fare structure:", fs))
-        ttm_with_cost = NA
-        fare_structure = fare_structures[[fs]]
-        for(mf in max_fares) {
-          output_rds = sprintf("%s/ttm_%s_%dmin_%s_%dtransfers_%s_fare_maxfare%d.rds", 
-                         folder_name, 
-                         tolower(mode), max_trip_duration, strftime(departure_datetime, "%Y%m%d%H%M", tz = "Europe/Lisbon"),
-                         mr-1, fs, mf
-                       )
-          ttm = readRDS(output_rds) |> mutate(cost=mf)
-          if(any(is.na(ttm_with_cost))) {
-            ttm_with_cost = ttm 
-          } else {
-            # bind ttm rows to ttm_with_cost, filtering ttm so that there is no matching (from_id, to_id)
-            ttm_with_cost = bind_rows(
-              ttm_with_cost,
-              ttm |> anti_join(ttm_with_cost, by = c("from_id", "to_id"))
-            )
-          }
-        }
-        
-        # Store travel cost matrix 
-        cost_matrix_rds = sprintf("%s/cost_matrix_%s_%dmin_%s_%dtransfers_%s_fare.rds", 
-          folder_name_costs, 
-          tolower(mode), max_trip_duration, strftime(departure_datetime, "%Y%m%d%H%M", tz = "Europe/Lisbon"),
-          mr-1, fs
-        )
-        saveRDS(ttm_with_cost, cost_matrix_rds)
-      }
-    }
-  }
-}
+# 
+# folder_name
+# folder_name_costs = sprintf("%s/mobility_fare_costs", root_folder)
+# if(!dir.exists(folder_name_costs)) {
+#   dir.create(folder_name_costs, recursive = TRUE)
+# }
+# 
+# max_trip_durations = c(60,120)
+# departure_datetimes = c(departure_datetime_HP, departure_datetime_FHP, departure_datetime_night)
+# max_rides = c(max_rides_1, max_rides_2, max_rides_3, max_rides_4, max_rides_5)
+# 
+# fare_structures = list("single" = fare_single, "pass" = fare_pass, "single_2" = fare_single_2)
+# max_fares = c(2,5,10)
+# 
+# 
+# for (max_trip_duration in max_trip_durations) {
+#   for (departure_datetime in departure_datetimes) {
+#     for (mr in max_rides) {
+#       # Common attributes
+#       # ttm_transit_60min_202602040800_0transfers.rds
+#       
+#       # Fare variation
+#       for (fs in names(fare_structures)) {
+#         message(paste("Processing cost matrix for max trip duration:", max_trip_duration, "departure datetime:", departure_datetime, "max rides:", mr-1, "fare structure:", fs))
+#         ttm_with_cost = NA
+#         fare_structure = fare_structures[[fs]]
+#         for(mf in max_fares) {
+#           output_rds = sprintf("%s/ttm_%s_%dmin_%s_%dtransfers_%s_fare_maxfare%d.rds", 
+#                          folder_name, 
+#                          tolower(mode), max_trip_duration, strftime(departure_datetime, "%Y%m%d%H%M", tz = "Europe/Lisbon"),
+#                          mr-1, fs, mf
+#                        )
+#           ttm = readRDS(output_rds) |> mutate(cost=mf)
+#           if(any(is.na(ttm_with_cost))) {
+#             ttm_with_cost = ttm 
+#           } else {
+#             # bind ttm rows to ttm_with_cost, filtering ttm so that there is no matching (from_id, to_id)
+#             ttm_with_cost = bind_rows(
+#               ttm_with_cost,
+#               ttm |> anti_join(ttm_with_cost, by = c("from_id", "to_id"))
+#             )
+#           }
+#         }
+#         
+#         # Store travel cost matrix 
+#         cost_matrix_rds = sprintf("%s/cost_matrix_%s_%dmin_%s_%dtransfers_%s_fare.rds", 
+#           folder_name_costs, 
+#           tolower(mode), max_trip_duration, strftime(departure_datetime, "%Y%m%d%H%M", tz = "Europe/Lisbon"),
+#           mr-1, fs
+#         )
+#         saveRDS(ttm_with_cost, cost_matrix_rds)
+#       }
+#     }
+#   }
+# }
 
 
 # stop r5r ----------------------------------------------------------------
