@@ -29,11 +29,13 @@ grid_transfers = st_read(IMPT_URL("/mobility_commuting/grid_transfers.gpkg"))
 freguesia_affordability_car = st_read(IMPT_URL("/mobility_money_costs/freguesia_commuting_money_car.gpkg"))
 municipio_affordability_car = st_read(IMPT_URL("/mobility_money_costs/municipio_commuting_money_car.gpkg"))
 grid_affordability_car = st_read(IMPT_URL("/mobility_money_costs/grid_commuting_money_car.gpkg"))
+# mapview(freguesia_affordability_car, zcol = "total_money") + mapview(grid_affordability_car, zcol = "total_money")
 
 freguesia_affordability_pt_single_fare = st_read(IMPT_URL("/mobility_money_costs/freguesia_commuting_money_pt_single_fare.gpkg"))
 municipio_affordability_pt_single_fare = st_read(IMPT_URL("/mobility_money_costs/municipio_commuting_money_pt_single_fare.gpkg"))
 grid_affordability_pt_single_fare = st_read(IMPT_URL("/mobility_money_costs/grid_commuting_money_pt_single_fare.gpkg"))
 # mapview(freguesia_affordability_pt_single_fare, zcol = "total_money") + mapview(grid_affordability_pt_single_fare, zcol = "total_money")
+# mapview(municipio_affordability_pt_single_fare, zcol = "total_money")
 
 freguesia_affordability_pt_pass = st_read(IMPT_URL("/mobility_money_costs/freguesia_commuting_money_pt_pass_fare.gpkg"))
 municipio_affordability_pt_pass = st_read(IMPT_URL("/mobility_money_costs/municipio_commuting_money_pt_pass_fare.gpkg"))
