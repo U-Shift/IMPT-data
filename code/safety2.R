@@ -45,9 +45,8 @@ ig_freg <- st_join(
   freguesias %>% select(dtmnfr, freguesia)
 )
 
-
 table(is.na(ig_freg$freguesia)) # 173
-mapview::mapview(ig_freg) + mapview::mapview(freguesias, alpha.regions = 0.2)
+# mapview::mapview(ig_freg) + mapview::mapview(freguesias, alpha.regions = 0.2)
 
 ig_freg = ig_freg |> filter(!is.na(freguesia)) # remove os 173 sem freguesia (pontes!) (que são poucos, e não vale a pena resolver por nearest)
 
@@ -55,7 +54,7 @@ ig_freg = ig_freg |> filter(!is.na(freguesia)) # remove os 173 sem freguesia (po
 table(ig_freg$Ano)
 ig_freg = ig_freg |> filter(Ano %in% c(2019:2023))
 
-# select only the ones that matter
+# select only the variables that matter
 names(ig_freg)
 ig_redux = ig_freg |> select(dtmnfr, freguesia, Ano, VM.30d, X_VM.30d, FG.30d, X_FG.30d, FL.30d, X_FL.30d, X_Veículo,
                             X_Veícul_1, X_Ciclomoto, X_Desconhec, X_Máquina,  X_Motociclo, X_Motocic_1, X_Quadricic, X_Triciclo,
@@ -77,22 +76,22 @@ accidents = ig_redux |>
 sum(accidents$vitimas_mortais30) # 433 mortos a 30 dias
 
 # check with pmus data 
-vitimas = accidents |> 
-  st_drop_geometry() |> 
-  group_by(Ano) |> 
-  summarise(vitimas_mortais30 = sum(vitimas_mortais30, na.rm = TRUE),
-            feridos_graves30 = sum(feridos_graves30, na.rm = TRUE),
-            feridos_ligeiros30 = sum(feridos_ligeiros30, na.rm = TRUE),
-            total_vitimas30 = sum(total_vitimas30, na.rm = TRUE),
-            acidentes = n())
-veiculos = accidents |> 
-  st_drop_geometry() |> 
-  group_by(Ano) |> 
-  summarise(veh_motorizado = sum(veh_motorizado, na.rm = TRUE),
-            veh_bicicleta = sum(veh_bicicleta, na.rm = TRUE),
-            veh_peoes = sum(veh_peoes, na.rm = TRUE),
-            total_veiculos = sum(total_veh, na.rm = TRUE),
-            acidentes = n())
+# vitimas = accidents |> 
+#   st_drop_geometry() |> 
+#   group_by(Ano) |> 
+#   summarise(vitimas_mortais30 = sum(vitimas_mortais30, na.rm = TRUE),
+#             feridos_graves30 = sum(feridos_graves30, na.rm = TRUE),
+#             feridos_ligeiros30 = sum(feridos_ligeiros30, na.rm = TRUE),
+#             total_vitimas30 = sum(total_vitimas30, na.rm = TRUE),
+#             acidentes = n())
+# veiculos = accidents |> 
+#   st_drop_geometry() |> 
+#   group_by(Ano) |> 
+#   summarise(veh_motorizado = sum(veh_motorizado, na.rm = TRUE),
+#             veh_bicicleta = sum(veh_bicicleta, na.rm = TRUE),
+#             veh_peoes = sum(veh_peoes, na.rm = TRUE),
+#             total_veiculos = sum(total_veh, na.rm = TRUE),
+#             acidentes = n())
 
 
 
@@ -125,7 +124,7 @@ accidents_redux = accidents |>
 
 
 #### Populations and municipio
-### Join with municipio
+### Join with municipio - use ours!
 accidents_redux = accidents_redux |> 
   left_join(freguesias |> st_drop_geometry() |> select(dtmnfr, municipio), by = "dtmnfr")
 
@@ -175,7 +174,6 @@ accidents_redux_localidades = accidents |>
   group_by(dtmnfr, freguesia) |>
   summarise(
     total_acidentes = n(),
-    # total 5 anos
     noite = sum(noite),
     vitimas_mortais30 = sum(vitimas_mortais30, na.rm = TRUE),
     feridos_graves30 = sum(feridos_graves30, na.rm = TRUE),
@@ -196,8 +194,7 @@ accidents_redux_localidades = accidents |>
   select(-id) |>
   mutate(
     indice_gravidade = vitimas_mortais30 / total_vitimas30,
-    indice_gravidade_carro = ifelse(veh_motorizado > 0, vitimas_mortais30 / veh_motorizado, NA_real_),
-    # ignora se não houve carro involvido
+    indice_gravidade_carro = ifelse(veh_motorizado > 0, vitimas_mortais30 / veh_motorizado, NA_real_), # ignora se não houve carro involvido
     indice_gravidade_bicicleta = ifelse(veh_bicicleta > 0, vitimas_mortais30 / veh_bicicleta, NA_real_),
     indice_gravidade_peoes = ifelse(veh_peoes > 0, vitimas_mortais30 / veh_peoes, NA_real_)
   ) |>
