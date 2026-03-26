@@ -24,8 +24,8 @@ IMPT_URL <- function(path) {
 # ----------------------------
 freguesias <- st_read(IMPT_URL("/geo/freguesias_2024_unique.gpkg"), quiet = TRUE)
 
-acidentes_path <- "~/IMPT-data/13-SegurançaRodoviária.gpkg"
-stopifnot(file.exists(path.expand(acidentes_path)))
+acidentes_path <- IMPT_URL("/safety/13-SegurançaRodoviária.gpkg")
+# stopifnot(file.exists(path.expand(acidentes_path)))
 
 ig <- st_read(
   dsn = acidentes_path,
@@ -34,22 +34,19 @@ ig <- st_read(
 )
 
 # ----------------------------
-# 2) Join espacial (pontos -> freguesia nova) + resolver NA por nearest
+# 2) Join espacial (pontos -> freguesia nova)
 # ----------------------------
-ig2 <- st_transform(ig, st_crs(freguesias))
-
 ig_freg <- st_join(
-  ig2,
-  freguesias %>% select(dtmnfr, freguesia),
-  left = TRUE
+  ig |>
+    select(-Freguesia) |> 
+    st_transform(st_crs(freguesias)),
+  freguesias %>% select(dtmnfr, freguesia)
 )
 
-na_idx <- which(is.na(ig_freg$dtmnfr))
-if (length(na_idx) > 0) {
-  nearest <- st_nearest_feature(ig2[na_idx, ], freguesias)
-  ig_freg$dtmnfr[na_idx] <- freguesias$dtmnfr[nearest]
-  ig_freg$freguesia[na_idx] <- freguesias$freguesia[nearest]
-}
+table(is.na(ig_freg$freguesia)) # 173
+mapview::mapview(ig_freg) + mapview::mapview(freguesias, alpha.regions = 0.2)
+
+ig_freg = ig_freg |> filter(!is.na(freguesia)) # remove os 173 sem freguesia (pontes!) (que são poucos, e não vale a pena resolver por nearest)
 
 # ----------------------------
 # 3) Variáveis auxiliares (modos, VM30, filtros arruamento/noite)
