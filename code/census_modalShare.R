@@ -49,10 +49,10 @@ all_dicofre_conversion_weight
 database_converted = all_dicofre_conversion_weight |>
   left_join(database, by = c("dtmnfr16")) |> 
   mutate(
-    total_converted = total * weight,
-    pt_converted = pt * weight,
-    private_vehicle_converted = private_vehicle * weight,
-    active_converted = active * weight
+    total_converted = round(total * weight, digits=2),
+    pt_converted = round(pt * weight, digits=2),
+    private_vehicle_converted = round(private_vehicle * weight, digits=2),
+    active_converted = round(active * weight, digits=2)
   )
 
 assertthat::assert_that(nrow(database_converted) == nrow(all_dicofre_conversion_weight))
