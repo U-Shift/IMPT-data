@@ -1,0 +1,80 @@
+# Read CSV
+database = read.csv(IMPT_URL("/census2021/ine_indicador_0011704.csv"), sep = ";")
+# names(database)
+# [1] "Local.de.residência.à.data.dos.Censos..2021...NUTS...2013."                      
+# [2] "S7A2021.2021.T.HM.T.Total.T.Total.T.Total"                                       
+# [3] "S7A2021.2021.T.HM.T.Total.01.A.pé.T.Total"                                       
+# [4] "S7A2021.2021.T.HM.T.Total.02.Automovel.ligeiro...como.condutor.T.Total"          
+# [5] "S7A2021.2021.T.HM.T.Total.03.Automovel.ligeiro...como.passageiro.T.Total"        
+# [6] "S7A2021.2021.T.HM.T.Total.04.Autocarro.T.Total"                                  
+# [7] "S7A2021.2021.T.HM.T.Total.05.Transporte.coletivo.da.empresa.ou.da.escola.T.Total"
+# [8] "S7A2021.2021.T.HM.T.Total.06.Metropolitano.T.Total"                              
+# [9] "S7A2021.2021.T.HM.T.Total.07.Comboio.T.Total"                                    
+# [10] "S7A2021.2021.T.HM.T.Total.08.Motociclo.T.Total"                                  
+# [11] "S7A2021.2021.T.HM.T.Total.09.Bicicleta.T.Total"                                  
+# [12] "S7A2021.2021.T.HM.T.Total.10.Barco.T.Total"                                      
+# [13] "S7A2021.2021.T.HM.T.Total.11.Outro.T.Total"     
+# Rename first column to str_id
+names(database)
+names(database)[1] <- "str_id"
+names(database)[2] <- "total"
+names(database)[3] <- "walk"
+names(database)[4] <- "car_driver"
+names(database)[5] <- "car_passenger"
+names(database)[6] <- "bus"
+names(database)[7] <- "company_school_transport"
+names(database)[8] <- "metro"
+names(database)[9] <- "train"
+names(database)[10] <- "motorcycle"
+names(database)[11] <- "bicycle"
+names(database)[12] <- "boat"
+names(database)[13] <- "other"
+
+
+database = database |>
+  mutate(dtmnfr16 = sub(":.*", "", str_id)) |> 
+  filter(!dtmnfr16 %in% c("17", "170")) |>
+  mutate(
+    pt = bus + company_school_transport + metro + train + boat, 
+    private_vehicle = car_driver + car_passenger + motorcycle,
+    active = walk + bicycle
+  ) |>
+  select(dtmnfr16, total, pt, private_vehicle, active)
+nrow(database)
+
+# Modal share computation, with dicofre convertion
+all_dicofre_conversion_weight = readRDS("useful_data/dicofre_16_24_conversion_full_with_weights.Rds")
+all_dicofre_conversion_weight
+
+database_converted = all_dicofre_conversion_weight |>
+  left_join(database, by = c("dtmnfr16")) |> 
+  mutate(
+    total_converted = total * weight,
+    pt_converted = pt * weight,
+    private_vehicle_converted = private_vehicle * weight,
+    active_converted = active * weight
+  )
+
+assertthat::assert_that(nrow(database_converted) == nrow(all_dicofre_conversion_weight))
+assertthat::assert_that(sum(database_converted$total_converted) == sum(database$total))
+assertthat::assert_that(sum(database_converted$pt_converted) == sum(database$pt))
+assertthat::assert_that(sum(database_converted$private_vehicle_converted) == sum(database$private_vehicle))
+assertthat::assert_that(sum(database_converted$active_converted) == sum(database$active))
+
+database_final = database_converted |>
+  select(dtmnfr24, total_converted, pt_converted, private_vehicle_converted, active_converted) |>
+  rename(
+    dtmnfr = dtmnfr24,
+    total = total_converted,
+    pt = pt_converted,
+    private_vehicle = private_vehicle_converted,
+    active = active_converted
+  ) |>
+  mutate(
+    pt_share = round(pt / total, digits=2),
+    private_vehicle_share = round(private_vehicle / total, digits=2),
+    active_share = round(active / total, digits=2)
+  )
+View(database_final)
+
+write.csv(database_final, "useful_data/census_modal_share.csv", row.names = FALSE)
