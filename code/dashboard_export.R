@@ -52,14 +52,14 @@ grid
 # 3.1 Merge with global results  -------------------------------------------------
 # Attention! Run results_visualizer.R before running this section, to have the global results dataframes available in the environment
 
-impt_pca = read.csv(IMPT_URL("results_aggregated/20260311/IMPT_PCA_and_Entropy_Scores.csv"))
-impt_pca_bike = read.csv(IMPT_URL("results_aggregated/20260312/IMPT_PCA_and_Entropy_Scores_bike.csv")) |>
+impt_pca = read.csv(IMPT_URL("results_aggregated/20260330/IMPT_PCA_and_Entropy_Scores.csv"))
+impt_pca_bike = read.csv(IMPT_URL("results_aggregated/20260330/IMPT_PCA_and_Entropy_Scores_bike.csv")) |>
   rename_with(~ paste0(., "_bike"), ends_with("_Index"))
-impt_pca_walk = read.csv(IMPT_URL("results_aggregated/20260312/IMPT_PCA_and_Entropy_Scores_walk.csv")) |> 
+impt_pca_walk = read.csv(IMPT_URL("results_aggregated/20260330/IMPT_PCA_and_Entropy_Scores_walk.csv")) |> 
   rename_with(~ paste0(., "_walk"), ends_with("_Index"))
-impt_pca_pt = read.csv(IMPT_URL("results_aggregated/20260312/IMPT_PCA_and_Entropy_Scores_pt.csv")) |> 
+impt_pca_pt = read.csv(IMPT_URL("results_aggregated/20260330/IMPT_PCA_and_Entropy_Scores_pt.csv")) |> 
   rename_with(~ paste0(., "_pt"), ends_with("_Index"))
-impt_pca_car = read.csv(IMPT_URL("results_aggregated/20260312/IMPT_PCA_and_Entropy_Scores_car.csv")) |> 
+impt_pca_car = read.csv(IMPT_URL("results_aggregated/20260330/IMPT_PCA_and_Entropy_Scores_car.csv")) |> 
   rename_with(~ paste0(., "_car"), ends_with("_Index"))
 
 freguesias_aggregated = freguesias |> 
@@ -92,9 +92,13 @@ freguesias_aggregated = freguesias |>
       mutate(dtmnfr = as.character(dtmnfr)) |>
       st_drop_geometry()
     ,by=c("id"="dtmnfr")
+  ) |>
+  mutate(
+    # All columns that start with "IMPT_", mutate to 100-.x
+    across(starts_with("IMPT_"), ~ 100 - .)
   )
 names(freguesias_aggregated)
-
+summary(freguesias_aggregated)
 
 # 3.2 Merge with dimensions indicators  -------------------------------------------------
 # Attention! Run results.R before running this section, to have the indicators dataframes available in the environment
