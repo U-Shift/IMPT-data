@@ -4,8 +4,6 @@
 library(tidyverse)
 library(sf)
 
-# Helper: sum that returns NA when ALL inputs are NA (unlike sum(na.rm=TRUE) which returns 0)
-sum_na = function(x) if (all(is.na(x))) NA_real_ else sum(x, na.rm = TRUE)
 
 # Load Reference Data --------------------------------------------------
 grid = st_read("/data/IMPT/geo/grelha_h3_r8.gpkg") |> mutate(id = as.character(id))
@@ -15,6 +13,8 @@ municipios_geo = st_read("/data/IMPT/geo/municipios_2024.gpkg")
 municipios_id = read.csv("useful_data/municipios_id.csv") 
 municipios_geo = municipios_geo |> left_join(municipios_id) |> mutate(mun_id = as.character(mun_id))
 
+# Helper: sum that returns NA when ALL inputs are NA (unlike sum(na.rm=TRUE) which returns 0)
+sum_na = function(x) if (all(is.na(x))) NA_real_ else sum(x, na.rm = TRUE)
 
 # Houses and buildings ----------------------------------------------------
 census_pts = st_read("/data/IMPT/geo/census24_points.gpkg") |> 
