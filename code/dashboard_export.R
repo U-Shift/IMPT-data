@@ -18,18 +18,27 @@ freguesias = freguesias |>
   select(-area_ha)
 freguesias
 # mapview(freguesias, zcol="group_id")
+# write.csv(
+#   freguesias |> 
+#     select(id,name,region_id,group_id) |> 
+#     st_drop_geometry() |>
+#     rename(freg_id=id, mun_id=group_id, nuts_id=region_id), 
+#   "useful_data/freguesias_nuts.csv", 
+#   row.names = FALSE
+# )
 
 # mun_nuts <- freguesias |>
 #   st_drop_geometry() |>
 #   group_by(group_id) |>
 #   summarise(
-#     nuts = first(nuts),
+#     nuts = first(region_id),
 #     municipio = first(municipio),
 #     .groups = "drop"
 #   ) |>
 #   rename(id=group_id)
-# write.csv(mun_nuts, "useful_data/mun_nuts.csv", row.names = FALSE)
-mun_nuts = read.csv("useful_data/mun_nuts.csv")
+# write.csv(mun_nuts |> rename(mun_id=id, nuts_id=nuts, name=municipio), "useful_data/mun_nuts.csv", row.names = FALSE)
+
+mun_nuts = read.csv("useful_data/mun_nuts.csv") |> rename(nuts=nuts_id, id=mun_id,municipio=name)
 mun_nuts
 municipios <- municipios |>
   left_join(mun_nuts, by = "municipio") |>
@@ -42,6 +51,14 @@ grid_centroids = st_centroid(grid)
 grid_nuts = st_join(grid_centroids, freguesias |> select(id, region_id) |> rename(group_id=id), join = st_within) |>
   st_drop_geometry()
 grid_nuts
+
+# write.csv(
+#   grid_nuts |> st_drop_geometry() |> rename(grid_id=id, freg_id=group_id, nuts_id=region_id) |>
+#   left_join(freguesias |> st_drop_geometry() |> select(id, group_id) |> rename(freg_id=id, mun_id=group_id), by="freg_id"),
+#   "useful_data/grid_nuts.csv", 
+#   row.names = FALSE
+# )
+
 grid = grid |>
   left_join(grid_nuts, by = "id") |>
   filter(!is.na(region_id)) |>
