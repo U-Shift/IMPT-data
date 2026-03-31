@@ -18,7 +18,7 @@ municipios_geo <- municipios_geo |>
 # Helper: sum that returns NA when ALL inputs are NA (unlike sum(na.rm=TRUE) which returns 0)
 sum_na <- function(x) if (all(is.na(x))) NA_real_ else sum(x, na.rm = TRUE)
 
-# Houses and buildings ----------------------------------------------------
+# Census, Houses and buildings ----------------------------------------------------
 census_pts = st_read("/data/IMPT/geo/census24_points.gpkg") |> 
   select(
     buildings_pre1945   = N_EDIFICIOS_CONSTR_ANTES_1945,
@@ -53,10 +53,11 @@ grid_stats <- census_with_grid |>
     volume_with_grid |>
       st_drop_geometry() |>
       group_by(id) |>
-      summarise(vol_m3 = sum(volume_m3, na.rm = TRUE)),
+      summarise(volume_m3 = sum(volume_m3, na.rm = TRUE)),
     by = "id"
   ) |>
-  rename(grid_id = id)
+  rename(grid_id = id) |> 
+  ungroup()
 
 # Join the cross-reference (freg_id, mun_id) to these stats
 # Grid cells with no census centroid inside them keep NA (no false zeros)
@@ -75,9 +76,10 @@ buildings_grid <- grid |>
   left_join(master_stats, by = c("id" = "grid_id")) |>
   mutate(
     area_m2 = as.numeric(st_area(geom)),
-    volume_density = round(vol_m3 / area_m2, 2)
+    volume_density = round(volume_m3 / area_m2, 2)
   )
 # mapview(buildings_grid, zcol="volume_density")
+buildings_grid = buildings_grid |> st_drop_geometry() |> select(id, pre1945, volume_m3, volume_density)
 write.csv(st_drop_geometry(buildings_grid), "/data/IMPT/landuse/buildings_grid.csv", row.names = FALSE)
 
 ## FREGUESIA LEVEL
@@ -88,7 +90,7 @@ buildings_freguesias <- freguesias_geo |>
       group_by(freg_id) |>
       summarise(
         total_pre1945 = sum_na(pre1945),
-        total_volume_m3 = sum_na(vol_m3)
+        total_volume_m3 = sum_na(volume_m3)
       ),
     by = c("dtmnfr" = "freg_id")
   ) |>
@@ -96,8 +98,13 @@ buildings_freguesias <- freguesias_geo |>
     total_volume_m3 = round(total_volume_m3),
     area_m2 = round(as.numeric(st_area(geom))),
     volume_density = round(total_volume_m3 / area_m2, 2)
-  )
+  ) |> 
+  rename(freg_id = dtmnfr,
+         pre1945 = total_pre1945,
+         volume_m3 = total_volume_m3)
+
 # mapview(buildings_freguesias, zcol="volume_density")
+buildings_freguesias = buildings_freguesias |> st_drop_geometry() |> select(freg_id, pre1945, volume_m3, volume_density)
 write.csv(buildings_freguesias |> st_drop_geometry(), "/data/IMPT/landuse/buildings_freguesias.csv", row.names = FALSE)
 
 ## MUNICIPALITY LEVEL
@@ -108,7 +115,7 @@ buildings_municipios <- municipios_geo |>
       group_by(mun_id) |>
       summarise(
         total_pre1945 = sum_na(pre1945),
-        total_volume_m3 = sum_na(vol_m3)
+        total_volume_m3 = sum_na(volume_m3)
       ),
     by = "mun_id"
   ) |>
@@ -116,8 +123,12 @@ buildings_municipios <- municipios_geo |>
     total_volume_m3 = round(total_volume_m3),
     area_m2 = round(as.numeric(st_area(geom))),
     volume_density = round(total_volume_m3 / area_m2, 2)
-  )
+  ) |> 
+  rename(pre1945 = total_pre1945,
+         volume_m3 = total_volume_m3)
+
 # mapview(buildings_municipios, zcol="volume_density")
+buildings_municipios = buildings_municipios |> st_drop_geometry() |> select(mun_id, pre1945, volume_m3, volume_density)
 write.csv(buildings_municipios |> st_drop_geometry(), "/data/IMPT/landuse/buildings_municipios.csv", row.names = FALSE)
 
 
