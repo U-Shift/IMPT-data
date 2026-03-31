@@ -80,7 +80,7 @@ buildings_grid <- grid |>
   )
 # mapview(buildings_grid, zcol="volume_density")
 buildings_grid = buildings_grid |> st_drop_geometry() |> select(id, pre1945, volume_m3, volume_density)
-write.csv(st_drop_geometry(buildings_grid), "/data/IMPT/landuse/buildings_grid.csv", row.names = FALSE)
+write.csv(buildings_grid, "/data/IMPT/landuse/buildings_grid.csv", row.names = FALSE)
 
 ## FREGUESIA LEVEL
 buildings_freguesias <- freguesias_geo |>
@@ -105,7 +105,7 @@ buildings_freguesias <- freguesias_geo |>
 
 # mapview(buildings_freguesias, zcol="volume_density")
 buildings_freguesias = buildings_freguesias |> st_drop_geometry() |> select(freg_id, pre1945, volume_m3, volume_density)
-write.csv(buildings_freguesias |> st_drop_geometry(), "/data/IMPT/landuse/buildings_freguesias.csv", row.names = FALSE)
+write.csv(buildings_freguesias, "/data/IMPT/landuse/buildings_freguesias.csv", row.names = FALSE)
 
 ## MUNICIPALITY LEVEL
 buildings_municipios <- municipios_geo |>
@@ -129,7 +129,7 @@ buildings_municipios <- municipios_geo |>
 
 # mapview(buildings_municipios, zcol="volume_density")
 buildings_municipios = buildings_municipios |> st_drop_geometry() |> select(mun_id, pre1945, volume_m3, volume_density)
-write.csv(buildings_municipios |> st_drop_geometry(), "/data/IMPT/landuse/buildings_municipios.csv", row.names = FALSE)
+write.csv(buildings_municipios, "/data/IMPT/landuse/buildings_municipios.csv", row.names = FALSE)
 
 
 
@@ -146,12 +146,13 @@ census_grid <- grid |>
   mutate(
     area_m2            = as.numeric(st_area(geom)),
     population_density = round(population / (area_m2 / 1e6), 1),   # pop/km²
-    youth_ratio        = round(youth / population, 4),
-    elderly_ratio      = round(elderly / population, 4),
+    youth_ratio        = round(youth / population * 100, 2),
+    elderly_ratio      = round(elderly / population *100, 2),
     women_percentage   = round(women / population * 100, 2)
   )
 # mapview(census_grid, zcol="population_density")
-write.csv(st_drop_geometry(census_grid), "/data/IMPT/landuse/census_grid.csv", row.names = FALSE)
+census_grid = census_grid |> st_drop_geometry() |> select(id, population, population_density, youth_ratio, elderly_ratio, women_percentage)
+write.csv(census_grid, "/data/IMPT/landuse/census_grid.csv", row.names = FALSE)
 
 ## FREGUESIA LEVEL
 census_freguesias <- freguesias_geo |>
@@ -170,12 +171,16 @@ census_freguesias <- freguesias_geo |>
   mutate(
     area_m2            = round(as.numeric(st_area(geom))),
     population_density = round(population / (area_m2 / 1e6), 1),
-    youth_ratio        = round(youth / population, 4),
-    elderly_ratio      = round(elderly / population, 4),
+    youth_ratio        = round(youth / population * 100, 2),
+    elderly_ratio      = round(elderly / population *100, 2),
     women_percentage   = round(women / population * 100, 2)
-  )
-# mapview(census_freguesias, zcol="population_density")
-write.csv(census_freguesias |> st_drop_geometry(), "/data/IMPT/landuse/census_freguesias.csv", row.names = FALSE)
+  ) |> 
+  rename(freg_id = dtmnfr)
+
+mapview(census_freguesias, zcol="population_density")
+census_freguesias = census_freguesias |> st_drop_geometry() |> select(freg_id, population, population_density, youth_ratio, elderly_ratio, women_percentage)
+write.csv(census_freguesias, "/data/IMPT/landuse/census_freguesias.csv", row.names = FALSE)
+
 
 ## MUNICIPALITY LEVEL
 census_municipios <- municipios_geo |>
@@ -194,12 +199,23 @@ census_municipios <- municipios_geo |>
   mutate(
     area_m2            = round(as.numeric(st_area(geom))),
     population_density = round(population / (area_m2 / 1e6), 1),
-    youth_ratio        = round(youth / population, 4),
-    elderly_ratio      = round(elderly / population, 4),
+    youth_ratio        = round(youth / population * 100, 2),
+    elderly_ratio      = round(elderly / population *100, 2),
     women_percentage   = round(women / population * 100, 2)
-  )
+  ) 
 # mapview(census_municipios, zcol="population_density")
-write.csv(census_municipios |> st_drop_geometry(), "/data/IMPT/landuse/census_municipios.csv", row.names = FALSE)
+census_municipios = census_municipios |> st_drop_geometry() |> select(mun_id, population, population_density, youth_ratio, elderly_ratio, women_percentage)
+write.csv(census_municipios, "/data/IMPT/landuse/census_municipios.csv", row.names = FALSE)
+
+
+
+# TO-DO !!!!: understand this:
+sum(census_freguesias$population) #2850177
+sum(census_municipios$population) #2850177
+sum(census_pts$population)  #2870208
+# maybe it is better to group_by and summarize at the original census data for freguesias and municipios!
+
+
 
 
 # Pedestrian and Cycling infrastructure -----------------------------------
