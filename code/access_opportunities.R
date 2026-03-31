@@ -1,3 +1,9 @@
+# Access to opportunities
+# Purpose   Determine number of opportunities reachable within threshold (travel time)
+# Scale     hex, parish, municipality
+# Issue     https://github.com/U-Shift/IMPT-data/issues/7
+
+
 library(mapview)
 
 output_dir = "/accessibility/r8"

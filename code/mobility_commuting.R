@@ -1,3 +1,9 @@
+# Travel time (peak) + Number of transfers for key destinations (transit)
+# Purpose     Determine the travel time for commuting, at peak hours, by different modes, and the number of transfers for transit
+# Scale       hex, parish, municipality
+# Issue       -
+
+
 # I. Commuting travel time (peak)  -------------------------------------------------
 # Data loading  -------------------------------------------------
 

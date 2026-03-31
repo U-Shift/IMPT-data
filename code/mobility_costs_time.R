@@ -1,3 +1,8 @@
+# Travel time to nearest opportunities
+# Purpose     Compute travel time to first (1,2,3) opportunities of each category, by mode 
+# Scale       hex, parish, municipality
+# Issue       -
+
 library(mapview)
 
 output_dir = "/mobility_costs/r8"

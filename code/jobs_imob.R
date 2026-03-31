@@ -1,3 +1,9 @@
+# Jittered job locations based on IMOB
+# Purpose     Export ODs for jobs trips (IMOB 2017) with building weight
+# Scale       Points
+# Issue       https://github.com/U-Shift/IMPT-data/issues/1
+
+
 library(tidyverse)
 library(sf)
 # re-install odjitter in cargo (v0.2.1) to consider weitghs for buildings, in terminal:

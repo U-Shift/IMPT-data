@@ -1,3 +1,9 @@
+# Cost of commuting by PT
+# Purpose     Determine the generalized cost of PT commuting, considering the ODs of IMOB 2017
+# Scales      hex, parish, municipality
+# Issue       https://github.com/U-Shift/IMPT-data/issues/10
+
+
 # Compute detailed itineraries -------------------------------------------------
 
 # Start by loading r5r and the following variables from ttm_gridh3.R

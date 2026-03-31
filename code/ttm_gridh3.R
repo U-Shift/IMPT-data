@@ -1,3 +1,9 @@
+# Travel time matrix 
+# Purpose     Compute travel time matrix for hex grid for different modes, departure times and max trip durations
+# Scale       hex
+# Issue       https://github.com/U-Shift/IMPT-data/issues/6
+
+
 options(java.parameters = '-Xmx96G') # RAM to 16GB
 library(r5r)
 

@@ -1,3 +1,9 @@
+# PT Waiting Times + night/weekend service availability
+# Purpose     Compute PT frequencies and headways
+# Scale       hex, parish, municipality
+# Issue       - 
+
+
 # Waiting times and frequencies ---------------------------------------------------------------------
 pois_transit_headways = st_read(IMPT_URL("/mobility_transit/transit_stops_headways.gpkg"))
 summary(pois_transit_headways)

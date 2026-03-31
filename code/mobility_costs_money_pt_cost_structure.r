@@ -1,3 +1,9 @@
+# Fare structure for PT
+# Purpose     Define cost structure for PT, to compute commuting costs of that mode
+# Scales      NA
+# Issue       https://github.com/U-Shift/IMPT-data/issues/10
+
+
 # Define cost structure for AML, with 2 scenarios (per trip or woth PT pass)
 # https://ipeagit.github.io/r5r/reference/setup_fare_structure.html
 # https://u-shift.github.io/Traffic-Simulation-Models/pareto.html
