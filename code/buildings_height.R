@@ -1,7 +1,12 @@
-# Extract buildings height and estimate floors from the Global Building Atlas LOD1 dataset using DuckDB and sf
+# Buildings heights
+# Purpose     Extract buildings height and estimate floors from the Global Building Atlas LOD1 dataset using DuckDB and sf
+# Scale       Points
+# Issue       https://github.com/U-Shift/IMPT-data/issues/1
+
 # https://mediatum.ub.tum.de/1782307
 # https://source.coop/tge-labs/globalbuildingatlas-lod1
 # cite: https://doi.org/10.5194/essd-17-6647-2025
+
 
 library(duckdb)
 library(sf)

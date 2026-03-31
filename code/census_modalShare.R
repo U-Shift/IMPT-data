@@ -1,3 +1,8 @@
+# Census modal share
+# Purpose     Determine the modal share for each parish
+# Scale       parish
+# Issue       -
+
 # Read CSV
 database = read.csv(IMPT_URL("/census2021/ine_indicador_0011704.csv"), sep = ";")
 # names(database)
