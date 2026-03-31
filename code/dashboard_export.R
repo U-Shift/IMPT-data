@@ -52,15 +52,19 @@ grid
 # 3.1 Merge with global results  -------------------------------------------------
 # Attention! Run results_visualizer.R before running this section, to have the global results dataframes available in the environment
 
-impt_pca = read.csv(IMPT_URL("results_aggregated/20260330/IMPT_PCA_and_Entropy_Scores.csv"))
+impt_pca = read.csv(IMPT_URL("results_aggregated/20260330/IMPT_PCA_and_Entropy_Scores.csv")) |>
+  rename(Affordability_Index_no_nav = MS_AFF_PRE_NAV, Affordability_Index_nav = MS_AFF_POST_NAV) |>
+  
 impt_pca_bike = read.csv(IMPT_URL("results_aggregated/20260330/IMPT_PCA_and_Entropy_Scores_bike.csv")) |>
   rename_with(~ paste0(., "_bike"), ends_with("_Index"))
 impt_pca_walk = read.csv(IMPT_URL("results_aggregated/20260330/IMPT_PCA_and_Entropy_Scores_walk.csv")) |> 
   rename_with(~ paste0(., "_walk"), ends_with("_Index"))
 impt_pca_pt = read.csv(IMPT_URL("results_aggregated/20260330/IMPT_PCA_and_Entropy_Scores_pt.csv")) |> 
-  rename_with(~ paste0(., "_pt"), ends_with("_Index"))
+  rename_with(~ paste0(., "_pt"), ends_with("_Index")) |>
+  rename(Affordability_Index_pt_no_nav = h_transp_inc_pt.x, Affordability_Index_pt_nav = h_transp_inc_pt.y)
 impt_pca_car = read.csv(IMPT_URL("results_aggregated/20260330/IMPT_PCA_and_Entropy_Scores_car.csv")) |> 
-  rename_with(~ paste0(., "_car"), ends_with("_Index"))
+  rename_with(~ paste0(., "_car"), ends_with("_Index")) |>
+  rename(Affordability_Index_car=h_transp_inc_car)
 
 freguesias_aggregated = freguesias |> 
   left_join(
@@ -311,3 +315,9 @@ st_write(municipios_aggregated, IMPT_URL(paste(output_dir, "municipios_aggregate
 write.csv(grid_aggregated |> st_drop_geometry(), IMPT_URL(paste(output_dir, "grid_aggregated.csv", sep="/")), row.names = FALSE)
 write.csv(freguesias_aggregated |> st_drop_geometry(), IMPT_URL(paste(output_dir, "freguesias_aggregated.csv", sep="/")), row.names = FALSE)
 write.csv(municipios_aggregated |> st_drop_geometry(), IMPT_URL(paste(output_dir, "municipios_aggregated.csv", sep="/")), row.names = FALSE)
+
+names(freguesias_aggregated)
+freguesias_aggregated |> 
+  # select(starts_with("IMPT_score_pca_geom")) |> # Filter those that start with "IMPT_score_pca_geom"
+  # Filter those that contain "affordability"
+  names()
