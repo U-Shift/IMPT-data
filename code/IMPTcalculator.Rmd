@@ -1155,8 +1155,83 @@ write_csv(Final_Results_Master_pt, "IMPT_PCA_and_Entropy_Scores_pt.csv")
 write_csv(Final_Results_Master_bike, "IMPT_PCA_and_Entropy_Scores_bike.csv")
 write_csv(Final_Results_Master_walk, "IMPT_PCA_and_Entropy_Scores_walk.csv")
 
+```
+
+# Visualize
+
+```{r}
+library(mapview)
+freguesias # Read from data_load.R
+
+DATA_LOCATION = "https://impt.server.ushift.pt" # When running locally, get data from remote server
+API_KEY = Sys.getenv("IMPT_DATA_KEY") # Set it using usethis::edit_r_environ(), followed by CTRL+F10
+
+IMPT_URL = function(path) {
+  # If does not start with "/", add it
+  if (!startsWith(path, "/")) {
+    path = paste0("/", path)
+  }
+  local_path = sprintf("%s%s", DATA_LOCATION, path)
+  # If data location starts with "http", add api key to url
+  if (startsWith(DATA_LOCATION, "http")) {
+    # If API_KEY empty or not defined, throw error
+    if (API_KEY == "") {
+      stop("IMPT_DATA_KEY env var is not defined. Please set it using usethis::edit_r_environ() and restart R.")
+    }
+    return(sprintf("%s%s?key=%s", DATA_LOCATION, path, API_KEY))
+  } else {
+    # If local folder does not exist, create, recursively if needed
+    if (!dir.exists(dirname(local_path))) {
+      dir.create(dirname(local_path), recursive = TRUE)
+    }
+  }
+  # Otherwise, return local path
+  return(local_path)
+}
 
 
+# IMPT PCA and Entropy scores
+impt_pca = read.csv(IMPT_URL("results_aggregated/20260330/IMPT_PCA_and_Entropy_Scores.csv"))
+impt_pca_sf = freguesias |>
+  select(-nuts2, -area_ha) |>
+  mutate(dtmnfr = as.integer(dtmnfr)) |>
+  left_join(
+    impt_pca |>
+      rename(
+        Accessibility_PCA = Accessibility_Index,
+        Affordability_PCA_prenav = MS_AFF_PRE_NAV,
+        Affordability_PCA_postnav = MS_AFF_POST_NAV,
+        Mobility_PCA = Mobility_Index,
+        Safety_PCA = Safety_Index
+      )
+  ) |> 
+  # Round PCA scores to 2 decimals
+  mutate(
+    across(starts_with("Accessibility"), ~ round(., 2)),
+    across(starts_with("Affordability"), ~ round(., 2)),
+    across(starts_with("Mobility"), ~ round(., 2)),
+    across(starts_with("Safety"), ~ round(., 2)),
+    across(starts_with("IMPT"), ~ round(., 2))
+  ) |>
+  # Columns order
+  select(
+    dtmnfr, freguesia, municipio, 
+    starts_with("Accessibility"), starts_with("Affordability"), starts_with("Mobility"), starts_with("Safety"),
+    starts_with("IMPT")
+  )
+# View(impt_pca_sf |> st_drop_geometry())
 
+mapview(impt_pca_sf, zcol="Accessibility_PCA", layer.name="PCA Accessibility", hide=TRUE) +
+  mapview(impt_pca_sf, zcol="Affordability_PCA_prenav", layer.name="PCA Affordability - single fare", hide=TRUE) +
+  mapview(impt_pca_sf, zcol="Affordability_PCA_postnav", layer.name="PCA Affordability - navegante", hide=TRUE) +
+  mapview(impt_pca_sf, zcol="Mobility_PCA", layer.name="PCA Mobility", hide=TRUE) +
+  mapview(impt_pca_sf, zcol="Safety_PCA", layer.name="PCA Safety", hide=TRUE) +
+  
+  mapview(impt_pca_sf, zcol="IMPT_score_pca_geom_nav", layer.name="IMPT PCA Geom - navegante", hide=TRUE) + 
+  mapview(impt_pca_sf, zcol="IMPT_score_pca_geom_no_nav", layer.name="IMPT PCA Geom - single fare", hide=TRUE) +
+  mapview(impt_pca_sf, zcol="IMPT_score_pca_avg_nav", layer.name="IMPT PCA Avg - navegante", hide=TRUE) + 
+   mapview(impt_pca_sf, zcol="IMPT_score_pca_avg_no_nav", layer.name="IMPT PCA Avg - single fare", hide=TRUE) +
+  mapview(impt_pca_sf, zcol="IMPT_entropy_pca_nav", layer.name="IMPT PCA Entropy - navegante", hide=TRUE) +
+  mapview(impt_pca_sf, zcol="IMPT_entropy_pca_no_nav", layer.name="IMPT PCA Entropy - single fare", hide=TRUE)
 ```
 
