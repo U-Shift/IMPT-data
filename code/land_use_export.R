@@ -4,6 +4,9 @@
 library(tidyverse)
 library(sf)
 
+# Helper: sum that returns NA when ALL inputs are NA (unlike sum(na.rm=TRUE) which returns 0)
+sum_na = function(x) if (all(is.na(x))) NA_real_ else sum(x, na.rm = TRUE)
+
 # Load Reference Data --------------------------------------------------
 grid = st_read("/data/IMPT/geo/grelha_h3_r8.gpkg") |> mutate(id = as.character(id))
 grid_freg_mun = read.csv("useful_data/grid_nuts.csv") |> mutate(grid_id = as.character(grid_id), freg_id = as.character(freg_id), mun_id = as.character(mun_id))
@@ -40,9 +43,9 @@ grid_stats = census_with_grid |>
   rename(grid_id = id)
 
 # Join the cross-reference (freg_id, mun_id) to these stats
+# Grid cells with no census centroid inside them keep NA (no false zeros)
 master_stats = grid_freg_mun |>
   left_join(grid_stats |> mutate(grid_id = as.character(grid_id)), by = "grid_id") |>
-  mutate(across(c(pre1945, vol_m3), ~replace_na(.x, 0))) |> 
   mutate(
     grid_id = as.character(grid_id),
     freg_id = as.character(freg_id),
@@ -67,13 +70,13 @@ buildings_freguesias = freguesias_geo |>
     master_stats |> 
       group_by(freg_id) |> 
       summarise(
-        total_pre1945 = sum(pre1945),
-        total_volume_m3 = round(sum(vol_m3))
+        total_pre1945 = sum_na(pre1945),
+        total_volume_m3 = sum_na(vol_m3)
       ), 
     by = c("dtmnfr" = "freg_id")
   ) |>
   mutate(
-    across(c(total_pre1945, total_volume_m3), ~replace_na(.x, 0)),
+    total_volume_m3 = round(total_volume_m3),
     area_m2 = round(as.numeric(st_area(geom))),
     volume_density = round(total_volume_m3 / area_m2, 2)
   )
@@ -87,18 +90,18 @@ buildings_municipios = municipios_geo |>
     master_stats |> 
       group_by(mun_id) |> 
       summarise(
-        total_pre1945 = sum(pre1945),
-        total_volume_m3 = round(sum(vol_m3))
+        total_pre1945 = sum_na(pre1945),
+        total_volume_m3 = sum_na(vol_m3)
       ), 
     by = "mun_id"
   ) |>
   mutate(
-    across(c(total_pre1945, total_volume_m3), ~replace_na(.x, 0)),
+    total_volume_m3 = round(total_volume_m3),
     area_m2 = round(as.numeric(st_area(geom))),
     volume_density = round(total_volume_m3 / area_m2, 2)
   )
 # mapview(buildings_municipios, zcol="volume_density")
-write.csv(buildings_municipios|> st_drop_geometry(), "/data/IMPT/landuse/buildings_municipios.csv", row.names = FALSE)
+write.csv(buildings_municipios |> st_drop_geometry(), "/data/IMPT/landuse/buildings_municipios.csv", row.names = FALSE)
 
 
 
