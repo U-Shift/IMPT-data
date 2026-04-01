@@ -24,6 +24,18 @@ freguesia_transfers = read.csv(IMPT_URL("/mobility_commuting/freguesia_transfers
 municipio_transfers = read.csv(IMPT_URL("/mobility_commuting/municipio_transfers.csv"))
 grid_transfers = read.csv(IMPT_URL("/mobility_commuting/grid_transfers.csv"))
 
+freguesia_stop_coverage = read.csv(IMPT_URL("/mobility/freguesias_stops_coverage.csv"))
+municipio_stop_coverage = read.csv(IMPT_URL("/mobility/municipios_stops_coverage.csv"))
+grid_stop_coverage = read.csv(IMPT_URL("/mobility/grid_stops_coverage.csv"))
+
+freguesia_shared_mobility = read.csv(IMPT_URL("/mobility/freguesias_shared_mobility.csv"))
+municipio_shared_mobility = read.csv(IMPT_URL("/mobility/municipios_shared_mobility.csv"))
+grid_shared_mobility = read.csv(IMPT_URL("/mobility/grid_shared_mobility.csv"))
+
+freguesia_mobility_infrastructure = read.csv(IMPT_URL("/mobility/freguesias_infrastructure_ratio.csv"))
+municipio_mobility_infrastructure = read.csv(IMPT_URL("/mobility/municipios_infrastructure_ratio.csv"))
+grid_mobility_infrastructure = read.csv(IMPT_URL("/mobility/grid_infrastructure_ratio.csv"))
+
 # Affordability  -----------------------------------------------------------
 
 freguesia_affordability_car = read.csv(IMPT_URL("/mobility_money_costs/freguesia_commuting_money_car.csv"))
@@ -37,3 +49,18 @@ grid_affordability_pt_single_fare = read.csv(IMPT_URL("/mobility_money_costs/gri
 freguesia_affordability_pt_pass = read.csv(IMPT_URL("/mobility_money_costs/freguesia_commuting_money_pt_pass_fare.csv"))
 municipio_affordability_pt_pass = read.csv(IMPT_URL("/mobility_money_costs/municipio_commuting_money_pt_pass_fare.csv"))
 grid_affordability_pt_pass = read.csv(IMPT_URL("/mobility_money_costs/grid_commuting_money_pt_pass_fare.csv"))
+
+
+# Additional indicators ---------------------------------------------------
+
+freguesia_pois = read.csv(IMPT_URL("/pois/freguesias_pois.csv"))
+municipio_pois = read.csv(IMPT_URL("/pois/municipios_pois.csv"))
+grid_pois = read.csv(IMPT_URL("/pois/grid_pois.csv"))
+
+freguesia_modal_share_census = read.csv(IMPT_URL("census2021/census_modal_share_parish.csv"))
+municipio_modal_share_census = read.csv(IMPT_URL("census2021/census_modal_share_municipality.csv"))
+grid_modal_share_census = read.csv(IMPT_URL("census2021/census_modal_share_grid.csv"))
+
+freguesia_veh_ownership = read.csv(IMPT_URL("imob/imob_vehicles_freg.csv"))
+municipio_veh_ownership = read.csv(IMPT_URL("imob/imob_vehicles_mun.csv"))
+grid_veh_ownership = read.csv(IMPT_URL("imob/imob_vehicles_grid.csv"))
