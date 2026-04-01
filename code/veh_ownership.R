@@ -265,10 +265,6 @@ vehicles_by_grid = read.csv("useful_data/grid_nuts.csv") |>
 # mapview::mapview(grid |> left_join(vehicles_by_grid), zcol="avg_cars")
 # mapview::mapview(grid |> left_join(vehicles_by_grid), zcol="avg_bicycles")
 
-
-# TODO! By grid, give exactly the same value as the parish
-# TODO! By municipality
-
 # quick check
 summary(vehicles_by_dicofre$avg_cars)
 summary(vehicles_by_dicofre_new$avg_cars)

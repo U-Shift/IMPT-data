@@ -1,6 +1,6 @@
 # Census modal share
-# Purpose     Determine the modal share for each parish
-# Scale       parish
+# Purpose     Determine the modal share for each scale
+# Scale       hex, parish, municipality
 # Issue       -
 
 # Read CSV
@@ -83,3 +83,42 @@ database_final = database_converted |>
 View(database_final)
 
 write.csv(database_final, "useful_data/census_modal_share.csv", row.names = FALSE)
+
+# Compute for municipality
+mun_parish = read.csv("useful_data/freguesias_nuts.csv")
+
+database_municipality = database_converted |>
+  select(dtmnfr24, total_converted, pt_converted, private_vehicle_converted, active_converted) |>
+  left_join(mun_parish |> select(freg_id, mun_id) |> mutate(freg_id=as.character(freg_id)) |> rename(id=mun_id), by=c("dtmnfr24" = "freg_id")) |>
+  group_by(id) |>
+  rename(
+    total = total_converted,
+    pt = pt_converted,
+    private_vehicle = private_vehicle_converted,
+    active = active_converted
+  ) |>
+  mutate(
+    pt_share = round(pt / total, digits=2),
+    private_vehicle_share = round(private_vehicle / total, digits=2),
+    active_share = round(active / total, digits=2)
+  )
+
+# mun_id = read.csv("useful_data/mun_nuts.csv")
+# mapview::mapview(municipios |> left_join(mun_id, by=c("municipio"="name")) |> left_join(database_municipality, by = c("mun_id" = "id")), zcol="pt_share")
+# mapview::mapview(municipios |> left_join(mun_id, by=c("municipio"="name")) |> left_join(database_municipality, by = c("mun_id" = "id")), zcol="private_vehicle_share")
+# mapview::mapview(municipios |> left_join(mun_id, by=c("municipio"="name")) |> left_join(database_municipality, by = c("mun_id" = "id")), zcol="active_share")
+
+database_grid = read.csv("useful_data/grid_nuts.csv") |>
+  select(grid_id, freg_id) |> 
+  rename(id=grid_id, dicofre=freg_id) |> 
+  mutate(dtmnfr=as.character(dicofre)) |>
+  filter(!is.na(dtmnfr)) |>
+  left_join(database_final, by = "dtmnfr")
+# mapview::mapview(grid |> left_join(database_grid), zcol="pt_share")
+# mapview::mapview(grid |> left_join(database_grid), zcol="active_share")
+
+
+write.csv(database_final, IMPT_URL("census2021/census_modal_share_parish.csv"), row.names = FALSE)
+write.csv(database_municipality, IMPT_URL("census2021/census_modal_share_municipality.csv"), row.names = FALSE)
+write.csv(database_grid, IMPT_URL("census2021/census_modal_share_grid.csv"), row.names = FALSE)
+
