@@ -3,12 +3,13 @@
 # load libraries
 library(tidyverse)
 library(sf)
+library(readxl)
 
 
 # Load Reference Data --------------------------------------------------
 # population and census from original census 21
-census24_fregmun = read.csv(, "useful_data/census24_fregmun.csv", row.names = FALSE)
-
+census24_fregmun = read.csv("useful_data/census24_fregmun.csv")
+census24_fregmun = census24_fregmun |> mutate(freg_id = as.character(freg_id), mun_id = as.character(mun_id))
 grid <- st_read("/data/IMPT/geo/grelha_h3_r8.gpkg") |> mutate(id = as.character(id))
 grid_freg_mun <- read.csv("useful_data/grid_nuts.csv") |> mutate(grid_id = as.character(grid_id), freg_id = as.character(freg_id), mun_id = as.character(mun_id))
 freguesias_geo <- st_read("useful_data/freguesias.gpkg")
@@ -114,10 +115,10 @@ write.csv(landuse_grid, "/data/IMPT/landuse/landuse_grid.csv", row.names = FALSE
 landuse_freguesias <- census24_fregmun |>
   left_join(
     master_stats |>
-      select(freg_id, volume_m3) |>
+      select(freg_id, buildings_volume_m3) |>
       group_by(freg_id) |>
       summarise(
-        buildings_volume_m3 = sum_na(volume_m3)
+        buildings_volume_m3 = sum_na(buildings_volume_m3)
       )
   ) |>
   left_join(freguesias_area |> select(dtmnfr, area_m2, area_km2), by = c("freg_id" = "dtmnfr")) |>
@@ -143,10 +144,10 @@ write.csv(landuse_freguesias, "/data/IMPT/landuse/landuse_freguesias.csv", row.n
 landuse_municipios <- census24_fregmun |>
   left_join(
     master_stats |>
-      select(freg_id, volume_m3) |>
+      select(freg_id, buildings_volume_m3) |>
       group_by(freg_id) |>
       summarise(
-        buildings_volume_m3 = sum_na(volume_m3)
+        buildings_volume_m3 = sum_na(buildings_volume_m3)
       ) |> 
       ungroup()
   ) |>
@@ -183,11 +184,61 @@ write.csv(landuse_municipios, "/data/IMPT/landuse/landuse_municipios.csv", row.n
 # Final check
 sum(census_pts$population)  #2870208
 sum(landuse_grid$population, na.rm = TRUE) #2850646 # some census bgri centroids fall outside the grid cells, so we lose some 1450 population
-sum(landuse_municipios$population) #2870208
-sum(landuse_freguesias$population) #2870208
+sum(landuse_municipios$population) #2870206 # 2 missing due round when separating new freguesias
+sum(landuse_freguesias$population) #2870206
 
 
 
-# Pedestrian and Cycling infrastructure -----------------------------------
+# Income, Gini, housing costs -----------------------------------
+
+## income
+income_freguesias <- read_excel("/data/IMPT/BaseDados_INE/Rendimento_agregado_2023.xls", 
+                              sheet = "freg", col_types = c("skip", "numeric", "text"))
+income_freguesias = income_freguesias |> filter(freg_id %in% grid_freg_mun$freg_id) # filter only freguesias that are in the grid, to avoid join problems later
+
+income_municipios = read_excel("/data/IMPT/BaseDados_INE/Rendimento_agregado_2023.xls", 
+                              sheet = "mun", col_types = c("skip", "numeric", "text", "skip"))
+
+income_grid = income_freguesias |>
+  left_join(grid_freg_mun |> select(freg_id, grid_id)) |>
+  select(-freg_id) 
 
 
+## housing costs
+housing_freguesias <- read_excel("/data/IMPT/BaseDados_INE/Habitacao_custos_2021.xls", 
+                                sheet = "freg", col_types = c("skip", "text", "numeric"))
+housing_freguesias = housing_freguesias |> filter(freg_id %in% grid_freg_mun$freg_id)  # filter only freguesias that are in the grid, to avoid join problems later
+
+housing_municipios = read_excel("/data/IMPT/BaseDados_INE/Habitacao_custos_2021.xls", 
+                               sheet = "mun", col_types = c("skip",  "text", "numeric")) |> 
+  mutate(housing_costs = round(housing_costs, 2))
+
+housing_grid = housing_freguesias |>
+  left_join(grid_freg_mun |> select(freg_id, grid_id)) |>
+  select(-freg_id) 
+
+## Gini coefficient
+gini_municipios = read_excel("/data/IMPT/BaseDados_INE/Rendimento_agregado_2023.xls", 
+                               sheet = "mun", col_types = c("skip", "skip", "text", "numeric")) |> 
+  mutate(gini_coef = round(gini_coef, 1))
+
+gini_freguesias = grid_freg_mun |>
+  select(freg_id, mun_id) |>
+  distinct() |> na.omit() |>
+  left_join(gini_municipios) |>
+  select(freg_id, gini_coef)
+
+gini_grid = grid_freg_mun |>
+  select(grid_id, mun_id) |>
+  # distinct() |> na.omit() |>
+  left_join(gini_municipios) |>
+  select(grid_id, gini_coef)
+  
+
+## Export
+income_grid |> left_join(housing_grid) |> left_join(gini_grid) |> select(grid_id, income_hh, gini_coef, housing_costs) |>
+  write.csv("/data/IMPT/landuse/grid_income_housing_gini.csv", row.names = FALSE)
+income_freguesias |> left_join(housing_freguesias) |> left_join(gini_freguesias) |> select(freg_id, income_hh, gini_coef, housing_costs) |>
+  write.csv("/data/IMPT/landuse/freguesias_income_housing_gini.csv", row.names = FALSE)
+income_municipios |> left_join(housing_municipios) |> left_join(gini_municipios) |> select(mun_id, income_hh, gini_coef, housing_costs) |>
+  write.csv("/data/IMPT/landuse/municipios_income_housing_gini.csv", row.names = FALSE)
