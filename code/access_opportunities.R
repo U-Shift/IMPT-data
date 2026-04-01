@@ -295,7 +295,7 @@ write.csv(freguesia_accessibility |> st_drop_geometry(), IMPT_URL(sprintf("%s/ac
 st_write(municipio_accessibility, IMPT_URL(sprintf("%s/accessibility_municipio.gpkg", output_dir)), delete_dsn = TRUE)
 write.csv(municipio_accessibility |> st_drop_geometry(), IMPT_URL(sprintf("%s/accessibility_municipio.csv", output_dir)), row.names = FALSE) 
 st_write(grid_access, IMPT_URL(sprintf("%s/accessibility_grid.gpkg", output_dir)), delete_dsn = TRUE)
-write.csv(grid_access, IMPT_URL(sprintf("%s/accessibility_grid.csv", output_dir)), row.names = FALSE)
+write.csv(grid_access |> st_drop_geometry(), IMPT_URL(sprintf("%s/accessibility_grid.csv", output_dir)), row.names = FALSE)
 # 
 # mapview(municipio_accessibility, zcol = "access_transit_bus_transit_1t_5min_residents")
 # mapview(freguesia_accessibility, zcol = "access_transit_transit_1t_5min_residents")

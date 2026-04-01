@@ -196,7 +196,7 @@ write.csv(freguesia_mobility |> st_drop_geometry(), IMPT_URL(sprintf("%s/mobilit
 st_write(municipio_mobility, IMPT_URL(sprintf("%s/mobility_municipio.gpkg", output_dir)), delete_dsn = TRUE)
 write.csv(municipio_mobility |> st_drop_geometry(), IMPT_URL(sprintf("%s/mobility_municipio.csv", output_dir)), row.names = FALSE) 
 st_write(grid_mobility, IMPT_URL(sprintf("%s/mobility_grid.gpkg", output_dir)), delete_dsn = TRUE)
-write.csv(grid_mobility, IMPT_URL(sprintf("%s/mobility_grid.csv", output_dir)), row.names = FALSE)
+write.csv(grid_mobility |> st_drop_geometry(), IMPT_URL(sprintf("%s/mobility_grid.csv", output_dir)), row.names = FALSE)
 # 
 # mapview(freguesia_mobility, zcol = "mobility_cost_health_walk_n1_residents")
 # mapview(freguesia_mobility, zcol = "mobility_cost_health_walk_n1_elder")
