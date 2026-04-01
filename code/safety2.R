@@ -217,11 +217,69 @@ accidents_localidades_final = accidents_redux_localidades |>
   arrange(mun_id, freguesia)
 
 
+
+# acidentes por município -------------------------------------------------
+
+accidents_final_municipio = accidents_final |> 
+  group_by(mun_id) |> 
+  summarize_at(vars(population, total_acidentes, localidades_dentro, noite, 
+                    vitimas_mortais30, feridos_graves30, feridos_ligeiros30, 
+                    total_vitimas30, veh_motorizado, veh_bicicleta, 
+                    veh_peoes, total_veiculos), 
+               sum, na.rm = TRUE) |> 
+  mutate(localidades_dentro_perc = localidades_dentro / total_acidentes,
+         noite_perc = noite / total_acidentes,
+         vitimas_mortais30 / total_vitimas30,
+         indice_gravidade = vitimas_mortais30 / total_vitimas30,
+         indice_gravidade_carro = ifelse(veh_motorizado > 0, vitimas_mortais30 / veh_motorizado, NA_real_), # ignora se não houve carro involvido
+         indice_gravidade_bicicleta = ifelse(veh_bicicleta > 0, vitimas_mortais30 / veh_bicicleta, NA_real_),
+         indice_gravidade_peoes = ifelse(veh_peoes > 0, vitimas_mortais30 / veh_peoes, NA_real_),
+         acidentes_per_1000res = total_acidentes / population * 1000,
+         vitimas_mortais30_per_1000res = vitimas_mortais30 / population * 1000) |> 
+  select(mun_id, population, total_acidentes, localidades_dentro, localidades_dentro_perc, noite, noite_perc,
+         vitimas_mortais30, feridos_graves30, feridos_ligeiros30, total_vitimas30,
+         veh_motorizado, veh_bicicleta, veh_peoes, total_veiculos,
+         indice_gravidade, indice_gravidade_carro, indice_gravidade_bicicleta, indice_gravidade_peoes,
+         acidentes_per_1000res, vitimas_mortais30_per_1000res) |> 
+  arrange(mun_id)
+
+sum(accidents_final_municipio$total_acidentes) #41727
+sum(accidents_final$total_acidentes) #41727
+
+
+accidents_final_municipio_localidades = accidents_localidades_final |> 
+  group_by(mun_id) |> 
+  summarize_at(vars(population, total_acidentes, noite, 
+                    vitimas_mortais30, feridos_graves30, feridos_ligeiros30, 
+                    total_vitimas30, veh_motorizado, veh_bicicleta, 
+                    veh_peoes, total_veiculos), 
+               sum, na.rm = TRUE) |> 
+  mutate(noite_perc = noite / total_acidentes,
+         vitimas_mortais30 / total_vitimas30,
+         indice_gravidade = vitimas_mortais30 / total_vitimas30,
+         indice_gravidade_carro = ifelse(veh_motorizado > 0, vitimas_mortais30 / veh_motorizado, NA_real_), # ignora se não houve carro involvido
+         indice_gravidade_bicicleta = ifelse(veh_bicicleta > 0, vitimas_mortais30 / veh_bicicleta, NA_real_),
+         indice_gravidade_peoes = ifelse(veh_peoes > 0, vitimas_mortais30 / veh_peoes, NA_real_),
+         acidentes_per_1000res = total_acidentes / population * 1000,
+         vitimas_mortais30_per_1000res = vitimas_mortais30 / population * 1000) |> 
+  select(mun_id, population, total_acidentes, noite, noite_perc,
+         vitimas_mortais30, feridos_graves30, feridos_ligeiros30, total_vitimas30,
+         veh_motorizado, veh_bicicleta, veh_peoes, total_veiculos,
+         indice_gravidade, indice_gravidade_carro, indice_gravidade_bicicleta, indice_gravidade_peoes,
+         acidentes_per_1000res, vitimas_mortais30_per_1000res) |> 
+  arrange(mun_id)
+
+sum(accidents_final_municipio_localidades$total_acidentes) #35344
+sum(accidents_localidades_final$total_acidentes) #35344
+
 # ----------------------------
 # 4) Exportar csv
 # ----------------------------
 
 write.csv(accidents_final, "/data/IMPT/safety/accidents_by_freguesia_5years.csv", row.names = FALSE)
 write.csv(accidents_localidades_final, "/data/IMPT/safety/accidents_by_freguesia_5years_dentrolocalidades.csv", row.names = FALSE)
+
+write.csv(accidents_final_municipio, "/data/IMPT/safety/accidents_by_municipio_5years.csv", row.names = FALSE)
+write.csv(accidents_final_municipio_localidades, "/data/IMPT/safety/accidents_by_municipio_5years_dentrolocalidades.csv", row.names = FALSE)
 
 
