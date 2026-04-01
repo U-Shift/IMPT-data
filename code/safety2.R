@@ -125,16 +125,14 @@ accidents_redux = accidents |>
 
 #### Populations and municipio
 ### Join with municipio - use ours!
+### Join with population and municipio
+census24_fregmun = read.csv("useful_data/census24_fregmun.csv") |>
+  mutate(freg_id = as.character(freg_id),
+         mun_id = as.character(mun_id))
+
 accidents_redux = accidents_redux |> 
-  left_join(freguesias |> st_drop_geometry() |> select(dtmnfr, municipio), by = "dtmnfr")
-
-
-### Join with population
-accidents_redux = accidents_redux |> 
-  left_join(freguesias_aggregated |> st_drop_geometry() |> select(id, population = census_residents) |> 
-              mutate(dtmnfr = as.character(id))) |> 
-  select(-id)
-
+  left_join(census24_fregmun |> select(freg_id, mun_id, population), by = c("dtmnfr" = "freg_id")) |> 
+  rename(freg_id = dtmnfr)
 
 
 
@@ -185,13 +183,8 @@ accidents_redux_localidades = accidents |>
     total_veiculos = sum(total_veh, na.rm = TRUE)
   ) |>
   ungroup() |>
-  left_join(freguesias |> st_drop_geometry() |> select(dtmnfr, municipio),
-            by = "dtmnfr") |>
-  left_join(
-    freguesias_aggregated |> st_drop_geometry() |> select(id, population = census_residents) |>
-      mutate(dtmnfr = as.character(id))
-  ) |>
-  select(-id) |>
+  left_join(census24_fregmun |> select(freg_id, mun_id, population), by = c("dtmnfr" = "freg_id")) |> 
+  rename(freg_id = dtmnfr) |>
   mutate(
     indice_gravidade = vitimas_mortais30 / total_vitimas30,
     indice_gravidade_carro = ifelse(veh_motorizado > 0, vitimas_mortais30 / veh_motorizado, NA_real_), # ignora se não houve carro involvido
@@ -208,20 +201,20 @@ accidents_redux_localidades = accidents |>
 
 ### Organizar
 accidents_final = accidents_redux |> 
-  select(dtmnfr, freguesia, municipio, population, total_acidentes, localidades_dentro, localidades_dentro_perc, noite, noite_perc,
+  select(freg_id, freguesia, mun_id, population, total_acidentes, localidades_dentro, localidades_dentro_perc, noite, noite_perc,
          vitimas_mortais30, feridos_graves30, feridos_ligeiros30, total_vitimas30,
          veh_motorizado, veh_bicicleta, veh_peoes, total_veiculos,
          indice_gravidade, indice_gravidade_carro, indice_gravidade_bicicleta, indice_gravidade_peoes,
          acidentes_per_1000res, vitimas_mortais30_per_1000res) |> 
-  arrange(municipio, freguesia)
+  arrange(mun_id, freguesia)
 
 accidents_localidades_final = accidents_redux_localidades |> 
-  select(dtmnfr, freguesia, municipio, population, total_acidentes, noite, noite_perc,
+  select(freg_id, freguesia, mun_id, population, total_acidentes, noite, noite_perc,
          vitimas_mortais30, feridos_graves30, feridos_ligeiros30, total_vitimas30,
          veh_motorizado, veh_bicicleta, veh_peoes, total_veiculos,
          indice_gravidade, indice_gravidade_carro, indice_gravidade_bicicleta, indice_gravidade_peoes,
          acidentes_per_1000res, vitimas_mortais30_per_1000res) |> 
-  arrange(municipio, freguesia)
+  arrange(mun_id, freguesia)
 
 
 # ----------------------------
