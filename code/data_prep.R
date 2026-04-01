@@ -432,6 +432,24 @@ census_points24 = census_points21 |>
 st_write(census_points24, "/data/IMPT/geo/census24_points.gpkg", delete_dsn = TRUE)
 census_points24 = st_read("/data/IMPT/geo/census24_points.gpkg")
 
+# auxiliary table for freguesias and municipios with no data lost (no geom)
+conversion_dicofre_weight = readRDS("useful_data/dicofre_16_24_conversion_full_with_weights.Rds")
+census24_fregmun = census21_fregmun |>
+  left_join(conversion_dicofre_weight, by = c("DTMNFR21" = "dtmnfr16")) |> 
+  mutate(population = population * weight,
+         youth = youth * weight,
+         elderly = elderly * weight,
+         women = women * weight,
+         buildings = buildings * weight,
+         buildings_pre1945 = buildings_pre1945 * weight
+  ) |>
+  select(
+    freg_id = dtmnfr24,
+    mun_id = DTMN21,
+    population, youth, elderly, women, buildings, buildings_pre1945)
+
+sum(census24_fregmun$population) # 2870208
+write.csv(census24_fregmun, "useful_data/census24_fregmun.csv", row.names = FALSE)
 
 
 # POIs --------------------------------------------------------------------
