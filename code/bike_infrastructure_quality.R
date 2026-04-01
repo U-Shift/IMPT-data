@@ -1,3 +1,9 @@
+# Bike infrastructure classification
+# Purpose     Classify bike infrastructure based on its quality
+# Scale       Lines
+# Issue       -
+
+
 # classify osm tags in 4 types:
 # 1. Cycle track or lane: Light or separated tracks exclusive for cycling
 # 2. Advisory lane: Marked (e.g. sharrow or advisory) cycle lanes, but shared with motor vehicles
