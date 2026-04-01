@@ -1,22 +1,22 @@
 # 1. Make sure to run data_load.R and results.R before running this script -------------------------------------------------
 
 # 2. Associate base layers to nuts  -------------------------------------------------
-grid = st_read(IMPT_URL("/geo/grelha_h3_r8.gpkg"))
-freguesias = st_read(IMPT_URL("/geo/freguesias_2024_unique.gpkg"))
-municipios = st_read(IMPT_URL("/geo/municipios_2024.gpkg"))
-
-freguesias = freguesias |> 
-  mutate(
-    nuts2=ifelse(nuts2=="Grande Lisboa", "PT1B", "PT1A"),
-    group_id = substr(dtmnfr, 1, 4)
-  ) |>
-  rename(
-    id = dtmnfr,
-    name = freguesia,
-    region_id = nuts2
-  ) |>
-  select(-area_ha)
-freguesias
+# grid = st_read(IMPT_URL("/geo/grelha_h3_r8.gpkg"))
+# freguesias = st_read(IMPT_URL("/geo/freguesias_2024_unique.gpkg"))
+# municipios = st_read(IMPT_URL("/geo/municipios_2024.gpkg"))
+# 
+# freguesias = freguesias |> 
+#   mutate(
+#     nuts2=ifelse(nuts2=="Grande Lisboa", "PT1B", "PT1A"),
+#     group_id = substr(dtmnfr, 1, 4)
+#   ) |>
+#   rename(
+#     id = dtmnfr,
+#     name = freguesia,
+#     region_id = nuts2
+#   ) |>
+#   select(-area_ha)
+# freguesias
 # mapview(freguesias, zcol="group_id")
 # write.csv(
 #   freguesias |> 
@@ -38,19 +38,19 @@ freguesias
 #   rename(id=group_id)
 # write.csv(mun_nuts |> rename(mun_id=id, nuts_id=nuts, name=municipio), "useful_data/mun_nuts.csv", row.names = FALSE)
 
-mun_nuts = read.csv("useful_data/mun_nuts.csv") |> rename(nuts=nuts_id, id=mun_id,municipio=name)
-mun_nuts
-municipios <- municipios |>
-  left_join(mun_nuts, by = "municipio") |>
-  rename(name=municipio, region_id=nuts)
-municipios
+# mun_nuts = read.csv("useful_data/mun_nuts.csv") |> rename(nuts=nuts_id, id=mun_id,municipio=name)
+# mun_nuts
+# municipios <- municipios |>
+#   left_join(mun_nuts, by = "municipio") |>
+#   rename(name=municipio, region_id=nuts)
+# municipios
 # mapview(municipios, zcol="nuts")
-freguesias = freguesias |> select(-municipio)
-
-grid_centroids = st_centroid(grid)
-grid_nuts = st_join(grid_centroids, freguesias |> select(id, region_id) |> rename(group_id=id), join = st_within) |>
-  st_drop_geometry()
-grid_nuts
+# freguesias = freguesias |> select(-municipio)
+# 
+# grid_centroids = st_centroid(grid)
+# grid_nuts = st_join(grid_centroids, freguesias |> select(id, region_id) |> rename(group_id=id), join = st_within) |>
+#   st_drop_geometry()
+# grid_nuts
 
 # write.csv(
 #   grid_nuts |> st_drop_geometry() |> rename(grid_id=id, freg_id=group_id, nuts_id=region_id) |>
@@ -58,19 +58,28 @@ grid_nuts
 #   "useful_data/grid_nuts.csv", 
 #   row.names = FALSE
 # )
-
-grid = grid |>
-  left_join(grid_nuts, by = "id") |>
-  filter(!is.na(region_id)) |>
-  mutate(name=id)
-grid
+# 
+# grid = grid |>
+#   left_join(grid_nuts, by = "id") |>
+#   filter(!is.na(region_id)) |>
+#   mutate(name=id)
+# grid
 # mapview(grid, zcol="nuts")
+# 
+# st_write(grid, IMPT_URL("dashboard_data/grid.gpkg"), delete_dsn = TRUE)
+# st_write(freguesias, IMPT_URL("dashboard_data/freguesias.gpkg"), delete_dsn = TRUE)
+# st_write(municipios, IMPT_URL("dashboard_data/municipios.gpkg"), delete_dsn = TRUE)
+
+grid = st_read(IMPT_URL("dashboard_data/grid.gpkg"))
+freguesias = st_read(IMPT_URL("dashboard_data/freguesias.gpkg"))
+municipios = st_read(IMPT_URL("dashboard_data/municipios.gpkg"))
+mun_nuts = read.csv("useful_data/mun_nuts.csv") |> rename(nuts=nuts_id, id=mun_id,municipio=name)
 
 # 3.1 Merge with global results  -------------------------------------------------
 # Attention! Run results_visualizer.R before running this section, to have the global results dataframes available in the environment
 
 impt_pca = read.csv(IMPT_URL("results_aggregated/20260330/IMPT_PCA_and_Entropy_Scores.csv")) |>
-  rename(Affordability_Index_no_nav = MS_AFF_PRE_NAV, Affordability_Index_nav = MS_AFF_POST_NAV) |>
+  rename(Affordability_Index_no_nav = MS_AFF_PRE_NAV, Affordability_Index_nav = MS_AFF_POST_NAV) 
   
 impt_pca_bike = read.csv(IMPT_URL("results_aggregated/20260330/IMPT_PCA_and_Entropy_Scores_bike.csv")) |>
   rename_with(~ paste0(., "_bike"), ends_with("_Index"))
@@ -78,10 +87,10 @@ impt_pca_walk = read.csv(IMPT_URL("results_aggregated/20260330/IMPT_PCA_and_Entr
   rename_with(~ paste0(., "_walk"), ends_with("_Index"))
 impt_pca_pt = read.csv(IMPT_URL("results_aggregated/20260330/IMPT_PCA_and_Entropy_Scores_pt.csv")) |> 
   rename_with(~ paste0(., "_pt"), ends_with("_Index")) |>
-  rename(Affordability_Index_pt_no_nav = h_transp_inc_pt.x, Affordability_Index_pt_nav = h_transp_inc_pt.y)
+  rename(Affordability_Index_pt_no_nav = Affordability_Index_no_nav, Affordability_Index_pt_nav = Affordability_Index_nav)
 impt_pca_car = read.csv(IMPT_URL("results_aggregated/20260330/IMPT_PCA_and_Entropy_Scores_car.csv")) |> 
-  rename_with(~ paste0(., "_car"), ends_with("_Index")) |>
-  rename(Affordability_Index_car=h_transp_inc_car)
+  rename_with(~ paste0(., "_car"), ends_with("_Index"))
+
 
 freguesias_aggregated = freguesias |> 
   left_join(
