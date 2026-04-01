@@ -70,6 +70,8 @@
 # st_write(freguesias, IMPT_URL("dashboard_data/freguesias.gpkg"), delete_dsn = TRUE)
 # st_write(municipios, IMPT_URL("dashboard_data/municipios.gpkg"), delete_dsn = TRUE)
 
+DATA_LOCATION = "https://impt.server.ushift.pt" # To get data from server
+
 grid = st_read(IMPT_URL("dashboard_data/grid.gpkg"))
 freguesias = st_read(IMPT_URL("dashboard_data/freguesias.gpkg"))
 municipios = st_read(IMPT_URL("dashboard_data/municipios.gpkg"))
@@ -130,6 +132,22 @@ freguesias_aggregated = freguesias |>
   )
 names(freguesias_aggregated)
 summary(freguesias_aggregated)
+
+impt_pca_municipality = read.csv(IMPT_URL("results_aggregated/20260330/impt_municipality.csv"))
+
+municipios_aggregated = municipios |> 
+  left_join(
+    impt_pca_municipality |> 
+      rename(id=mun_id) |>
+      st_drop_geometry()
+    ,by=c("id"="id")
+  )|>
+  mutate(
+    # All columns that start with "IMPT_", mutate to 100-.x
+    across(starts_with("IMPT_"), ~ 100 - .)
+  )
+names(municipios_aggregated)
+
 
 # 3.2 Merge with dimensions indicators  -------------------------------------------------
 # Attention! Run results.R before running this section, to have the indicators dataframes available in the environment
@@ -339,7 +357,7 @@ freguesias_aggregated = freguesias_aggregated |>
 names(freguesias_aggregated)
 
 
-municipios_aggregated = municipios |> 
+municipios_aggregated = municipios_aggregated |> 
   # Accessibility
   left_join(
     municipio_accessibility |> 
@@ -455,6 +473,7 @@ municipios_aggregated = municipios_aggregated |>
   mutate(across(where(is.numeric), ~ round(., 2)))
 
 # 4. Export to geojson -------------------------------------------------
+DATA_LOCATION = "data" # To store locally
 output_dir = "dashboard_data"
 
 st_write(grid_aggregated, IMPT_URL(paste(output_dir, "grid_aggregated.geojson", sep="/")), delete_dsn = TRUE)
@@ -465,8 +484,12 @@ write.csv(grid_aggregated |> st_drop_geometry(), IMPT_URL(paste(output_dir, "gri
 write.csv(freguesias_aggregated |> st_drop_geometry(), IMPT_URL(paste(output_dir, "freguesias_aggregated.csv", sep="/")), row.names = FALSE)
 write.csv(municipios_aggregated |> st_drop_geometry(), IMPT_URL(paste(output_dir, "municipios_aggregated.csv", sep="/")), row.names = FALSE)
 
-names(freguesias_aggregated)
-freguesias_aggregated |> 
-  # select(starts_with("IMPT_score_pca_geom")) |> # Filter those that start with "IMPT_score_pca_geom"
-  # Filter those that contain "affordability"
-  names()
+length(names(grid_aggregated)) # 710
+length(names(freguesias_aggregated)) # 970
+length(names(municipios_aggregated)) # 965
+
+# names(freguesias_aggregated)
+# freguesias_aggregated |> 
+#   # select(starts_with("IMPT_score_pca_geom")) |> # Filter those that start with "IMPT_score_pca_geom"
+#   # Filter those that contain "affordability"
+#   names()
