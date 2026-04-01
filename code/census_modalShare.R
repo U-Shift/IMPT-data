@@ -89,13 +89,19 @@ mun_parish = read.csv("useful_data/freguesias_nuts.csv")
 
 database_municipality = database_converted |>
   select(dtmnfr24, total_converted, pt_converted, private_vehicle_converted, active_converted) |>
-  left_join(mun_parish |> select(freg_id, mun_id) |> mutate(freg_id=as.character(freg_id)) |> rename(id=mun_id), by=c("dtmnfr24" = "freg_id")) |>
-  group_by(id) |>
   rename(
     total = total_converted,
     pt = pt_converted,
     private_vehicle = private_vehicle_converted,
     active = active_converted
+  ) |>
+  left_join(mun_parish |> select(freg_id, mun_id) |> mutate(freg_id=as.character(freg_id)), by=c("dtmnfr24" = "freg_id")) |>
+  group_by(mun_id) |>
+  summarise(
+    total = sum(total),
+    pt = sum(pt),
+    private_vehicle = sum(private_vehicle),
+    active = sum(active)
   ) |>
   mutate(
     pt_share = round(pt / total, digits=2),
