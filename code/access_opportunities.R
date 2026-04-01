@@ -47,16 +47,16 @@ pois_mass = pois_transit |> filter(agency %in% c("CP - Comboios de Portugal", "F
 
 pois_list = list(
   # POI type, sf data.frame with points 
-  # list("health", pois_health),
-  # list("health_primary", pois_health |> filter(type=="Centro de Saúde")),
-  # list("health_hospital", pois_health |> filter(type=="Hospital")),
-  # list("groceries", pois_supermarket),
-  # list("greenspaces", pois_green),
-  # list("recreation", pois_recreation),
-  # list("schools", pois_schools),
-  # list("schools_primary", pois_schools |> filter(grepl("Cycle", type))),
+  list("health", pois_health),
+  list("health_primary", pois_health |> filter(type=="Centro de Saúde")),
+  list("health_hospital", pois_health |> filter(type=="Hospital")),
+  list("groceries", pois_supermarket),
+  list("greenspaces", pois_green),
+  list("recreation", pois_recreation),
+  list("schools", pois_schools),
+  list("schools_primary", pois_schools |> filter(grepl("Cycle", type))),
   list("schools_high", pois_schools |> filter(grepl("High", type))),
-  # list("jobs", pois_jobs)
+  list("jobs", pois_jobs),
   list("transit", pois_transit |> mutate(n=1)),
   list("transit_bus", pois_bus |> mutate(n=1)),
   list("transit_mass", pois_mass |> mutate(n=1))
