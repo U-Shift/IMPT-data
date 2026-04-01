@@ -228,7 +228,7 @@ accidents_localidades_final = accidents_redux_localidades |>
 # 4) Exportar csv
 # ----------------------------
 
-write.csv(accidents_final, "data/accidents_by_freguesia_5years.csv", row.names = FALSE)
-write.csv(accidents_final, "data/accidents_by_freguesia_5years_dentrolocalidades.csv", row.names = FALSE)
+write.csv(accidents_final, "/data/IMPT/safety/accidents_by_freguesia_5years.csv", row.names = FALSE)
+write.csv(accidents_localidades_final, "/data/IMPT/safety/accidents_by_freguesia_5years_dentrolocalidades.csv", row.names = FALSE)
 
 
