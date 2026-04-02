@@ -899,7 +899,7 @@ Final_Results_Master <- Final_Results_Master |>
 
 ######### Save the final results
 # write_csv(Results_Equal_Weights, "/data/IMPT/impt/results/IMPT_Equal_Weights.csv")
-write_csv(Final_Results_Master, "/data/IMPT/impt/results/IMPT_PCA_and_Entropy_Scores.csv")
+write_csv(Final_Results_Master, "/data/IMPT/impt/results/IMPT_PCA_and_Entropy_Scores_freguesia.csv")
 
 ```
 
@@ -1010,10 +1010,10 @@ Final_Results_Master_walk <- Final_Results_Master_walk |>
 
 
 ######### Save the final results
-write_csv(Final_Results_Master_car, "/data/IMPT/impt/results/IMPT_PCA_and_Entropy_Scores_car.csv")
-write_csv(Final_Results_Master_pt, "/data/IMPT/impt/results/IMPT_PCA_and_Entropy_Scores_pt.csv")
-write_csv(Final_Results_Master_bike, "/data/IMPT/impt/results/IMPT_PCA_and_Entropy_Scores_bike.csv")
-write_csv(Final_Results_Master_walk, "/data/IMPT/impt/results/IMPT_PCA_and_Entropy_Scores_walk.csv")
+write_csv(Final_Results_Master_car, "/data/IMPT/impt/results/IMPT_PCA_and_Entropy_Scores_car_freguesia.csv")
+write_csv(Final_Results_Master_pt, "/data/IMPT/impt/results/IMPT_PCA_and_Entropy_Scores_pt_freguesia.csv")
+write_csv(Final_Results_Master_bike, "/data/IMPT/impt/results/IMPT_PCA_and_Entropy_Scores_bike_freguesia.csv")
+write_csv(Final_Results_Master_walk, "/data/IMPT/impt/results/IMPT_PCA_and_Entropy_Scores_walk_freguesia.csv")
 
 ```
 
@@ -1095,7 +1095,7 @@ freguesias # Read from data_load.R
 
 # IMPT PCA and Entropy scores
 # impt_pca = read.csv(IMPT_URL("results_aggregated/20260330/IMPT_PCA_and_Entropy_Scores.csv"))
-impt_pca = read.csv("/data/IMPT/impt/results/IMPT_PCA_and_Entropy_Scores.csv")
+impt_pca = read.csv("/data/IMPT/impt/results/IMPT_PCA_and_Entropy_Scores_freguesia.csv")
 impt_pca_sf = freguesias |>
   select(-nuts2, -area_ha) |>
   mutate(dtmnfr = as.integer(dtmnfr)) |>
