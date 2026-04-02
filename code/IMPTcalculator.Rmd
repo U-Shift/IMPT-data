@@ -1,7 +1,7 @@
 ---
 title: "IMPT"
 output: html_document
-date: "2026-03-02"
+date: "2026-04-02"
 ---
 
 ```{r setup, include=FALSE}
@@ -28,6 +28,73 @@ library(janitor)     # For data cleaning, if needed
 ### Leaving out Mobility costs for now
 
 
+```{r}
+# Data loading Accessibility
+freguesia_accessibility <- read_csv("/data/IMPT/results_data/freguesia_accessibility.csv")
+Accessibility <- freguesia_accessibility |> select (-nuts)
+```
+
+```{r}
+# Data loading Mobility
+freguesias_infrastructure_ratio <- read_csv("/data/IMPT/mobility/freguesias_infrastructure_ratio.csv")
+# names(freguesias_infrastructure_ratio)
+freguesias_infrastructure_ratio = freguesias_infrastructure_ratio |> 
+  select(dtmnfr, road_length, pedpath_length, cycleway_length, 
+        segregated_cycleway_length, pedpath_to_road_ratio, cycleway_to_road_ratio, 
+        cycling_quality_ratio)
+
+freguesias_stops_coverage <- read_csv("/data/IMPT/mobility/freguesias_stops_coverage.csv")
+# names(freguesias_stops_coverage)
+#### There is not a varaible named "Stops_coverage", and the on at mauricio drive has different values than  the suspected one
+# summary(Mobility2$Stops_coverage)
+#    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+#  0.1337  0.7302  0.9211  0.8522  0.9833  1.0000 
+# summary(freguesias_stops_coverage$ratio_served_population)
+#    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+#  0.3500  0.9000  0.9800  0.9354  1.0000  1.0000 
+ 
+freguesias_stops_coverage = freguesias_stops_coverage |> 
+  select(freguesia, ratio_served_population) # will use this for now...
+# we need to add the dtmnfr code to be able to join
+freguesias_names = st_read("/data/IMPT/geo/freguesias_2024_unique.gpkg") |> 
+  st_drop_geometry() |> 
+  select(dtmnfr, freguesia)
+freguesias_stops_coverage = freguesias_stops_coverage |>
+  left_join(freguesias_names, by = "freguesia") |> 
+  select(-freguesia) |> 
+  mutate(dtmnfr = as.numeric(dtmnfr))
+
+freguesias_shared_mobility <- read_csv("/data/IMPT/mobility/freguesias_shared_mobility.csv")
+# names(freguesias_shared_mobility)
+freguesias_shared_mobility = freguesias_shared_mobility |> 
+  select(dtmnfr, shared_mobility_points)
+
+freguesias_mobility <- read_csv("/data/IMPT/results_data/freguesia_mobility.csv")
+names(freguesias_mobility)
+freguesias_mobility = freguesias_mobility |> 
+  select(-nuts)
+
+freguesias_headways = read_csv("/data/IMPT/mobility_transit/freguesias_headways.csv") 
+names(freguesias_headways)
+  # summary(Mobility2$PT_Waitingtime)
+  # summary(freguesias_headways$weighted_waiting_time_peak)
+  # summary(Mobility2$PT_Weight_frequendy_peak_day)
+  # summary(freguesias_headways$weighted_frequency_day)
+  # summary(freguesias_headways$weighted_frequency_peak) # we want this one!
+freguesias_headways = freguesias_headways |> 
+  select(dtmnfr, weighted_frequency_peak, weighted_waiting_time_peak)
+
+## Join all tables
+Mobility <- freguesias_infrastructure_ratio |> 
+  left_join(freguesias_stops_coverage, by = "dtmnfr") |> 
+  left_join(freguesias_shared_mobility, by = "dtmnfr") |> 
+  left_join(freguesias_mobility, by = "dtmnfr") |> 
+  left_join(freguesias_headways, by = "dtmnfr")
+
+# names(Mobility)
+# names(Mobility2)
+```
+
 
 
 
@@ -35,16 +102,8 @@ library(janitor)     # For data cleaning, if needed
 
 ```{r}
 
-# Accessibility <- freguesia_accessibility |> 
-#   select (-nuts)
-# 
-# #Mobility <- Mobility_freguesia |> 
-#  # left_join(
-#   #  freguesia_mobility , by = "dtmnfr") |> 
-#   #select(-nuts,-freguesia)
-# 
-# 
-# 
+
+
 # Affordability_post_nav <- freguesia_affordability |>
 #   mutate(h_transp_inc_car = (housing + affordability_car_total_money*365)/Income) |> 
 #   mutate(h_transp_inc_pt = (housing + affordability_transit_pass_total_money*365)/Income) |>
