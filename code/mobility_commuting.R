@@ -371,3 +371,72 @@ write.csv(municipio_transfers, IMPT_URL(sprintf("%s/municipio_transfers.csv", ou
 
 
 
+
+
+# Accessibility Gap -------------------------------------------------------
+
+jobs_grid <- read_csv("/data/IMPT/mobility_commuting/jittering_grid.csv") |> 
+  rename(hex_id = id_grid_origin) |> 
+  select(hex_id, trips)
+
+## In time
+process_ttm <- function(path, dests, tag) {
+  if (!file.exists(path)) {
+    return(data.frame(hex_id = character(), min_t = numeric()))
+  }
+  readRDS(path) |>
+    left_join() # need to add trips info from od_pairs
+    filter(to_id %in% dests) |>
+    group_by(from_id) |>
+    summarise(min_t = weighted.mean(travel_time_p50, trips, na.rm = TRUE)) |> # weight by trips
+    rename(hex_id = from_id, !!tag := min_t) |>
+    mutate(hex_id = as.character(hex_id), !!tag := pmin(get(tag), 60))
+}
+
+poi_h_dest <- unique(jobs_grid$hex_id[!is.na(jobs_grid$hex_id)])
+res_car <- process_ttm("/data/IMPT/ttm/ttm_h3_res8/ttm_car_60min_202602040800.rds", poi_h_dest, "time_car")
+res_peak <- process_ttm("/data/IMPT/ttm/ttm_h3_res8/ttm_transit_60min_202602040800_1transfers.rds", poi_h_dest, "time_pt_peak")
+
+# Nut2 mapping for hex
+mun_geom_for_nuts <- freg_geom |>
+  group_by(municipio) |>
+  summarise(nuts2 = first(nuts2), .groups = "drop") |>
+  st_make_valid()
+
+grid_centroids <- st_centroid(grid)
+grid_nuts <- st_join(grid_centroids, mun_geom_for_nuts, join = st_within) |>
+  st_drop_geometry() |>
+  select(hex_id, nuts2)
+
+jobs_grid_redux = jobs_grid |> 
+  group_by(hex_id) |>
+  summarise(trips = sum(trips, na.rm = TRUE)) |> 
+  ungroup()
+
+hex_stats_gap <- grid_freg_mun |>
+  mutate(grid_id = as.character(grid_id)) |>
+  left_join(res_car, by = c("grid_id" = "hex_id")) |>
+  left_join(res_peak, by = c("grid_id" = "hex_id")) |>
+  left_join(jobs_grid_redux |> mutate(hex_id = as.character(hex_id)), by =  c("grid_id" = "hex_id")) |>
+  filter(time_car > 0 & time_pt_peak > 0) |>
+
+  mutate(across(starts_with("time_"), ~ replace_na(., 60))) |>
+  mutate(accessibility_gap = time_pt_peak - time_car) |>
+  mutate(across(where(is.numeric), ~ replace_na(., 0)))
+
+
+# at freguesia level. average weighted by trips
+freg_stats_gap <- hex_stats_gap |> 
+  filter(freg_id != 0) |> 
+  filter(time_car > 0 & time_pt_peak > 0) |>
+  group_by(freg_id) |>
+  summarise(
+    time_car = weighted.mean(time_car, trips, na.rm = TRUE),
+    time_pt_peak = weighted.mean(time_pt_peak, trips, na.rm = TRUE),
+    total_trips = sum(trips, na.rm = TRUE) 
+  ) |> 
+  mutate(accessibility_gap = time_pt_peak - time_car) |> 
+  ungroup() |> 
+  filter(!is.nan(time_car))
+
+# at municipio level. average weighted by trips
