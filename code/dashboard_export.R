@@ -216,7 +216,7 @@ grid_aggregated = grid |>
   left_join(
     grid_affordability_pt_single_fare |> 
       rename(id=id_grid_origin) |>
-      rename_with(~ paste0("affordability_pt_single_fare_", .), -id),
+      rename_with(~ paste0("affordability_pt_no_pass_", .), -id),
     by="id"
   ) |>
   left_join(
@@ -322,7 +322,7 @@ freguesias_aggregated = freguesias_aggregated |>
     freguesia_affordability_pt_single_fare |> 
       rename(id=Origin_dicofre24) |>
       mutate(id=as.character(id)) |>
-      rename_with(~ paste0("affordability_pt_single_fare_", .), -id),
+      rename_with(~ paste0("affordability_pt_no_pass_", .), -id),
     by="id"
   ) |>
   left_join(
@@ -433,7 +433,7 @@ municipios_aggregated = municipios_aggregated |>
     municipio_affordability_pt_single_fare |> 
       left_join(mun_nuts |> select(id, municipio), by="municipio") |>
       select(-municipio) |>
-      rename_with(~ paste0("affordability_pt_single_fare_", .), -id),
+      rename_with(~ paste0("affordability_pt_no_pass_", .), -id),
     by="id"
   ) |>
   left_join(
@@ -464,13 +464,45 @@ municipios_aggregated = municipios_aggregated |>
   )
 names(municipios_aggregated)
 
-# Normalize data (round all numeric values to 2 digits)
+
+# Normalize data ----------------------------------------------------------
+
+
+# Round all numeric values to 2 digits
 grid_aggregated = grid_aggregated |> 
   mutate(across(where(is.numeric), ~ round(., 2)))
 freguesias_aggregated = freguesias_aggregated |> 
   mutate(across(where(is.numeric), ~ round(., 2)))
 municipios_aggregated = municipios_aggregated |> 
   mutate(across(where(is.numeric), ~ round(., 2)))
+
+# Replace "_nav" with "_pass" on column names, to be compatible with dashboard filters
+# Example: "daily_car_count_nav" becomes "daily_car_count_pass"
+names(grid_aggregated) = gsub("^(.*)nav(.*)$", "\\1pass\\2", names(grid_aggregated))
+names(freguesias_aggregated) = gsub("^(.*)nav(.*)$", "\\1pass\\2", names(freguesias_aggregated))
+names(municipios_aggregated) = gsub("^(.*)nav(.*)$", "\\1pass\\2", names(municipios_aggregated))
+
+# Col names with "_mode_" in the middle, should end with "_mode" to be compatible with dashboard filters
+# Example: "daily_car_count" becomes "daily_count_car"
+# names(freguesias_aggregated) = gsub("^(.*)_car_(.*)$", "\\1_\\2_car", names(freguesias_aggregated))
+modes = list(
+  # From, to
+  c("car", "car"),
+  c("private_vehicle", "car"),
+  c("bike", "bike"),
+  c("walk", "walk"),
+  c("pt", "pt"),
+  c("transit", "pt"),
+  # pass and no_pass should come after pt, to append it in the end of variable name!
+  c("no_pass", "no_pass"), # no_pass before pass, to avoid duplicated change!
+  c("pass", "pass")
+)
+
+for (mode in modes) {
+  names(grid_aggregated) = gsub(paste0("^(.*)_", mode[1], "_(.*)$"), paste0("\\1_\\2_", mode[2]), names(grid_aggregated))
+  names(freguesias_aggregated) = gsub(paste0("^(.*)_", mode[1], "_(.*)$"), paste0("\\1_\\2_", mode[2]), names(freguesias_aggregated))
+  names(municipios_aggregated) = gsub(paste0("^(.*)_", mode[1], "_(.*)$"), paste0("\\1_\\2_", mode[2]), names(municipios_aggregated))
+}
 
 # 4. Export to geojson -------------------------------------------------
 DATA_LOCATION = "data" # To store locally
@@ -487,6 +519,9 @@ write.csv(municipios_aggregated |> st_drop_geometry(), IMPT_URL(paste(output_dir
 length(names(grid_aggregated)) # 710
 length(names(freguesias_aggregated)) # 970
 length(names(municipios_aggregated)) # 965
+
+freguesia_names = names(freguesias_aggregated) |> data.frame()
+grid_names = names(grid_aggregated) |> data.frame()
 
 # names(freguesias_aggregated)
 # freguesias_aggregated |> 
