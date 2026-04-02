@@ -31,7 +31,7 @@ names(database)[7] <- "company_school_transport"
 names(database)[8] <- "metro"
 names(database)[9] <- "train"
 names(database)[10] <- "motorcycle"
-names(database)[11] <- "bicycle"
+names(database)[11] <- "bike"
 names(database)[12] <- "boat"
 names(database)[13] <- "other"
 
@@ -42,9 +42,9 @@ database = database |>
   mutate(
     pt = bus + company_school_transport + metro + train + boat, 
     private_vehicle = car_driver + car_passenger + motorcycle,
-    active = walk + bicycle
+    active = walk + bike
   ) |>
-  select(dtmnfr16, total, pt, private_vehicle, active)
+  select(dtmnfr16, total, pt, private_vehicle, active, walk, bike)
 nrow(database)
 
 # Modal share computation, with dicofre convertion
@@ -57,7 +57,9 @@ database_converted = all_dicofre_conversion_weight |>
     total_converted = round(total * weight, digits=2),
     pt_converted = round(pt * weight, digits=2),
     private_vehicle_converted = round(private_vehicle * weight, digits=2),
-    active_converted = round(active * weight, digits=2)
+    active_converted = round(active * weight, digits=2),
+    walk_converted = round(walk * weight, digits=2),
+    bike_converted = round(bike * weight, digits=2)
   )
 
 assertthat::assert_that(nrow(database_converted) == nrow(all_dicofre_conversion_weight))
@@ -65,20 +67,26 @@ assertthat::assert_that(sum(database_converted$total_converted) == sum(database$
 assertthat::assert_that(sum(database_converted$pt_converted) == sum(database$pt))
 assertthat::assert_that(sum(database_converted$private_vehicle_converted) == sum(database$private_vehicle))
 assertthat::assert_that(sum(database_converted$active_converted) == sum(database$active))
+assertthat::assert_that(sum(database_converted$walk_converted) == sum(database$walk))
+assertthat::assert_that(sum(database_converted$bike_converted) == sum(database$bike))
 
 database_final = database_converted |>
-  select(dtmnfr24, total_converted, pt_converted, private_vehicle_converted, active_converted) |>
+  select(dtmnfr24, total_converted, pt_converted, private_vehicle_converted, active_converted, walk_converted, bike_converted) |>
   rename(
     dtmnfr = dtmnfr24,
     total = total_converted,
     pt = pt_converted,
     private_vehicle = private_vehicle_converted,
-    active = active_converted
+    active = active_converted,
+    walk = walk_converted,
+    bike = bike_converted
   ) |>
   mutate(
     pt_share = round(pt / total, digits=2),
     private_vehicle_share = round(private_vehicle / total, digits=2),
-    active_share = round(active / total, digits=2)
+    active_share = round(active / total, digits=2),
+    walk_share = round(walk / total, digits=2),
+    bike_share = round(bike / total, digits=2)
   )
 View(database_final)
 
@@ -88,12 +96,14 @@ write.csv(database_final, "useful_data/census_modal_share.csv", row.names = FALS
 mun_parish = read.csv("useful_data/freguesias_nuts.csv")
 
 database_municipality = database_converted |>
-  select(dtmnfr24, total_converted, pt_converted, private_vehicle_converted, active_converted) |>
+  select(dtmnfr24, total_converted, pt_converted, private_vehicle_converted, active_converted, walk_converted, bike_converted) |>
   rename(
     total = total_converted,
     pt = pt_converted,
     private_vehicle = private_vehicle_converted,
-    active = active_converted
+    active = active_converted,
+    walk = walk_converted,
+    bike = bike_converted
   ) |>
   left_join(mun_parish |> select(freg_id, mun_id) |> mutate(freg_id=as.character(freg_id)), by=c("dtmnfr24" = "freg_id")) |>
   group_by(mun_id) |>
@@ -101,12 +111,16 @@ database_municipality = database_converted |>
     total = sum(total),
     pt = sum(pt),
     private_vehicle = sum(private_vehicle),
-    active = sum(active)
+    active = sum(active),
+    walk = sum(walk),
+    bike = sum(bike)
   ) |>
   mutate(
     pt_share = round(pt / total, digits=2),
     private_vehicle_share = round(private_vehicle / total, digits=2),
-    active_share = round(active / total, digits=2)
+    active_share = round(active / total, digits=2),
+    walk_share = round(walk / total, digits=2),
+    bike_share = round(bike / total, digits=2)
   )
 
 # mun_id = read.csv("useful_data/mun_nuts.csv")
