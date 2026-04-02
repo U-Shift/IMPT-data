@@ -1017,6 +1017,49 @@ write_csv(Final_Results_Master_walk, "/data/IMPT/impt/results/IMPT_PCA_and_Entro
 
 ```
 
+## Export for other levels
+
+```{r}
+# export at municipality level, weighted mean with population
+census24_fregmun_pop = read_csv("useful_data/census24_fregmun.csv") |> 
+  select(freg_id, mun_id, population) |> 
+  mutate(dtmnfr = as.integer(freg_id))
+
+Final_Results_Master_municipio <- Final_Results_Master |>
+  left_join(census24_fregmun_pop, by = "dtmnfr") |>
+  group_by(mun_id) |>
+  # weighted mean with population as weights 
+  summarize_at(vars(-dtmnfr, -freg_id, -population), ~ weighted.mean(., w = population, na.rm = TRUE))
+Final_Results_Master_car_municipio <- Final_Results_Master_car |>
+  left_join(census24_fregmun_pop, by = "dtmnfr") |>
+  group_by(mun_id) |>
+  # weighted mean with population as weights 
+  summarize_at(vars(-dtmnfr, -freg_id, -population), ~ weighted.mean(., w = population, na.rm = TRUE))
+Final_Results_Master_pt_municipio <- Final_Results_Master_pt |>
+  left_join(census24_fregmun_pop, by = "dtmnfr") |>
+  group_by(mun_id) |>
+  # weighted mean with population as weights 
+  summarize_at(vars(-dtmnfr, -freg_id, -population), ~ weighted.mean(., w = population, na.rm = TRUE))
+Final_Results_Master_walk_municipio <- Final_Results_Master_walk |>
+  left_join(census24_fregmun_pop, by = "dtmnfr") |>
+  group_by(mun_id) |>
+  # weighted mean with population as weights 
+  summarize_at(vars(-dtmnfr, -freg_id, -population), ~ weighted.mean(., w = population, na.rm = TRUE))
+Final_Results_Master_bike_municipio <- Final_Results_Master_bike |>
+  left_join(census24_fregmun_pop, by = "dtmnfr") |>
+  group_by(mun_id) |>
+  # weighted mean with population as weights 
+  summarize_at(vars(-dtmnfr, -freg_id, -population), ~ weighted.mean(., w = population, na.rm = TRUE))
+
+write_csv(Final_Results_Master_municipio, "/data/IMPT/impt/results/IMPT_PCA_and_Entropy_Scores_municipio.csv")
+write_csv(Final_Results_Master_car_municipio, "/data/IMPT/impt/results/IMPT_PCA_and_Entropy_Scores_car_municipio.csv")
+write_csv(Final_Results_Master_pt_municipio, "/data/IMPT/impt/results/IMPT_PCA_and_Entropy_Scores_pt_municipio.csv")
+write_csv(Final_Results_Master_walk_municipio, "/data/IMPT/impt/results/IMPT_PCA_and_Entropy_Scores_walk_municipio.csv")
+write_csv(Final_Results_Master_bike_municipio, "/data/IMPT/impt/results/IMPT_PCA_and_Entropy_Scores_bike_municipio.csv")
+
+```
+
+
 # Visualize
 
 ```{r}
