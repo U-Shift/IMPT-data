@@ -80,8 +80,9 @@ names(freguesias_headways)
   # summary(freguesias_headways$weighted_waiting_time_peak)
   # summary(Mobility2$PT_Weight_frequendy_peak_day)
   # summary(freguesias_headways$weighted_frequency_day)
+  # summary(freguesias_headways$weighted_frequency_peak) # we want this one!
 freguesias_headways = freguesias_headways |> 
-  select(dtmnfr, weighted_frequency_day, weighted_waiting_time_peak)
+  select(dtmnfr, weighted_frequency_peak, weighted_waiting_time_peak)
 
 ## Join all tables
 Mobility <- freguesias_infrastructure_ratio |> 
