@@ -1020,6 +1020,7 @@ write_csv(Final_Results_Master_walk, "/data/IMPT/impt/results/IMPT_PCA_and_Entro
 ## Export for other levels
 
 ```{r}
+## Municipality
 # export at municipality level, weighted mean with population
 census24_fregmun_pop = read_csv("useful_data/census24_fregmun.csv") |> 
   select(freg_id, mun_id, population) |> 
@@ -1056,6 +1057,36 @@ write_csv(Final_Results_Master_car_municipio, "/data/IMPT/impt/results/IMPT_PCA_
 write_csv(Final_Results_Master_pt_municipio, "/data/IMPT/impt/results/IMPT_PCA_and_Entropy_Scores_pt_municipio.csv")
 write_csv(Final_Results_Master_walk_municipio, "/data/IMPT/impt/results/IMPT_PCA_and_Entropy_Scores_walk_municipio.csv")
 write_csv(Final_Results_Master_bike_municipio, "/data/IMPT/impt/results/IMPT_PCA_and_Entropy_Scores_bike_municipio.csv")
+
+
+## Grid level
+# via grid_freg_mun lookup (generalised assumption).
+grid_freg_mun <- read.csv("useful_data/grid_nuts.csv") |> 
+  select(grid_id, freg_id) |> 
+  mutate(freg_id = as.integer(freg_id))
+
+Final_Results_Master_grid <- grid_freg_mun |>
+  left_join(Final_Results_Master, by = c("freg_id" = "dtmnfr")) |> 
+  select(-freg_id)
+Final_Results_Master_grid_car <- grid_freg_mun |>
+  left_join(Final_Results_Master_car, by = c("freg_id" = "dtmnfr")) |> 
+  select(-freg_id)
+Final_Results_Master_grid_pt <- grid_freg_mun |>
+  left_join(Final_Results_Master_pt, by = c("freg_id" = "dtmnfr")) |> 
+  select(-freg_id)
+Final_Results_Master_grid_walk <- grid_freg_mun |>
+  left_join(Final_Results_Master_walk, by = c("freg_id" = "dtmnfr")) |> 
+  select(-freg_id)
+Final_Results_Master_grid_bike <- grid_freg_mun |>
+  left_join(Final_Results_Master_bike, by = c("freg_id" = "dtmnfr")) |> 
+  select(-freg_id)
+
+
+write.csv(Final_Results_Master_grid, "/data/IMPT/impt/results/IMPT_PCA_and_Entropy_Scores_grid.csv", row.names = FALSE)
+write.csv(Final_Results_Master_grid_car, "/data/IMPT/impt/results/IMPT_PCA_and_Entropy_Scores_car_grid.csv", row.names = FALSE)
+write.csv(Final_Results_Master_grid_pt, "/data/IMPT/impt/results/IMPT_PCA_and_Entropy_Scores_pt_grid.csv", row.names = FALSE)
+write.csv(Final_Results_Master_grid_bike, "/data/IMPT/impt/results/IMPT_PCA_and_Entropy_Scores_bike_grid.csv", row.names = FALSE)
+write.csv(Final_Results_Master_grid_walk, "/data/IMPT/impt/results/IMPT_PCA_and_Entropy_Scores_walk_grid.csv", row.names = FALSE)
 
 ```
 
