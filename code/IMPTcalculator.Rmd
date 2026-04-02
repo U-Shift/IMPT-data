@@ -69,7 +69,8 @@ freguesias_stops_coverage = freguesias_stops_coverage |>
 freguesias_shared_mobility <- read_csv("/data/IMPT/mobility/freguesias_shared_mobility.csv")
 # names(freguesias_shared_mobility)
 freguesias_shared_mobility = freguesias_shared_mobility |> 
-  select(dtmnfr, shared_mobility_points)
+  select(dtmnfr, shared_mobility_points) |> 
+  rename(Shared_mobility = shared_mobility_points)
 
 freguesias_mobility <- read_csv("/data/IMPT/results_data/freguesia_mobility.csv")
 names(freguesias_mobility)
@@ -169,6 +170,10 @@ Affordability_pre_nav <- Affordability_pre_nav |>
   mutate(transp_inc_pt = case_when(
      dtmnfr == "150701" ~ mean_viz_canha2$mean_transp_inc_pt,
     TRUE ~ transp_inc_pt))
+
+
+census_modal_share = read_csv("/data/IMPT/census2021/census_modal_share_parish.csv") |> 
+  select(dtmnfr, total, pt, private_vehicle, active, pt_share, private_vehicle_share, active_share)
 ```
 
 
@@ -206,7 +211,6 @@ Affordability_pt_pre_nav <- Affordability_pre_nav |>
   select(dtmnfr, contains("pt"))
 
 
-  
 Safety_car <- Safety |> 
   select(dtmnfr, contains("car"), contains("motorizado"))
 Safety_bike <- Safety |>
@@ -216,8 +220,6 @@ Safety_bike <- Safety |>
 
 Safety_bike <- Safety_bike |> 
   mutate(across(where(is.numeric), ~ ifelse(is.na(.x), 0, .x)))
-
-
 Safety_walk <- Safety |>
   select(dtmnfr, contains("peo"))
 ```
@@ -252,54 +254,33 @@ normalize_cost <- function(x) {
 
 Accessibility_Norm <- Accessibility |> 
   mutate(
-    # Use c() inside starts_with for multiple prefixes
-    across(starts_with("access"), ~ normalize_benefit(.x)),
-    
-    # Same for your negative indicators
-    across(starts_with("mobility"), ~ normalize_cost(.x))
-  ) 
-
+    across(starts_with("access"), ~ normalize_benefit(.x)), # Use c() inside starts_with for multiple prefixes
+    across(starts_with("mobility"), ~ normalize_cost(.x)) # Same for your negative indicators
+  ) |> 
+  mutate(
+    across(where(is.numeric), ~ ifelse(is.na(.x), mean(.x, na.rm = TRUE), .x))) #replace NA with the mean
 
 Mobility_Norm <- Mobility|> 
   mutate(
-    # Use c() inside starts_with for multiple prefixes
-    across(starts_with(c("PT_Wait", "mobility")), ~ normalize_cost(.x)),
-    
-    # Same for the negative indicators
-    across(!c(dtmnfr, starts_with(c("PT_Wait", "mobility"))), ~ normalize_benefit(.x))
+    across(starts_with(c("PT_Wait", "mobility")), ~ normalize_cost(.x)),     # Use c() inside starts_with for multiple prefixes
+    across(!c(dtmnfr, starts_with(c("PT_Wait", "mobility"))), ~ normalize_benefit(.x)) # Same for the negative indicators
   )
-
 
 Affordability_Norm_post_nav <- Affordability_post_nav |> ### All are negative
-  mutate(
-    
-    across(!dtmnfr, ~ normalize_cost(.x)))
-
+  mutate(across(!dtmnfr, ~ normalize_cost(.x)))
 Affordability_Norm_pre_nav <- Affordability_pre_nav |> ### All are negative
-  mutate(
-    
-    across(!dtmnfr, ~ normalize_cost(.x)))
-
+  mutate(across(!dtmnfr, ~ normalize_cost(.x)))
 
 Safety_Norm <- Safety |> ### All are negative
-    mutate(
-    across(!dtmnfr, ~ normalize_cost(.x)))
+    mutate(across(!dtmnfr, ~ normalize_cost(.x)))
     
-##### Save normalized dataset
+##### Export normalized dataset
 
-write_csv(Mobility_Norm, "Mobility_Norm.csv")
-
-
-#replace NA with the mean
-Accessibility_Norm <- Accessibility_Norm |> 
-  mutate(
-    across(where(is.numeric), ~ ifelse(is.na(.x), mean(.x, na.rm = TRUE), .x))
-  )
-write_csv(Accessibility_Norm, "Accessibility_Norm.csv")
-write_csv(Affordability_Norm_post_nav, "Affordability_Norm_post_nav.csv")
-write_csv(Affordability_Norm_pre_nav, "Affordability_Norm_pre_nav.csv")
-write_csv(Safety_Norm, "Safety_Norm.csv")
-  
+write_csv(Mobility_Norm, "/data/IMPT/impt/norm/Mobility_Norm.csv")
+write_csv(Accessibility_Norm, "/data/IMPT/impt/norm/Accessibility_Norm.csv")
+write_csv(Affordability_Norm_post_nav, "/data/IMPT/impt/norm/Affordability_Norm_post_nav.csv")
+write_csv(Affordability_Norm_pre_nav, "/data/IMPT/impt/norm/Affordability_Norm_pre_nav.csv")
+write_csv(Safety_Norm, "/data/IMPT/impt/norm/Safety_Norm.csv")
 ```
 
 ### Normalize indicators for per mode datasets
@@ -307,149 +288,96 @@ write_csv(Safety_Norm, "Safety_Norm.csv")
 The functions to normalize are in the previous chunk
 
 ```{r}
-
-
-
 Accessibility_car_Norm <- Accessibility_car |> 
   mutate(
-    # Use c() inside starts_with for multiple prefixes
-    across(starts_with("access"), ~ normalize_benefit(.x)),
-    
-    # Same for your negative indicators
-    across(starts_with("mobility"), ~ normalize_cost(.x))
-  ) 
-
+    across(starts_with("access"), ~ normalize_benefit(.x)), # Use c() inside starts_with for multiple prefixes
+    across(starts_with("mobility"), ~ normalize_cost(.x)))     # Same for your negative indicators
+   
 Accessibility_pt_Norm <- Accessibility_pt |> 
   mutate(
-    # Use c() inside starts_with for multiple prefixes
     across(starts_with("access"), ~ normalize_benefit(.x)),
-    
-    # Same for your negative indicators
     across(starts_with("mobility"), ~ normalize_cost(.x))
-  )
+  ) |> 
+  mutate(
+    across(where(is.numeric), ~ ifelse(is.na(.x), mean(.x, na.rm = TRUE), .x))) #replace NA with the mean) 
 
 Accessibility_bike_Norm <- Accessibility_bike |> 
   mutate(
-    # Use c() inside starts_with for multiple prefixes
     across(starts_with("access"), ~ normalize_benefit(.x)),
-    
-    # Same for your negative indicators
-    across(starts_with("mobility"), ~ normalize_cost(.x))
-  )
+    across(starts_with("mobility"), ~ normalize_cost(.x)))
 
 Accessibility_walk_Norm <- Accessibility_walk |>
   mutate(
-    # Use c() inside starts_with for multiple prefixes
     across(starts_with("access"), ~ normalize_benefit(.x)),
-    
-    # Same for your negative indicators
-    across(starts_with("mobility"), ~ normalize_cost(.x))
-  )
-
-
+    across(starts_with("mobility"), ~ normalize_cost(.x)))
 
 
 Mobility_car_Norm <- Mobility_car|> 
   mutate(
-    # Use c() inside starts_with for multiple prefixes
     across(starts_with(c("mobility")), ~ normalize_cost(.x)),
-    
-    # Same for the negative indicators
     across(!c(dtmnfr, starts_with(c("mobility"))), ~ normalize_benefit(.x))
   )
 Mobility_pt_Norm <- Mobility_pt|>
  mutate(
-    # Use c() inside starts_with for multiple prefixes
     across(starts_with(c("PT_Wait", "mobility")), ~ normalize_cost(.x)),
-    
-    # Same for the negative indicators
-    across(!c(dtmnfr, starts_with(c("PT_Wait", "mobility"))), ~ normalize_benefit(.x))
-  )
-                                                   
+    across(!c(dtmnfr, starts_with(c("PT_Wait", "mobility"))), ~ normalize_benefit(.x)))
 Mobility_bike_Norm <- Mobility_bike|>
  mutate(
-    # Use c() inside starts_with for multiple prefixes
     across(starts_with(c("mobility")), ~ normalize_cost(.x)),
-    
-    # Same for the negative indicators
-    across(!c(dtmnfr, starts_with(c("mobility"))), ~ normalize_benefit(.x))
-  )
-
+    across(!c(dtmnfr, starts_with(c("mobility"))), ~ normalize_benefit(.x)))
 Mobility_walk_Norm <- Mobility_walk|>
    mutate(
-    # Use c() inside starts_with for multiple prefixes
     across(starts_with(c("mobility")), ~ normalize_cost(.x)),
-    
-    # Same for the negative indicators
-    across(!c(dtmnfr, starts_with(c("mobility"))), ~ normalize_benefit(.x))
-  )
-
+    across(!c(dtmnfr, starts_with(c("mobility"))), ~ normalize_benefit(.x)))
 
 
 Affordability_car_Norm <- Affordability_car |> ### All are negative
-  mutate(
-    
-    across(!dtmnfr, ~ normalize_cost(.x)))
-
+  mutate(across(!dtmnfr, ~ normalize_cost(.x)))
 Affordability_pt_Norm_post_nav <- Affordability_pt_post_nav |> ### All are negative
-  mutate(
-    
-    across(!dtmnfr, ~ normalize_cost(.x)))
-
+  mutate(across(!dtmnfr, ~ normalize_cost(.x)))
 Affordability_pt_Norm_pre_nav <- Affordability_pt_pre_nav |> ### All are negative
-  mutate(
-    
-    across(!dtmnfr, ~ normalize_cost(.x)))
+  mutate(across(!dtmnfr, ~ normalize_cost(.x)))
 
+afford_post_nav <- Affordability_Norm_post_nav |>
+  left_join(census_modal_share, by = "dtmnfr") |>
+  mutate(MS_CAR_AFF = h_transp_inc_car * private_vehicle_share) |>
+  mutate(MS_PT_AFF = h_transp_inc_pt * pt_share) |>
+  mutate(MS_AFF_POST_NAV = (MS_CAR_AFF + MS_PT_AFF) / (private_vehicle_share + pt_share + active_share))
+afford_pre_nav <- Affordability_Norm_pre_nav |>
+  left_join(census_modal_share, by = "dtmnfr") |>
+  mutate(MS_CAR_AFF = h_transp_inc_car * private_vehicle_share) |>
+  mutate(MS_PT_AFF = h_transp_inc_pt * pt_share) |>
+  mutate(MS_AFF_PRE_NAV = (MS_CAR_AFF + MS_PT_AFF) / (private_vehicle_share + pt_share + active_share))
 
 
 Safety_car_Norm <- Safety_car |> ### All are negative
-  mutate(
-    
-    across(!dtmnfr, ~ normalize_cost(.x)))
-
+  mutate(across(!dtmnfr, ~ normalize_cost(.x)))
 Safety_bike_Norm <- Safety_bike |> ### All are negative
-  mutate(
-    
-    across(!dtmnfr, ~ normalize_cost(.x)))
+  mutate(across(!dtmnfr, ~ normalize_cost(.x)))
 Safety_walk_Norm <- Safety_walk |> ### All are negative
-  mutate(
-    
-    across(!dtmnfr, ~ normalize_cost(.x)))
+  mutate(across(!dtmnfr, ~ normalize_cost(.x)))
 
 
+##### Export normalized datasets per mode
 
-##### Save normalized dataset
+write_csv(Mobility_car_Norm, "/data/IMPT/impt/norm/Mobility_car_Norm.csv")
+write_csv(Mobility_pt_Norm, "/data/IMPT/impt/norm/Mobility_pt_Norm.csv")
+write_csv(Mobility_bike_Norm, "/data/IMPT/impt/norm/Mobility_bike_Norm.csv")
+write_csv(Mobility_walk_Norm, "/data/IMPT/impt/norm/Mobility_walk_Norm.csv")
 
-write_csv(Mobility_car_Norm, "Mobility_car_Norm.csv")
-write_csv(Mobility_pt_Norm, "Mobility_pt_Norm.csv")
-write_csv(Mobility_bike_Norm, "Mobility_bike_Norm.csv")
-write_csv(Mobility_walk_Norm, "Mobility_walk_Norm.csv")
+write_csv(Accessibility_car_Norm, "/data/IMPT/impt/norm/Accessibility_car_Norm.csv")
+write_csv(Accessibility_pt_Norm, "/data/IMPT/impt/norm/Accessibility_pt_Norm.csv")
+write_csv(Accessibility_bike_Norm, "/data/IMPT/impt/norm/Accessibility_bike_Norm.csv")
+write_csv(Accessibility_walk_Norm, "/data/IMPT/impt/norm/Accessibility_walk_Norm.csv")
 
-#replace NA with the mean
-Accessibility_pt_Norm <- Accessibility_pt_Norm |> 
-  mutate(
-    across(where(is.numeric), ~ ifelse(is.na(.x), mean(.x, na.rm = TRUE), .x))
-  )
+write_csv(Affordability_car_Norm, "/data/IMPT/impt/norm/Affordability_car_Norm.csv")
+write_csv(Affordability_pt_Norm_pre_nav, "/data/IMPT/impt/norm/Affordability_pt_Norm_pre_nav.csv")
+write_csv(Affordability_pt_Norm_post_nav, "/data/IMPT/impt/norm/Affordability_pt_Norm_post_nav.csv")
 
-write_csv(Accessibility_car_Norm, "Accessibility_car_Norm.csv")
-write_csv(Accessibility_pt_Norm, "Accessibility_pt_Norm.csv")
-write_csv(Accessibility_bike_Norm, "Accessibility_bike_Norm.csv")
-write_csv(Accessibility_walk_Norm, "Accessibility_walk_Norm.csv")
-
-write_csv(Affordability_car_Norm, "Affordability_car_Norm.csv")
-write_csv(Affordability_pt_Norm_pre_nav, "Affordability_pt_Norm_pre_nav.csv")
-write_csv(Affordability_pt_Norm_post_nav, "Affordability_pt_Norm_post_nav.csv")
-
-
-write_csv(Safety_car_Norm, "Safety_car_Norm.csv")
-write_csv(Safety_bike_Norm, "Safety_bike_Norm.csv")
-write_csv(Safety_walk_Norm, "Safety_walk_Norm.csv")
-
-
+write_csv(Safety_car_Norm, "/data/IMPT/impt/norm/Safety_car_Norm.csv")
+write_csv(Safety_bike_Norm, "/data/IMPT/impt/norm/Safety_bike_Norm.csv")
+write_csv(Safety_walk_Norm, "/data/IMPT/impt/norm/Safety_walk_Norm.csv")
 ```
-
-
 
 
 ## Step 2: Compute dimensions weights based on indicators
@@ -550,19 +478,14 @@ Results_Equal_Weights_walk <- data.frame(
 ```
 
 
-
-
-
-
 ### Step 3: Compute USING PCA: We will perform Principal Component Analysis (PCA) to determine the weights based on the variance explained by each indicator. Using PC1.
+
 ```{r}
-
-
 ##################### PCA #####################################
 
-
 # Perform PCA on the normalized indicators
-# Assuming 'data' is your dataset with normalized indicators
+# Assuming 'data' is dataset with normalized indicators
+
 pca_access <- PCA(Accessibility_Norm, quali.sup = 1, graph = FALSE)
 #pca_afford_post_nav <- PCA(Affordability_Norm_post_nav, quali.sup = 1, graph = FALSE)
 #pca_afford_pre_nav <- PCA(Affordability_Norm_pre_nav, quali.sup = 1, graph = FALSE)
@@ -570,38 +493,10 @@ pca_mobility <- PCA(Mobility_Norm, quali.sup = 1, graph = FALSE)
 pca_safety <- PCA(Safety_Norm, quali.sup = 1, graph = FALSE)
 
 
-
-################ AFFORDABILITY NOT PCA #######################################
-afford_pre_nav <- Affordability_Norm_pre_nav |> 
-  left_join(census_modal_share, by = "dtmnfr")
-
-afford_post_nav <- Affordability_Norm_post_nav |> 
-left_join(census_modal_share, by = "dtmnfr") |>  
-  mutate(MS_CAR_AFF = h_transp_inc_car * private_vehicle_share) |>
-  mutate(MS_PT_AFF = h_transp_inc_pt * pt_share) |>
-  mutate(MS_AFF_POST_NAV = (MS_CAR_AFF + MS_PT_AFF) / (private_vehicle_share + pt_share + active_share))
-
-afford_pre_nav <- Affordability_Norm_pre_nav |> 
-  left_join(census_modal_share, by = "dtmnfr") |> 
-  mutate(MS_CAR_AFF = h_transp_inc_car * private_vehicle_share) |>
-  mutate(MS_PT_AFF = h_transp_inc_pt * pt_share) |> 
-  mutate(MS_AFF_PRE_NAV = (MS_CAR_AFF + MS_PT_AFF) / (private_vehicle_share + pt_share + active_share))
-
-
-
-
-afford_post_nav_fin <- afford_post_nav |> 
-  select(dtmnfr, MS_AFF_POST_NAV)
-
-
-afford_pre_nav_fin <- afford_pre_nav |> 
-  select(dtmnfr, MS_AFF_PRE_NAV)
-
 # A helper function to scale any vector 0-100
 scale_0_100 <- function(x) {
   x_min <- min(x, na.rm = TRUE)
   x_max <- max(x, na.rm = TRUE)
-  
   # Logic: 1 + (normalized_value * 99) 
   # This ensures the lowest value is 1 and the highest is 100
   1 + ( (x - x_min) / (x_max - x_min) * 99 )
@@ -610,51 +505,36 @@ scale_0_100 <- function(x) {
 # 1. Extract Accessibility Score
 acc_scores <- data.frame(
   dtmnfr = Accessibility_Norm$dtmnfr,
-  Accessibility_Index = scale_0_100(pca_access$ind$coord[, 1])
-)
+  Accessibility_Index = scale_0_100(pca_access$ind$coord[, 1]))
 
 # 2. Extract Affordability Score
-#aff_scores_post_nav <- data.frame(
-  #dtmnfr = Affordability_Norm_post_nav$dtmnfr,
-  #Affordability_Index_post_nav = scale_0_100(pca_afford_post_nav$ind$coord[, 1])
-#)
+# aff_scores_post_nav <- data.frame(
+#   dtmnfr = Affordability_Norm_post_nav$dtmnfr,
+#   Affordability_Index_post_nav = scale_0_100(pca_afford_post_nav$ind$coord[, 1]))
+# aff_scores_pre_nav <- data.frame(
+#   dtmnfr = Affordability_Norm_pre_nav$dtmnfr,
+#   Affordability_Index_pre_nav = scale_0_100(pca_afford_pre_nav$ind$coord[, 1]))
+afford_post_nav_fin <- afford_post_nav |> 
+  select(dtmnfr, MS_AFF_POST_NAV)
+afford_pre_nav_fin <- afford_pre_nav |> 
+  select(dtmnfr, MS_AFF_PRE_NAV)
 
-#aff_scores_pre_nav <- data.frame(
- # dtmnfr = Affordability_Norm_pre_nav$dtmnfr,
-  #Affordability_Index_pre_nav = scale_0_100(pca_afford_pre_nav$ind$coord[, 1])
-#)
 
 # 3. Extract Safety Score
 saf_scores <- data.frame(
  dtmnfr = Safety_Norm$dtmnfr,
-  Safety_Index = scale_0_100(pca_safety$ind$coord[, 1])
-)
+  Safety_Index = scale_0_100(pca_safety$ind$coord[, 1]))
 
 #4. Extract Mobility Score
 mob_scores <- data.frame(
   dtmnfr = Mobility_Norm$dtmnfr,
-  Mobility_Index = scale_0_100(pca_mobility$ind$coord[,1])
-)
+  Mobility_Index = scale_0_100(pca_mobility$ind$coord[,1]))
 
-
-#### Join Results scores
-
-Final_Results_Master <- acc_scores |> 
-  #left_join(aff_scores_pre_nav, by = "dtmnfr") |> 
-  #left_join(aff_scores_post_nav, by = "dtmnfr") |>
-  left_join(afford_pre_nav_fin, by = "dtmnfr") |>
-   left_join(afford_post_nav_fin, by = "dtmnfr") |>
-  left_join(mob_scores, by = "dtmnfr") |>
-  left_join(saf_scores, by = "dtmnfr")
-
-#Extract the weights from the first principal component 
-
-
-#pca_weights_access <- pca_access$var$coord[, 1] / sum(pca_access$var$coord[, 1])
-#pca_weights_afford <- pca_afford$var$coord[, 1] / sum(pca_afford$var$coord[, 1])
-#pca_weights_mobility <- pca_mobility$var$coord[, 1] / sum(pca_mobility$var$coord[, 1])
-#pca_weights_safety <- pca_safety$var$coord[, 1] / sum(pca_safety$var$coord[, 1])
-
+### Extract the weights from the first principal component 
+# pca_weights_access <- pca_access$var$coord[, 1] / sum(pca_access$var$coord[, 1])
+# pca_weights_afford <- pca_afford$var$coord[, 1] / sum(pca_afford$var$coord[, 1])
+# pca_weights_mobility <- pca_mobility$var$coord[, 1] / sum(pca_mobility$var$coord[, 1])
+# pca_weights_safety <- pca_safety$var$coord[, 1] / sum(pca_safety$var$coord[, 1])
 
 
 ####CHECK THE CHAMPIONS INDICATORS
@@ -662,39 +542,44 @@ Final_Results_Master <- acc_scores |>
 Champions <- function(pca_here, dim = 1, n = 10) {
   # Extract the specific dimension contributions
   contributions <- pca_here$var$contrib[, dim]
-  
   # Sort and take the top n
   # Remember: use TRUE (all caps)
   top_n <- sort(contributions, decreasing = TRUE) |> head(n)
-  
   return(top_n)
 }
 
 Champions_access <- Champions(pca_access)
-#Champions_afford_pre_nav <- Champions(pca_afford_pre_nav) # or pca_afford_post_nav, depending on which you want to analyze
-#Champions_afford_post_nav <- Champions(pca_afford_post_nav)
+# Champions_afford_pre_nav <- Champions(pca_afford_pre_nav) # or pca_afford_post_nav, depending on which you want to analyze
+# Champions_afford_post_nav <- Champions(pca_afford_post_nav)
 Champions_mobility <- Champions(pca_mobility)
 Champions_safety <- Champions(pca_safety)
 
 
-
-
 # Write the PCA scores to CSV files
 
-write_csv(acc_scores, "Accessibility_PCA_Scores.csv")
+write_csv(acc_scores, "/data/IMPT/impt/pca_scores/Accessibility_PCA_Scores.csv")
 #write_csv(aff_scores_pre_nav, "Affordability_PCA_Scores_pre_nav.csv")
 #write_csv(aff_scores_post_nav, "Affordability_PCA_Scores_post_nav.csv")
-write_csv(saf_scores, "Safety_PCA_Scores.csv")
-write_csv(mob_scores, "Mobility_PCA_Scores.csv")
+write_csv(saf_scores, "/data/IMPT/impt/pca_scores/Safety_PCA_Scores.csv")
+write_csv(mob_scores, "/data/IMPT/impt/pca_scores/Mobility_PCA_Scores.csv")
 
 # Write champions scores
-write_csv(data.frame(Indicator = names(Champions_access), Contribution = Champions_access), "Champions_Accessibility.csv")
+write_csv(data.frame(Indicator = names(Champions_access), Contribution = Champions_access), "/data/IMPT/impt/pca_scores/Champions_Accessibility.csv")
 #write_csv(data.frame(Indicator = names(Champions_afford_pre_nav), Contribution = Champions_afford_pre_nav), "Champions_Affordability_pre_nav.csv")
 #write_csv(data.frame(Indicator = names(Champions_afford_post_nav), Contribution = Champions_afford_post_nav), "Champions_Affordability_post_nav.csv")
-write_csv(data.frame(Indicator = names(Champions_mobility), Contribution = Champions_mobility), "Champions_Mobility.csv")
-write_csv(data.frame(Indicator = names(Champions_safety), Contribution = Champions_safety), "Champions_Safety.csv")
+write_csv(data.frame(Indicator = names(Champions_mobility), Contribution = Champions_mobility), "/data/IMPT/impt/pca_scores/Champions_Mobility.csv")
+write_csv(data.frame(Indicator = names(Champions_safety), Contribution = Champions_safety), "/data/IMPT/impt/pca_scores/Champions_Safety.csv")
 
-                                                                           
+
+
+#### Join Results scores
+Final_Results_Master <- acc_scores |>
+  #left_join(aff_scores_pre_nav, by = "dtmnfr") |>
+  #left_join(aff_scores_post_nav, by = "dtmnfr") |>
+  left_join(afford_pre_nav_fin, by = "dtmnfr") |>
+  left_join(afford_post_nav_fin, by = "dtmnfr") |>
+  left_join(mob_scores, by = "dtmnfr") |>
+  left_join(saf_scores, by = "dtmnfr")
 ```
 
 
@@ -704,31 +589,21 @@ The function to rescale is on the previous chunk
 
 ```{r}
 
-##################### PCA #####################################
-
+##################### PCA per mode #####################################
 
 # Perform PCA on the normalized indicators
-
 pca_car_access <- PCA(Accessibility_car_Norm, quali.sup = 1, graph = FALSE)
 pca_pt_access <- PCA(Accessibility_pt_Norm, quali.sup = 1, graph = FALSE)
 pca_bike_access <- PCA(Accessibility_bike_Norm, quali.sup = 1, graph = FALSE)
 pca_walk_access <- PCA(Accessibility_walk_Norm, quali.sup = 1, graph = FALSE)
 
+# pca_car_afford <- PCA(Affordability_car_Norm, quali.sup = 1, graph = FALSE).  NOT ENOUGH INDICATORS
+# pca_pt_afford_pre_nav <- PCA(Affordability_pt_Norm_pre_nav, quali.sup = 1, graph = FALSE) NOT ENOUGH INDICATORS
+# pca_pt_afford_post_nav <- PCA(Affordability_pt_Norm_post_nav, quali.sup = 1, graph = FALSE) NOT ENOUGH INDICATORS
 
-
-#pca_car_afford <- PCA(Affordability_car_Norm, quali.sup = 1, graph = FALSE).  NOT ENOUGH INDICATORS
-#pca_pt_afford_pre_nav <- PCA(Affordability_pt_Norm_pre_nav, quali.sup = 1, graph = FALSE) NOT ENOUGH INDICATORS
-#pca_pt_afford_post_nav <- PCA(Affordability_pt_Norm_post_nav, quali.sup = 1, graph = FALSE) NOT ENOUGH INDICATORS
-
-car_afford <- Affordability_car_Norm |> 
-  select(dtmnfr, 2) 
-
-pt_afford_pre_nav <- Affordability_pt_Norm_pre_nav |> 
-  select(dtmnfr, 2)
-
-pt_afford_post_nav <- Affordability_pt_Norm_post_nav |> 
-  select(dtmnfr, 2)
-
+car_afford <- Affordability_car_Norm |> select(dtmnfr, h_transp_inc_car) 
+pt_afford_pre_nav <- Affordability_pt_Norm_pre_nav |> select(dtmnfr, h_transp_inc_pt)
+pt_afford_post_nav <- Affordability_pt_Norm_post_nav |> select(dtmnfr, h_transp_inc_pt)
 
 pca_car_mobility <- PCA(Mobility_car_Norm, quali.sup = 1, graph = FALSE) 
 pca_pt_mobility <- PCA(Mobility_pt_Norm, quali.sup = 1, graph = FALSE)
@@ -744,7 +619,6 @@ pca_walk_safety <- PCA(Safety_walk_Norm, quali.sup = 1, graph = FALSE)
 
 # Define the list of PCA objects you have created
 pca_list <- list(
-  
   Accessibility_GB = pca_access,
   #Affordability_GB_post_nav = pca_afford_post_nav,
   #Affordability_GB_pre_nav = pca_afford_pre_nav,
@@ -764,23 +638,18 @@ pca_list <- list(
   Safety_car = pca_car_safety,
   Safety_bike = pca_bike_safety,
   Safety_walk = pca_walk_safety
-
-  # Add all your other PCA objects here...
 )
 
 # Function to extract variance and variable correlations
 get_pca_diagnostics <- function(pca_obj, name) {
-  
-  # 1. Get Variance of PC1
+    # 1. Get Variance of PC1
   var_pc1 <- pca_obj$eig[1, 2]
-  
-  # 2. Get Correlations of variables with PC1
+    # 2. Get Correlations of variables with PC1
   cors <- as.data.frame(pca_obj$var$cor[, 1])
   colnames(cors) <- "Correlation_PC1"
   cors$Variable <- rownames(cors)
   cors$Dimension_Mode <- name
   cors$PC1_Variance_Percent <- var_pc1
-  
   return(cors)
 }
 
@@ -792,10 +661,10 @@ pca_variance_report <- do.call(rbind, lapply(names(pca_list), function(x) {
 # Reorder columns for readability
 pca_variance_report <- pca_variance_report[, c("Dimension_Mode", "PC1_Variance_Percent", "Variable", "Correlation_PC1")]
 
+
 ######## Write the results to export PCA variances
 
-write_csv(pca_variance_report, "PCA_Variance_and_Correlations.csv")
-
+write_csv(pca_variance_report, "/data/IMPT/impt/pca_scores/PCA_Variance_and_Correlations.csv")
 
 pca_summary_table <- data.frame(
   Dimension_Mode = names(pca_list),
@@ -808,20 +677,18 @@ print(pca_summary_table)
 
 #### Export CSV summary
 
-write_csv(pca_summary_table, "PCA_Variance_Table.csv")
+write_csv(pca_summary_table, "/data/IMPT/impt/pca_scores/PCA_Variance_Table.csv")
 
 # Check the direction of the first variable for each PCA
 # 1. Run the loop and store it in an object
 direction_results <- do.call(rbind, lapply(names(pca_list), function(x) {
   # Get the correlations for the 1st component
   cors <- pca_list[[x]]$var$cor[, 1]
-  
-  # Find the variable with the strongest relationship to PC1
+    # Find the variable with the strongest relationship to PC1
   top_idx <- which.max(abs(cors))
   top_var <- names(cors)[top_idx]
   cor_val <- cors[top_idx]
-  
-  data.frame(
+    data.frame(
     Dimension = x, 
     Top_Variable = top_var, 
     Correlation = round(cor_val, 3)
@@ -834,29 +701,24 @@ print(direction_results)
 # 1. Extract Accessibility Score
 acc_car_scores <- data.frame(
   dtmnfr = Accessibility_car_Norm$dtmnfr,
-  Accessibility_Index = scale_0_100(as.numeric(pca_car_access$ind$coord[, 1]))
-)
+  Accessibility_Index = scale_0_100(as.numeric(pca_car_access$ind$coord[, 1])))
 
 acc_pt_scores <- data.frame(
   dtmnfr = Accessibility_pt_Norm$dtmnfr,
-  Accessibility_Index = scale_0_100(as.numeric(pca_pt_access$ind$coord[, 1]))
-)
+  Accessibility_Index = scale_0_100(as.numeric(pca_pt_access$ind$coord[, 1])))
 
 acc_bike_scores <- data.frame(
   dtmnfr = Accessibility_bike_Norm$dtmnfr,
-  Accessibility_Index = scale_0_100(as.numeric(pca_bike_access$ind$coord[, 1]))
-)
+  Accessibility_Index = scale_0_100(as.numeric(pca_bike_access$ind$coord[, 1])))
 
 acc_walk_scores <- data.frame(
   dtmnfr = Accessibility_walk_Norm$dtmnfr,
-  Accessibility_Index = scale_0_100(as.numeric(pca_walk_access$ind$coord[, 1]))
-)
+  Accessibility_Index = scale_0_100(as.numeric(pca_walk_access$ind$coord[, 1])))
 
 # 2. Extract Affordability Score
 aff_car_scores <- data.frame(
   dtmnfr = Affordability_car_Norm$dtmnfr,
-  Affordability_Index = scale_0_100(as.numeric(pca_car_afford$ind$coord[, 1]))
-)
+  Affordability_Index = scale_0_100(as.numeric(pca_car_afford$ind$coord[, 1])))
 
 # aff_pt_scores <- data.frame(
 #   dtmnfr = Affordability_pt_Norm$dtmnfr,
@@ -956,25 +818,24 @@ Final_Results_Master_walk <- acc_walk_scores |>
 
 # Write the PCA scores to CSV files
 
-write_csv(acc_car_scores, "Accessibility_PCA_car_Scores.csv")
-write_csv(acc_pt_scores, "Accessibility_PCA_pt_Scores.csv")
-write_csv(acc_bike_scores, "Accessibility_PCA_bike_Scores.csv")
-write_csv(acc_walk_scores, "Accessibility_PCA_walk_Scores.csv")
+write_csv(acc_car_scores, "/data/IMPT/impt/pca_scores/Accessibility_PCA_car_Scores.csv")
+write_csv(acc_pt_scores, "/data/IMPT/impt/pca_scores/Accessibility_PCA_pt_Scores.csv")
+write_csv(acc_bike_scores, "/data/IMPT/impt/pca_scores/Accessibility_PCA_bike_Scores.csv")
+write_csv(acc_walk_scores, "/data/IMPT/impt/pca_scores/Accessibility_PCA_walk_Scores.csv")
 
-write_csv(aff_car_scores, "Affordability_car_Scores.csv")
-write_csv(aff_pt_scores, "Affordability_pt_Scores_pre_nav.csv")
-write_csv(aff_pt_scores, "Affordability_pt_Scores_post_nav.csv")
+write_csv(aff_car_scores, "/data/IMPT/impt/pca_scores/Affordability_car_Scores.csv")
+write_csv(aff_pt_scores, "/data/IMPT/impt/pca_scores/Affordability_pt_Scores_pre_nav.csv")
+write_csv(aff_pt_scores, "/data/IMPT/impt/pca_scores/Affordability_pt_Scores_post_nav.csv")
 
 
-write_csv(saf_car_scores, "Safety_car_Scores.csv")
-write_csv(saf_bike_scores, "Safety_bike_Scores.csv")
-write_csv(saf_walk_scores, "Safety_walk_Scores.csv")
+write_csv(saf_car_scores, "/data/IMPT/impt/pca_scores/Safety_car_Scores.csv")
+write_csv(saf_bike_scores, "/data/IMPT/impt/pca_scores/Safety_bike_Scores.csv")
+write_csv(saf_walk_scores, "/data/IMPT/impt/pca_scores/Safety_walk_Scores.csv")
 
-write_csv(mob_car_scores, "Mobility_PCA_car_Scores.csv")
-write_csv(mob_pt_scores, "Mobility_PCA_pt_Scores.csv")
-write_csv(mob_bike_scores, "Mobility_PCA_bike_Scores.csv")
-write_csv(mob_walk_scores, "Mobility_PCA_walk_Scores.csv")
-
+write_csv(mob_car_scores, "/data/IMPT/impt/pca_scores/Mobility_PCA_car_Scores.csv")
+write_csv(mob_pt_scores, "/data/IMPT/impt/pca_scores/Mobility_PCA_pt_Scores.csv")
+write_csv(mob_bike_scores, "/data/IMPT/impt/pca_scores/Mobility_PCA_bike_Scores.csv")
+write_csv(mob_walk_scores, "/data/IMPT/impt/pca_scores/Mobility_PCA_walk_Scores.csv")
 
 ```
 
