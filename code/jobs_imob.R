@@ -204,3 +204,59 @@ mapview::mapview(pois_jobs_check, zcol = "trips")
 
 ## Save OD mode and trip purpose for other ttm statistics?
 saveRDS(OD_all_new, "data/IMOB_od_freg_mode_purpose.Rds")
+
+
+
+
+
+## Modal share from IMOB - EXPORT -----------------------------------
+# file from data_prep.R
+
+# --- Load raw OD data ---
+od_raw <- readRDS("/data/IMPT/trips/TRIPSmode_freguesias_2024.Rds") |>
+  mutate(freg_id = as.character(Origin_dicofre24))
+
+# --- FREGUESIA LEVEL ---
+modal_share_freg <- od_raw |>
+  group_by(freg_id) |>
+  summarise(
+    trips_total = round(sum(Total, na.rm = TRUE)),
+    share_car = round(sum(Car, na.rm = TRUE) / trips_total * 100, 2),
+    share_pt = round(sum(PTransit, na.rm = TRUE) / trips_total * 100, 2),
+    share_walk = round(sum(Walk, na.rm = TRUE) / trips_total * 100, 2),
+    share_bike = round(sum(Bike, na.rm = TRUE) / trips_total * 100, 2),
+    share_active = round((sum(Walk, na.rm = TRUE) + sum(Bike, na.rm = TRUE)) / trips_total * 100, 2),
+    .groups = "drop"
+  )
+# sum(modal_share_freg$trips_total) #5299854
+
+write.csv(modal_share_freg, "/data/IMPT/trips/imob_modal_share_freg.csv", row.names = FALSE)
+
+# --- MUNICIPALITY LEVEL ---
+# Aggregate raw trips directly to avoid double-weighting
+modal_share_mun <- od_raw |>
+  left_join(grid_freg_mun |> select(freg_id, mun_id) |> distinct(), by = "freg_id") |>
+  group_by(mun_id) |>
+  summarise(
+    trips_total = round(sum(Total, na.rm = TRUE)),
+    share_car = round(sum(Car, na.rm = TRUE) / trips_total * 100, 2),
+    share_pt = round(sum(PTransit, na.rm = TRUE) / trips_total * 100, 2),
+    share_walk = round(sum(Walk, na.rm = TRUE) / trips_total * 100, 2),
+    share_bike = round(sum(Bike, na.rm = TRUE) / trips_total * 100, 2),
+    share_active = round((sum(Walk, na.rm = TRUE) + sum(Bike, na.rm = TRUE)) / trips_total * 100, 2),
+    .groups = "drop"
+  )
+# sum(modal_share_mun$trips_total) #5299853
+
+write.csv(modal_share_mun, "/data/IMPT/trips/imob_modal_share_mun.csv", row.names = FALSE)
+
+# --- GRID LEVEL ---
+# IMOB OD is at freguesia resolution; freg-level shares assigned to grid cells
+# via grid_freg_mun lookup (generalised assumption).
+modal_share_grid <- grid_freg_mun |>
+  select(grid_id, freg_id) |>
+  left_join(modal_share_freg |> select(-trips_total), by = "freg_id") |> 
+  select(-freg_id)
+
+write.csv(modal_share_grid, "/data/IMPT/trips/imob_modal_share_grid.csv", row.names = FALSE)
+
