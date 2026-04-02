@@ -27,6 +27,7 @@ library(janitor)     # For data cleaning, if needed
 
 ### Leaving out Mobility costs for now
 
+######### Data prepatation #########################
 
 ```{r}
 # Data loading Accessibility
@@ -62,7 +63,8 @@ freguesias_names = st_read("/data/IMPT/geo/freguesias_2024_unique.gpkg") |>
 freguesias_stops_coverage = freguesias_stops_coverage |>
   left_join(freguesias_names, by = "freguesia") |> 
   select(-freguesia) |> 
-  mutate(dtmnfr = as.numeric(dtmnfr))
+  mutate(dtmnfr = as.numeric(dtmnfr)) |> 
+  rename(Stops_coverage = ratio_served_population)
 
 freguesias_shared_mobility <- read_csv("/data/IMPT/mobility/freguesias_shared_mobility.csv")
 # names(freguesias_shared_mobility)
@@ -82,7 +84,9 @@ names(freguesias_headways)
   # summary(freguesias_headways$weighted_frequency_day)
   # summary(freguesias_headways$weighted_frequency_peak) # we want this one!
 freguesias_headways = freguesias_headways |> 
-  select(dtmnfr, weighted_frequency_peak, weighted_waiting_time_peak)
+  select(dtmnfr, weighted_frequency_peak, weighted_waiting_time_peak) |> 
+  rename(PT_Waitingtime = weighted_waiting_time_peak,
+         PT_Weight_frequency_peak = weighted_frequency_peak)
 
 ## Join all tables
 Mobility <- freguesias_infrastructure_ratio |> 
@@ -95,88 +99,76 @@ Mobility <- freguesias_infrastructure_ratio |>
 # names(Mobility2)
 ```
 
-
-
-
-######### Data prepatation #########################
+```{r}
+# Data loading Safety
+accidents_by_freguesia_5years_dentrolocalidades = read_csv("/data/IMPT/safety/accidents_by_freguesia_5years_dentrolocalidades.csv")
+# names(accidents_by_freguesia_5years_dentrolocalidades)
+Safety <- accidents_by_freguesia_5years_dentrolocalidades|>
+  select(-freguesia, -mun_id, -population) |> 
+  rename(dtmnfr = freg_id) |>
+  mutate(across(where(is.numeric), ~ ifelse(is.na(.x), 0, .x))) # Replace NA with 0 for safety dataset 
+```
 
 ```{r}
+# Data loading Affordability
+freguesia_affordability_mob = read_csv("/data/IMPT/results_data/freguesia_affordability.csv")
+names(freguesia_affordability_mob)
+freguesia_income = read_csv("/data/IMPT/landuse/freguesias_income_housing_gini.csv") |> 
+  select(-gini_coef) |> 
+  rename(dtmnfr = freg_id) |> 
+  mutate(housing_costs_year = housing_costs * 12)
+# join both
+freguesia_affordability = freguesia_affordability_mob |> 
+  left_join(freguesia_income, by = "dtmnfr")
 
+## With Navegante monthly pass
+Affordability_post_nav <- freguesia_affordability |>
+  mutate(h_transp_inc_car = (housing_costs_year + affordability_car_total_money*250)/income_hh) |> # consider 250 working days
+  mutate(h_transp_inc_pt = (housing_costs_year + affordability_transit_pass_total_money*250)/income_hh) |>
+  mutate(transp_inc_car = (affordability_car_total_money*250)/income_hh) |>
+  mutate(transp_inc_pt = (affordability_transit_pass_total_money*250)/income_hh) |>
+  select(dtmnfr, h_transp_inc_car, h_transp_inc_pt, transp_inc_car, transp_inc_pt) 
+  #   mutate(across(where(is.numeric), ~ ifelse(is.na(.x), 0, .x))) # Change Canha
 
+mean_viz_canha <- Affordability_post_nav |> # Filter dtmnfr starting with 1507
+  filter(str_starts(dtmnfr, "1507")) |>
+  filter(dtmnfr!= "150701")|>
+  summarise(mean_h_transp_inc_pt = mean(h_transp_inc_pt, na.rm = TRUE),
+            mean_transp_inc_pt = mean(transp_inc_pt, na.rm = TRUE))
 
-# Affordability_post_nav <- freguesia_affordability |>
-#   mutate(h_transp_inc_car = (housing + affordability_car_total_money*365)/Income) |> 
-#   mutate(h_transp_inc_pt = (housing + affordability_transit_pass_total_money*365)/Income) |>
-#   mutate(transp_inc_car = (affordability_car_total_money*365)/Income) |>
-#   mutate(transp_inc_pt = (affordability_transit_pass_total_money*365)/Income) |>
-#   select(dtmnfr, h_transp_inc_car, h_transp_inc_pt, transp_inc_car, transp_inc_pt)
-# 
-# #Replace NA with 0 for affordability dataset (if any)
-# Affordability_post_nav <- Affordability_post_nav |> 
-#   mutate(across(where(is.numeric), ~ ifelse(is.na(.x), 0, .x)))
-# 
-# mean_viz_canha <- Affordability_post_nav |> # Filter dtmnfr starting with 1507
-#   filter(str_starts(dtmnfr, "1507")) |> 
-#   filter(dtmnfr!= "150701")|>
-#   summarise(mean_h_transp_inc_pt = mean(h_transp_inc_pt, na.rm = TRUE),
-#             mean_transp_inc_pt = mean(transp_inc_pt, na.rm = TRUE))
-# 
-# 
-# #### Replace zeros with the municipality avg
-#   
-# Affordability_post_nav <- Affordability_post_nav |> 
-#   mutate(h_transp_inc_pt = case_when(
-#      dtmnfr == "150701" ~ mean_viz_canha$mean_h_transp_inc_pt,
-#     TRUE ~ h_transp_inc_pt
-#   )) |>
-#   mutate(transp_inc_pt = case_when(
-#      dtmnfr == "150701" ~ mean_viz_canha$mean_transp_inc_pt,
-#     TRUE ~ transp_inc_pt))
-#     
-# 
-# 
-#     
-#     
-# Affordability_pre_nav <- freguesia_affordability |> 
-#   mutate(h_transp_inc_car = (housing + affordability_car_total_money*365)/Income) |>
-#   mutate(h_transp_inc_pt = (housing + affordability_transit_single_fare_total_money*365)/Income) |>
-#   mutate(transp_inc_car = (affordability_car_total_money*365)/Income) |>
-#   mutate(transp_inc_pt = (affordability_transit_single_fare_total_money*365)/Income) |>
-#   select(dtmnfr, h_transp_inc_car, h_transp_inc_pt, transp_inc_car, transp_inc_pt)
-# 
-# #Replace NA with 0 for affordability dataset (if any)
-# Affordability_pre_nav <- Affordability_pre_nav |> 
-#   mutate(across(where(is.numeric), ~ ifelse(is.na(.x), 0, .x)))
-#   
-# mean_viz_canha2 <- Affordability_pre_nav |> # Filter dtmnfr starting with 1507
-#   filter(str_starts(dtmnfr, "1507")) |> 
-#   filter(dtmnfr!= "150701")|>
-#   summarise(mean_h_transp_inc_pt = mean(h_transp_inc_pt, na.rm = TRUE),
-#             mean_transp_inc_pt = mean(transp_inc_pt, na.rm = TRUE))
-# 
-# 
-# #### Replace zeros with the municipality avg
-#   
-# Affordability_pre_nav <- Affordability_pre_nav |> 
-#   mutate(h_transp_inc_pt = case_when(
-#      dtmnfr == "150701" ~ mean_viz_canha2$mean_h_transp_inc_pt,
-#     TRUE ~ h_transp_inc_pt
-#   )) |>
-#   mutate(transp_inc_pt = case_when(
-#      dtmnfr == "150701" ~ mean_viz_canha2$mean_transp_inc_pt,
-#     TRUE ~ transp_inc_pt))
-# 
-# Safety <- accidents_by_freguesia_5years_dentrolocalidades|> 
-#   select(-2, -3, -4)
-# 
-# # Replace NA with 0 for safety dataset
-# Safety <- Safety |> 
-#   mutate(across(where(is.numeric), ~ ifelse(is.na(.x), 0, .x)))
-# 
-#   
-  
-  
-  
+#### Replace zeros with the municipality avg
+Affordability_post_nav <- Affordability_post_nav |>
+  mutate(h_transp_inc_pt = case_when(
+     dtmnfr == "150701" ~ mean_viz_canha$mean_h_transp_inc_pt,
+    TRUE ~ h_transp_inc_pt
+  )) |>
+  mutate(transp_inc_pt = case_when(
+     dtmnfr == "150701" ~ mean_viz_canha$mean_transp_inc_pt,
+    TRUE ~ transp_inc_pt))
+
+## With single fare tickets
+Affordability_pre_nav <- freguesia_affordability |>
+  mutate(h_transp_inc_car = (housing_costs_year + affordability_car_total_money*250)/income_hh) |>
+  mutate(h_transp_inc_pt = (housing_costs_year + affordability_transit_single_fare_total_money*250)/income_hh) |>
+  mutate(transp_inc_car = (affordability_car_total_money*250)/income_hh) |>
+  mutate(transp_inc_pt = (affordability_transit_single_fare_total_money*250)/income_hh) |>
+  select(dtmnfr, h_transp_inc_car, h_transp_inc_pt, transp_inc_car, transp_inc_pt)
+
+mean_viz_canha2 <- Affordability_pre_nav |> # Filter dtmnfr starting with 1507
+  filter(str_starts(dtmnfr, "1507")) |>
+  filter(dtmnfr!= "150701")|>
+  summarise(mean_h_transp_inc_pt = mean(h_transp_inc_pt, na.rm = TRUE),
+            mean_transp_inc_pt = mean(transp_inc_pt, na.rm = TRUE))
+
+#### Replace zeros with the municipality avg
+Affordability_pre_nav <- Affordability_pre_nav |>
+  mutate(h_transp_inc_pt = case_when(
+     dtmnfr == "150701" ~ mean_viz_canha2$mean_h_transp_inc_pt,
+    TRUE ~ h_transp_inc_pt
+  )) |>
+  mutate(transp_inc_pt = case_when(
+     dtmnfr == "150701" ~ mean_viz_canha2$mean_transp_inc_pt,
+    TRUE ~ transp_inc_pt))
 ```
 
 
@@ -228,8 +220,6 @@ Safety_bike <- Safety_bike |>
 
 Safety_walk <- Safety |>
   select(dtmnfr, contains("peo"))
-
-
 ```
 
 
