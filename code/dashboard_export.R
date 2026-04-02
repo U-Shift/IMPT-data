@@ -225,6 +225,19 @@ grid_aggregated = grid |>
       rename_with(~ paste0("affordability_pt_pass_", .), -id),
     by="id"
   ) |> 
+  # Safety
+  left_join(
+    grid_safety |> 
+      rename(id=grid_id) |>
+      rename_with(~ paste0("safety_", .), -id),
+    by="id"
+  ) |>
+  left_join(
+    grid_safety_inner |> 
+      rename(id=grid_id) |>
+      rename_with(~ paste0("safety_inner_", .), -id),
+    by="id"
+  ) |>
   # Additional indicators
   left_join(
     grid_pois |> 
@@ -242,6 +255,17 @@ grid_aggregated = grid |>
       select(-dicofre) |>
       rename_with(~ paste0("veh_ownership_", .), -id),
     by="id"   
+  ) |>
+  left_join(
+    grid_census_income |>
+      rename(id=grid_id) |>
+      rename_with(~ paste0("census_income_", .), -id),
+    by="id"
+  ) |>
+  left_join(
+    grid_census_landuse |>
+      rename_with(~ paste0("census_landuse_", .), -id),
+    by="id"
   )
 names(grid_aggregated)
 
@@ -332,6 +356,21 @@ freguesias_aggregated = freguesias_aggregated |>
       rename_with(~ paste0("affordability_pt_pass_", .), -id),
     by="id"
   ) |>
+  # Safety
+  left_join(
+    freguesia_safety |> 
+      rename(id=freg_id) |>
+      mutate(id=as.character(id)) |>
+      rename_with(~ paste0("safety_", .), -id),
+    by="id"
+  ) |>
+  left_join(
+    freguesia_safety_inner |> 
+      rename(id=freg_id) |>
+      mutate(id=as.character(id)) |>
+      rename_with(~ paste0("safety_inner_", .), -id),
+    by="id"
+  ) |>
   # Additional indicators
   left_join(
     freguesia_pois |> 
@@ -352,6 +391,20 @@ freguesias_aggregated = freguesias_aggregated |>
       rename(id=dicofre) |>
       mutate(id=as.character(id)) |>
       rename_with(~ paste0("veh_ownership_", .), -id),
+    by="id"
+  ) |>
+  left_join(
+    freguesia_census_income |>
+      rename(id=freg_id) |>
+      mutate(id=as.character(id)) |>
+      rename_with(~ paste0("census_income_", .), -id),
+    by="id"
+  ) |>
+  left_join(
+    freguesia_census_landuse |>
+      rename(id=freg_id) |>
+      mutate(id=as.character(id)) |>
+      rename_with(~ paste0("census_landuse_", .), -id),
     by="id"
   )
 names(freguesias_aggregated)
@@ -443,6 +496,19 @@ municipios_aggregated = municipios_aggregated |>
       rename_with(~ paste0("affordability_pt_pass_", .), -id),
     by="id"
   ) |>
+  # Safety
+  left_join(
+    municipio_safety |> 
+      rename(id=mun_id) |>
+      rename_with(~ paste0("safety_", .), -id),
+    by="id"
+  ) |> 
+  left_join(
+    municipio_safety_inner |> 
+      rename(id=mun_id) |>
+      rename_with(~ paste0("safety_inner_", .), -id),
+    by="id"
+  ) |>
   # Additional indicators
   left_join(
     municipio_pois |>
@@ -461,6 +527,18 @@ municipios_aggregated = municipios_aggregated |>
     municipio_veh_ownership |> 
       rename_with(~ paste0("veh_ownership_", .), -id),
     by="id"
+  ) |>
+  left_join(
+    municipio_census_income |>
+      rename(id=mun_id) |>
+      rename_with(~ paste0("census_income_", .), -id),
+    by="id"
+  ) |>
+  left_join(
+    municipio_census_landuse |>
+      rename(id=mun_id) |>
+      rename_with(~ paste0("census_landuse_", .), -id),
+    by="id"
   )
 names(municipios_aggregated)
 
@@ -478,9 +556,20 @@ municipios_aggregated = municipios_aggregated |>
 
 # Replace "_nav" with "_pass" on column names, to be compatible with dashboard filters
 # Example: "daily_car_count_nav" becomes "daily_car_count_pass"
-names(grid_aggregated) = gsub("^(.*)nav(.*)$", "\\1pass\\2", names(grid_aggregated))
-names(freguesias_aggregated) = gsub("^(.*)nav(.*)$", "\\1pass\\2", names(freguesias_aggregated))
-names(municipios_aggregated) = gsub("^(.*)nav(.*)$", "\\1pass\\2", names(municipios_aggregated))
+replace_anywhere = list(
+  # From, to
+  c("nav", "pass"),
+  c("carro", "car"),
+  c("private_vehicle", "car"),
+  c("peoes", "walk"),
+  c("bicicleta", "bike"),
+  c("transit", "pt")
+)
+for (replacement in replace_anywhere) {
+  names(grid_aggregated) = gsub(paste0("^(.*)", replacement[1], "(.*)$"), paste0("\\1", replacement[2], "\\2"), names(grid_aggregated))
+  names(freguesias_aggregated) = gsub(paste0("^(.*)", replacement[1], "(.*)$"), paste0("\\1", replacement[2], "\\2"), names(freguesias_aggregated))
+  names(municipios_aggregated) = gsub(paste0("^(.*)", replacement[1], "(.*)$"), paste0("\\1", replacement[2], "\\2"), names(municipios_aggregated))
+}
 
 # Col names with "_mode_" in the middle, should end with "_mode" to be compatible with dashboard filters
 # Example: "daily_car_count" becomes "daily_count_car"
@@ -488,11 +577,9 @@ names(municipios_aggregated) = gsub("^(.*)nav(.*)$", "\\1pass\\2", names(municip
 modes = list(
   # From, to
   c("car", "car"),
-  c("private_vehicle", "car"),
   c("bike", "bike"),
   c("walk", "walk"),
   c("pt", "pt"),
-  c("transit", "pt"),
   # pass and no_pass should come after pt, to append it in the end of variable name!
   c("no_pass", "no_pass"), # no_pass before pass, to avoid duplicated change!
   c("pass", "pass")

@@ -51,6 +51,18 @@ municipio_affordability_pt_pass = read.csv(IMPT_URL("/mobility_money_costs/munic
 grid_affordability_pt_pass = read.csv(IMPT_URL("/mobility_money_costs/grid_commuting_money_pt_pass_fare.csv"))
 
 
+
+# Safety ------------------------------------------------------------------
+
+freguesia_safety = read.csv(IMPT_URL("/safety/accidents_by_freguesia_5years.csv"))
+municipio_safety = read.csv(IMPT_URL("/safety/accidents_by_municipio_5years.csv"))
+grid_safety = read.csv(IMPT_URL("/safety/accidents_by_grid_5years.csv"))
+
+freguesia_safety_inner = read.csv(IMPT_URL("/safety/accidents_by_freguesia_5years_dentrolocalidades.csv"))
+municipio_safety_inner = read.csv(IMPT_URL("/safety/accidents_by_municipio_5years_dentrolocalidades.csv"))
+grid_safety_inner = read.csv(IMPT_URL("/safety/accidents_by_grid_5years_dentrolocalidades.csv"))
+
+
 # Additional indicators ---------------------------------------------------
 
 freguesia_pois = read.csv(IMPT_URL("/pois/freguesias_pois.csv"))
@@ -64,3 +76,11 @@ grid_modal_share_census = read.csv(IMPT_URL("census2021/census_modal_share_grid.
 freguesia_veh_ownership = read.csv(IMPT_URL("imob/imob_vehicles_freg.csv"))
 municipio_veh_ownership = read.csv(IMPT_URL("imob/imob_vehicles_mun.csv"))
 grid_veh_ownership = read.csv(IMPT_URL("imob/imob_vehicles_grid.csv"))
+
+freguesia_census_income = read.csv(IMPT_URL("landuse/freguesias_income_housing_gini.csv"))
+municipio_census_income = read.csv(IMPT_URL("landuse/municipios_income_housing_gini.csv"))
+grid_census_income = read.csv(IMPT_URL("landuse/grid_income_housing_gini.csv"))
+
+freguesia_census_landuse = read.csv(IMPT_URL("landuse/landuse_freguesias.csv"))
+municipio_census_landuse = read.csv(IMPT_URL("landuse/landuse_municipios.csv"))
+grid_census_landuse = read.csv(IMPT_URL("landuse/landuse_grid.csv"))
