@@ -12,12 +12,12 @@ knitr::opts_chunk$set(echo = TRUE)
 library(dplyr)
 library(readr)
 library(ggplot2)
-library(sf)        # If you are using spatial data for Freguesias
+library(sf) # If you are using spatial data for Freguesias
 library(tidyr)
 library(FactoMineR)
 library(factoextra)
-library(stringr)    # For string manipulation, if neededring)
-library(janitor)     # For data cleaning, if needed
+library(stringr) # For string manipulation, if neededring)
+library(janitor) # For data cleaning, if needed
 ```
 
 
@@ -32,68 +32,72 @@ library(janitor)     # For data cleaning, if needed
 ```{r}
 # Data loading Accessibility
 freguesia_accessibility <- read_csv("/data/IMPT/results_data/freguesia_accessibility.csv")
-Accessibility <- freguesia_accessibility |> select (-nuts)
+Accessibility <- freguesia_accessibility |> select(-nuts)
 ```
 
 ```{r}
 # Data loading Mobility
 freguesias_infrastructure_ratio <- read_csv("/data/IMPT/mobility/freguesias_infrastructure_ratio.csv")
 # names(freguesias_infrastructure_ratio)
-freguesias_infrastructure_ratio = freguesias_infrastructure_ratio |> 
-  select(dtmnfr, road_length, pedpath_length, cycleway_length, 
-        segregated_cycleway_length, pedpath_to_road_ratio, cycleway_to_road_ratio, 
-        cycling_quality_ratio)
+freguesias_infrastructure_ratio <- freguesias_infrastructure_ratio |>
+  select(
+    dtmnfr, road_length, pedpath_length, cycleway_length,
+    segregated_cycleway_length, pedpath_to_road_ratio, cycleway_to_road_ratio,
+    cycling_quality_ratio
+  )
 
 freguesias_stops_coverage <- read_csv("/data/IMPT/mobility/freguesias_stops_coverage.csv")
 # names(freguesias_stops_coverage)
 #### There is not a varaible named "Stops_coverage", and the on at mauricio drive has different values than  the suspected one
 # summary(Mobility2$Stops_coverage)
-#    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-#  0.1337  0.7302  0.9211  0.8522  0.9833  1.0000 
+#    Min. 1st Qu.  Median    Mean 3rd Qu.    Max.
+#  0.1337  0.7302  0.9211  0.8522  0.9833  1.0000
 # summary(freguesias_stops_coverage$ratio_served_population)
-#    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-#  0.3500  0.9000  0.9800  0.9354  1.0000  1.0000 
- 
-freguesias_stops_coverage = freguesias_stops_coverage |> 
+#    Min. 1st Qu.  Median    Mean 3rd Qu.    Max.
+#  0.3500  0.9000  0.9800  0.9354  1.0000  1.0000
+
+freguesias_stops_coverage <- freguesias_stops_coverage |>
   select(freguesia, ratio_served_population) # will use this for now...
 # we need to add the dtmnfr code to be able to join
-freguesias_names = st_read("/data/IMPT/geo/freguesias_2024_unique.gpkg") |> 
-  st_drop_geometry() |> 
+freguesias_names <- st_read("/data/IMPT/geo/freguesias_2024_unique.gpkg") |>
+  st_drop_geometry() |>
   select(dtmnfr, freguesia)
-freguesias_stops_coverage = freguesias_stops_coverage |>
-  left_join(freguesias_names, by = "freguesia") |> 
-  select(-freguesia) |> 
-  mutate(dtmnfr = as.numeric(dtmnfr)) |> 
+freguesias_stops_coverage <- freguesias_stops_coverage |>
+  left_join(freguesias_names, by = "freguesia") |>
+  select(-freguesia) |>
+  mutate(dtmnfr = as.numeric(dtmnfr)) |>
   rename(Stops_coverage = ratio_served_population)
 
 freguesias_shared_mobility <- read_csv("/data/IMPT/mobility/freguesias_shared_mobility.csv")
 # names(freguesias_shared_mobility)
-freguesias_shared_mobility = freguesias_shared_mobility |> 
-  select(dtmnfr, shared_mobility_points) |> 
+freguesias_shared_mobility <- freguesias_shared_mobility |>
+  select(dtmnfr, shared_mobility_points) |>
   rename(Shared_mobility = shared_mobility_points)
 
 freguesias_mobility <- read_csv("/data/IMPT/results_data/freguesia_mobility.csv")
 names(freguesias_mobility)
-freguesias_mobility = freguesias_mobility |> 
+freguesias_mobility <- freguesias_mobility |>
   select(-nuts)
 
-freguesias_headways = read_csv("/data/IMPT/mobility_transit/freguesias_headways.csv") 
+freguesias_headways <- read_csv("/data/IMPT/mobility_transit/freguesias_headways.csv")
 names(freguesias_headways)
-  # summary(Mobility2$PT_Waitingtime)
-  # summary(freguesias_headways$weighted_waiting_time_peak)
-  # summary(Mobility2$PT_Weight_frequendy_peak_day)
-  # summary(freguesias_headways$weighted_frequency_day)
-  # summary(freguesias_headways$weighted_frequency_peak) # we want this one!
-freguesias_headways = freguesias_headways |> 
-  select(dtmnfr, weighted_frequency_peak, weighted_waiting_time_peak) |> 
-  rename(PT_Waitingtime = weighted_waiting_time_peak,
-         PT_Weight_frequency_peak = weighted_frequency_peak)
+# summary(Mobility2$PT_Waitingtime)
+# summary(freguesias_headways$weighted_waiting_time_peak)
+# summary(Mobility2$PT_Weight_frequendy_peak_day)
+# summary(freguesias_headways$weighted_frequency_day)
+# summary(freguesias_headways$weighted_frequency_peak) # we want this one!
+freguesias_headways <- freguesias_headways |>
+  select(dtmnfr, weighted_frequency_peak, weighted_waiting_time_peak) |>
+  rename(
+    PT_Waitingtime = weighted_waiting_time_peak,
+    PT_Weight_frequency_peak = weighted_frequency_peak
+  )
 
 ## Join all tables
-Mobility <- freguesias_infrastructure_ratio |> 
-  left_join(freguesias_stops_coverage, by = "dtmnfr") |> 
-  left_join(freguesias_shared_mobility, by = "dtmnfr") |> 
-  left_join(freguesias_mobility, by = "dtmnfr") |> 
+Mobility <- freguesias_infrastructure_ratio |>
+  left_join(freguesias_stops_coverage, by = "dtmnfr") |>
+  left_join(freguesias_shared_mobility, by = "dtmnfr") |>
+  left_join(freguesias_mobility, by = "dtmnfr") |>
   left_join(freguesias_headways, by = "dtmnfr")
 
 # names(Mobility)
@@ -102,77 +106,83 @@ Mobility <- freguesias_infrastructure_ratio |>
 
 ```{r}
 # Data loading Safety
-accidents_by_freguesia_5years_dentrolocalidades = read_csv("/data/IMPT/safety/accidents_by_freguesia_5years_dentrolocalidades.csv")
+accidents_by_freguesia_5years_dentrolocalidades <- read_csv("/data/IMPT/safety/accidents_by_freguesia_5years_dentrolocalidades.csv")
 # names(accidents_by_freguesia_5years_dentrolocalidades)
-Safety <- accidents_by_freguesia_5years_dentrolocalidades|>
-  select(-freguesia, -mun_id, -population) |> 
+Safety <- accidents_by_freguesia_5years_dentrolocalidades |>
+  select(-freguesia, -mun_id, -population) |>
   rename(dtmnfr = freg_id) |>
-  mutate(across(where(is.numeric), ~ ifelse(is.na(.x), 0, .x))) # Replace NA with 0 for safety dataset 
+  mutate(across(where(is.numeric), ~ ifelse(is.na(.x), 0, .x))) # Replace NA with 0 for safety dataset
 ```
 
 ```{r}
 # Data loading Affordability
-freguesia_affordability_mob = read_csv("/data/IMPT/results_data/freguesia_affordability.csv")
+freguesia_affordability_mob <- read_csv("/data/IMPT/results_data/freguesia_affordability.csv")
 names(freguesia_affordability_mob)
-freguesia_income = read_csv("/data/IMPT/landuse/freguesias_income_housing_gini.csv") |> 
-  select(-gini_coef) |> 
-  rename(dtmnfr = freg_id) |> 
+freguesia_income <- read_csv("/data/IMPT/landuse/freguesias_income_housing_gini.csv") |>
+  select(-gini_coef) |>
+  rename(dtmnfr = freg_id) |>
   mutate(housing_costs_year = housing_costs * 12)
 # join both
-freguesia_affordability = freguesia_affordability_mob |> 
+freguesia_affordability <- freguesia_affordability_mob |>
   left_join(freguesia_income, by = "dtmnfr")
 
 ## With Navegante monthly pass
 Affordability_navegante <- freguesia_affordability |>
-  mutate(h_transp_inc_car = (housing_costs_year + affordability_car_total_money*250)/income_hh) |> # consider 250 working days
-  mutate(h_transp_inc_pt = (housing_costs_year + affordability_transit_pass_total_money*250)/income_hh) |>
-  mutate(transp_inc_car = (affordability_car_total_money*250)/income_hh) |>
-  mutate(transp_inc_pt = (affordability_transit_pass_total_money*250)/income_hh) |>
-  select(dtmnfr, h_transp_inc_car, h_transp_inc_pt, transp_inc_car, transp_inc_pt) 
-  #   mutate(across(where(is.numeric), ~ ifelse(is.na(.x), 0, .x))) # Change Canha
+  mutate(h_transp_inc_car = (housing_costs_year + affordability_car_total_money * 250) / income_hh) |> # consider 250 working days
+  mutate(h_transp_inc_pt = (housing_costs_year + affordability_transit_pass_total_money * 250) / income_hh) |>
+  mutate(transp_inc_car = (affordability_car_total_money * 250) / income_hh) |>
+  mutate(transp_inc_pt = (affordability_transit_pass_total_money * 250) / income_hh) |>
+  select(dtmnfr, h_transp_inc_car, h_transp_inc_pt, transp_inc_car, transp_inc_pt)
+#   mutate(across(where(is.numeric), ~ ifelse(is.na(.x), 0, .x))) # Change Canha
 
 mean_viz_canha <- Affordability_navegante |> # Filter dtmnfr starting with 1507
   filter(str_starts(dtmnfr, "1507")) |>
-  filter(dtmnfr!= "150701")|>
-  summarise(mean_h_transp_inc_pt = mean(h_transp_inc_pt, na.rm = TRUE),
-            mean_transp_inc_pt = mean(transp_inc_pt, na.rm = TRUE))
+  filter(dtmnfr != "150701") |>
+  summarise(
+    mean_h_transp_inc_pt = mean(h_transp_inc_pt, na.rm = TRUE),
+    mean_transp_inc_pt = mean(transp_inc_pt, na.rm = TRUE)
+  )
 
 #### Replace zeros with the municipality avg
 Affordability_navegante <- Affordability_navegante |>
   mutate(h_transp_inc_pt = case_when(
-     dtmnfr == "150701" ~ mean_viz_canha$mean_h_transp_inc_pt,
+    dtmnfr == "150701" ~ mean_viz_canha$mean_h_transp_inc_pt,
     TRUE ~ h_transp_inc_pt
   )) |>
   mutate(transp_inc_pt = case_when(
-     dtmnfr == "150701" ~ mean_viz_canha$mean_transp_inc_pt,
-    TRUE ~ transp_inc_pt))
+    dtmnfr == "150701" ~ mean_viz_canha$mean_transp_inc_pt,
+    TRUE ~ transp_inc_pt
+  ))
 
 ## With single fare tickets
 Affordability_singlefare <- freguesia_affordability |>
-  mutate(h_transp_inc_car = (housing_costs_year + affordability_car_total_money*250)/income_hh) |>
-  mutate(h_transp_inc_pt = (housing_costs_year + affordability_transit_single_fare_total_money*250)/income_hh) |>
-  mutate(transp_inc_car = (affordability_car_total_money*250)/income_hh) |>
-  mutate(transp_inc_pt = (affordability_transit_single_fare_total_money*250)/income_hh) |>
+  mutate(h_transp_inc_car = (housing_costs_year + affordability_car_total_money * 250) / income_hh) |>
+  mutate(h_transp_inc_pt = (housing_costs_year + affordability_transit_single_fare_total_money * 250) / income_hh) |>
+  mutate(transp_inc_car = (affordability_car_total_money * 250) / income_hh) |>
+  mutate(transp_inc_pt = (affordability_transit_single_fare_total_money * 250) / income_hh) |>
   select(dtmnfr, h_transp_inc_car, h_transp_inc_pt, transp_inc_car, transp_inc_pt)
 
 mean_viz_canha2 <- Affordability_singlefare |> # Filter dtmnfr starting with 1507
   filter(str_starts(dtmnfr, "1507")) |>
-  filter(dtmnfr!= "150701")|>
-  summarise(mean_h_transp_inc_pt = mean(h_transp_inc_pt, na.rm = TRUE),
-            mean_transp_inc_pt = mean(transp_inc_pt, na.rm = TRUE))
+  filter(dtmnfr != "150701") |>
+  summarise(
+    mean_h_transp_inc_pt = mean(h_transp_inc_pt, na.rm = TRUE),
+    mean_transp_inc_pt = mean(transp_inc_pt, na.rm = TRUE)
+  )
 
 #### Replace zeros with the municipality avg
 Affordability_singlefare <- Affordability_singlefare |>
   mutate(h_transp_inc_pt = case_when(
-     dtmnfr == "150701" ~ mean_viz_canha2$mean_h_transp_inc_pt,
+    dtmnfr == "150701" ~ mean_viz_canha2$mean_h_transp_inc_pt,
     TRUE ~ h_transp_inc_pt
   )) |>
   mutate(transp_inc_pt = case_when(
-     dtmnfr == "150701" ~ mean_viz_canha2$mean_transp_inc_pt,
-    TRUE ~ transp_inc_pt))
+    dtmnfr == "150701" ~ mean_viz_canha2$mean_transp_inc_pt,
+    TRUE ~ transp_inc_pt
+  ))
 
 
-census_modal_share = read_csv("/data/IMPT/census2021/census_modal_share_parish.csv") |> 
+census_modal_share <- read_csv("/data/IMPT/census2021/census_modal_share_parish.csv") |>
   select(dtmnfr, total, pt, private_vehicle, active, pt_share, private_vehicle_share, active_share)
 ```
 
@@ -181,10 +191,9 @@ census_modal_share = read_csv("/data/IMPT/census2021/census_modal_share_parish.c
 
 
 ```{r}
-
 ###################### Create a dataset per mode per dimension #####################
 
-Accessibility_car <- Accessibility |> 
+Accessibility_car <- Accessibility |>
   select(dtmnfr, contains("_car_"))
 Accessibility_pt <- Accessibility |>
   select(dtmnfr, contains("_transit_"))
@@ -194,16 +203,16 @@ Accessibility_walk <- Accessibility |>
   select(dtmnfr, contains("_walk_"))
 
 
-Mobility_car <- Mobility |> 
-  select(dtmnfr, contains("_car"),"road_length")
+Mobility_car <- Mobility |>
+  select(dtmnfr, contains("_car"), "road_length")
 Mobility_pt <- Mobility |>
   select(dtmnfr, contains("PT"), "Stops_coverage", contains("transit"), Shared_mobility)
 Mobility_bike <- Mobility |>
   select(dtmnfr, contains("cycl"), contains("bike"))
 Mobility_walk <- Mobility |>
-  select(dtmnfr, contains("_walk"),contains("ped"))
+  select(dtmnfr, contains("_walk"), contains("ped"))
 
-Affordability_car <- Affordability_navegante |> 
+Affordability_car <- Affordability_navegante |>
   select(dtmnfr, contains("car"))
 Affordability_pt_navegante <- Affordability_navegante |>
   select(dtmnfr, contains("pt"))
@@ -211,14 +220,14 @@ Affordability_pt_singlefare <- Affordability_singlefare |>
   select(dtmnfr, contains("pt"))
 
 
-Safety_car <- Safety |> 
+Safety_car <- Safety |>
   select(dtmnfr, contains("car"), contains("motorizado"))
 Safety_bike <- Safety |>
   select(dtmnfr, contains("bici"))
 
-#Replace NA with 0 for bike safety
+# Replace NA with 0 for bike safety
 
-Safety_bike <- Safety_bike |> 
+Safety_bike <- Safety_bike |>
   mutate(across(where(is.numeric), ~ ifelse(is.na(.x), 0, .x)))
 Safety_walk <- Safety |>
   select(dtmnfr, contains("peo"))
@@ -231,38 +240,38 @@ Safety_walk <- Safety |>
 
 Use Normalize benefit for indicators where higher is better and Normalize cost for indicators where lower is better.
 ```{r cars}
-
 # Use for "More is Better" (e.g., Number of stops, Frequency, Safety score)
 normalize_benefit <- function(x) {
   x_min <- min(x, na.rm = TRUE)
   x_max <- max(x, na.rm = TRUE)
-  
+
   # Standard Min-Max scaled to 1-100
-  return( 1 + ( (x - x_min) / (x_max - x_min) ) * (100 - 1) )
+  return(1 + ((x - x_min) / (x_max - x_min)) * (100 - 1))
 }
 
 # Use for "More is Worse" (e.g., Travel time, Cost, Distance to station)
 normalize_cost <- function(x) {
   x_min <- min(x, na.rm = TRUE)
   x_max <- max(x, na.rm = TRUE)
-  
+
   # Inverted Min-Max scaled to 1-100
   # This makes the lowest raw value become 100
-  return( 1 + ( (x_max - x) / (x_max - x_min) ) * (100 - 1) )
+  return(1 + ((x_max - x) / (x_max - x_min)) * (100 - 1))
 }
 
 
-Accessibility_Norm <- Accessibility |> 
+Accessibility_Norm <- Accessibility |>
   mutate(
     across(starts_with("access"), ~ normalize_benefit(.x)), # Use c() inside starts_with for multiple prefixes
     across(starts_with("mobility"), ~ normalize_cost(.x)) # Same for your negative indicators
-  ) |> 
+  ) |>
   mutate(
-    across(where(is.numeric), ~ ifelse(is.na(.x), mean(.x, na.rm = TRUE), .x))) #replace NA with the mean
+    across(where(is.numeric), ~ ifelse(is.na(.x), mean(.x, na.rm = TRUE), .x))
+  ) # replace NA with the mean
 
-Mobility_Norm <- Mobility|> 
+Mobility_Norm <- Mobility |>
   mutate(
-    across(starts_with(c("PT_Wait", "mobility")), ~ normalize_cost(.x)),     # Use c() inside starts_with for multiple prefixes
+    across(starts_with(c("PT_Wait", "mobility")), ~ normalize_cost(.x)), # Use c() inside starts_with for multiple prefixes
     across(!c(dtmnfr, starts_with(c("PT_Wait", "mobility"))), ~ normalize_benefit(.x)) # Same for the negative indicators
   )
 
@@ -272,8 +281,8 @@ Affordability_Norm_singlefare <- Affordability_singlefare |> ### All are negativ
   mutate(across(!dtmnfr, ~ normalize_cost(.x)))
 
 Safety_Norm <- Safety |> ### All are negative
-    mutate(across(!dtmnfr, ~ normalize_cost(.x)))
-    
+  mutate(across(!dtmnfr, ~ normalize_cost(.x)))
+
 ##### Export normalized dataset
 
 write_csv(Mobility_Norm, "/data/IMPT/impt/norm/Mobility_Norm.csv")
@@ -288,47 +297,54 @@ write_csv(Safety_Norm, "/data/IMPT/impt/norm/Safety_Norm.csv")
 The functions to normalize are in the previous chunk
 
 ```{r}
-Accessibility_car_Norm <- Accessibility_car |> 
+Accessibility_car_Norm <- Accessibility_car |>
   mutate(
     across(starts_with("access"), ~ normalize_benefit(.x)), # Use c() inside starts_with for multiple prefixes
-    across(starts_with("mobility"), ~ normalize_cost(.x)))     # Same for your negative indicators
-   
-Accessibility_pt_Norm <- Accessibility_pt |> 
+    across(starts_with("mobility"), ~ normalize_cost(.x))
+  ) # Same for your negative indicators
+
+Accessibility_pt_Norm <- Accessibility_pt |>
   mutate(
     across(starts_with("access"), ~ normalize_benefit(.x)),
     across(starts_with("mobility"), ~ normalize_cost(.x))
-  ) |> 
+  ) |>
   mutate(
-    across(where(is.numeric), ~ ifelse(is.na(.x), mean(.x, na.rm = TRUE), .x))) #replace NA with the mean) 
+    across(where(is.numeric), ~ ifelse(is.na(.x), mean(.x, na.rm = TRUE), .x))
+  ) # replace NA with the mean)
 
-Accessibility_bike_Norm <- Accessibility_bike |> 
+Accessibility_bike_Norm <- Accessibility_bike |>
   mutate(
     across(starts_with("access"), ~ normalize_benefit(.x)),
-    across(starts_with("mobility"), ~ normalize_cost(.x)))
+    across(starts_with("mobility"), ~ normalize_cost(.x))
+  )
 
 Accessibility_walk_Norm <- Accessibility_walk |>
   mutate(
     across(starts_with("access"), ~ normalize_benefit(.x)),
-    across(starts_with("mobility"), ~ normalize_cost(.x)))
+    across(starts_with("mobility"), ~ normalize_cost(.x))
+  )
 
 
-Mobility_car_Norm <- Mobility_car|> 
+Mobility_car_Norm <- Mobility_car |>
   mutate(
     across(starts_with(c("mobility")), ~ normalize_cost(.x)),
     across(!c(dtmnfr, starts_with(c("mobility"))), ~ normalize_benefit(.x))
   )
-Mobility_pt_Norm <- Mobility_pt|>
- mutate(
+Mobility_pt_Norm <- Mobility_pt |>
+  mutate(
     across(starts_with(c("PT_Wait", "mobility")), ~ normalize_cost(.x)),
-    across(!c(dtmnfr, starts_with(c("PT_Wait", "mobility"))), ~ normalize_benefit(.x)))
-Mobility_bike_Norm <- Mobility_bike|>
- mutate(
+    across(!c(dtmnfr, starts_with(c("PT_Wait", "mobility"))), ~ normalize_benefit(.x))
+  )
+Mobility_bike_Norm <- Mobility_bike |>
+  mutate(
     across(starts_with(c("mobility")), ~ normalize_cost(.x)),
-    across(!c(dtmnfr, starts_with(c("mobility"))), ~ normalize_benefit(.x)))
-Mobility_walk_Norm <- Mobility_walk|>
-   mutate(
+    across(!c(dtmnfr, starts_with(c("mobility"))), ~ normalize_benefit(.x))
+  )
+Mobility_walk_Norm <- Mobility_walk |>
+  mutate(
     across(starts_with(c("mobility")), ~ normalize_cost(.x)),
-    across(!c(dtmnfr, starts_with(c("mobility"))), ~ normalize_benefit(.x)))
+    across(!c(dtmnfr, starts_with(c("mobility"))), ~ normalize_benefit(.x))
+  )
 
 
 Affordability_car_Norm <- Affordability_car |> ### All are negative
@@ -387,7 +403,6 @@ We will use two approaches:
 - Equal weights: All indicators contribute equally to the dimension score.
 
 ```{r pressure, echo=FALSE}
-
 # Load necessary libraries
 
 
@@ -396,15 +411,15 @@ We will use two approaches:
 # calculate_dimension_EW <- function(df_norm) {
 #   # We exclude the ID column (dtmnfr) and take the average of all numeric columns
 #   score <- rowMeans(df_norm[, -1], na.rm = TRUE)
-#   
+#
 # }
-# 
+#
 # # Calculate the 4 dimensions
 # Acc_EW_Score  <- calculate_dimension_EW(Accessibility_Norm)
 # Aff_EW_Score  <- calculate_dimension_EW(Affordability_Norm)
 # Mob_EW_Score  <- calculate_dimension_EW(Mobility_Norm)
 # Saf_EW_Score  <- calculate_dimension_EW(Safety_Norm)
-# 
+#
 # # Combine them into a new Results table
 # Results_Equal_Weights <- data.frame(
 #   dtmnfr = Accessibility_Norm$dtmnfr,
@@ -413,67 +428,64 @@ We will use two approaches:
 #   Mobility      = Mob_EW_Score,
 #   Safety        = Saf_EW_Score
 # )
-
-
 ```
 
 
 #### Equal weights per mode
 
 ```{r,eval=FALSE}
-
 # Calculate the 4 dimensions
-Acc_car_EW_Score  <- calculate_dimension_EW(Accessibility_car_Norm)
-Acc_pt_EW_Score  <- calculate_dimension_EW(Accessibility_pt_Norm)
-Acc_bike_EW_Score  <- calculate_dimension_EW(Accessibility_bike_Norm)
-Acc_walk_EW_Score  <- calculate_dimension_EW(Accessibility_walk_Norm)
+Acc_car_EW_Score <- calculate_dimension_EW(Accessibility_car_Norm)
+Acc_pt_EW_Score <- calculate_dimension_EW(Accessibility_pt_Norm)
+Acc_bike_EW_Score <- calculate_dimension_EW(Accessibility_bike_Norm)
+Acc_walk_EW_Score <- calculate_dimension_EW(Accessibility_walk_Norm)
 
 
-Aff_car_EW_Score  <- calculate_dimension_EW(Affordability_car_Norm)
-Aff_pt_EW_Score  <- calculate_dimension_EW(Affordability_pt_Norm)
-Aff_bike_EW_Score  <- calculate_dimension_EW(Affordability_bike_Norm)
+Aff_car_EW_Score <- calculate_dimension_EW(Affordability_car_Norm)
+Aff_pt_EW_Score <- calculate_dimension_EW(Affordability_pt_Norm)
+Aff_bike_EW_Score <- calculate_dimension_EW(Affordability_bike_Norm)
 
 
-Mob_car_EW_Score  <- calculate_dimension_EW(Mobility_car_Norm)
-Mob_pt_EW_Score  <- calculate_dimension_EW(Mobility_pt_Norm)
-Mob_bike_EW_Score  <- calculate_dimension_EW(Mobility_bike_Norm)
-Mob_walk_EW_Score  <- calculate_dimension_EW(Mobility_walk_Norm)
+Mob_car_EW_Score <- calculate_dimension_EW(Mobility_car_Norm)
+Mob_pt_EW_Score <- calculate_dimension_EW(Mobility_pt_Norm)
+Mob_bike_EW_Score <- calculate_dimension_EW(Mobility_bike_Norm)
+Mob_walk_EW_Score <- calculate_dimension_EW(Mobility_walk_Norm)
 
-Saf_car_EW_Score  <- calculate_dimension_EW(Safety_car_Norm)
-Saf_bike_EW_Score  <- calculate_dimension_EW(Safety_bike_Norm)
-Saf_walk_EW_Score  <- calculate_dimension_EW(Safety_walk_Norm)
+Saf_car_EW_Score <- calculate_dimension_EW(Safety_car_Norm)
+Saf_bike_EW_Score <- calculate_dimension_EW(Safety_bike_Norm)
+Saf_walk_EW_Score <- calculate_dimension_EW(Safety_walk_Norm)
 
 # Combine them into a new Results table
 Results_Equal_Weights_car <- data.frame(
   dtmnfr = Accessibility_car_Norm$dtmnfr,
   Accessibility = Acc_car_EW_Score,
   Affordability = Aff_car_EW_Score,
-  Mobility      = Mob_car_EW_Score,
-  Safety        = Saf_car_EW_Score
+  Mobility = Mob_car_EW_Score,
+  Safety = Saf_car_EW_Score
 )
 
 Results_Equal_Weights_pt <- data.frame(
   dtmnfr = Accessibility_pt_Norm$dtmnfr,
   Accessibility = Acc_pt_EW_Score,
   Affordability = Aff_pt_EW_Score,
-  Mobility      = Mob_pt_EW_Score,
-  Safety        = NA # No safety indicators for PT
+  Mobility = Mob_pt_EW_Score,
+  Safety = NA # No safety indicators for PT
 )
 
 Results_Equal_Weights_bike <- data.frame(
   dtmnfr = Accessibility_bike_Norm$dtmnfr,
   Accessibility = Acc_bike_EW_Score,
   Affordability = Aff_bike_EW_Score,
-  Mobility      = Mob_bike_EW_Score,
-  Safety        = Saf_bike_EW_Score
+  Mobility = Mob_bike_EW_Score,
+  Safety = Saf_bike_EW_Score
 )
 
 Results_Equal_Weights_walk <- data.frame(
   dtmnfr = Accessibility_walk_Norm$dtmnfr,
   Accessibility = Acc_walk_EW_Score,
   Affordability = NA, # No affordability indicators for walking
-  Mobility      = Mob_walk_EW_Score,
-  Safety        = Saf_walk_EW_Score
+  Mobility = Mob_walk_EW_Score,
+  Safety = Saf_walk_EW_Score
 )
 ```
 
@@ -487,9 +499,9 @@ Results_Equal_Weights_walk <- data.frame(
 # Assuming 'data' is dataset with normalized indicators
 
 pca_access <- PCA(Accessibility_Norm, quali.sup = 1, graph = FALSE)
-#pca_afford_post_nav <- PCA(Affordability_Norm_post_nav, quali.sup = 1, graph = FALSE)
-#pca_afford_pre_nav <- PCA(Affordability_Norm_pre_nav, quali.sup = 1, graph = FALSE)
-pca_mobility <- PCA(Mobility_Norm, quali.sup = 1, graph = FALSE) 
+# pca_afford_post_nav <- PCA(Affordability_Norm_post_nav, quali.sup = 1, graph = FALSE)
+# pca_afford_pre_nav <- PCA(Affordability_Norm_pre_nav, quali.sup = 1, graph = FALSE)
+pca_mobility <- PCA(Mobility_Norm, quali.sup = 1, graph = FALSE)
 pca_safety <- PCA(Safety_Norm, quali.sup = 1, graph = FALSE)
 
 
@@ -497,15 +509,16 @@ pca_safety <- PCA(Safety_Norm, quali.sup = 1, graph = FALSE)
 scale_0_100 <- function(x) {
   x_min <- min(x, na.rm = TRUE)
   x_max <- max(x, na.rm = TRUE)
-  # Logic: 1 + (normalized_value * 99) 
+  # Logic: 1 + (normalized_value * 99)
   # This ensures the lowest value is 1 and the highest is 100
-  1 + ( (x - x_min) / (x_max - x_min) * 99 )
+  1 + ((x - x_min) / (x_max - x_min) * 99)
 }
 
 # 1. Extract Accessibility Score
 acc_scores <- data.frame(
   dtmnfr = Accessibility_Norm$dtmnfr,
-  Accessibility_Index = scale_0_100(pca_access$ind$coord[, 1]))
+  Accessibility_Index = scale_0_100(pca_access$ind$coord[, 1])
+)
 
 # 2. Extract Affordability Score
 # aff_scores_post_nav <- data.frame(
@@ -514,32 +527,34 @@ acc_scores <- data.frame(
 # aff_scores_pre_nav <- data.frame(
 #   dtmnfr = Affordability_Norm_pre_nav$dtmnfr,
 #   Affordability_Index_pre_nav = scale_0_100(pca_afford_pre_nav$ind$coord[, 1]))
-afford_navegante_fin <- afford_navegante |> 
-  select(dtmnfr, MS_AFF_POST_NAV) |> 
+afford_navegante_fin <- afford_navegante |>
+  select(dtmnfr, MS_AFF_POST_NAV) |>
   rename(Affordability_Index_navegante = MS_AFF_POST_NAV)
-afford_singlefare_fin <- afford_singlefare |> 
-  select(dtmnfr, MS_AFF_PRE_NAV) |> 
+afford_singlefare_fin <- afford_singlefare |>
+  select(dtmnfr, MS_AFF_PRE_NAV) |>
   rename(Affordability_Index_singlefare = MS_AFF_PRE_NAV)
 
 
 # 3. Extract Safety Score
 saf_scores <- data.frame(
- dtmnfr = Safety_Norm$dtmnfr,
-  Safety_Index = scale_0_100(pca_safety$ind$coord[, 1]))
+  dtmnfr = Safety_Norm$dtmnfr,
+  Safety_Index = scale_0_100(pca_safety$ind$coord[, 1])
+)
 
-#4. Extract Mobility Score
+# 4. Extract Mobility Score
 mob_scores <- data.frame(
   dtmnfr = Mobility_Norm$dtmnfr,
-  Mobility_Index = scale_0_100(pca_mobility$ind$coord[,1]))
+  Mobility_Index = scale_0_100(pca_mobility$ind$coord[, 1])
+)
 
-### Extract the weights from the first principal component 
+### Extract the weights from the first principal component
 # pca_weights_access <- pca_access$var$coord[, 1] / sum(pca_access$var$coord[, 1])
 # pca_weights_afford <- pca_afford$var$coord[, 1] / sum(pca_afford$var$coord[, 1])
 # pca_weights_mobility <- pca_mobility$var$coord[, 1] / sum(pca_mobility$var$coord[, 1])
 # pca_weights_safety <- pca_safety$var$coord[, 1] / sum(pca_safety$var$coord[, 1])
 
 
-####CHECK THE CHAMPIONS INDICATORS
+#### CHECK THE CHAMPIONS INDICATORS
 
 Champions <- function(pca_here, dim = 1, n = 10) {
   # Extract the specific dimension contributions
@@ -560,15 +575,15 @@ Champions_safety <- Champions(pca_safety)
 # Write the PCA scores to CSV files
 
 write_csv(acc_scores, "/data/IMPT/impt/pca_scores/Accessibility_PCA_Scores.csv")
-#write_csv(aff_scores_pre_nav, "Affordability_PCA_Scores_pre_nav.csv")
-#write_csv(aff_scores_post_nav, "Affordability_PCA_Scores_post_nav.csv")
+# write_csv(aff_scores_pre_nav, "Affordability_PCA_Scores_pre_nav.csv")
+# write_csv(aff_scores_post_nav, "Affordability_PCA_Scores_post_nav.csv")
 write_csv(saf_scores, "/data/IMPT/impt/pca_scores/Safety_PCA_Scores.csv")
 write_csv(mob_scores, "/data/IMPT/impt/pca_scores/Mobility_PCA_Scores.csv")
 
 # Write champions scores
 write_csv(data.frame(Indicator = names(Champions_access), Contribution = Champions_access), "/data/IMPT/impt/pca_scores/Champions_Accessibility.csv")
-#write_csv(data.frame(Indicator = names(Champions_afford_pre_nav), Contribution = Champions_afford_pre_nav), "Champions_Affordability_pre_nav.csv")
-#write_csv(data.frame(Indicator = names(Champions_afford_post_nav), Contribution = Champions_afford_post_nav), "Champions_Affordability_post_nav.csv")
+# write_csv(data.frame(Indicator = names(Champions_afford_pre_nav), Contribution = Champions_afford_pre_nav), "Champions_Affordability_pre_nav.csv")
+# write_csv(data.frame(Indicator = names(Champions_afford_post_nav), Contribution = Champions_afford_post_nav), "Champions_Affordability_post_nav.csv")
 write_csv(data.frame(Indicator = names(Champions_mobility), Contribution = Champions_mobility), "/data/IMPT/impt/pca_scores/Champions_Mobility.csv")
 write_csv(data.frame(Indicator = names(Champions_safety), Contribution = Champions_safety), "/data/IMPT/impt/pca_scores/Champions_Safety.csv")
 
@@ -576,8 +591,8 @@ write_csv(data.frame(Indicator = names(Champions_safety), Contribution = Champio
 
 #### Join Results scores
 Final_Results_Master <- acc_scores |>
-  #left_join(aff_scores_pre_nav, by = "dtmnfr") |>
-  #left_join(aff_scores_post_nav, by = "dtmnfr") |>
+  # left_join(aff_scores_pre_nav, by = "dtmnfr") |>
+  # left_join(aff_scores_post_nav, by = "dtmnfr") |>
   left_join(afford_singlefare_fin, by = "dtmnfr") |>
   left_join(afford_navegante_fin, by = "dtmnfr") |>
   left_join(mob_scores, by = "dtmnfr") |>
@@ -590,7 +605,6 @@ Final_Results_Master <- acc_scores |>
 The function to rescale is on the previous chunk
 
 ```{r}
-
 ##################### PCA per mode #####################################
 
 # Perform PCA on the normalized indicators
@@ -613,7 +627,7 @@ pt_afford_navegante <- Affordability_pt_Norm_navegante |>
   select(dtmnfr, h_transp_inc_pt) |>
   rename(Affordability_Index_navegante = h_transp_inc_pt)
 
-pca_car_mobility <- PCA(Mobility_car_Norm, quali.sup = 1, graph = FALSE) 
+pca_car_mobility <- PCA(Mobility_car_Norm, quali.sup = 1, graph = FALSE)
 pca_pt_mobility <- PCA(Mobility_pt_Norm, quali.sup = 1, graph = FALSE)
 pca_bike_mobility <- PCA(Mobility_bike_Norm, quali.sup = 1, graph = FALSE)
 pca_walk_mobility <- PCA(Mobility_walk_Norm, quali.sup = 1, graph = FALSE)
@@ -628,17 +642,17 @@ pca_walk_safety <- PCA(Safety_walk_Norm, quali.sup = 1, graph = FALSE)
 # Define the list of PCA objects you have created
 pca_list <- list(
   Accessibility_GB = pca_access,
-  #Affordability_GB_post_nav = pca_afford_post_nav,
-  #Affordability_GB_pre_nav = pca_afford_pre_nav,
+  # Affordability_GB_post_nav = pca_afford_post_nav,
+  # Affordability_GB_pre_nav = pca_afford_pre_nav,
   Mobility_GB = pca_mobility,
   Safety_GB = pca_safety,
   Accessibility_car = pca_car_access,
   Accessibility_pt = pca_pt_access,
   Accessibility_bike = pca_bike_access,
   Accessibility_walk = pca_walk_access,
-  #Affordability_car = car_afford,
-  #Affordability_pt_pre_nav = pt_afford_pre_nav,
-  #Affordability_pt_post_nav = pt_afford_post_nav,
+  # Affordability_car = car_afford,
+  # Affordability_pt_pre_nav = pt_afford_pre_nav,
+  # Affordability_pt_post_nav = pt_afford_post_nav,
   Mobility_car = pca_car_mobility,
   Mobility_pt = pca_pt_mobility,
   Mobility_bike = pca_bike_mobility,
@@ -650,9 +664,9 @@ pca_list <- list(
 
 # Function to extract variance and variable correlations
 get_pca_diagnostics <- function(pca_obj, name) {
-    # 1. Get Variance of PC1
+  # 1. Get Variance of PC1
   var_pc1 <- pca_obj$eig[1, 2]
-    # 2. Get Correlations of variables with PC1
+  # 2. Get Correlations of variables with PC1
   cors <- as.data.frame(pca_obj$var$cor[, 1])
   colnames(cors) <- "Correlation_PC1"
   cors$Variable <- rownames(cors)
@@ -693,13 +707,13 @@ write_csv(pca_summary_table, "/data/IMPT/impt/pca_scores/PCA_Variance_Table.csv"
 direction_results <- do.call(rbind, lapply(names(pca_list), function(x) {
   # Get the correlations for the 1st component
   cors <- pca_list[[x]]$var$cor[, 1]
-    # Find the variable with the strongest relationship to PC1
+  # Find the variable with the strongest relationship to PC1
   top_idx <- which.max(abs(cors))
   top_var <- names(cors)[top_idx]
   cor_val <- cors[top_idx]
-    data.frame(
-    Dimension = x, 
-    Top_Variable = top_var, 
+  data.frame(
+    Dimension = x,
+    Top_Variable = top_var,
     Correlation = round(cor_val, 3)
   )
 }))
@@ -710,19 +724,23 @@ print(direction_results)
 # 1. Extract Accessibility Score
 acc_car_scores <- data.frame(
   dtmnfr = Accessibility_car_Norm$dtmnfr,
-  Accessibility_Index = scale_0_100(as.numeric(pca_car_access$ind$coord[, 1])))
+  Accessibility_Index = scale_0_100(as.numeric(pca_car_access$ind$coord[, 1]))
+)
 
 acc_pt_scores <- data.frame(
   dtmnfr = Accessibility_pt_Norm$dtmnfr,
-  Accessibility_Index = scale_0_100(as.numeric(pca_pt_access$ind$coord[, 1])))
+  Accessibility_Index = scale_0_100(as.numeric(pca_pt_access$ind$coord[, 1]))
+)
 
 acc_bike_scores <- data.frame(
   dtmnfr = Accessibility_bike_Norm$dtmnfr,
-  Accessibility_Index = scale_0_100(as.numeric(pca_bike_access$ind$coord[, 1])))
+  Accessibility_Index = scale_0_100(as.numeric(pca_bike_access$ind$coord[, 1]))
+)
 
 acc_walk_scores <- data.frame(
   dtmnfr = Accessibility_walk_Norm$dtmnfr,
-  Accessibility_Index = scale_0_100(as.numeric(pca_walk_access$ind$coord[, 1])))
+  Accessibility_Index = scale_0_100(as.numeric(pca_walk_access$ind$coord[, 1]))
+)
 
 # 2. Extract Affordability Score
 aff_car_scores <- car_afford
@@ -746,40 +764,43 @@ mob_car_scores <- data.frame(
 
 ######### Safety per mode using avg###########
 
-saf_car_scores <- Safety_car_Norm |> 
-  mutate(indice_gravidade_carro = 100 - indice_gravidade_carro) |> 
-  mutate(Safety_Index = indice_gravidade_carro*0.5 + veh_motorizado * 0.5 ) |> 
+saf_car_scores <- Safety_car_Norm |>
+  mutate(indice_gravidade_carro = 100 - indice_gravidade_carro) |>
+  mutate(Safety_Index = indice_gravidade_carro * 0.5 + veh_motorizado * 0.5) |>
   select(dtmnfr, Safety_Index)
-saf_bike_scores <- Safety_bike_Norm |> 
-  mutate(indice_gravidade_bicicleta = 100 - indice_gravidade_bicicleta) |> 
-  mutate(Safety_Index = indice_gravidade_bicicleta*0.5 + veh_bicicleta * 0.5 ) |> 
+saf_bike_scores <- Safety_bike_Norm |>
+  mutate(indice_gravidade_bicicleta = 100 - indice_gravidade_bicicleta) |>
+  mutate(Safety_Index = indice_gravidade_bicicleta * 0.5 + veh_bicicleta * 0.5) |>
   select(dtmnfr, Safety_Index)
 saf_walk_scores <- Safety_walk_Norm |>
-  mutate(indice_gravidade_peoes = 100 - indice_gravidade_peoes) |> 
-  mutate(Safety_Index = indice_gravidade_peoes*0.5 + veh_peoes * 0.5 ) |>
+  mutate(indice_gravidade_peoes = 100 - indice_gravidade_peoes) |>
+  mutate(Safety_Index = indice_gravidade_peoes * 0.5 + veh_peoes * 0.5) |>
   select(dtmnfr, Safety_Index)
 
 mob_pt_scores <- data.frame(
   dtmnfr = Mobility_pt_Norm$dtmnfr,
-  Mobility_Index = scale_0_100(pca_pt_mobility$ind$coord[,1]))
+  Mobility_Index = scale_0_100(pca_pt_mobility$ind$coord[, 1])
+)
 mob_bike_scores <- data.frame(
   dtmnfr = Mobility_bike_Norm$dtmnfr,
-  Mobility_Index = scale_0_100(pca_bike_mobility$ind$coord[,1]))
+  Mobility_Index = scale_0_100(pca_bike_mobility$ind$coord[, 1])
+)
 mob_walk_scores <- data.frame(
   dtmnfr = Mobility_walk_Norm$dtmnfr,
-  Mobility_Index = scale_0_100(pca_walk_mobility$ind$coord[,1]))
+  Mobility_Index = scale_0_100(pca_walk_mobility$ind$coord[, 1])
+)
 
 #### Join Results scores
 
-Final_Results_Master_car <- acc_car_scores |> 
-  left_join(car_afford, by = "dtmnfr") |> 
+Final_Results_Master_car <- acc_car_scores |>
+  left_join(car_afford, by = "dtmnfr") |>
   left_join(mob_car_scores, by = "dtmnfr") |>
   left_join(saf_car_scores, by = "dtmnfr")
 
 Final_Results_Master_pt <- acc_pt_scores |>
-  left_join(pt_afford_navegante, by = "dtmnfr") |> 
+  left_join(pt_afford_navegante, by = "dtmnfr") |>
   left_join(pt_afford_singlefare, by = "dtmnfr") |>
-  left_join(mob_pt_scores, by = "dtmnfr") 
+  left_join(mob_pt_scores, by = "dtmnfr")
 
 Final_Results_Master_bike <- acc_bike_scores |>
   left_join(mob_bike_scores, by = "dtmnfr") |>
@@ -790,11 +811,11 @@ Final_Results_Master_walk <- acc_walk_scores |>
   left_join(saf_walk_scores, by = "dtmnfr")
 
 
-#Extract the weights from the first principal component 
-#pca_weights_access <- pca_access$var$coord[, 1] / sum(pca_access$var$coord[, 1])
-#pca_weights_afford <- pca_afford$var$coord[, 1] / sum(pca_afford$var$coord[, 1])
-#pca_weights_mobility <- pca_mobility$var$coord[, 1] / sum(pca_mobility$var$coord[, 1])
-#pca_weights_safety <- pca_safety$var$coord[, 1] / sum(pca_safety$var$coord[, 1])
+# Extract the weights from the first principal component
+# pca_weights_access <- pca_access$var$coord[, 1] / sum(pca_access$var$coord[, 1])
+# pca_weights_afford <- pca_afford$var$coord[, 1] / sum(pca_afford$var$coord[, 1])
+# pca_weights_mobility <- pca_mobility$var$coord[, 1] / sum(pca_mobility$var$coord[, 1])
+# pca_weights_safety <- pca_safety$var$coord[, 1] / sum(pca_safety$var$coord[, 1])
 
 
 # Write the PCA scores to CSV files
@@ -805,8 +826,8 @@ write_csv(acc_bike_scores, "/data/IMPT/impt/pca_scores/Accessibility_PCA_bike_Sc
 write_csv(acc_walk_scores, "/data/IMPT/impt/pca_scores/Accessibility_PCA_walk_Scores.csv")
 
 write_csv(aff_car_scores, "/data/IMPT/impt/pca_scores/Affordability_car_Scores.csv")
-write_csv(aff_pt_scores, "/data/IMPT/impt/pca_scores/Affordability_pt_Scores_singlefare.csv")
-write_csv(aff_pt_scores, "/data/IMPT/impt/pca_scores/Affordability_pt_Scores_navegante.csv")
+write_csv(aff_pt_scores_singlefare, "/data/IMPT/impt/pca_scores/Affordability_pt_Scores_singlefare.csv")
+write_csv(aff_pt_scores_navegante, "/data/IMPT/impt/pca_scores/Affordability_pt_Scores_navegante.csv")
 
 write_csv(saf_car_scores, "/data/IMPT/impt/pca_scores/Safety_car_Scores.csv")
 write_csv(saf_bike_scores, "/data/IMPT/impt/pca_scores/Safety_bike_Scores.csv")
@@ -816,14 +837,12 @@ write_csv(mob_car_scores, "/data/IMPT/impt/pca_scores/Mobility_PCA_car_Scores.cs
 write_csv(mob_pt_scores, "/data/IMPT/impt/pca_scores/Mobility_PCA_pt_Scores.csv")
 write_csv(mob_bike_scores, "/data/IMPT/impt/pca_scores/Mobility_PCA_bike_Scores.csv")
 write_csv(mob_walk_scores, "/data/IMPT/impt/pca_scores/Mobility_PCA_walk_Scores.csv")
-
 ```
 
 
 ### Step 4: Compute the overall IMPT score
 
 ```{r}
-
 # ### EQUAL WEIGHTS
 # Results_Equal_Weights <- Results_Equal_Weights |>
 #   mutate(
@@ -837,10 +856,9 @@ write_csv(mob_walk_scores, "/data/IMPT/impt/pca_scores/Mobility_PCA_walk_Scores.
 #   mutate(IMPT_Equal_Weights_avg = (Accessibility + Affordability + Mobility + Safety) / 4)
 
 
-                                    
 ####### Compute overall IMPT score using PCA weights + AVG and geometric mean
 Final_Results_Master <- Final_Results_Master |>
-  mutate(# Adding +1 ensures no zeros, then we subtract it at the end
+  mutate( # Adding +1 ensures no zeros, then we subtract it at the end
     IMPT_score_pca_geom_navegante = ((Accessibility_Index + 1) * (Mobility_Index + 1) * (Affordability_Index_navegante + 1) * (Safety_Index + 1))^(1 / 4) - 1
   ) |>
   mutate(IMPT_score_pca_geom_singlefare = ((Accessibility_Index + 1) * (Mobility_Index + 1) * (Affordability_Index_singlefare + 1) * (Safety_Index + 1))^(1 / 4) - 1) |>
@@ -867,9 +885,9 @@ compute_entropy_weights <- function(df) {
 }
 
 # 1. dataframe containing only the scores you want to weight
-scores_for_entropy1 <- Final_Results_Master |> 
+scores_for_entropy1 <- Final_Results_Master |>
   select(Accessibility_Index, Affordability_Index_navegante, Mobility_Index, Safety_Index)
-scores_for_entropy2 <- Final_Results_Master |> 
+scores_for_entropy2 <- Final_Results_Master |>
   select(Accessibility_Index, Affordability_Index_singlefare, Mobility_Index, Safety_Index)
 
 Entropy_weights_pca_navegante <- compute_entropy_weights(scores_for_entropy1)
@@ -882,17 +900,17 @@ Final_Results_Master <- Final_Results_Master |>
   mutate(
     IMPT_entropy_pca_navegante = (
       (Accessibility_Index + 1)^Entropy_weights_pca_navegante[1] *
-      (Affordability_Index_navegante + 1)^Entropy_weights_pca_navegante[2] *
-      (Mobility_Index      + 1)^Entropy_weights_pca_navegante[3] *
-      (Safety_Index        + 1)^Entropy_weights_pca_navegante[4]
+        (Affordability_Index_navegante + 1)^Entropy_weights_pca_navegante[2] *
+        (Mobility_Index + 1)^Entropy_weights_pca_navegante[3] *
+        (Safety_Index + 1)^Entropy_weights_pca_navegante[4]
     ) - 1 # Subtract the 1 at the end to keep the scale similar
-  ) |> 
+  ) |>
   mutate(
     IMPT_entropy_pca_singlefare = (
       (Accessibility_Index + 1)^Entropy_weights_pca_nonav[1] *
-      (Affordability_Index_singlefare + 1)^Entropy_weights_pca_nonav[2] *
-      (Mobility_Index      + 1)^Entropy_weights_pca_nonav[3] *
-      (Safety_Index        + 1)^Entropy_weights_pca_nonav[4]
+        (Affordability_Index_singlefare + 1)^Entropy_weights_pca_nonav[2] *
+        (Mobility_Index + 1)^Entropy_weights_pca_nonav[3] *
+        (Safety_Index + 1)^Entropy_weights_pca_nonav[4]
     ) - 1 # Subtract the 1 at the end to keep the scale similar
   )
 
@@ -900,64 +918,69 @@ Final_Results_Master <- Final_Results_Master |>
 ######### Save the final results
 # write_csv(Results_Equal_Weights, "/data/IMPT/impt/results/IMPT_Equal_Weights.csv")
 write_csv(Final_Results_Master, "/data/IMPT/impt/results/IMPT_PCA_and_Entropy_Scores_freguesia.csv")
-
 ```
 
 
 #### Compute IMPT per mode
 
 ```{r}
- 
 ################################################### Compute overall IMPT score using PCA weights + AVG and geometric mean
-Final_Results_Master_car <- Final_Results_Master_car |> 
-  mutate(# Adding +1 ensures no zeros, then we subtract it at the end 
-        IMPT_score_pca_geom_car = ((Accessibility_Index + 1) * (Mobility_Index + 1) * (Affordability_Index + 1) * (Safety_Index + 1))^(1/4) - 1) |> 
-  mutate(IMPT_score_pca_avg_car = ((Accessibility_Index) + (Mobility_Index) + (Affordability_Index) + (Safety_Index))/4)
-
-
-Final_Results_Master_pt <- Final_Results_Master_pt |> 
-  mutate( # Adding +1 ensures no zeros, then we subtract it at the end 
-    IMPT_score_pca_geom_pt_singlefare = ((Accessibility_Index + 1) * (Mobility_Index + 1) * (Affordability_Index_singlefare + 1))^(1/3) - 1
-  ) |> 
-  mutate (
-  IMPT_score_pca_geom_pt_navegante = ((Accessibility_Index + 1) * (Mobility_Index + 1) * (Affordability_Index_navegante + 1))^(1/3) - 1
+Final_Results_Master_car <- Final_Results_Master_car |>
+  mutate( # Adding +1 ensures no zeros, then we subtract it at the end
+    IMPT_score_pca_geom_car = ((Accessibility_Index + 1) * (Mobility_Index + 1) * (Affordability_Index + 1) * (Safety_Index + 1))^(1 / 4) - 1
   ) |>
-  mutate( 
-    IMPT_score_pca_avg_pt_singlefare = ((Accessibility_Index) + (Mobility_Index) + (Affordability_Index_singlefare))/3) |>
+  mutate(IMPT_score_pca_avg_car = ((Accessibility_Index) + (Mobility_Index) + (Affordability_Index) + (Safety_Index)) / 4)
+
+
+Final_Results_Master_pt <- Final_Results_Master_pt |>
+  mutate( # Adding +1 ensures no zeros, then we subtract it at the end
+    IMPT_score_pca_geom_pt_singlefare = ((Accessibility_Index + 1) * (Mobility_Index + 1) * (Affordability_Index_singlefare + 1))^(1 / 3) - 1
+  ) |>
   mutate(
-    IMPT_score_pca_avg_pt_navegante = ((Accessibility_Index) + (Mobility_Index) + (Affordability_Index_navegante))/3)
+    IMPT_score_pca_geom_pt_navegante = ((Accessibility_Index + 1) * (Mobility_Index + 1) * (Affordability_Index_navegante + 1))^(1 / 3) - 1
+  ) |>
+  mutate(
+    IMPT_score_pca_avg_pt_singlefare = ((Accessibility_Index) + (Mobility_Index) + (Affordability_Index_singlefare)) / 3
+  ) |>
+  mutate(
+    IMPT_score_pca_avg_pt_navegante = ((Accessibility_Index) + (Mobility_Index) + (Affordability_Index_navegante)) / 3
+  )
 
 Final_Results_Master_bike <- Final_Results_Master_bike |>
-  mutate(# Adding +1 ensures no zeros, then we subtract it at the end 
-    IMPT_score_pca_geom_bike = ((Accessibility_Index + 1) * (Mobility_Index + 1) * (Safety_Index + 1))^(1/3) - 1) |> 
-  mutate( 
-    IMPT_score_pca_avg_bike = ((Accessibility_Index) + (Mobility_Index) + (Safety_Index))/4)
+  mutate( # Adding +1 ensures no zeros, then we subtract it at the end
+    IMPT_score_pca_geom_bike = ((Accessibility_Index + 1) * (Mobility_Index + 1) * (Safety_Index + 1))^(1 / 3) - 1
+  ) |>
+  mutate(
+    IMPT_score_pca_avg_bike = ((Accessibility_Index) + (Mobility_Index) + (Safety_Index)) / 4
+  )
 
 Final_Results_Master_walk <- Final_Results_Master_walk |>
   mutate( # Adding +1 ensures no zeros, then we subtract it at the end
-   IMPT_score_pca_geom_walk = ((Accessibility_Index + 1) * (Mobility_Index + 1) * (Safety_Index + 1))^(1/3) - 1) |>
-  mutate( 
-    IMPT_score_pca_avg_walk = ((Accessibility_Index) + (Mobility_Index) + (Safety_Index))/3)
+    IMPT_score_pca_geom_walk = ((Accessibility_Index + 1) * (Mobility_Index + 1) * (Safety_Index + 1))^(1 / 3) - 1
+  ) |>
+  mutate(
+    IMPT_score_pca_avg_walk = ((Accessibility_Index) + (Mobility_Index) + (Safety_Index)) / 3
+  )
 
 #### Compute overall IMPT with entropy weights
 
 # 1. dataframe containing only the scores you want to weight
-scores_for_entropy_car <- Final_Results_Master_car |> 
+scores_for_entropy_car <- Final_Results_Master_car |>
   select(Accessibility_Index, Affordability_Index, Mobility_Index, Safety_Index)
 Entropy_weights_pca_car <- compute_entropy_weights(scores_for_entropy_car)
 
-scores_for_entropy_pt_navegante <- Final_Results_Master_pt |> 
+scores_for_entropy_pt_navegante <- Final_Results_Master_pt |>
   select(Accessibility_Index, Affordability_Index_navegante, Mobility_Index)
-scores_for_entropy_pt_singlefare <- Final_Results_Master_pt |> 
+scores_for_entropy_pt_singlefare <- Final_Results_Master_pt |>
   select(Accessibility_Index, Affordability_Index_singlefare, Mobility_Index)
 Entropy_weights_pca_pt_navegante <- compute_entropy_weights(scores_for_entropy_pt_navegante)
 Entropy_weights_pca_pt_singlefare <- compute_entropy_weights(scores_for_entropy_pt_singlefare)
 
-scores_for_entropy_bike <- Final_Results_Master_bike |> 
+scores_for_entropy_bike <- Final_Results_Master_bike |>
   select(Accessibility_Index, Mobility_Index, Safety_Index)
 Entropy_weights_pca_bike <- compute_entropy_weights(scores_for_entropy_bike)
 
-scores_for_entropy_walk <- Final_Results_Master_walk |> 
+scores_for_entropy_walk <- Final_Results_Master_walk |>
   select(Accessibility_Index, Mobility_Index, Safety_Index)
 Entropy_weights_pca_walk <- compute_entropy_weights(scores_for_entropy_walk)
 
@@ -968,25 +991,25 @@ Final_Results_Master_car <- Final_Results_Master_car |>
   mutate(
     IMPT_entropy_pca_car = (
       (Accessibility_Index + 1)^Entropy_weights_pca_car[1] *
-      (Affordability_Index + 1)^Entropy_weights_pca_car[2] *
-      (Mobility_Index      + 1)^Entropy_weights_pca_car[3] *
-      (Safety_Index        + 1)^Entropy_weights_pca_car[4]
+        (Affordability_Index + 1)^Entropy_weights_pca_car[2] *
+        (Mobility_Index + 1)^Entropy_weights_pca_car[3] *
+        (Safety_Index + 1)^Entropy_weights_pca_car[4]
     ) - 1 # Subtract the 1 at the end to keep the scale similar
-  ) 
+  )
 
 Final_Results_Master_pt <- Final_Results_Master_pt |>
   mutate(
     IMPT_entropy_pca_pt_navevante = (
       (Accessibility_Index + 1)^Entropy_weights_pca_pt_navegante[1] *
-      (Affordability_Index_navegante + 1)^Entropy_weights_pca_pt_navegante[2] *
-      (Mobility_Index      + 1)^Entropy_weights_pca_pt_navegante[3]
+        (Affordability_Index_navegante + 1)^Entropy_weights_pca_pt_navegante[2] *
+        (Mobility_Index + 1)^Entropy_weights_pca_pt_navegante[3]
     ) - 1 # Subtract the 1 at the end to keep the scale similar
-  ) |> 
+  ) |>
   mutate(
     IMPT_entropy_pca_pt_singlefare = (
       (Accessibility_Index + 1)^Entropy_weights_pca_pt_singlefare[1] *
-      (Affordability_Index_singlefare + 1)^Entropy_weights_pca_pt_singlefare[2] *
-      (Mobility_Index      + 1)^Entropy_weights_pca_pt_singlefare[3]
+        (Affordability_Index_singlefare + 1)^Entropy_weights_pca_pt_singlefare[2] *
+        (Mobility_Index + 1)^Entropy_weights_pca_pt_singlefare[3]
     ) - 1 # Subtract the 1 at the end to keep the scale similar
   )
 
@@ -994,8 +1017,8 @@ Final_Results_Master_bike <- Final_Results_Master_bike |>
   mutate(
     IMPT_entropy_pca_bike = (
       (Accessibility_Index + 1)^Entropy_weights_pca_bike[1] *
-      (Mobility_Index      + 1)^Entropy_weights_pca_bike[2] *
-      (Safety_Index        + 1)^Entropy_weights_pca_bike[3]
+        (Mobility_Index + 1)^Entropy_weights_pca_bike[2] *
+        (Safety_Index + 1)^Entropy_weights_pca_bike[3]
     ) - 1 # Subtract the 1 at the end to keep the scale similar
   )
 
@@ -1003,8 +1026,8 @@ Final_Results_Master_walk <- Final_Results_Master_walk |>
   mutate(
     IMPT_entropy_pca_walk = (
       (Accessibility_Index + 1)^Entropy_weights_pca_walk[1] *
-      (Mobility_Index      + 1)^Entropy_weights_pca_walk[2] *
-      (Safety_Index        + 1)^Entropy_weights_pca_walk[3]
+        (Mobility_Index + 1)^Entropy_weights_pca_walk[2] *
+        (Safety_Index + 1)^Entropy_weights_pca_walk[3]
     ) - 1 # Subtract the 1 at the end to keep the scale similar
   )
 
@@ -1014,7 +1037,6 @@ write_csv(Final_Results_Master_car, "/data/IMPT/impt/results/IMPT_PCA_and_Entrop
 write_csv(Final_Results_Master_pt, "/data/IMPT/impt/results/IMPT_PCA_and_Entropy_Scores_pt_freguesia.csv")
 write_csv(Final_Results_Master_bike, "/data/IMPT/impt/results/IMPT_PCA_and_Entropy_Scores_bike_freguesia.csv")
 write_csv(Final_Results_Master_walk, "/data/IMPT/impt/results/IMPT_PCA_and_Entropy_Scores_walk_freguesia.csv")
-
 ```
 
 ## Export for other levels
@@ -1022,34 +1044,34 @@ write_csv(Final_Results_Master_walk, "/data/IMPT/impt/results/IMPT_PCA_and_Entro
 ```{r}
 ## Municipality
 # export at municipality level, weighted mean with population
-census24_fregmun_pop = read_csv("useful_data/census24_fregmun.csv") |> 
-  select(freg_id, mun_id, population) |> 
+census24_fregmun_pop <- read_csv("useful_data/census24_fregmun.csv") |>
+  select(freg_id, mun_id, population) |>
   mutate(dtmnfr = as.integer(freg_id))
 
 Final_Results_Master_municipio <- Final_Results_Master |>
   left_join(census24_fregmun_pop, by = "dtmnfr") |>
   group_by(mun_id) |>
-  # weighted mean with population as weights 
+  # weighted mean with population as weights
   summarize_at(vars(-dtmnfr, -freg_id, -population), ~ weighted.mean(., w = population, na.rm = TRUE))
 Final_Results_Master_car_municipio <- Final_Results_Master_car |>
   left_join(census24_fregmun_pop, by = "dtmnfr") |>
   group_by(mun_id) |>
-  # weighted mean with population as weights 
+  # weighted mean with population as weights
   summarize_at(vars(-dtmnfr, -freg_id, -population), ~ weighted.mean(., w = population, na.rm = TRUE))
 Final_Results_Master_pt_municipio <- Final_Results_Master_pt |>
   left_join(census24_fregmun_pop, by = "dtmnfr") |>
   group_by(mun_id) |>
-  # weighted mean with population as weights 
+  # weighted mean with population as weights
   summarize_at(vars(-dtmnfr, -freg_id, -population), ~ weighted.mean(., w = population, na.rm = TRUE))
 Final_Results_Master_walk_municipio <- Final_Results_Master_walk |>
   left_join(census24_fregmun_pop, by = "dtmnfr") |>
   group_by(mun_id) |>
-  # weighted mean with population as weights 
+  # weighted mean with population as weights
   summarize_at(vars(-dtmnfr, -freg_id, -population), ~ weighted.mean(., w = population, na.rm = TRUE))
 Final_Results_Master_bike_municipio <- Final_Results_Master_bike |>
   left_join(census24_fregmun_pop, by = "dtmnfr") |>
   group_by(mun_id) |>
-  # weighted mean with population as weights 
+  # weighted mean with population as weights
   summarize_at(vars(-dtmnfr, -freg_id, -population), ~ weighted.mean(., w = population, na.rm = TRUE))
 
 write_csv(Final_Results_Master_municipio, "/data/IMPT/impt/results/IMPT_PCA_and_Entropy_Scores_municipio.csv")
@@ -1061,24 +1083,24 @@ write_csv(Final_Results_Master_bike_municipio, "/data/IMPT/impt/results/IMPT_PCA
 
 ## Grid level
 # via grid_freg_mun lookup (generalised assumption).
-grid_freg_mun <- read.csv("useful_data/grid_nuts.csv") |> 
-  select(grid_id, freg_id) |> 
+grid_freg_mun <- read.csv("useful_data/grid_nuts.csv") |>
+  select(grid_id, freg_id) |>
   mutate(freg_id = as.integer(freg_id))
 
 Final_Results_Master_grid <- grid_freg_mun |>
-  left_join(Final_Results_Master, by = c("freg_id" = "dtmnfr")) |> 
+  left_join(Final_Results_Master, by = c("freg_id" = "dtmnfr")) |>
   select(-freg_id)
 Final_Results_Master_grid_car <- grid_freg_mun |>
-  left_join(Final_Results_Master_car, by = c("freg_id" = "dtmnfr")) |> 
+  left_join(Final_Results_Master_car, by = c("freg_id" = "dtmnfr")) |>
   select(-freg_id)
 Final_Results_Master_grid_pt <- grid_freg_mun |>
-  left_join(Final_Results_Master_pt, by = c("freg_id" = "dtmnfr")) |> 
+  left_join(Final_Results_Master_pt, by = c("freg_id" = "dtmnfr")) |>
   select(-freg_id)
 Final_Results_Master_grid_walk <- grid_freg_mun |>
-  left_join(Final_Results_Master_walk, by = c("freg_id" = "dtmnfr")) |> 
+  left_join(Final_Results_Master_walk, by = c("freg_id" = "dtmnfr")) |>
   select(-freg_id)
 Final_Results_Master_grid_bike <- grid_freg_mun |>
-  left_join(Final_Results_Master_bike, by = c("freg_id" = "dtmnfr")) |> 
+  left_join(Final_Results_Master_bike, by = c("freg_id" = "dtmnfr")) |>
   select(-freg_id)
 
 
@@ -1087,7 +1109,6 @@ write.csv(Final_Results_Master_grid_car, "/data/IMPT/impt/results/IMPT_PCA_and_E
 write.csv(Final_Results_Master_grid_pt, "/data/IMPT/impt/results/IMPT_PCA_and_Entropy_Scores_pt_grid.csv", row.names = FALSE)
 write.csv(Final_Results_Master_grid_bike, "/data/IMPT/impt/results/IMPT_PCA_and_Entropy_Scores_bike_grid.csv", row.names = FALSE)
 write.csv(Final_Results_Master_grid_walk, "/data/IMPT/impt/results/IMPT_PCA_and_Entropy_Scores_walk_grid.csv", row.names = FALSE)
-
 ```
 
 
@@ -1099,7 +1120,7 @@ freguesias # Read from data_load.R
 
 # DATA_LOCATION = "https://impt.server.ushift.pt" # When running locally, get data from remote server
 # API_KEY = Sys.getenv("IMPT_DATA_KEY") # Set it using usethis::edit_r_environ(), followed by CTRL+F10
-# 
+#
 # IMPT_URL = function(path) {
 #   # If does not start with "/", add it
 #   if (!startsWith(path, "/")) {
@@ -1126,8 +1147,8 @@ freguesias # Read from data_load.R
 
 # IMPT PCA and Entropy scores
 # impt_pca = read.csv(IMPT_URL("results_aggregated/20260330/IMPT_PCA_and_Entropy_Scores.csv"))
-impt_pca = read.csv("/data/IMPT/impt/results/IMPT_PCA_and_Entropy_Scores_freguesia.csv")
-impt_pca_sf = freguesias |>
+impt_pca <- read.csv("/data/IMPT/impt/results/IMPT_PCA_and_Entropy_Scores_freguesia.csv")
+impt_pca_sf <- freguesias |>
   select(-nuts2, -area_ha) |>
   mutate(dtmnfr = as.integer(dtmnfr)) |>
   left_join(
@@ -1139,7 +1160,7 @@ impt_pca_sf = freguesias |>
         Mobility_PCA = Mobility_Index,
         Safety_PCA = Safety_Index
       )
-  ) |> 
+  ) |>
   # Round PCA scores to 2 decimals
   mutate(
     across(starts_with("Accessibility"), ~ round(., 2)),
@@ -1150,23 +1171,23 @@ impt_pca_sf = freguesias |>
   ) |>
   # Columns order
   select(
-    dtmnfr, freguesia, municipio, 
+    dtmnfr, freguesia, municipio,
     starts_with("Accessibility"), starts_with("Affordability"), starts_with("Mobility"), starts_with("Safety"),
     starts_with("IMPT")
   )
 # View(impt_pca_sf |> st_drop_geometry())
 
-mapview(impt_pca_sf, zcol="Accessibility_PCA", layer.name="PCA Accessibility", hide=TRUE) +
-  mapview(impt_pca_sf, zcol="Affordability_PCA_prenav", layer.name="PCA Affordability - single fare", hide=TRUE) +
-  mapview(impt_pca_sf, zcol="Affordability_PCA_postnav", layer.name="PCA Affordability - navegante", hide=TRUE) +
-  mapview(impt_pca_sf, zcol="Mobility_PCA", layer.name="PCA Mobility", hide=TRUE) +
-  mapview(impt_pca_sf, zcol="Safety_PCA", layer.name="PCA Safety", hide=TRUE) +
-  
-  mapview(impt_pca_sf, zcol="IMPT_score_pca_geom_navegante", layer.name="IMPT PCA Geom - navegante", hide=TRUE) + 
-  mapview(impt_pca_sf, zcol="IMPT_score_pca_geom_singlefare", layer.name="IMPT PCA Geom - single fare", hide=TRUE) +
-  mapview(impt_pca_sf, zcol="IMPT_score_pca_avg_navegante", layer.name="IMPT PCA Avg - navegante", hide=TRUE) + 
-   mapview(impt_pca_sf, zcol="IMPT_score_pca_avg_singlefare", layer.name="IMPT PCA Avg - single fare", hide=TRUE) +
-  mapview(impt_pca_sf, zcol="IMPT_entropy_pca_navegante", layer.name="IMPT PCA Entropy - navegante", hide=TRUE) +
-  mapview(impt_pca_sf, zcol="IMPT_entropy_pca_singlefare", layer.name="IMPT PCA Entropy - single fare", hide=TRUE)
+mapview(impt_pca_sf, zcol = "Accessibility_PCA", layer.name = "PCA Accessibility", hide = TRUE) +
+  mapview(impt_pca_sf, zcol = "Affordability_PCA_prenav", layer.name = "PCA Affordability - single fare", hide = TRUE) +
+  mapview(impt_pca_sf, zcol = "Affordability_PCA_postnav", layer.name = "PCA Affordability - navegante", hide = TRUE) +
+  mapview(impt_pca_sf, zcol = "Mobility_PCA", layer.name = "PCA Mobility", hide = TRUE) +
+  mapview(impt_pca_sf, zcol = "Safety_PCA", layer.name = "PCA Safety", hide = TRUE) +
+
+  mapview(impt_pca_sf, zcol = "IMPT_score_pca_geom_navegante", layer.name = "IMPT PCA Geom - navegante", hide = TRUE) +
+  mapview(impt_pca_sf, zcol = "IMPT_score_pca_geom_singlefare", layer.name = "IMPT PCA Geom - single fare", hide = TRUE) +
+  mapview(impt_pca_sf, zcol = "IMPT_score_pca_avg_navegante", layer.name = "IMPT PCA Avg - navegante", hide = TRUE) +
+  mapview(impt_pca_sf, zcol = "IMPT_score_pca_avg_singlefare", layer.name = "IMPT PCA Avg - single fare", hide = TRUE) +
+  mapview(impt_pca_sf, zcol = "IMPT_entropy_pca_navegante", layer.name = "IMPT PCA Entropy - navegante", hide = TRUE) +
+  mapview(impt_pca_sf, zcol = "IMPT_entropy_pca_singlefare", layer.name = "IMPT PCA Entropy - single fare", hide = TRUE)
 ```
 
