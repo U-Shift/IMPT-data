@@ -375,68 +375,156 @@ write.csv(municipio_transfers, IMPT_URL(sprintf("%s/municipio_transfers.csv", ou
 
 # Accessibility Gap -------------------------------------------------------
 
-jobs_grid <- read_csv("/data/IMPT/mobility_commuting/jittering_grid.csv") |> 
-  rename(hex_id = id_grid_origin) |> 
-  select(hex_id, trips)
+# OD pairs with trip weights from the jittered commuting flows.
+# We need both origin, destination AND trips for the weighted mean in process_ttm.
+od_pairs <- read_csv(IMPT_URL("/mobility_commuting/jittering_grid.csv")) |>
+  select(id_grid_origin, id_grid_destination, trips) |>
+  mutate(
+    id_grid_origin      = as.integer(id_grid_origin),
+    id_grid_destination = as.integer(id_grid_destination)
+  )
 
-## In time
-process_ttm <- function(path, dests, tag) {
+# Destination grid cells used in actual commuting flows (job locations).
+# FIX: was incorrectly using origin IDs before.
+poi_h_dest <- unique(od_pairs$id_grid_destination[!is.na(od_pairs$id_grid_destination)])
+
+# process_ttm: for each origin grid cell, compute the trip-weighted mean
+# travel time to all reachable destination cells (actual job locations).
+# FIX 1: od_pairs now passed in and joined so weighted.mean has real trip weights.
+# FIX 2: uses 120-min TTM — avoids artificial 60-min cap collapsing the gap.
+# FIX 3: NAs (truly unreachable within 120 min) are left as NA, not imputed.
+process_ttm <- function(path, od_pairs, dests, tag) {
   if (!file.exists(path)) {
-    return(data.frame(hex_id = character(), min_t = numeric()))
+    message(sprintf("File not found, skipping: %s", path))
+    return(data.frame(hex_id = character()))
   }
   readRDS(path) |>
-    left_join() # need to add trips info from od_pairs
+    mutate(from_id = as.integer(from_id), to_id = as.integer(to_id)) |>
     filter(to_id %in% dests) |>
+    # Join trip weights: only keep OD pairs that exist in the jittered flows
+    inner_join(od_pairs, by = c("from_id" = "id_grid_origin", "to_id" = "id_grid_destination")) |>
     group_by(from_id) |>
-    summarise(min_t = weighted.mean(travel_time_p50, trips, na.rm = TRUE)) |> # weight by trips
-    rename(hex_id = from_id, !!tag := min_t) |>
-    mutate(hex_id = as.character(hex_id), !!tag := pmin(get(tag), 60))
+    # Weighted mean travel time across all destinations, weighted by nr of trips
+    summarise(
+      !!tag        := weighted.mean(travel_time_p50, trips, na.rm = TRUE),
+      total_trips  := sum(trips, na.rm = TRUE),
+      .groups = "drop"
+    ) |>
+    rename(hex_id = from_id) |>
+    mutate(hex_id = as.character(hex_id))
 }
 
-poi_h_dest <- unique(jobs_grid$hex_id[!is.na(jobs_grid$hex_id)])
-res_car <- process_ttm("/data/IMPT/ttm/ttm_h3_res8/ttm_car_60min_202602040800.rds", poi_h_dest, "time_car")
-res_peak <- process_ttm("/data/IMPT/ttm/ttm_h3_res8/ttm_transit_60min_202602040800_1transfers.rds", poi_h_dest, "time_pt_peak")
+res_car  <- process_ttm(
+  IMPT_URL("/ttm/ttm_h3_res8/ttm_car_120min_202602040800.rds"),
+  od_pairs, poi_h_dest, "time_car"
+)
+res_peak <- process_ttm(
+  IMPT_URL("/ttm/ttm_h3_res8/ttm_transit_120min_202602040800_1transfers.rds"),
+  od_pairs, poi_h_dest, "time_pt_peak"
+)
 
-# Nut2 mapping for hex
-mun_geom_for_nuts <- freg_geom |>
-  group_by(municipio) |>
-  summarise(nuts2 = first(nuts2), .groups = "drop") |>
-  st_make_valid()
+summary(res_car)
+summary(res_peak)
+nrow(res_car)   # origin cells with at least one reachable job by car
+nrow(res_peak)  # same for transit — expect fewer
 
-grid_centroids <- st_centroid(grid)
-grid_nuts <- st_join(grid_centroids, mun_geom_for_nuts, join = st_within) |>
+# Total trips per origin grid cell (for weighting at higher scales)
+jobs_grid_redux <- od_pairs |>
+  group_by(hex_id = as.character(id_grid_origin)) |>
+  summarise(trips = sum(trips, na.rm = TRUE), .groups = "drop")
+
+# Build grid-level gap table -----------------------------------------------
+# FIX: removed grid_freg_mun (undefined here); build from grid + spatial join.
+# FIX: only filter where car time is missing; transit NAs are kept as they
+#      represent the largest penalty (unreachable by PT within 120 min).
+# accessibility_gap: for each origin hex cell, the difference in minutes between
+# the trip-weighted average PT travel time and the trip-weighted average car travel
+# time, across all actual commuting destinations (OD pairs from jittered flows).
+# Positive value = PT takes longer than car by that many minutes.
+# trips = total commuting trips originating from this hex cell (all destinations).
+hex_stats_gap <- grid |>
   st_drop_geometry() |>
-  select(hex_id, nuts2)
-
-jobs_grid_redux = jobs_grid |> 
-  group_by(hex_id) |>
-  summarise(trips = sum(trips, na.rm = TRUE)) |> 
-  ungroup()
-
-hex_stats_gap <- grid_freg_mun |>
+  select(grid_id = id) |>
   mutate(grid_id = as.character(grid_id)) |>
-  left_join(res_car, by = c("grid_id" = "hex_id")) |>
-  left_join(res_peak, by = c("grid_id" = "hex_id")) |>
-  left_join(jobs_grid_redux |> mutate(hex_id = as.character(hex_id)), by =  c("grid_id" = "hex_id")) |>
-  filter(time_car > 0 & time_pt_peak > 0) |>
+  left_join(res_car  |> select(hex_id, time_car),   by = c("grid_id" = "hex_id")) |>
+  left_join(res_peak |> select(hex_id, time_pt_peak), by = c("grid_id" = "hex_id")) |>
+  left_join(jobs_grid_redux, by = c("grid_id" = "hex_id")) |>
+  # Only drop cells where car time is unknown (no matched commuting flows)
+  filter(!is.na(time_car) & time_car > 0) |>
+  mutate(
+    # Where transit cannot reach destination within 120 min, assign 120 as penalty.
+    # This avoids hiding the true gap for cells unserved by PT.
+    time_pt_peak_for_gap = if_else(is.na(time_pt_peak), 120, time_pt_peak),
+    # Gap in minutes (at origin hex level): positive = PT slower than car
+    accessibility_gap = time_pt_peak_for_gap - time_car
+  )
 
-  mutate(across(starts_with("time_"), ~ replace_na(., 60))) |>
-  mutate(accessibility_gap = time_pt_peak - time_car) |>
-  mutate(across(where(is.numeric), ~ replace_na(., 0)))
+# Attach freg and municipio ids via spatial join
+hex_stats_gap <- hex_stats_gap |>
+  left_join(
+    st_join(
+      st_centroid(grid),
+      freguesias |> select(freg_id = dtmnfr, mun_id = municipio),
+      join = st_within
+    ) |>
+      st_drop_geometry() |>
+      mutate(grid_id = as.character(id)) |>
+      select(grid_id, freg_id, mun_id),
+    by = "grid_id"
+  )
 
+summary(hex_stats_gap)
+# mapview(grid |> left_join(hex_stats_gap, by = c("id" = "grid_id")), zcol = "accessibility_gap")
+# mapview(grid |> left_join(hex_stats_gap, by = c("id" = "grid_id")), zcol = "time_car")
+# mapview(grid |> left_join(hex_stats_gap, by = c("id" = "grid_id")), zcol = "time_pt_peak")
 
-# at freguesia level. average weighted by trips
-freg_stats_gap <- hex_stats_gap |> 
-  filter(freg_id != 0) |> 
-  filter(time_car > 0 & time_pt_peak > 0) |>
+# at freguesia level: weighted mean by trips --------------------------------
+freg_stats_gap <- hex_stats_gap |>
+  filter(!is.na(freg_id)) |>
   group_by(freg_id) |>
   summarise(
-    time_car = weighted.mean(time_car, trips, na.rm = TRUE),
-    time_pt_peak = weighted.mean(time_pt_peak, trips, na.rm = TRUE),
-    total_trips = sum(trips, na.rm = TRUE) 
-  ) |> 
-  mutate(accessibility_gap = time_pt_peak - time_car) |> 
-  ungroup() |> 
+    time_car           = weighted.mean(time_car,             trips, na.rm = TRUE),
+    time_pt_peak       = weighted.mean(time_pt_peak_for_gap, trips, na.rm = TRUE),
+    total_trips        = sum(trips, na.rm = TRUE),
+    n_cells_no_transit = sum(is.na(time_pt_peak)),   # cells where PT unreachable
+    .groups = "drop"
+  ) |>
+  mutate(accessibility_gap = time_pt_peak - time_car) |>
   filter(!is.nan(time_car))
 
-# at municipio level. average weighted by trips
+freg_stats_gap_sf <- freguesias |> select(dtmnfr, geom) |>
+  left_join(freg_stats_gap, by = c("dtmnfr" = "freg_id"))
+
+# mapview(freg_stats_gap_sf, zcol = "accessibility_gap")
+# mapview(freg_stats_gap_sf, zcol = "time_car")
+# mapview(freg_stats_gap_sf, zcol = "time_pt_peak")
+
+# at municipio level: weighted mean by trips --------------------------------
+mun_stats_gap <- hex_stats_gap |>
+  filter(!is.na(mun_id)) |>
+  group_by(mun_id) |>
+  summarise(
+    time_car           = weighted.mean(time_car,             trips, na.rm = TRUE),
+    time_pt_peak       = weighted.mean(time_pt_peak_for_gap, trips, na.rm = TRUE),
+    total_trips        = sum(trips, na.rm = TRUE),
+    n_cells_no_transit = sum(is.na(time_pt_peak)),
+    .groups = "drop"
+  ) |>
+  mutate(accessibility_gap = time_pt_peak - time_car) |>
+  filter(!is.nan(time_car))
+
+mun_stats_gap_sf <- municipios |> select(municipio, geom) |>
+  left_join(mun_stats_gap, by = c("municipio" = "mun_id"))
+
+# mapview(mun_stats_gap_sf, zcol = "accessibility_gap")
+# mapview(mun_stats_gap_sf, zcol = "time_car")
+# mapview(mun_stats_gap_sf, zcol = "time_pt_peak")
+
+# Export ------------------------------------------------------------------
+write.csv(hex_stats_gap,  IMPT_URL(sprintf("%s/hex_stats_gap.csv",  output_dir)), row.names = FALSE)
+write.csv(freg_stats_gap, IMPT_URL(sprintf("%s/freg_stats_gap.csv", output_dir)), row.names = FALSE)
+write.csv(mun_stats_gap,  IMPT_URL(sprintf("%s/mun_stats_gap.csv",  output_dir)), row.names = FALSE)
+
+st_write(freg_stats_gap_sf, IMPT_URL(sprintf("%s/freg_stats_gap.gpkg", output_dir)), delete_dsn = TRUE)
+st_write(mun_stats_gap_sf,  IMPT_URL(sprintf("%s/mun_stats_gap.gpkg",  output_dir)), delete_dsn = TRUE)
+
