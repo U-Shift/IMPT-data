@@ -20,12 +20,12 @@ hex_stats_gap <- tt_grid |>
     mutate(
         time_pt_peak_for_gap = if_else(is.na(time_pt_peak), 120, time_pt_peak),
         # Gap in minutes: positive = PT slower than car
-        accessibility_gap = time_pt_peak_for_gap - time_car
+        accessibility_gap = round(time_pt_peak_for_gap - time_car,2)
     ) |>
     left_join(grid_freg_mun |> select(grid_id, freg_id, mun_id), by = "grid_id")
 
 summary(hex_stats_gap)
-# mapview(grid |> mutate(grid_id = as.character(id)) |> left_join(hex_stats_gap), zcol = "accessibility_gap")
+mapview(grid |> mutate(grid_id = as.character(id)) |> left_join(hex_stats_gap), zcol = "accessibility_gap")
 # mapview(grid |> mutate(grid_id = as.character(id)) |> left_join(hex_stats_gap), zcol = "time_car")
 # mapview(grid |> mutate(grid_id = as.character(id)) |> left_join(hex_stats_gap), zcol = "time_pt_peak")
 
@@ -34,14 +34,14 @@ freg_stats_gap <- hex_stats_gap |>
     filter(!is.na(freg_id)) |>
     group_by(freg_id) |>
     summarise(
-        time_car = weighted.mean(time_car, trips, na.rm = TRUE),
-        time_pt_peak = weighted.mean(time_pt_peak_for_gap, trips, na.rm = TRUE),
+        time_car = round(weighted.mean(time_car, trips, na.rm = TRUE),2),
+        time_pt_peak = round(weighted.mean(time_pt_peak_for_gap, trips, na.rm = TRUE),2),
         total_trips = sum(trips, na.rm = TRUE),
         n_cells_no_transit = sum(is.na(time_pt_peak)),
         .groups = "drop"
     ) |>
     mutate(
-        accessibility_gap = time_pt_peak - time_car,
+        accessibility_gap = round(time_pt_peak - time_car,2),
         freg_id = as.character(freg_id)
     ) |>
     filter(!is.nan(time_car))
@@ -61,14 +61,14 @@ mun_stats_gap <- hex_stats_gap |>
     filter(!is.na(mun_id)) |>
     group_by(mun_id) |>
     summarise(
-        time_car = weighted.mean(time_car, trips, na.rm = TRUE),
-        time_pt_peak = weighted.mean(time_pt_peak_for_gap, trips, na.rm = TRUE),
+        time_car = round(weighted.mean(time_car, trips, na.rm = TRUE),2),
+        time_pt_peak = round(weighted.mean(time_pt_peak_for_gap, trips, na.rm = TRUE),2),
         total_trips = sum(trips, na.rm = TRUE),
         n_cells_no_transit = sum(is.na(time_pt_peak)),
         .groups = "drop"
     ) |>
     mutate(
-        accessibility_gap = time_pt_peak - time_car,
+        accessibility_gap = round(time_pt_peak - time_car,2),
         mun_id = as.character(mun_id)
     ) |>
     filter(!is.nan(time_car))
@@ -95,23 +95,25 @@ write.csv(mun_stats_gap, IMPT_URL(sprintf("%s/mun_accessibility_gap_time.csv", o
 # Accessibility Gap - Money -------------------------------------------------------
 
 # Accessibility Gap - Money -------------------------------------------------------
-# Files available under data/mobility_money_costs/mobility_money_costs/:
+# Files available under /data/IMPT/mobility_money_costs/:
 #   grid_commuting_money_car.csv        - id_grid_origin, total_money (€, car), avg_tt, avg_distance, trips
 #   grid_commuting_money_pt_single_fare.csv - id_grid_origin, total_money (€, PT single fare), trips
 # total_money is already the trip-weighted mean cost per origin grid cell.
 # Produced by mobility_costs_money_car.R and mobility_costs_money_pt.R.
 
-money_dir <- "data/mobility_money_costs/mobility_money_costs"
+money_dir <- IMPT_URL("mobility_money_costs")
 
 costs_car_grid <- read.csv(file.path(money_dir, "grid_commuting_money_car.csv")) |>
     rename(cost_car = total_money, trips_car = trips) |>
     select(id_grid_origin, cost_car, trips_car) |>
     mutate(id_grid_origin = as.character(id_grid_origin))
+summary(costs_car_grid) # max 39.9
 
-costs_pt_grid <- read.csv(file.path(money_dir, "grid_commuting_money_pt_single_fare.csv")) |>
+costs_pt_grid <- read.csv(file.path(money_dir, "grid_commuting_money_pt_single_fare.csv")) |> # we are using single fare, can change for navegante
     rename(cost_pt = total_money, trips_pt = trips) |>
     select(id_grid_origin, cost_pt, trips_pt) |>
     mutate(id_grid_origin = as.character(id_grid_origin))
+summary(costs_pt_grid) # max 7.64
 
 # Grid-level cost gap -----------------------------------------------
 # total_money is the trip-weighted mean cost at origin grid level.
@@ -122,16 +124,18 @@ hex_stats_gap_money <- costs_car_grid |>
     rename(grid_id = id_grid_origin) |>
     mutate(
         # Where PT has no fare (NA = unreachable or no itinerary), assign ceiling.
-        # Max single fare in AML is ~€10; adjust if your data shows otherwise.
+        # Max single fare in AML is ~€10.
         cost_pt_for_gap = if_else(is.na(cost_pt), 10, cost_pt),
         # Gap in €: positive = PT more expensive than car (per trip)
-        cost_gap = cost_pt_for_gap - cost_car,
+        cost_gap = round(cost_pt_for_gap - cost_car, 2),
         trips = trips_car # use car trips as reference weight for aggregation
     ) |>
     left_join(grid_freg_mun |> select(grid_id, freg_id, mun_id), by = "grid_id")
 
 summary(hex_stats_gap_money)
-# mapview(grid |> mutate(grid_id = as.character(id)) |> left_join(hex_stats_gap_money), zcol = "cost_gap")
+
+# Viz Check
+mapview(grid |> mutate(grid_id = as.character(id)) |> left_join(hex_stats_gap_money), zcol = "cost_gap")
 # mapview(grid |> mutate(grid_id = as.character(id)) |> left_join(hex_stats_gap_money), zcol = "cost_car")
 # mapview(grid |> mutate(grid_id = as.character(id)) |> left_join(hex_stats_gap_money), zcol = "cost_pt")
 
@@ -140,47 +144,49 @@ freg_stats_gap_money <- hex_stats_gap_money |>
     filter(!is.na(freg_id)) |>
     group_by(freg_id) |>
     summarise(
-        cost_car = weighted.mean(cost_car, trips, na.rm = TRUE),
-        cost_pt = weighted.mean(cost_pt_for_gap, trips, na.rm = TRUE),
-        total_trips = sum(trips, na.rm = TRUE),
+        cost_car = round(weighted.mean(cost_car, trips, na.rm = TRUE),2),
+        cost_pt = round(weighted.mean(cost_pt_for_gap, trips, na.rm = TRUE), 2),
+        total_trips = round(sum(trips, na.rm = TRUE)),
         n_cells_no_pt_fare = sum(is.na(cost_pt)),
         .groups = "drop"
     ) |>
     mutate(
-        cost_gap = cost_pt - cost_car,
+        cost_gap = round(cost_pt - cost_car, 2),
         freg_id  = as.character(freg_id)
     ) |>
     filter(!is.nan(cost_car))
 
+# Viz Check
 freg_stats_gap_money_sf <- freguesias |>
     select(dtmnfr, geom) |>
     left_join(freg_stats_gap_money, by = c("dtmnfr" = "freg_id"))
 
-# mapview(freg_stats_gap_money_sf, zcol = "cost_gap")
+mapview(freg_stats_gap_money_sf, zcol = "cost_gap")
 
 # at municipio level: re-weight grid means by trips --------------------------------
 mun_stats_gap_money <- hex_stats_gap_money |>
     filter(!is.na(mun_id)) |>
     group_by(mun_id) |>
     summarise(
-        cost_car = weighted.mean(cost_car, trips, na.rm = TRUE),
-        cost_pt = weighted.mean(cost_pt_for_gap, trips, na.rm = TRUE),
-        total_trips = sum(trips, na.rm = TRUE),
+        cost_car = round(weighted.mean(cost_car, trips, na.rm = TRUE),2),
+        cost_pt = round(weighted.mean(cost_pt_for_gap, trips, na.rm = TRUE),2),
+        total_trips = round(sum(trips, na.rm = TRUE)),
         n_cells_no_pt_fare = sum(is.na(cost_pt)),
         .groups = "drop"
     ) |>
     mutate(
-        cost_gap = cost_pt - cost_car,
+        cost_gap = round(cost_pt - cost_car,2),
         mun_id   = as.character(mun_id)
     ) |>
     filter(!is.nan(cost_car))
 
+# Viz Check
 mun_stats_gap_money_sf <- municipios |>
     select(municipio, geom) |>
     left_join(municipios_id) |> # municipios_id already loaded above
     left_join(mun_stats_gap_money, by = "mun_id")
 
-# mapview(mun_stats_gap_money_sf, zcol = "cost_gap")
+mapview(mun_stats_gap_money_sf, zcol = "cost_gap")
 
 # Export ------------------------------------------------------------------
 write.csv(hex_stats_gap_money, IMPT_URL(sprintf("%s/grid_accessibility_gap_money.csv", output_dir)), row.names = FALSE)
