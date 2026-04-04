@@ -459,19 +459,12 @@ hex_stats_gap <- grid |>
     accessibility_gap = time_pt_peak_for_gap - time_car
   )
 
-# Attach freg and municipio ids via spatial join
+# Attach freg and municipio ids from pre-computed lookup table
+grid_freg_mun <- read.csv("useful_data/grid_nuts.csv") |>
+  mutate(grid_id = as.character(grid_id))
+
 hex_stats_gap <- hex_stats_gap |>
-  left_join(
-    st_join(
-      st_centroid(grid),
-      freguesias |> select(freg_id = dtmnfr, mun_id = municipio),
-      join = st_within
-    ) |>
-      st_drop_geometry() |>
-      mutate(grid_id = as.character(id)) |>
-      select(grid_id, freg_id, mun_id),
-    by = "grid_id"
-  )
+  left_join(grid_freg_mun |> select(grid_id, freg_id, mun_id), by = "grid_id")
 
 summary(hex_stats_gap)
 # mapview(grid |> left_join(hex_stats_gap, by = c("id" = "grid_id")), zcol = "accessibility_gap")
