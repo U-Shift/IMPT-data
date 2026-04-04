@@ -463,13 +463,14 @@ hex_stats_gap <- grid |>
 grid_freg_mun <- read.csv("useful_data/grid_nuts.csv") |>
   mutate(grid_id = as.character(grid_id))
 
+# Check
 hex_stats_gap <- hex_stats_gap |>
   left_join(grid_freg_mun |> select(grid_id, freg_id, mun_id), by = "grid_id")
 
 summary(hex_stats_gap)
-# mapview(grid |> left_join(hex_stats_gap, by = c("id" = "grid_id")), zcol = "accessibility_gap")
-# mapview(grid |> left_join(hex_stats_gap, by = c("id" = "grid_id")), zcol = "time_car")
-# mapview(grid |> left_join(hex_stats_gap, by = c("id" = "grid_id")), zcol = "time_pt_peak")
+mapview(grid |> mutate(grid_id = as.character(id)) |> left_join(hex_stats_gap), zcol = "accessibility_gap")
+# mapview(grid |> mutate(grid_id = as.character(id)) |> left_join(hex_stats_gap), zcol = "time_car")
+# mapview(grid |> mutate(grid_id = as.character(id)) |> left_join(hex_stats_gap), zcol = "time_pt_peak")
 
 # at freguesia level: weighted mean by trips --------------------------------
 freg_stats_gap <- hex_stats_gap |>
@@ -483,12 +484,14 @@ freg_stats_gap <- hex_stats_gap |>
     .groups = "drop"
   ) |>
   mutate(accessibility_gap = time_pt_peak - time_car) |>
-  filter(!is.nan(time_car))
+  filter(!is.nan(time_car)) |> 
+  mutate(freg_id = as.character(freg_id))
 
+# Check
 freg_stats_gap_sf <- freguesias |> select(dtmnfr, geom) |>
   left_join(freg_stats_gap, by = c("dtmnfr" = "freg_id"))
 
-# mapview(freg_stats_gap_sf, zcol = "accessibility_gap")
+mapview(freg_stats_gap_sf, zcol = "accessibility_gap")
 # mapview(freg_stats_gap_sf, zcol = "time_car")
 # mapview(freg_stats_gap_sf, zcol = "time_pt_peak")
 
@@ -504,20 +507,25 @@ mun_stats_gap <- hex_stats_gap |>
     .groups = "drop"
   ) |>
   mutate(accessibility_gap = time_pt_peak - time_car) |>
-  filter(!is.nan(time_car))
+  filter(!is.nan(time_car)) |> 
+  mutate(mun_id = as.character(mun_id))
 
+# Check
+municipios_id = read.csv("useful_data/municipios_id.csv") |> mutate(mun_id = as.character(mun_id))
 mun_stats_gap_sf <- municipios |> select(municipio, geom) |>
-  left_join(mun_stats_gap, by = c("municipio" = "mun_id"))
+  left_join(municipios_id) |>
+  left_join(mun_stats_gap, by = "mun_id")
 
-# mapview(mun_stats_gap_sf, zcol = "accessibility_gap")
+mapview(mun_stats_gap_sf, zcol = "accessibility_gap")
 # mapview(mun_stats_gap_sf, zcol = "time_car")
 # mapview(mun_stats_gap_sf, zcol = "time_pt_peak")
 
 # Export ------------------------------------------------------------------
-write.csv(hex_stats_gap,  IMPT_URL(sprintf("%s/hex_stats_gap.csv",  output_dir)), row.names = FALSE)
-write.csv(freg_stats_gap, IMPT_URL(sprintf("%s/freg_stats_gap.csv", output_dir)), row.names = FALSE)
-write.csv(mun_stats_gap,  IMPT_URL(sprintf("%s/mun_stats_gap.csv",  output_dir)), row.names = FALSE)
+output_dir = "/mobility_commuting"
+write.csv(hex_stats_gap,  IMPT_URL(sprintf("%s/grid_accessibility_gap_time.csv",  output_dir)), row.names = FALSE)
+write.csv(freg_stats_gap, IMPT_URL(sprintf("%s/freg_accessibility_gap_time.csv", output_dir)), row.names = FALSE)
+write.csv(mun_stats_gap,  IMPT_URL(sprintf("%s/mun_accessibility_gap_time.csv",  output_dir)), row.names = FALSE)
 
-st_write(freg_stats_gap_sf, IMPT_URL(sprintf("%s/freg_stats_gap.gpkg", output_dir)), delete_dsn = TRUE)
-st_write(mun_stats_gap_sf,  IMPT_URL(sprintf("%s/mun_stats_gap.gpkg",  output_dir)), delete_dsn = TRUE)
+# st_write(freg_stats_gap_sf, IMPT_URL(sprintf("%s/freg_stats_gap.gpkg", output_dir)), delete_dsn = TRUE)
+# st_write(mun_stats_gap_sf,  IMPT_URL(sprintf("%s/mun_stats_gap.gpkg",  output_dir)), delete_dsn = TRUE)
 
