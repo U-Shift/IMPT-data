@@ -79,83 +79,95 @@ mun_nuts = read.csv("useful_data/mun_nuts.csv") |> rename(nuts=nuts_id, id=mun_i
 freg_nuts = read.csv("useful_data/freguesias_nuts.csv") |> rename(id=freg_id, group_id=mun_id, freguesia=name, region_id=nuts_id)
 
 # 3.1 Merge with global results  -------------------------------------------------
-# Attention! Run results_visualizer.R before running this section, to have the global results dataframes available in the environment
+# Attention! Run results.R before running this section, to have the global results dataframes available in the environment
 
-impt_pca = read.csv(IMPT_URL("results_aggregated/20260330/IMPT_PCA_and_Entropy_Scores.csv")) |>
-  rename(Affordability_Index_no_nav = MS_AFF_PRE_NAV, Affordability_Index_nav = MS_AFF_POST_NAV) 
+modes = c("", "_bike", "_walk", "_pt", "_car")
+dimensions = c("Accessibility_", "Mobility_", "Affordability_", "Safety_")
+
+municipios_aggregated = municipios 
+for(m in modes) {
+  message("Mode ", m, "...")
   
-impt_pca_bike = read.csv(IMPT_URL("results_aggregated/20260330/IMPT_PCA_and_Entropy_Scores_bike.csv")) |>
-  rename_with(~ paste0(., "_bike"), ends_with("_Index"))
-impt_pca_walk = read.csv(IMPT_URL("results_aggregated/20260330/IMPT_PCA_and_Entropy_Scores_walk.csv")) |> 
-  rename_with(~ paste0(., "_walk"), ends_with("_Index"))
-impt_pca_pt = read.csv(IMPT_URL("results_aggregated/20260330/IMPT_PCA_and_Entropy_Scores_pt.csv")) |> 
-  rename_with(~ paste0(., "_pt"), ends_with("_Index")) |>
-  rename(Affordability_Index_pt_no_nav = Affordability_Index_no_nav, Affordability_Index_pt_nav = Affordability_Index_nav)
-impt_pca_car = read.csv(IMPT_URL("results_aggregated/20260330/IMPT_PCA_and_Entropy_Scores_car.csv")) |> 
-  rename_with(~ paste0(., "_car"), ends_with("_Index"))
-
-
-freguesias_aggregated = freguesias |> 
-  left_join(
-    impt_pca |> 
-      mutate(dtmnfr = as.character(dtmnfr)) |>
-      st_drop_geometry()
-    ,by=c("id"="dtmnfr")
-  ) |> 
-  left_join(
-    impt_pca_bike |> 
-      mutate(dtmnfr = as.character(dtmnfr)) |>
-      st_drop_geometry()
-    ,by=c("id"="dtmnfr")
-  ) |> 
-  left_join(
-    impt_pca_walk |> 
-      mutate(dtmnfr = as.character(dtmnfr)) |>
-      st_drop_geometry()
-    ,by=c("id"="dtmnfr")
-  ) |> 
-  left_join(
-    impt_pca_pt |> 
-      mutate(dtmnfr = as.character(dtmnfr)) |>
-      st_drop_geometry()
-    ,by=c("id"="dtmnfr")
-  ) |> 
-  left_join(
-    impt_pca_car |> 
-      mutate(dtmnfr = as.character(dtmnfr)) |>
-      st_drop_geometry()
-    ,by=c("id"="dtmnfr")
-  ) |>
-  mutate(
-    # All columns that start with "IMPT_", mutate to 100-.x
-    across(starts_with("IMPT_"), ~ 100 - .)
-  )
-names(freguesias_aggregated)
-summary(freguesias_aggregated)
-
-impt_pca_municipality = read.csv(IMPT_URL("results_aggregated/20260330/impt_municipality.csv"))
-
-municipios_aggregated = municipios |> 
-  left_join(
-    impt_pca_municipality |> 
-      rename(id=mun_id) |>
-      st_drop_geometry()
-    ,by=c("id"="id")
-  )|>
-  mutate(
-    # All columns that start with "IMPT_", mutate to 100-.x
-    across(starts_with("IMPT_"), ~ 100 - .)
-  )
+  impt = read.csv(IMPT_URL(sprintf("impt/results/IMPT_PCA_and_Entropy_Scores%s_municipio.csv", m))) |> 
+    rename(id=mun_id) |>
+    mutate(
+      # All columns that start with "IMPT_", mutate to 100-.x
+      across(starts_with("IMPT_"), ~ 100 - .)
+    )
+  impt = impt |> 
+    rename_with(~ paste0(., m), contains("_Index"))
+  municipios_aggregated = municipios_aggregated |> left_join(impt, by="id")
+}
 names(municipios_aggregated)
 
+freguesias_aggregated = freguesias
+for(m in modes) {
+  message("Mode ", m, "...")
+  
+  impt = read.csv(IMPT_URL(sprintf("impt/results/IMPT_PCA_and_Entropy_Scores%s_freguesia.csv", m))) |> 
+    rename(id=dtmnfr) |>
+    mutate(
+      # All columns that start with "IMPT_", mutate to 100-.x
+      across(starts_with("IMPT_"), ~ 100 - .)
+    )
+  
+  impt = impt |> 
+    rename_with(~ paste0(., m), contains("_Index"))
+  
+  freguesias_aggregated = freguesias_aggregated |> left_join(impt |> mutate(id=as.character(id)), by="id")
+}
+names(freguesias_aggregated)
+
+grid_aggregated = grid
+for(m in modes) {
+  message("Mode ", m, "...")
+  
+  impt = read.csv(IMPT_URL(sprintf("impt/results/IMPT_PCA_and_Entropy_Scores%s_grid.csv", m))) |> 
+    rename(id=grid_id) |>
+    mutate(
+      # All columns that start with "IMPT_", mutate to 100-.x
+      across(starts_with("IMPT_"), ~ 100 - .)
+    )
+  
+  impt = impt |> 
+    rename_with(~ paste0(., m), contains("_Index"))
+  
+  grid_aggregated = grid_aggregated |> left_join(impt, by="id")
+}
+names(grid_aggregated)
+
+for (m in modes) {
+  for (d in dimensions) {
+    message("Mode ", m, " and dimension ", d, "...")
+    col_name_prev = sprintf("%sIndex", d)
+    col_name_new = sprintf("PCA_Score_%s%s", d, m)
+    col_name_new = gsub("__", "_", col_name_new) # Replace "__" by "_"
+    col_name_new = gsub("_$", "", col_name_new) # If ends with "_", remove it
+    
+    pca_scores = tryCatch({
+     read.csv(IMPT_URL(sprintf("impt/pca_scores/%sPCA%s_Scores.csv", d, m))) |>
+        rename(!!col_name_new:=sym(col_name_prev)) |>
+        mutate(dtmnfr=as.character(dtmnfr))
+    }, error = function(e) {
+      message("!!! No PCA scores found!")
+      return (NULL)
+    })
+    
+    if (!is.null(pca_scores)) {
+      names(pca_scores)
+      freguesias_aggregated = freguesias_aggregated |> left_join(pca_scores |> rename(id=dtmnfr), by="id")
+    }
+    # TODO! Champions
+    # TODO! Variance
+    
+    # TODO! Municipios and grid?
+  }
+}
+names(freguesias_aggregated)
+navegante = # TODO
 
 # 3.2 Merge with dimensions indicators  -------------------------------------------------
-# Attention! Run results.R before running this section, to have the indicators dataframes available in the environment
-grid_original = grid
-grid_original
-# grid = grid_original
-
-grid_aggregated = grid |> 
+grid_aggregated = grid_aggregated |> 
   # Accessibility
   left_join(
     grid_accessibility |> 
