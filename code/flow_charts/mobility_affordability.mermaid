@@ -1,0 +1,92 @@
+flowchart TB
+    Start([Start: Affordability & Monetary Costs])
+    
+    %% Inputs
+    subgraph Inputs["Input Data Sources"]
+        OD[Jittered OD Pairs<br/>19547 pairs / ~839k trips]
+        PTFares[PT Fare Structures<br/>Pass & Single Fare configurations]
+        Econ[Economic Data<br/>Housing costs, HH income<br/>by administrative unit]
+    end
+    
+    Start --> Inputs
+    
+    %% Routing
+    Inputs --> Routing
+    
+    subgraph Routing["Routing & Itineraries (r5r)"]
+        direction TB
+        R5rCar[Car Itineraries<br/>Geometry extraction per route]
+        R5rPT[PT Itineraries<br/>Includes fare calculation<br/>Pass & Single fare]
+    end
+    
+    %% Cost Calculation
+    Routing --> CostCalc
+    
+    subgraph CostCalc["Cost Calculation per Trip"]
+        direction TB
+        subgraph CarCosts["Car Trips"]
+            direction TB
+            TollsAPI[Tolls API request<br/>Infraestruturas de Portugal]
+            DistCost[Distance Cost computation<br/>trip distance * avg cost/km]
+            TotalCar[Total route cost<br/>Tolls + Distance cost]
+            
+            TollsAPI & DistCost --> TotalCar
+        end
+        
+        subgraph PTCosts["Public Transit Trips"]
+            direction TB
+            ExtractFare[Extract optimal fare per-trip<br/>Single vs Monthly Pass]
+        end
+        
+        R5rCar --> CarCosts
+        R5rPT --> PTCosts
+    end
+    
+    %% Spatial Aggregation
+    CostCalc --> Aggregation
+    
+    subgraph Aggregation["Spatial Aggregation"]
+        direction TB
+        WeightCost[Calculate weighted mean trip cost<br/>weighted by number of OD trips]
+        AggGeo[Group costs by Origin:<br/>Grid cell, Freguesia, Municipality]
+        
+        WeightCost --> AggGeo
+    end
+    
+    %% Affordability Indexing
+    Aggregation --> AffCalc
+    
+    subgraph AffCalc["Affordability Index (IMPcalculator)"]
+        direction TB
+        JoinEcon[Join Economic Data<br/>Housing & Income]
+        CalcIndex[Affordability Formula:<br/>(Housing + [Transp. Cost * 250 trips]) / Income]
+        Norm[Normalize Scores:<br/>lower cost = higher score]
+        
+        JoinEcon --> CalcIndex --> Norm
+    end
+    
+    %% Outputs
+    AffCalc --> Output
+    
+    subgraph Output["Output Files"]
+        direction TB
+        GridOut[Grid Level:<br/>*commuting_money*.csv/.gpkg]
+        FreqOut[Parish Level:<br/>*commuting_money*.csv/.gpkg]
+        MuniOut[Municipality Level:<br/>*commuting_money*.csv/.gpkg]
+        FinalInd[Final Indicators Extract:<br/>freguesia_affordability.csv]
+        
+        GridOut & FreqOut & MuniOut -. feeds into .-> FinalInd
+    end
+    
+    Output --> End([End: Affordability Metrics<br/>Normalized affordability indexes by mode])
+    
+    %% Styling
+    classDef inputStyle fill:#e1f5ff,stroke:#0288d1,stroke-width:2px
+    classDef processStyle fill:#fff3e0,stroke:#f57c00,stroke-width:2px
+    classDef outputStyle fill:#e8f5e9,stroke:#388e3c,stroke-width:2px
+    classDef calcStyle fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
+    
+    class OD,PTFares,Econ,Inputs inputStyle
+    class Routing,R5rCar,R5rPT,CostCalc,CarCosts,PTCosts,Aggregation processStyle
+    class Output,GridOut,FreqOut,MuniOut,FinalInd outputStyle
+    class AffCalc,JoinEcon,CalcIndex,Norm,WeightCost,AggGeo calcStyle

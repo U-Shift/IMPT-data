@@ -1,0 +1,66 @@
+flowchart TB
+    Start([Start: Safety Analysis])
+    
+    %% Input Data
+    subgraph Inputs["Input Data Sources"]
+        Acci[Road Accidents Point Data<br/>ANSR 2019-2023]
+        Pop[Census Population Data<br/>by Parish and Grid cell]
+        Geo[Geographic Units<br/>Parishes, Municipalities,<br/>H3 Grid Res 8]
+    end
+    
+    Start --> Inputs
+    
+    %% Processing
+    Inputs --> PreProcess
+    
+    subgraph PreProcess["Pre-Processing & Spatial Join"]
+        direction TB
+        FilterYear[Filter last 5 years<br/>2019 - 2023]
+        Sjoin[sf::st_join:<br/>Assign accidents to Freguesias<br/>and Grid cells]
+        ExtractVars[Calculate base metrics:<br/>Victim severity - fatal, serious, slight<br/>Vehicles involved - motorized, bike, pedestrian<br/>Context - night time, within localities]
+        
+        FilterYear --> Sjoin
+        Sjoin --> ExtractVars
+    end
+    
+    %% Aggregation & Index Calc
+    PreProcess --> Aggregation
+    
+    subgraph Aggregation["Aggregation & Metrics Calculation"]
+        direction TB
+        AggGeo[Group accidents and victims by:<br/>Grid cell, Freguesia, Municipality]
+        JoinPop[dplyr::left_join:<br/>Join Population Data]
+        
+        subgraph CalcIndexes["Compute specific indexes"]
+            direction TB
+            SevTotal[Severity Index:<br/>fatalities / total victims]
+            SevMode[Severity by transport mode:<br/>fatalities / vehicles involved]
+            AccDens[Accidents rate:<br/>per 1000 residents]
+            FatDens[Fatality rate:<br/>per 1000 residents]
+        end
+        
+        AggGeo --> JoinPop --> CalcIndexes
+    end
+    
+    %% Output Files
+    Aggregation --> Output
+    
+    subgraph Output["Output Files (All & Within Localities)"]
+        direction TB
+        GridOut[Grid Level:<br/>accidents_by_grid_5years.csv]
+        FreqOut[Parish Level:<br/>accidents_by_freguesia_5years.csv]
+        MuniOut[Municipality Level:<br/>accidents_by_municipio_5years.csv]
+    end
+    
+    Output --> End([End: Regional Safety Indicators<br/>Severity indexes and accident rates])
+    
+    %% Styling
+    classDef inputStyle fill:#e1f5ff,stroke:#0288d1,stroke-width:2px
+    classDef processStyle fill:#fff3e0,stroke:#f57c00,stroke-width:2px
+    classDef outputStyle fill:#e8f5e9,stroke:#388e3c,stroke-width:2px
+    classDef calcStyle fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
+    
+    class Acci,Pop,Geo,Inputs inputStyle
+    class PreProcess,Aggregation,FilterYear,Sjoin,ExtractVars processStyle
+    class Output,GridOut,FreqOut,MuniOut outputStyle
+    class JoinPop,CalcIndexes,AggGeo calcStyle
