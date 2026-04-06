@@ -82,7 +82,6 @@ freg_nuts = read.csv("useful_data/freguesias_nuts.csv") |> rename(id=freg_id, gr
 # Attention! Run results.R before running this section, to have the global results dataframes available in the environment
 
 modes = c("", "_bike", "_walk", "_pt", "_car")
-dimensions = c("Accessibility_", "Mobility_", "Affordability_", "Safety_")
 
 municipios_aggregated = municipios 
 for(m in modes) {
@@ -135,36 +134,6 @@ for(m in modes) {
   grid_aggregated = grid_aggregated |> left_join(impt, by="id")
 }
 names(grid_aggregated)
-
-for (m in modes) {
-  for (d in dimensions) {
-    message("Mode ", m, " and dimension ", d, "...")
-    col_name_prev = sprintf("%sIndex", d)
-    col_name_new = sprintf("PCA_Score_%s%s", d, m)
-    col_name_new = gsub("__", "_", col_name_new) # Replace "__" by "_"
-    col_name_new = gsub("_$", "", col_name_new) # If ends with "_", remove it
-    
-    pca_scores = tryCatch({
-     read.csv(IMPT_URL(sprintf("impt/pca_scores/%sPCA%s_Scores.csv", d, m))) |>
-        rename(!!col_name_new:=sym(col_name_prev)) |>
-        mutate(dtmnfr=as.character(dtmnfr))
-    }, error = function(e) {
-      message("!!! No PCA scores found!")
-      return (NULL)
-    })
-    
-    if (!is.null(pca_scores)) {
-      names(pca_scores)
-      freguesias_aggregated = freguesias_aggregated |> left_join(pca_scores |> rename(id=dtmnfr), by="id")
-    }
-    # TODO! Champions
-    # TODO! Variance
-    
-    # TODO! Municipios and grid?
-  }
-}
-names(freguesias_aggregated)
-navegante = # TODO
 
 # 3.2 Merge with dimensions indicators  -------------------------------------------------
 grid_aggregated = grid_aggregated |> 
@@ -570,6 +539,8 @@ municipios_aggregated = municipios_aggregated |>
 # Example: "daily_car_count_nav" becomes "daily_car_count_pass"
 replace_anywhere = list(
   # From, to
+  c("navegante", "pass"),
+  c("singlefare", "no_pass"),
   c("nav", "pass"),
   c("carro", "car"),
   c("private_vehicle", "car"),
