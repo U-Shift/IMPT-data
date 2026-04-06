@@ -36,7 +36,7 @@ These scripts parse outputs from Phase 2 and 3 to compute the exact indicators f
 * **`04_mobility_costs_money_pt_cost_structure.r`**: Specific helpers mapping local fare policies for the entire transit grid.
 * **`04_mobility_costs_money_pt.R`**: Evaluates monetary affordability strictly relating to PT use (e.g. single-fare vs overall transit passes).
 * **`04_mobility_costs_time.R`**: Values and calculates generalized time costs dedicated across variable modes.
-* **`04_safety2.R`**: Computes road safety vulnerabilities by intersecting traffic crashes spatially, and grouping them against area-based population scales.
+* **`04_safety.R`**: Computes road safety vulnerabilities by intersecting traffic crashes spatially, and grouping them against area-based population scales.
 
 ### Phase 5: Result Aggregation and Normalization
 * **`05_IMPTcalculator.R`**: The core scoring engine. It loads the normalized dimension tables, scales and inverts them to percentages [0-100], calculates variance via Principal Component Analysis (PCA) and calculates weights through entropy scoring. It merges the output arrays to build the final IMPT general and sub-modal scores.
