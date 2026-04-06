@@ -59,7 +59,7 @@ flowchart TB
     subgraph AffCalc["Affordability Index (IMPcalculator)"]
         direction TB
         JoinEcon[Join Economic Data<br/>Housing & Income]
-        CalcIndex[Affordability Formula:<br/>(Housing + [Transp. Cost * 250 trips]) / Income]
+        CalcIndex["Affordability Formula:<br/>(Housing + [Transp. Cost * 250 trips]) / Income"]
         Norm[Normalize Scores:<br/>lower cost = higher score]
         
         JoinEcon --> CalcIndex --> Norm
