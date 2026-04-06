@@ -221,27 +221,7 @@ mapview(municipios |> left_join(pedpath_length_by_municipio, by = "municipio"), 
 #aml_cycleways <- aml_cycleways |> select(osm_id, name, highway, geometry)
 #mapview(aml_cycleways)
 
-  # Disaggregate and measure cycleway length by Freguesia (old)
-# cycleways_by_freguesia <- st_join(aml_cycleways, freguesias, left = FALSE)
-# cycleways_by_freguesia$length_segment <- st_length(cycleways_by_freguesia |> st_transform(3857)) 
-# cycleway_length_by_freguesia <- cycleways_by_freguesia |>
-#   group_by(freguesia) |>
-#   summarise(cycleway_length = sum(length_segment))
-# cycleway_length_by_freguesia <- cycleway_length_by_freguesia |>
-#   st_drop_geometry()
 
-
-  # Evaluate cycleway quality by freguesia (old)
-# segregated_cycleways <- st_read("/data/IMPT/mobility/cycle_network_class.gpkg") |> filter(cycle_segregation == "Cycle track or lane")
-# segregated_by_freguesia <- st_join(segregated_cycleways, freguesias, left = FALSE)
-# segregated_by_freguesia$length_segment <- st_length(segregated_by_freguesia)
-# segregated_length_by_freguesia <- segregated_by_freguesia |>
-#   group_by(freguesia) |>
-#   summarise(segregated_cycleway_length = sum(length_segment))
-# segregated_length_by_freguesia <- segregated_length_by_freguesia |>
-#   st_drop_geometry()
-
-# Updated code
 all_cycleways = st_read(IMPT_URL("mobility/AML_cycle_class.gpkg"))
 # mapview(all_cycleways)
 all_cycleways <- all_cycleways |> select(osm_id, name, highway, cycle_cat, infra5, geom)
