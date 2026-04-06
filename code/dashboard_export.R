@@ -655,3 +655,14 @@ grid_names = names(grid_aggregated) |> data.frame()
 #   # select(starts_with("IMPT_score_pca_geom")) |> # Filter those that start with "IMPT_score_pca_geom"
 #   # Filter those that contain "affordability"
 #   names()
+
+
+# Upload to GitHub release ------------------------------------------------
+piggyback::pb_upload(IMPT_URL(paste(output_dir, "grid_aggregated.geojson", sep="/")), repo="U-Shift/IMPT-data", tag="latest")
+piggyback::pb_upload(IMPT_URL(paste(output_dir, "freguesias_aggregated.geojson", sep="/")), repo="U-Shift/IMPT-data", tag="latest")
+piggyback::pb_upload(IMPT_URL(paste(output_dir, "municipios_aggregated.geojson", sep="/")), repo="U-Shift/IMPT-data", tag="latest")
+
+# Upload to IMPT-web ----------------------------------------------------
+piggyback::pb_download("grid_aggregated.geojson", repo="U-Shift/IMPT-data", tag="latest", dest = "../IMPT-web/dashboard/public/data")
+piggyback::pb_download("freguesias_aggregated.geojson", repo="U-Shift/IMPT-data", tag="latest", dest = "../IMPT-web/dashboard/public/data")
+piggyback::pb_download("municipios_aggregated.geojson", repo="U-Shift/IMPT-data", tag="latest", dest = "../IMPT-web/dashboard/public/data")
