@@ -4,7 +4,7 @@ flowchart TB
     %% Input Data
     subgraph Inputs["Input Data Sources"]
         TTM_Multi[Travel Time Matrix<br/>Public Transit<br/>5 transfer configurations:<br/>0, 1, 2, 3, 4 transfers<br/>120min max travel time<br/>15min max walk]
-        OD[Origin-Destination Data<br/>IMOB Jittered commuting trips<br/>with grid cell associations<br/>from Section I]
+        OD[Origin-Destination Data<br/>IMOB job-based OD pairs<br/>Jittered at 50-trip threshold<br/>with building-weighted points<br/>from Section I of mobility_commuting.R]
         Grid[H3 Grid Resolution 8]
     end
     

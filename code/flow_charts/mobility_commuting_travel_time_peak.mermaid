@@ -3,8 +3,8 @@ flowchart TB
     
     %% Input Data
     subgraph Inputs["Input Data Sources"]
-        OD[Origin-Destination Data<br/>IMOB Travel Survey<br/>Jittered commuting trips<br/>with origin and destination points]
-        TTM[Travel Time Matrix<br/>Multiple modes: walk, bike, car,<br/>transit 0-4 transfers<br/>various walking time limits<br/>Max travel time: 120-240min]
+        OD[Origin-Destination Data<br/>IMOB job-based OD pairs<br/>Jittered at 50-trip threshold<br/>with building-weighted points<br/>19547 OD pairs / ~839k trips]
+        TTM[Travel Time Matrix<br/>14 mode configurations: walk, bike, car,<br/>transit 0-4 transfers<br/>walk egress: 15, 20, 30 min variants<br/>Max travel time: 120-240min]
         Grid[H3 Grid Resolution 8<br/>with centroids]
     end
     
