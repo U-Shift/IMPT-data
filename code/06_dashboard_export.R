@@ -667,6 +667,14 @@ piggyback::pb_upload(IMPT_URL(paste(output_dir, "freguesias_aggregated.geojson",
 piggyback::pb_upload(IMPT_URL(paste(output_dir, "municipios_aggregated.geojson", sep="/")), repo="U-Shift/IMPT-data", tag="latest")
 
 # Upload to IMPT-web ----------------------------------------------------
-piggyback::pb_download("grid_aggregated.geojson", repo="U-Shift/IMPT-data", tag="latest", dest = "../IMPT-web/dashboard/public/data")
-piggyback::pb_download("freguesias_aggregated.geojson", repo="U-Shift/IMPT-data", tag="latest", dest = "../IMPT-web/dashboard/public/data")
-piggyback::pb_download("municipios_aggregated.geojson", repo="U-Shift/IMPT-data", tag="latest", dest = "../IMPT-web/dashboard/public/data")
+
+# Delete local file "../IMPT-web/dashboard/public/data/grid_aggregated.geojson" if exists, to avoid confusion with old data
+file.remove("../IMPT-web/dashboard/public/data/grid_aggregated.geojson")
+file.remove("../IMPT-web/dashboard/public/data/freguesias_aggregated.geojson")
+file.remove("../IMPT-web/dashboard/public/data/municipios_aggregated.geojson")
+
+piggyback::pb_download("grid_aggregated.geojson", repo="U-Shift/IMPT-data", tag="1.0", dest = "../IMPT-web/dashboard/public/data")
+piggyback::pb_download("freguesias_aggregated.geojson", repo="U-Shift/IMPT-data", tag="1.0", dest = "../IMPT-web/dashboard/public/data")
+piggyback::pb_download("municipios_aggregated.geojson", repo="U-Shift/IMPT-data", tag="1.0", dest = "../IMPT-web/dashboard/public/data")
+
+
