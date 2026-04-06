@@ -583,6 +583,10 @@ names(municipios_aggregated)
 
 # Normalize data ----------------------------------------------------------
 
+# Rename "União das Freguesias de" to "UF" at freguesias_aggregated
+freguesias_aggregated = freguesias_aggregated |> 
+  mutate(name = gsub("União das freguesias de ", "UF ", name)) |>
+  mutate(name = gsub("União das freguesias do ", "UF ", name))
 
 # Round all numeric values to 2 digits
 grid_aggregated = grid_aggregated |> 
