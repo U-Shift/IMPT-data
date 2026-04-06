@@ -247,6 +247,24 @@ grid_aggregated = grid_aggregated |>
     grid_census_landuse |>
       rename_with(~ paste0("census_landuse_", .), -id),
     by="id"
+  ) |>
+  left_join(
+    grid_modal_share_imob |> 
+      rename(id=grid_id) |>
+      rename_with(~ paste0("modal_imob_", .), -id),
+    by="id"
+  ) |>
+  left_join(
+    grid_access_gap_time |> 
+      rename(id=grid_id) |>
+      rename_with(~ paste0("access_gap_time_", .), -id),
+    by="id"
+  ) |>
+  left_join(
+    grid_access_gap_money |> 
+      rename(id=grid_id) |>
+      rename_with(~ paste0("access_gap_money_", .), -id),
+    by="id"
   )
 names(grid_aggregated)
 
@@ -387,6 +405,27 @@ freguesias_aggregated = freguesias_aggregated |>
       mutate(id=as.character(id)) |>
       rename_with(~ paste0("census_landuse_", .), -id),
     by="id"
+  ) |>
+  left_join(
+    freguesia_modal_share_imob |> 
+      rename(id=freg_id) |>
+      mutate(id=as.character(id)) |>
+      rename_with(~ paste0("modal_imob_", .), -id),
+    by="id"
+  ) |>
+  left_join(
+    freguesia_access_gap_time |> 
+      rename(id=freg_id) |>
+      mutate(id=as.character(id)) |>
+      rename_with(~ paste0("access_gap_time_", .), -id),
+    by="id"
+  ) |>
+  left_join(
+    freguesia_access_gap_money |> 
+      rename(id=freg_id) |>
+      mutate(id=as.character(id)) |>
+      rename_with(~ paste0("access_gap_money_", .), -id),
+    by="id"
   )
 names(freguesias_aggregated)
 
@@ -519,6 +558,24 @@ municipios_aggregated = municipios_aggregated |>
     municipio_census_landuse |>
       rename(id=mun_id) |>
       rename_with(~ paste0("census_landuse_", .), -id),
+    by="id"
+  ) |>
+  left_join(
+    municipio_modal_share_imob |> 
+      rename(id=mun_id) |>
+      rename_with(~ paste0("modal_imob_", .), -id),
+    by="id"
+  ) |>
+  left_join(
+    municipio_access_gap_time |> 
+      rename(id=mun_id) |>
+      rename_with(~ paste0("access_gap_time_", .), -id),
+    by="id"
+  ) |> 
+  left_join(
+    municipio_access_gap_money |> 
+      rename(id=mun_id) |>
+      rename_with(~ paste0("access_gap_money_", .), -id),
     by="id"
   )
 names(municipios_aggregated)

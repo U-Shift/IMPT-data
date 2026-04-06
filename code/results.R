@@ -73,6 +73,10 @@ freguesia_modal_share_census = read.csv(IMPT_URL("census2021/census_modal_share_
 municipio_modal_share_census = read.csv(IMPT_URL("census2021/census_modal_share_municipality.csv"))
 grid_modal_share_census = read.csv(IMPT_URL("census2021/census_modal_share_grid.csv"))
 
+freguesia_modal_share_imob = read.csv(IMPT_URL("trips/imob_modal_share_freg.csv"))
+municipio_modal_share_imob = read.csv(IMPT_URL("trips/imob_modal_share_mun.csv"))
+grid_modal_share_imob = read.csv(IMPT_URL("trips/imob_modal_share_grid.csv"))
+
 freguesia_veh_ownership = read.csv(IMPT_URL("imob/imob_vehicles_freg.csv"))
 municipio_veh_ownership = read.csv(IMPT_URL("imob/imob_vehicles_mun.csv"))
 grid_veh_ownership = read.csv(IMPT_URL("imob/imob_vehicles_grid.csv"))
@@ -84,3 +88,11 @@ grid_census_income = read.csv(IMPT_URL("landuse/grid_income_housing_gini.csv"))
 freguesia_census_landuse = read.csv(IMPT_URL("landuse/landuse_freguesias.csv"))
 municipio_census_landuse = read.csv(IMPT_URL("landuse/landuse_municipios.csv"))
 grid_census_landuse = read.csv(IMPT_URL("landuse/landuse_grid.csv"))
+
+freguesia_access_gap_time = read.csv(IMPT_URL("/mobility_commuting/freg_accessibility_gap_time.csv"))
+municipio_access_gap_time = read.csv(IMPT_URL("/mobility_commuting/mun_accessibility_gap_time.csv"))
+grid_access_gap_time = read.csv(IMPT_URL("/mobility_commuting/grid_accessibility_gap_time.csv"))
+
+freguesia_access_gap_money = read.csv(IMPT_URL("/mobility_commuting/freg_accessibility_gap_money.csv"))
+municipio_access_gap_money = read.csv(IMPT_URL("/mobility_commuting/mun_accessibility_gap_money.csv"))
+grid_access_gap_money = read.csv(IMPT_URL("/mobility_commuting/grid_accessibility_gap_money.csv"))
