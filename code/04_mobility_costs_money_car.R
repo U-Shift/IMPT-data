@@ -6,10 +6,10 @@
 
 # Compute detailed itineraries -------------------------------------------------
 
-# Start by loading r5r and the following variables from ttm_gridh3.R
+# Start by loading r5r and the following variables from 03_ttm_gridh3.R
 # > r5r_network, root_folder
 
-# Also, from mobility_commuting.R
+# Also, from 04_mobility_commuting.R
 # > od_freguesias_jittered50, od_freguesias_jittered_OR_geo, od_freguesias_jittered_DE_geo
 
 mode = "CAR"

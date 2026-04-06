@@ -1,4 +1,4 @@
-# Assuming pois_list from access_opportunities.R is defined
+# Assuming pois_list from 04_access_opportunities.R is defined
 
 freguesias_pois = freguesias |> select(dtmnfr) |> st_drop_geometry()
 municipios_pois = municipios |> select(municipio) |> st_drop_geometry()

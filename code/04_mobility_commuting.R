@@ -205,7 +205,7 @@ st_write(municipio_commuting_sf, IMPT_URL(sprintf("%s/municipio_commuting.gpkg",
 write.csv(municipio_commuting, IMPT_URL(sprintf("%s/municipio_commuting.csv", output_dir)), row.names = FALSE)
 
 # Debug
-grid_population # From accessibility.R
+grid_population # From 04_accessibility.R
 grid_debug <- grid_commuting_sf |>
   filter(!is.na(trips)) |>
   left_join(grid_population |> st_drop_geometry()) |> # Get census data
@@ -213,9 +213,9 @@ grid_debug <- grid_commuting_sf |>
     trips_residents_diff = trips - residents
   )
 grid_centroids <- points |> filter(id %in% grid_debug$id)
-points <- points_h3 # From data_load.R
-pois_transit <- st_read(IMPT_URL("/pois/transit_stops.gpkg")) # From data_prep.R
-od_jobs_jittered_OR_geo <- st_read(IMPT_URL("/trips/od_jobs_jt50_buildings_OR.gpkg")) # From ttm_gridh3.R
+points <- points_h3 # From 00_data_load.R
+pois_transit <- st_read(IMPT_URL("/pois/transit_stops.gpkg")) # From 01_data_prep.R
+od_jobs_jittered_OR_geo <- st_read(IMPT_URL("/trips/od_jobs_jt50_buildings_OR.gpkg")) # From 03_ttm_gridh3.R
 od_jobs_jittered_DE_geo <- st_read(IMPT_URL("/trips/od_jobs_jt50_buildings_DE.gpkg"))
 
 

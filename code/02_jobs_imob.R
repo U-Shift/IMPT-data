@@ -210,7 +210,7 @@ saveRDS(OD_all_new, "data/IMOB_od_freg_mode_purpose.Rds")
 
 
 ## Modal share from IMOB - EXPORT -----------------------------------
-# file from data_prep.R
+# file from 01_data_prep.R
 
 # --- Load raw OD data ---
 od_raw <- readRDS("/data/IMPT/trips/TRIPSmode_freguesias_2024.Rds") |>

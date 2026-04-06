@@ -1116,7 +1116,7 @@ write.csv(Final_Results_Master_grid_walk, "/data/IMPT/impt/results/IMPT_PCA_and_
 
 ```{r}
 library(mapview)
-freguesias # Read from data_load.R
+freguesias # Read from 00_data_load.R
 
 # DATA_LOCATION = "https://impt.server.ushift.pt" # When running locally, get data from remote server
 # API_KEY = Sys.getenv("IMPT_DATA_KEY") # Set it using usethis::edit_r_environ(), followed by CTRL+F10

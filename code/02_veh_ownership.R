@@ -204,7 +204,7 @@ vehicles_hh <- vehicles_hh  |>
 
 vehicles_by_dicofre_new <- vehicles_hh |>
   # join with conversion table on old dicofre
-  left_join(conversion_dicofre_weight, by = c("dicofre_home" = "dtmnfr16")) |> # conversion_dicofre_weight from data_load.R
+  left_join(conversion_dicofre_weight, by = c("dicofre_home" = "dtmnfr16")) |> # conversion_dicofre_weight from 00_data_load.R
   # scale only the household weight according to area weight
   mutate(hh_weight_new = hh_weight * weight) |>
   # rename the new dicofre

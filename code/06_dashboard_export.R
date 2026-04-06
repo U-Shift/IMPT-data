@@ -1,4 +1,4 @@
-# 1. Make sure to run data_load.R and results.R before running this script -------------------------------------------------
+# 1. Make sure to run 00_data_load.R and 06_results.R before running this script -------------------------------------------------
 
 # 2. Associate base layers to nuts  -------------------------------------------------
 # grid = st_read(IMPT_URL("/geo/grelha_h3_r8.gpkg"))
@@ -79,7 +79,7 @@ mun_nuts = read.csv("useful_data/mun_nuts.csv") |> rename(nuts=nuts_id, id=mun_i
 freg_nuts = read.csv("useful_data/freguesias_nuts.csv") |> rename(id=freg_id, group_id=mun_id, freguesia=name, region_id=nuts_id)
 
 # 3.1 Merge with global results  -------------------------------------------------
-# Attention! Run results.R before running this section, to have the global results dataframes available in the environment
+# Attention! Run 06_results.R before running this section, to have the global results dataframes available in the environment
 
 modes = c("", "_bike", "_walk", "_pt", "_car")
 

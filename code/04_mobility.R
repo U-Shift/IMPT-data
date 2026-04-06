@@ -87,7 +87,7 @@ write.csv(grid_by_stops, IMPT_URL("/mobility/grid_stops_coverage.csv"))
 
 # Shared Mobility Availability --------------------------------------------
 
-# Grid from data_load.R
+# Grid from 00_data_load.R
 grid_shared_mob = grid
 freguesias_shared_mob = freguesias
 municipios_shared_mob = municipios 

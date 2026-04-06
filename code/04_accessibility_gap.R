@@ -99,7 +99,7 @@ write.csv(mun_stats_gap, IMPT_URL(sprintf("%s/mun_accessibility_gap_time.csv", o
 #   grid_commuting_money_car.csv        - id_grid_origin, total_money (€, car), avg_tt, avg_distance, trips
 #   grid_commuting_money_pt_single_fare.csv - id_grid_origin, total_money (€, PT single fare), trips
 # total_money is already the trip-weighted mean cost per origin grid cell.
-# Produced by mobility_costs_money_car.R and mobility_costs_money_pt.R.
+# Produced by 04_mobility_costs_money_car.R and 04_mobility_costs_money_pt.R.
 
 money_dir <- IMPT_URL("mobility_money_costs")
 

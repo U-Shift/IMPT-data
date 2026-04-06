@@ -1,5 +1,5 @@
 # =============================================================================
-# IMPcalculator.R
+# 05_IMPTcalculator.R
 # IMPT - Integrated Mobility Performance Tool
 # Computes IMPT scores at the freguesia, municipality, and grid levels.
 #
@@ -799,10 +799,10 @@ write.csv(Final_Results_Master_grid_walk, "/data/IMPT/impt/results/IMPT_PCA_and_
 
 
 # =============================================================================
-# SECTION 7 – VISUALISATION  (requires data_load.R to have loaded `freguesias`)
+# SECTION 7 – VISUALISATION  (requires 00_data_load.R to have loaded `freguesias`)
 # =============================================================================
 
-# source("code/data_load.R")   # uncomment if `freguesias` is not already in memory
+# source("code/00_data_load.R")   # uncomment if `freguesias` is not already in memory
 
 impt_pca <- read.csv("/data/IMPT/impt/results/IMPT_PCA_and_Entropy_Scores_freguesia.csv")
 

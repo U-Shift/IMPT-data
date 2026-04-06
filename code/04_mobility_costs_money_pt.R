@@ -6,13 +6,13 @@
 
 # Compute detailed itineraries -------------------------------------------------
 
-# Start by loading r5r and the following variables from ttm_gridh3.R
+# Start by loading r5r and the following variables from 03_ttm_gridh3.R
 # > r5r_network, root_folder, 
 
-# Also, from mobility_commuting.R
+# Also, from 04_mobility_commuting.R
 # > od_freguesias_jittered50, od_freguesias_jittered_OR_geo, od_freguesias_jittered_DE_geo
 
-# From ttm_grid3.R
+# From 03_ttm_gridh3.R
 # fare_single, fare_pass, fare_single_2
 
 mode = "TRANSIT"
@@ -21,7 +21,7 @@ if(!dir.exists(folder_name)) {
   dir.create(folder_name, recursive = TRUE)
 }
 
-max_walk_time = 20 # Differs from ttm_grid3.R, which has computed for 15 minutes
+max_walk_time = 20 # Differs from 03_ttm_gridh3.R, which has computed for 15 minutes
 fare_structures = list("single" = fare_single, "pass" = fare_pass)
 departure_datetime_HP = as.POSIXct("04-02-2026 08:00:00", format = "%d-%m-%Y %H:%M:%S") 
 

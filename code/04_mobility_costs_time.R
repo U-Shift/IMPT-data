@@ -11,15 +11,15 @@ if(!dir.exists(IMPT_URL(output_dir))) {
 }
 
 # Travel time matrix ---------------------------------------------------------------
-# Defined in accessibility.R
+# Defined in 04_accessibility.R
 
 
 # POIs ---------------------------------------------------------------
-# Defined in accessibility.R
+# Defined in 04_accessibility.R
 
 
 # Grid population ---------------------------------------------------------------
-# Defined in accessibility.R
+# Defined in 04_accessibility.R
 
 # Number of opportunities -------------------------------------------------
 
@@ -75,7 +75,7 @@ for(i in 1:length(pois_list)) {
 }
 
 # 2. Aggregate by parish, population weighted
-# accessibility_modes and accessibility_masures Defined in accessibility.R
+# accessibility_modes and accessibility_masures Defined in 04_accessibility.R
 
 grid_mobility = grid_population 
 freguesia_mobility = freguesias |> 

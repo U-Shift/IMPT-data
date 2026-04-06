@@ -1,7 +1,7 @@
 # This script generates simplified versions of each dimension, with only the indicators used to compute the IMPT
 
 # 1. Load aggregated data  ------------------------------------------------
-# >> When adding new data, make sure it has ben aggregated previously by dashboard_export.R!
+# >> When adding new data, make sure it has ben aggregated previously by 06_dashboard_export.R!
 
 data_dir = "dashboard_data"
 grid_aggregated = st_read(IMPT_URL(paste(data_dir, "grid_aggregated.geojson", sep="/")))

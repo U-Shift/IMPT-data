@@ -28,7 +28,7 @@ rJava::.jgc(R.gc = TRUE)
 
 library(tidyverse)
 
-# load network, variable r5r_network using data_load.R
+# load network, variable r5r_network using 00_data_load.R
 r5r_network
 
 # load fare structures for PT
