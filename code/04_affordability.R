@@ -1,7 +1,7 @@
 # =============================================================================
 # 04_affordability.R
 # Pre-calculates raw and weighted affordability metrics by freguesia.
-# Exports to /data/IMPT/impt/affordability/affordability_freguesia_composite.csv so that
+# Exports to /data/IMPT/affordability/affordability_freguesia_composite.csv so that
 # 05_IMPTcalculator.R can read it and proceed cleanly.
 # =============================================================================
 
@@ -9,6 +9,12 @@
 library(dplyr)
 library(readr)
 library(stringr)
+
+
+# 0. Load external data ---------------------------------------------------
+
+municipios_id = read_csv("useful_data/municipios_id.csv")
+grid_freg_mun = read_csv("useful_data/grid_nuts.csv")
 
 # ── 1. Data Definitions & Imports ─────────────────────────────────────────────
 
@@ -24,7 +30,7 @@ occ_rate_car_freg <- readr::read_delim(
   trim_ws = TRUE
 ) |>
   left_join(municipios_id, by = c("Municipio" = "municipio")) |>
-  mutate(mun_id = as.character(mun_id)) |>
+  # mutate(mun_id = as.character(mun_id)) |>
   select(-Municipio) |>
   left_join(grid_freg_mun |> select(-grid_id), by = "mun_id") |>
   distinct() |>
@@ -51,9 +57,9 @@ freguesia_affordability <- freguesia_affordability_mob |>
   left_join(occ_rate_car_freg |> select(freg_id, taxa_ocup_auto), by = c("dtmnfr" = "freg_id")) |>
   left_join(households_size_freg |> select(freg_id, pp_hh_avg), by = c("dtmnfr" = "freg_id")) |>
   mutate(
-    affordability_car_total_money = (affordability_car_total_money / taxa_ocup_auto) * pp_hh_avg,
-    affordability_transit_pass_total_money = affordability_transit_pass_total_money * pp_hh_avg,
-    affordability_transit_single_fare_total_money = affordability_transit_single_fare_total_money * pp_hh_avg
+    affordability_car_total_money = (affordability_car_total_money / taxa_ocup_auto) * pp_hh_avg,  # adjust car costs by occupancy and household size)
+    affordability_transit_pass_total_money = affordability_transit_pass_total_money * pp_hh_avg, # adjust transit costs by household size
+    affordability_transit_single_fare_total_money = affordability_transit_single_fare_total_money * pp_hh_avg # adjust transit costs by household size
   )
 
 # Census modal share (used to compute modal-share-weighted affordability)
@@ -79,7 +85,7 @@ mean_viz_canha <- Affordability_navegante |>
     mean_transp_inc_pt   = mean(transp_inc_pt, na.rm = TRUE)
   )
 
-Affordability_navegante <- Affordability_navegante |>
+Affordability_navegante <- Affordability_navegante |> # take care of NA at Canha
   mutate(
     h_transp_inc_pt = case_when(dtmnfr == "150701" ~ mean_viz_canha$mean_h_transp_inc_pt, TRUE ~ h_transp_inc_pt),
     transp_inc_pt   = case_when(dtmnfr == "150701" ~ mean_viz_canha$mean_transp_inc_pt, TRUE ~ transp_inc_pt)
@@ -94,14 +100,14 @@ Affordability_navegante <- Affordability_navegante |>
 # SINGLE FARE scenario
 Affordability_singlefare <- freguesia_affordability |>
   mutate(
-    h_transp_inc_car = (housing_costs_year + affordability_car_total_money * trips_commuting_year) / income_hh,
+    h_transp_inc_car = (housing_costs_year + affordability_car_total_money * trips_commuting_year) / income_hh, # with housing costs
     h_transp_inc_pt  = (housing_costs_year + affordability_transit_single_fare_total_money * trips_commuting_year) / income_hh,
-    transp_inc_car   = (affordability_car_total_money * trips_commuting_year) / income_hh,
+    transp_inc_car   = (affordability_car_total_money * trips_commuting_year) / income_hh, # without housing costs
     transp_inc_pt    = (affordability_transit_single_fare_total_money * trips_commuting_year) / income_hh
   ) |>
   select(dtmnfr, h_transp_inc_car, h_transp_inc_pt, transp_inc_car, transp_inc_pt)
 
-mean_viz_canha2 <- Affordability_singlefare |>
+mean_viz_canha2 <- Affordability_singlefare |> # take care of NA at Canha
   filter(str_starts(dtmnfr, "1507"), dtmnfr != "150701") |>
   summarise(
     mean_h_transp_inc_pt = mean(h_transp_inc_pt, na.rm = TRUE),
@@ -114,15 +120,17 @@ Affordability_singlefare <- Affordability_singlefare |>
     transp_inc_pt   = case_when(dtmnfr == "150701" ~ mean_viz_canha2$mean_transp_inc_pt, TRUE ~ transp_inc_pt)
   ) |>
   left_join(census_modal_share, by = "dtmnfr") |>
-  mutate(
+  mutate( # accounting for modal share, with and without housing
     h_transp_inc_comp = (h_transp_inc_car * private_vehicle_share + h_transp_inc_pt * pt_share) / (private_vehicle_share + pt_share + active_share),
     transp_inc_comp   = (transp_inc_car * private_vehicle_share + transp_inc_pt * pt_share) / (private_vehicle_share + pt_share + active_share)
   ) |>
   select(dtmnfr, h_transp_inc_car, h_transp_inc_pt, transp_inc_car, transp_inc_pt, h_transp_inc_comp, transp_inc_comp)
 
+
+
 # ── 2. Export RAW Affordability ──────────────────────────────────────────────
-# Export a comprehensive table of raw affordability variables before normalisation.
-raw_affordability_export <- freguesia_affordability |>
+# Export a comprehensive table of raw affordability variables before PCA
+affordability_freguesia_composite <- freguesia_affordability |>
   select(
     dtmnfr, income_hh, housing_costs_year,
     affordability_car_total_money,
@@ -169,4 +177,5 @@ raw_affordability_export <- freguesia_affordability |>
     h_transp_inc_car, h_transp_inc_pt_nav, h_transp_inc_pt_sf, h_transp_inc_comp_nav, h_transp_inc_comp_sf
   )
 
-write_csv(raw_affordability_export, "/data/IMPT/impt/affordability/affordability_freguesia_composite.csv")
+write_csv(affordability_freguesia_composite, "/data/IMPT/affordability/affordability_freguesia_composite.csv")
+
