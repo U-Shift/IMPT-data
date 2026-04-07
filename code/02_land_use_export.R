@@ -39,6 +39,7 @@ census_pts = st_read("/data/IMPT/geo/census24_points.gpkg") |>
     buildings           = N_EDIFICIOS_CLASSICOS,
     buildings_pre1945   = N_EDIFICIOS_CONSTR_ANTES_1945,
     population          = N_INDIVIDUOS,
+    households          = N_NUCLEOS_FAMILIARES, # households
     pop_area_m2         = SHAPE_Area,       # census section area for density
     youth               = N_INDIVIDUOS_0_14,
     elderly             = N_INDIVIDUOS_65_OU_MAIS,
@@ -62,6 +63,7 @@ grid_stats <- census_with_grid |>
     buildings            = sum(buildings,        na.rm = TRUE),
     population  = sum(population,        na.rm = TRUE),
     population_density = sum(pop_area_m2,       na.rm = TRUE),
+    households   = sum(households,        na.rm = TRUE),
     youth       = sum(youth,             na.rm = TRUE),
     elderly     = sum(elderly,           na.rm = TRUE),
     women       = sum(women,             na.rm = TRUE)
@@ -90,6 +92,7 @@ master_stats <- grid_freg_mun |>
 
 ## GRID LEVEL
 landuse_grid <- grid |>
+  mutate(id = as.character(id)) |>
   left_join(master_stats, by = c("id" = "grid_id")) |>
   mutate(
     area_m2 = as.numeric(st_area(geom)),
@@ -106,7 +109,8 @@ landuse_grid <- grid |>
 landuse_grid = landuse_grid |> st_drop_geometry() |> select(id, area_km2,
                                                             buildings, buildings_pre1945, buildings_pre1945_percentage,
                                                             buildings_volume_m3, volume_density,
-                                                            population, population_density, youth_ratio, elderly_ratio, women_percentage)
+                                                            population, population_density, households,
+                                                            youth_ratio, elderly_ratio, women_percentage)
 write.csv(landuse_grid, "/data/IMPT/landuse/landuse_grid.csv", row.names = FALSE)
 
 
@@ -137,7 +141,8 @@ landuse_freguesias <- census24_fregmun |>
 landuse_freguesias = landuse_freguesias |> select(freg_id, area_km2,
                                                   buildings, buildings_pre1945, buildings_pre1945_percentage,
                                                   buildings_volume_m3, volume_density,
-                                                  population, population_density, youth_ratio, elderly_ratio, women_percentage)
+                                                  population, population_density, households,
+                                                  youth_ratio, elderly_ratio, women_percentage)
 write.csv(landuse_freguesias, "/data/IMPT/landuse/landuse_freguesias.csv", row.names = FALSE)
 
 ## MUNICIPALITY LEVEL
@@ -154,6 +159,7 @@ landuse_municipios <- census24_fregmun |>
   group_by(mun_id) |>
   summarise(
     population = sum(population, na.rm = TRUE),
+    households = sum(households, na.rm = TRUE),
     youth = sum(youth, na.rm = TRUE),
     elderly = sum(elderly, na.rm = TRUE),
     women = sum(women, na.rm = TRUE),
@@ -177,7 +183,8 @@ landuse_municipios <- census24_fregmun |>
 landuse_municipios = landuse_municipios |> select(mun_id, area_km2,
                                                   buildings, buildings_pre1945, buildings_pre1945_percentage,
                                                   buildings_volume_m3, volume_density,
-                                                  population, population_density, youth_ratio, elderly_ratio, women_percentage)
+                                                  population, population_density, households,
+                                                  youth_ratio, elderly_ratio, women_percentage)
 write.csv(landuse_municipios, "/data/IMPT/landuse/landuse_municipios.csv", row.names = FALSE)
 
 
