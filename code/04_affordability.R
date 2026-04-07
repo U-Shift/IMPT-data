@@ -204,4 +204,137 @@ aggregate_to_level <- function(df, lookup, by_col) {
 }
 
 affordability_municipio_composite <- aggregate_to_level(affordability_freguesia_composite, census24_fregmun_pop, "mun_id")
-  
+
+
+
+# Grid level --------------------------------------------------------------
+
+# car occupancy rate by grid
+# occupancy rate for car by municipality (IMOB_2017_AML.xlsx, sheet "Quadro IV.7 >> Taxa de ocupação dos automóveis por município de residência")
+occ_rate_car_grid <- readr::read_delim(
+  "/data/IMPT/trips/imob_taxa_occ_auto.csv",
+  delim = "\t",
+  escape_double = FALSE,
+  trim_ws = TRUE
+) |>
+  left_join(municipios_id, by = c("Municipio" = "municipio")) |>
+  # mutate(mun_id = as.character(mun_id)) |>
+  select(-Municipio) |>
+  left_join(grid_freg_mun, by = "mun_id") |>
+  distinct() |>
+  mutate(
+    taxa_ocup_auto = taxa_ocup_auto / 100,
+    grid_id = as.integer(grid_id)
+  )
+
+households_size_grid <- read_csv("/data/IMPT/landuse/landuse_grid.csv") |>
+  select(grid_id = id, population, households) |>
+  mutate(pp_hh_avg = population / households)
+
+
+## import previous computed costs
+grid_affordability_mob <- read_csv("/data/IMPT/results_data/grid_affordability.csv")
+### Does not exist - something in /data/IMPT/mobility_money_costs ??
+
+grid_income <- read_csv("/data/IMPT/landuse/grid_income_housing_gini.csv") |>
+  select(-gini_coef) |>
+  mutate(housing_costs_year = housing_costs * 12) # yearly costs
+
+
+### will not work from here due costs at grid level !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+grid_affordability <- grid_affordability_mob |>
+  left_join(grid_income, by = "grid_id") |>
+  left_join(occ_rate_car_freg |> select(freg_id, taxa_ocup_auto), by = "grid_id") |>
+  left_join(households_size_freg |> select(freg_id, pp_hh_avg), by = "grid_id") |>
+  mutate(
+    affordability_car_total_money = (affordability_car_total_money / taxa_ocup_auto) * pp_hh_avg,  # adjust car costs by occupancy and household size)
+    affordability_transit_pass_total_money = affordability_transit_pass_total_money * pp_hh_avg, # adjust transit costs by household size
+    affordability_transit_single_fare_total_money = affordability_transit_single_fare_total_money * pp_hh_avg # adjust transit costs by household size
+  )
+
+# Census modal share (used to compute modal-share-weighted affordability)
+census_modal_share_grid <- read_csv("/data/IMPT/census2021/census_modal_share_grid.csv") |>
+  select(grid_id = id, total, pt, private_vehicle, active, pt_share, private_vehicle_share, active_share)
+
+
+# NAVEGANTE monthly pass scenario
+Affordability_navegante_grid <- grid_affordability |>
+  mutate(
+    h_transp_inc_car = (housing_costs_year + affordability_car_total_money * trips_commuting_year) / income_hh,
+    h_transp_inc_pt  = (housing_costs_year + affordability_transit_pass_total_money * trips_commuting_year) / income_hh,
+    transp_inc_car   = (affordability_car_total_money * trips_commuting_year) / income_hh,
+    transp_inc_pt    = (affordability_transit_pass_total_money * trips_commuting_year) / income_hh
+  ) |>
+  select(dtmnfr, h_transp_inc_car, h_transp_inc_pt, transp_inc_car, transp_inc_pt) |> 
+  left_join(census_modal_share, by = "grid_id") |>
+  mutate(
+    h_transp_inc_comp = (h_transp_inc_car * private_vehicle_share + h_transp_inc_pt * pt_share) / (private_vehicle_share + pt_share + active_share),
+    transp_inc_comp   = (transp_inc_car * private_vehicle_share + transp_inc_pt * pt_share) / (private_vehicle_share + pt_share + active_share)
+  ) |>
+  select(dtmnfr, h_transp_inc_car, h_transp_inc_pt, transp_inc_car, transp_inc_pt, h_transp_inc_comp, transp_inc_comp)
+
+# SINGLE FARE scenario
+Affordability_singlefare_grid <- grid_affordability |>
+  mutate(
+    h_transp_inc_car = (housing_costs_year + affordability_car_total_money * trips_commuting_year) / income_hh, # with housing costs
+    h_transp_inc_pt  = (housing_costs_year + affordability_transit_single_fare_total_money * trips_commuting_year) / income_hh,
+    transp_inc_car   = (affordability_car_total_money * trips_commuting_year) / income_hh, # without housing costs
+    transp_inc_pt    = (affordability_transit_single_fare_total_money * trips_commuting_year) / income_hh
+  ) |>
+  select(dtmnfr, h_transp_inc_car, h_transp_inc_pt, transp_inc_car, transp_inc_pt) |> 
+  left_join(census_modal_share, by = "grid_id") |>
+  mutate( # accounting for modal share, with and without housing
+    h_transp_inc_comp = (h_transp_inc_car * private_vehicle_share + h_transp_inc_pt * pt_share) / (private_vehicle_share + pt_share + active_share),
+    transp_inc_comp   = (transp_inc_car * private_vehicle_share + transp_inc_pt * pt_share) / (private_vehicle_share + pt_share + active_share)
+  ) |>
+  select(grid_id, h_transp_inc_car, h_transp_inc_pt, transp_inc_car, transp_inc_pt, h_transp_inc_comp, transp_inc_comp)
+
+
+# Export a comprehensive table of raw affordability variables before PCA, for grid
+affordability_grid_composite <- grid_affordability |>
+  select(
+    grid_id, income_hh, housing_costs_year,
+    affordability_car_total_money,
+    affordability_transit_pass_total_money,
+    affordability_transit_single_fare_total_money
+  ) |>
+  mutate(
+    yearly_cost_car = affordability_car_total_money * trips_commuting_year,
+    yearly_cost_pt_navegante = affordability_transit_pass_total_money * trips_commuting_year,
+    yearly_cost_pt_singlefare = affordability_transit_single_fare_total_money * trips_commuting_year
+  ) |>
+  select(grid_id, income_hh, housing_costs_year, yearly_cost_car, yearly_cost_pt_navegante, yearly_cost_pt_singlefare) |>
+  left_join(
+    Affordability_navegante_grid |> select(
+      grid_id,
+      transp_inc_car,
+      transp_inc_pt_nav = transp_inc_pt,
+      transp_inc_comp_nav = transp_inc_comp,
+      h_transp_inc_car,
+      h_transp_inc_pt_nav = h_transp_inc_pt,
+      h_transp_inc_comp_nav = h_transp_inc_comp
+    ), by = "grid_id"
+  ) |>
+  left_join(
+    Affordability_singlefare_grid |> select(
+      grid_id,
+      transp_inc_pt_sf = transp_inc_pt,
+      transp_inc_comp_sf = transp_inc_comp,
+      h_transp_inc_pt_sf = h_transp_inc_pt,
+      h_transp_inc_comp_sf = h_transp_inc_comp
+    ), by = "grid_id"
+  ) |>
+  left_join(census_modal_share |> select(grid_id, private_vehicle_share, pt_share, active_share), by = "grid_id") |>
+  mutate(
+    yearly_cost_comp_nav = (yearly_cost_car * private_vehicle_share + yearly_cost_pt_navegante * pt_share) / (private_vehicle_share + pt_share + active_share),
+    yearly_cost_comp_sf = (yearly_cost_car * private_vehicle_share + yearly_cost_pt_singlefare * pt_share) / (private_vehicle_share + pt_share + active_share)
+  ) |>
+  select(
+    grid_id, income_hh, housing_costs_year,
+    yearly_cost_car, yearly_cost_pt_navegante, yearly_cost_pt_singlefare, yearly_cost_comp_nav, yearly_cost_comp_sf,
+    transp_inc_car, transp_inc_pt_nav, transp_inc_pt_sf, transp_inc_comp_nav, transp_inc_comp_sf,
+    h_transp_inc_car, h_transp_inc_pt_nav, h_transp_inc_pt_sf, h_transp_inc_comp_nav, h_transp_inc_comp_sf
+  )
+
+write_csv(affordability_grid_composite, "/data/IMPT/affordability/affordability_grid_composite.csv")
+
