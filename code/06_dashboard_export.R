@@ -5,7 +5,7 @@
 # When updated, data should be uploaded to the IST serve through SSH, to serve the web dashboard
 # install.packages("ssh")
 library(ssh)
-session <- ssh_connect("ist155593@sigma.ist.utl.pt") 
+session <- ssh_connect("ist1108284@sigma.ist.utl.pt")
 print(session)
 
 # 2. Associate base layers to nuts  -------------------------------------------------
@@ -224,6 +224,7 @@ grid_aggregated = grid_aggregated |>
   left_join(
     grid_safety_inner |> 
       rename(id=grid_id) |>
+      rename(total_veiculos_car=veh_motorizado, total_veiculos_bike=veh_bicicleta, total_veiculos_walk=veh_peoes) |>
       rename_with(~ paste0("safety_inner_", .), -id),
     by="id"
   ) |>
@@ -375,6 +376,7 @@ freguesias_aggregated = freguesias_aggregated |>
     freguesia_safety_inner |> 
       rename(id=freg_id) |>
       mutate(id=as.character(id)) |>
+      rename(total_veiculos_car=veh_motorizado, total_veiculos_bike=veh_bicicleta, total_veiculos_walk=veh_peoes) |>
       rename_with(~ paste0("safety_inner_", .), -id),
     by="id"
   ) |>
@@ -534,6 +536,7 @@ municipios_aggregated = municipios_aggregated |>
   left_join(
     municipio_safety_inner |> 
       rename(id=mun_id) |>
+      rename(total_veiculos_car=veh_motorizado, total_veiculos_bike=veh_bicicleta, total_veiculos_walk=veh_peoes) |>
       rename_with(~ paste0("safety_inner_", .), -id),
     by="id"
   ) |>
@@ -659,6 +662,11 @@ length(names(grid_aggregated)) # 829
 length(names(freguesias_aggregated)) # 1051
 length(names(municipios_aggregated)) # 1042
 
+freguesias_aggregated = read.csv(IMPT_URL(paste(output_dir, "freguesias_aggregated.csv", sep="/")))
+grid_aggregated = read.csv(IMPT_URL(paste(output_dir, "grid_aggregated.csv", sep="/")))
+munipios_aggregated = read.csv(IMPT_URL(paste(output_dir, "municipios_aggregated.csv", sep="/")))
+
+municipio_names = names(municipios_aggregated) |> data.frame()
 freguesia_names = names(freguesias_aggregated) |> data.frame()
 grid_names = names(grid_aggregated) |> data.frame()
 
@@ -669,9 +677,9 @@ grid_names = names(grid_aggregated) |> data.frame()
 #   names()
 
 # Upload to GitHub release ------------------------------------------------
-piggyback::pb_upload(IMPT_URL(paste(output_dir, "grid_aggregated.geojson", sep="/")), repo="u-shift/IMPT-data", tag="latest")
-piggyback::pb_upload(IMPT_URL(paste(output_dir, "freguesias_aggregated.geojson", sep="/")), repo="u-shift/IMPT-data", tag="latest")
-piggyback::pb_upload(IMPT_URL(paste(output_dir, "municipios_aggregated.geojson", sep="/")), repo="u-shift/IMPT-data", tag="latest")
+# piggyback::pb_upload(IMPT_URL(paste(output_dir, "grid_aggregated.geojson", sep="/")), repo="u-shift/IMPT-data", tag="latest")
+# piggyback::pb_upload(IMPT_URL(paste(output_dir, "freguesias_aggregated.geojson", sep="/")), repo="u-shift/IMPT-data", tag="latest")
+# piggyback::pb_upload(IMPT_URL(paste(output_dir, "municipios_aggregated.geojson", sep="/")), repo="u-shift/IMPT-data", tag="latest")
 
 # Upload to IST server for dashboard  ----------------------------------------------------
 files = c("grid_aggregated.geojson", "freguesias_aggregated.geojson", "municipios_aggregated.geojson")
