@@ -194,7 +194,12 @@ sum(landuse_grid$population, na.rm = TRUE) #2850646 # some census bgri centroids
 sum(landuse_municipios$population) #2870206 # 2 missing due round when separating new freguesias
 sum(landuse_freguesias$population) #2870206
 
-
+sum(landuse_grid$households, na.rm = TRUE) # 834277
+sum(landuse_freguesias$households) # 839934
+sum(landuse_municipios$households) # 839934
+summary(landuse_freguesias$population / landuse_freguesias$households) # 3.43?? people per household
+summary(landuse_municipios$population / landuse_municipios$households) # 3.37?? people per household
+sum(census_pts$population)/sum(census_pts$households)  #3.147 people per household in the original census data, so we have some discrepancies here that may be due to the way we assign census points to freguesias and municipalities, and how we handle missing data. This is something to keep in mind when interpreting the results, but overall the numbers are in a reasonable range.
 
 # Income, Gini, housing costs -----------------------------------
 
