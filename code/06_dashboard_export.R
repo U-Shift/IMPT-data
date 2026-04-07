@@ -1,4 +1,12 @@
-# 1. Make sure to run 00_data_load.R and 06_results.R before running this script -------------------------------------------------
+# ATTENTION! Make sure to run 00_data_load.R and 06_results.R before running this script -------------------------------------------------
+
+
+# SSH authentication ------------------------------------------------------
+# When updated, data should be uploaded to the IST serve through SSH, to serve the web dashboard
+# install.packages("ssh")
+library(ssh)
+session <- ssh_connect("ist1108284@sigma.ist.utl.pt") 
+print(session)
 
 # 2. Associate base layers to nuts  -------------------------------------------------
 # grid = st_read(IMPT_URL("/geo/grelha_h3_r8.gpkg"))
@@ -583,6 +591,10 @@ names(municipios_aggregated)
 
 # Normalize data ----------------------------------------------------------
 
+# Rename "União das Freguesias de" to "UF" at freguesias_aggregated
+freguesias_aggregated = freguesias_aggregated |> 
+  mutate(name = gsub("União das freguesias de ", "UF ", name)) |>
+  mutate(name = gsub("União das freguesias do ", "UF ", name))
 
 # Round all numeric values to 2 digits
 grid_aggregated = grid_aggregated |> 
@@ -656,13 +668,13 @@ grid_names = names(grid_aggregated) |> data.frame()
 #   # Filter those that contain "affordability"
 #   names()
 
-
 # Upload to GitHub release ------------------------------------------------
 piggyback::pb_upload(IMPT_URL(paste(output_dir, "grid_aggregated.geojson", sep="/")), repo="U-Shift/IMPT-data", tag="latest")
 piggyback::pb_upload(IMPT_URL(paste(output_dir, "freguesias_aggregated.geojson", sep="/")), repo="U-Shift/IMPT-data", tag="latest")
 piggyback::pb_upload(IMPT_URL(paste(output_dir, "municipios_aggregated.geojson", sep="/")), repo="U-Shift/IMPT-data", tag="latest")
 
-# Upload to IMPT-web ----------------------------------------------------
-piggyback::pb_download("grid_aggregated.geojson", repo="U-Shift/IMPT-data", tag="latest", dest = "../IMPT-web/dashboard/public/data")
-piggyback::pb_download("freguesias_aggregated.geojson", repo="U-Shift/IMPT-data", tag="latest", dest = "../IMPT-web/dashboard/public/data")
-piggyback::pb_download("municipios_aggregated.geojson", repo="U-Shift/IMPT-data", tag="latest", dest = "../IMPT-web/dashboard/public/data")
+# Upload to IST server for dashboard  ----------------------------------------------------
+files = c("grid_aggregated.geojson", "freguesias_aggregated.geojson", "municipios_aggregated.geojson")
+for (f in files) {
+  scp_upload(session, IMPT_URL(paste(output_dir, f, sep="/")), to = paste("/afs/.ist.utl.pt/groups/ushift/web/content/impt", f, sep="/"))
+}
