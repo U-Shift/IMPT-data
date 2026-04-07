@@ -44,6 +44,7 @@ These scripts parse outputs from Phase 2 and 3 to compute the exact indicators f
 
 ### Phase 5: Result Aggregation and Normalization
 
+- **`05a_results_export_pca.R`**: Exports calculated statistics to run locally the PCA - IMPT calculator.
 - **`05_IMPTcalculator.R`**: The core scoring engine. It loads the normalized dimension tables, scales and inverts them to percentages [0-100], calculates variance via Principal Component Analysis (PCA) and calculates weights through entropy scoring. It merges the output arrays to build the final IMPT general and sub-modal scores.
 
 ### Phase 6: Output Pipelines & Dashboarding
@@ -51,5 +52,4 @@ These scripts parse outputs from Phase 2 and 3 to compute the exact indicators f
 These scripts compile the calculated results strictly for system interaction and visualization tasks.
 
 - **`06_results.R`**: Utility script to load and verify all the generated variables/results files from Phase 4 explicitly into memory.
-- **`06_results_export.R`**: Exports calculated statistics matrices into independent dataframes.
 - **`06_dashboard_export.R`**: The final integration point. It takes raw table indices joining them heavily with the visual geometries (grid cells, polygons). Formats columns precisely for the dashboard environment (web) and uses `piggyback` to deploy the unified `GeoJSON` blocks straight to the live environment tracking platform (`IMPT-web`).
