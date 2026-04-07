@@ -108,11 +108,11 @@ Affordability_singlefare <- Affordability_composite |>
   select(
     dtmnfr,
     h_transp_inc_car,
-    h_transp_inc_pt   = h_transp_inc_pt_singlefare,
+    h_transp_inc_pt   = h_transp_inc_pt_sf,
     transp_inc_car,
-    transp_inc_pt     = transp_inc_pt_singlefare,
-    h_transp_inc_comp = h_transp_inc_comp_singlefare,
-    transp_inc_comp   = transp_inc_comp_singlefare
+    transp_inc_pt     = transp_inc_pt_sf,
+    h_transp_inc_comp = h_transp_inc_comp_sf,
+    transp_inc_comp   = transp_inc_comp_sf
   )
 
 
@@ -750,6 +750,7 @@ write.csv(Final_Results_Master_grid_walk, "/data/IMPT/impt/results/IMPT_PCA_and_
 # =============================================================================
 
 # source("code/00_data_load.R")   # uncomment if `freguesias` is not already in memory
+freguesias = st_read("/data/IMPT/geo/freguesias_2024_unique.gpkg")
 
 impt_pca <- read.csv("/data/IMPT/impt/results/IMPT_PCA_and_Entropy_Scores_freguesia.csv")
 
