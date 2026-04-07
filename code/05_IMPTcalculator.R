@@ -81,7 +81,12 @@ Mobility <- freguesias_infrastructure_ratio |>
 # ── 1.3 Safety ────────────────────────────────────────────────────────────────
 
 Safety <- read_csv("/data/IMPT/safety/accidents_by_freguesia_5years_dentrolocalidades.csv") |>
-  select(-freguesia, -mun_id, -population) |>
+  select(-freguesia, -mun_id, -population, -noite) |>
+  mutate(veh_motorizado_per = veh_motorizado/total_veiculos,
+         veh_bicicleta_per = veh_bicicleta/total_veiculos,
+         veh_peoes_per = veh_peoes/total_veiculos
+         ) |> 
+  # select(-total_veiculos, -veh_motorizado, -veh_bicicleta, -veh_peoes) |> 
   rename(dtmnfr = freg_id) |>
   mutate(across(where(is.numeric), ~ ifelse(is.na(.x), 0, .x))) # NAs → 0
 
@@ -303,7 +308,8 @@ champions <- function(pca_obj, dim = 1, n = 10) {
 
 pca_access <- PCA(Accessibility_Norm, quali.sup = 1, graph = FALSE)
 pca_mobility <- PCA(Mobility_Norm, quali.sup = 1, graph = FALSE)
-pca_safety <- PCA(Safety_Norm, quali.sup = 1, graph = FALSE)
+pca_safety <- PCA(Safety_Norm |> select(-total_veiculos, -veh_motorizado, -veh_bicicleta, -veh_peoes),
+                  quali.sup = 1, graph = FALSE)
 
 # Extract global dimension scores (PC1, rescaled to [1, 100])
 acc_scores <- data.frame(
@@ -348,9 +354,9 @@ pca_pt_mobility <- PCA(Mobility_pt_Norm, quali.sup = 1, graph = FALSE)
 pca_bike_mobility <- PCA(Mobility_bike_Norm, quali.sup = 1, graph = FALSE)
 pca_walk_mobility <- PCA(Mobility_walk_Norm, quali.sup = 1, graph = FALSE)
 
-pca_car_safety <- PCA(Safety_car_Norm, quali.sup = 1, graph = FALSE)
-pca_bike_safety <- PCA(Safety_bike_Norm, quali.sup = 1, graph = FALSE)
-pca_walk_safety <- PCA(Safety_walk_Norm, quali.sup = 1, graph = FALSE)
+pca_car_safety <- PCA(Safety_car_Norm |> select(-veh_motorizado), quali.sup = 1, graph = FALSE)
+pca_bike_safety <- PCA(Safety_bike_Norm|> select(-veh_bicicleta), quali.sup = 1, graph = FALSE)
+pca_walk_safety <- PCA(Safety_walk_Norm|> select(-veh_peoes), quali.sup = 1, graph = FALSE)
 
 # Per-mode accessibility scores
 acc_car_scores <- data.frame(
