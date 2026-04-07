@@ -116,6 +116,7 @@ store_by_mode(municipio_mobility, c("municipio", "nuts"), "municipio_mobility", 
 
 
 # 4. Affordability --------------------------------------------------------
+# this may be incorrect now, see 04_affordability.R
 select_impt_cols_affordability = function(data) {
   return (
     data |> 

@@ -91,7 +91,7 @@ Safety <- read_csv("/data/IMPT/safety/accidents_by_freguesia_5years_dentrolocali
 # Note: The computation of the raw affordability metrics has been moved out to 04_affordability.R.
 # We now simply read the output from that script to assemble the scenario tables.
 
-Affordability_composite <- read_csv("/data/IMPT/impt/affordability/affordability_freguesia_composite.csv")
+Affordability_composite <- read_csv("/data/IMPT/affordability/affordability_freguesia_composite.csv")
 
 Affordability_navegante <- Affordability_composite |>
   select(
