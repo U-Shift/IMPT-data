@@ -98,11 +98,12 @@ occ_rate_car_freg = readr::read_delim(
   trim_ws = TRUE
 ) |>
   left_join(municipios_id, by = c("Municipio" = "municipio")) |>
-  mutate(mun_id = as.integer(mun_id)) |>
+  mutate(mun_id = as.character(mun_id)) |>
   select(-Municipio) |>
   left_join(grid_freg_mun |> select(-grid_id), by = "mun_id") |>
   distinct() |>
-  mutate(taxa_ocup_auto = taxa_ocup_auto / 100)
+  mutate(taxa_ocup_auto = taxa_ocup_auto / 100,
+         freg_id = as.integer(freg_id))
 
 households_size_freg <- read_csv("/data/IMPT/landuse/landuse_freguesias.csv") |>
   select(freg_id, population, households) |>
