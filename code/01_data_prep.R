@@ -409,6 +409,29 @@ od_freguesias_jittered_DE_geo = st_read("/data/IMPT/trips/od_freguesias_jittered
 # unzip(temp, exdir = "/data/IMPT/original/")
 Census21_BGRI = st_read("/data/IMPT/original/BGRI21_170.gpkg")
 
+census21_fregmun = Census21_BGRI |> 
+  st_drop_geometry() |> 
+  select(DTMNFR21, DTMN21, N_INDIVIDUOS, N_NUCLEOS_FAMILIARES,
+         N_INDIVIDUOS_0_14, N_INDIVIDUOS_65_OU_MAIS, N_INDIVIDUOS_M,
+         N_EDIFICIOS_CLASSICOS, N_EDIFICIOS_CONSTR_ANTES_1945) |>
+  rename(population = N_INDIVIDUOS,
+         households = N_NUCLEOS_FAMILIARES,
+         youth = N_INDIVIDUOS_0_14,
+         elderly = N_INDIVIDUOS_65_OU_MAIS,
+         women = N_INDIVIDUOS_M,
+         buildings = N_EDIFICIOS_CLASSICOS,
+         buildings_pre1945 = N_EDIFICIOS_CONSTR_ANTES_1945) |> 
+  group_by(DTMNFR21, DTMN21) |>
+  summarise(population = sum(population),
+            households = sum(households),
+            youth = sum(youth),
+            elderly = sum(elderly),
+            women = sum(women),
+            buildings = sum(buildings),
+            buildings_pre1945 = sum(buildings_pre1945)) |> 
+  ungroup()
+         
+
 ## make sure there is no polygon missing or exclude extra ones
 # mapview::mapview(Census21_BGRI) + mapview(municipios_union, col.regions = "red")
 # they are the same areas!
@@ -437,6 +460,7 @@ conversion_dicofre_weight = readRDS("useful_data/dicofre_16_24_conversion_full_w
 census24_fregmun = census21_fregmun |>
   left_join(conversion_dicofre_weight, by = c("DTMNFR21" = "dtmnfr16")) |> 
   mutate(population = round(population * weight),
+         households = round(households * weight),
          youth = round(youth * weight),
          elderly = round(elderly * weight),
          women = round(women * weight),
@@ -446,7 +470,7 @@ census24_fregmun = census21_fregmun |>
   select(
     freg_id = dtmnfr24,
     mun_id = DTMN21,
-    population, youth, elderly, women, buildings, buildings_pre1945)
+    population, households, youth, elderly, women, buildings, buildings_pre1945)
 
 sum(census24_fregmun$population) # 2870206 - less 2 persons due rounding, which is acceptable for our purposes
 write.csv(census24_fregmun, "useful_data/census24_fregmun.csv", row.names = FALSE)
