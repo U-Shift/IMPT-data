@@ -179,3 +179,29 @@ affordability_freguesia_composite <- freguesia_affordability |>
 
 write_csv(affordability_freguesia_composite, "/data/IMPT/affordability/affordability_freguesia_composite.csv")
 
+
+## At Municipio level
+
+# Municipio level ---------------------------------------------------------
+
+# Population lookup: used to compute population-weighted means at higher levels
+census24_fregmun_pop <- read_csv("useful_data/census24_fregmun.csv") |>
+  select(freg_id, mun_id, population) |>
+  mutate(dtmnfr = as.integer(freg_id))
+
+# Grid lookup: assigns each grid cell to a freguesia (generalised assumption)
+grid_freg_mun <- read.csv("useful_data/grid_nuts.csv") |>
+  select(grid_id, freg_id) |>
+  mutate(freg_id = as.integer(freg_id))
+
+
+# Helper: aggregate from freguesia to a higher spatial unit using pop-weighted mean
+aggregate_to_level <- function(df, lookup, by_col) {
+  df |>
+    left_join(lookup, by = "dtmnfr") |>
+    group_by(across(all_of(by_col))) |>
+    summarize_at(vars(-dtmnfr, -freg_id, -population), ~ weighted.mean(., w = population, na.rm = TRUE))
+}
+
+affordability_municipio_composite <- aggregate_to_level(affordability_freguesia_composite, census24_fregmun_pop, "mun_id")
+  
