@@ -22,6 +22,12 @@ hex_stats_gap <- tt_grid |>
         # Gap in minutes: positive = PT slower than car
         accessibility_gap = round(time_pt_peak_for_gap - time_car,2)
     ) |>
+  # variable to check if gap is large in relative terms in percentage of car time (e.g. 50% slower than car) or -50% (50% faster than car)
+  # if positive, PT is slower than car, if negative, PT is faster than car, and if 0, they are the same
+    mutate(relative_accessibility_gap_time <- ifelse(time_pt_peak_for_gap >= time_car,
+                                  ((time_pt_peak_for_gap / time_car) - 1) * 100,
+                                  -((time_car / time_pt_peak_for_gap) - 1) * 100)
+          ) |>
     left_join(grid_freg_mun |> select(grid_id, freg_id, mun_id), by = "grid_id")
 
 summary(hex_stats_gap)
@@ -43,6 +49,10 @@ freg_stats_gap <- hex_stats_gap |>
     mutate(
         accessibility_gap = round(time_pt_peak - time_car,2),
         freg_id = as.character(freg_id)
+    ) |>
+    mutate(relative_accessibility_gap_time <- ifelse(time_pt_peak_for_gap >= time_car,
+                                     ((time_pt_peak_for_gap / time_car) - 1) * 100,
+                                     -((time_car / time_pt_peak_for_gap) - 1) * 100)
     ) |>
     filter(!is.nan(time_car))
 
@@ -71,6 +81,10 @@ mun_stats_gap <- hex_stats_gap |>
         accessibility_gap = round(time_pt_peak - time_car,2),
         mun_id = as.character(mun_id)
     ) |>
+  mutate(relative_accessibility_gap_time <- ifelse(time_pt_peak_for_gap >= time_car,
+                                                   ((time_pt_peak_for_gap / time_car) - 1) * 100,
+                                                   -((time_car / time_pt_peak_for_gap) - 1) * 100)
+  ) |>
     filter(!is.nan(time_car))
 
 mun_stats_gap_sf <- municipios |>
@@ -130,6 +144,10 @@ hex_stats_gap_money <- costs_car_grid |>
         cost_gap = round(cost_pt_for_gap - cost_car, 2),
         trips = trips_car # use car trips as reference weight for aggregation
     ) |>
+  mutate(relative_affordability_gap_cost <- ifelse(cost_pt_for_gap >= cost_car,
+                                                   ((cost_pt_for_gap / cost_car) - 1) * 100,
+                                                   -((cost_car / cost_pt_for_gap) - 1) * 100)
+  ) |>
     left_join(grid_freg_mun |> select(grid_id, freg_id, mun_id), by = "grid_id")
 
 summary(hex_stats_gap_money)
@@ -154,6 +172,10 @@ freg_stats_gap_money <- hex_stats_gap_money |>
         cost_gap = round(cost_pt - cost_car, 2),
         freg_id  = as.character(freg_id)
     ) |>
+  mutate(relative_affordability_gap_cost <- ifelse(cost_pt_for_gap >= cost_car,
+                                                   ((cost_pt_for_gap / cost_car) - 1) * 100,
+                                                   -((cost_car / cost_pt_for_gap) - 1) * 100)
+  ) |>
     filter(!is.nan(cost_car))
 
 # Viz Check
@@ -178,6 +200,10 @@ mun_stats_gap_money <- hex_stats_gap_money |>
         cost_gap = round(cost_pt - cost_car,2),
         mun_id   = as.character(mun_id)
     ) |>
+  mutate(relative_affordability_gap_cost <- ifelse(cost_pt_for_gap >= cost_car,
+                                                   ((cost_pt_for_gap / cost_car) - 1) * 100,
+                                                   -((cost_car / cost_pt_for_gap) - 1) * 100)
+  ) |>
     filter(!is.nan(cost_car))
 
 # Viz Check
