@@ -41,6 +41,7 @@ These scripts parse outputs from Phase 2 and 3 to compute the exact indicators f
 - **`04_mobility_costs_money_pt.R`**: Evaluates monetary affordability strictly relating to PT use (e.g. single-fare vs overall transit passes).
 - **`04_accessibility_gap.R`**: Evaluates accessibility gaps between distinct spatial zones along commuting constraints.
 - **`04_safety.R`**: Computes road safety vulnerabilities by intersecting traffic crashes spatially, and grouping them against area-based population scales.
+- **`04_affordability.R`**: Pre-calculates raw and weighted affordability metrics by freguesia.
 
 ### Phase 5: Result Aggregation and Normalization
 
