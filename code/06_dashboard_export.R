@@ -78,7 +78,7 @@ print(session)
 # st_write(freguesias, IMPT_URL("dashboard_data/freguesias.gpkg"), delete_dsn = TRUE)
 # st_write(municipios, IMPT_URL("dashboard_data/municipios.gpkg"), delete_dsn = TRUE)
 
-# DATA_LOCATION = "https://impt.server.ushift.pt" # To get data from server
+DATA_LOCATION = "https://impt.server.ushift.pt" # To get data from server
 
 grid = st_read(IMPT_URL("/dashboard_data/grid.gpkg"))
 freguesias = st_read(IMPT_URL("/dashboard_data/freguesias.gpkg"))
@@ -646,6 +646,29 @@ for (mode in modes) {
   names(municipios_aggregated) = gsub(paste0("^(.*)_", mode[1], "_(.*)$"), paste0("\\1_\\2_", mode[2]), names(municipios_aggregated))
 }
 
+
+# Extra: Champions --------------------------------------------------------
+
+dimensions = c("Accessibility", "Mobility", "Safety")
+champions = data.frame()
+for (d in dimensions) {
+  content = read.csv(IMPT_URL(paste("/impt/pca_scores/Champions_", d, ".csv", sep=""))) |>
+    mutate(position = row_number()) |>
+    select(-Contribution) |>
+    rename(metric=Indicator)
+  content$dimension = paste(d, "Index", sep="_")
+  
+  champions = rbind(champions, content)
+}
+champions_list = list()
+for (d in dimensions) {
+  d_name = paste(d, "Index", sep="_")
+  champions_list[[d_name]] = list()
+  for (i in 1:nrow(champions |> filter(dimension == paste(d, "Index", sep="_")))) {
+    champions_list[[d_name]][[i]] = champions |> filter(dimension == paste(d, "Index", sep="_")) |> select(metric) |> slice(i) |> pull()
+  }
+}
+
 # 4. Export to geojson -------------------------------------------------
 DATA_LOCATION = "data/" # To store locally
 output_dir = "dashboard_data"
@@ -657,6 +680,8 @@ st_write(municipios_aggregated, IMPT_URL(paste(output_dir, "municipios_aggregate
 write.csv(grid_aggregated |> st_drop_geometry(), IMPT_URL(paste(output_dir, "grid_aggregated.csv", sep="/")), row.names = FALSE)
 write.csv(freguesias_aggregated |> st_drop_geometry(), IMPT_URL(paste(output_dir, "freguesias_aggregated.csv", sep="/")), row.names = FALSE)
 write.csv(municipios_aggregated |> st_drop_geometry(), IMPT_URL(paste(output_dir, "municipios_aggregated.csv", sep="/")), row.names = FALSE)
+
+jsonlite::write_json(champions_list, IMPT_URL(paste(output_dir, "champions.json", sep="/")), pretty = TRUE, auto_unbox = TRUE)
 
 length(names(grid_aggregated)) # 829
 length(names(freguesias_aggregated)) # 1051
@@ -686,3 +711,4 @@ files = c("grid_aggregated.geojson", "freguesias_aggregated.geojson", "municipio
 for (f in files) {
   scp_upload(session, IMPT_URL(paste(output_dir, f, sep="/")), to = paste("/afs/.ist.utl.pt/groups/ushift/web/content/impt", f, sep="/"))
 }
+scp_upload(session, IMPT_URL(paste(output_dir, "champions.json", sep="/")), to = paste("/afs/.ist.utl.pt/groups/ushift/web/content/impt", "champions.json", sep="/"))
