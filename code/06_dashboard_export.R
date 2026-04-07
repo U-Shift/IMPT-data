@@ -5,7 +5,7 @@
 # When updated, data should be uploaded to the IST serve through SSH, to serve the web dashboard
 # install.packages("ssh")
 library(ssh)
-session <- ssh_connect("ist1108284@sigma.ist.utl.pt") 
+session <- ssh_connect("ist155593@sigma.ist.utl.pt") 
 print(session)
 
 # 2. Associate base layers to nuts  -------------------------------------------------
@@ -78,11 +78,11 @@ print(session)
 # st_write(freguesias, IMPT_URL("dashboard_data/freguesias.gpkg"), delete_dsn = TRUE)
 # st_write(municipios, IMPT_URL("dashboard_data/municipios.gpkg"), delete_dsn = TRUE)
 
-DATA_LOCATION = "https://impt.server.ushift.pt" # To get data from server
+# DATA_LOCATION = "https://impt.server.ushift.pt" # To get data from server
 
-grid = st_read(IMPT_URL("dashboard_data/grid.gpkg"))
-freguesias = st_read(IMPT_URL("dashboard_data/freguesias.gpkg"))
-municipios = st_read(IMPT_URL("dashboard_data/municipios.gpkg"))
+grid = st_read(IMPT_URL("/dashboard_data/grid.gpkg"))
+freguesias = st_read(IMPT_URL("/dashboard_data/freguesias.gpkg"))
+municipios = st_read(IMPT_URL("/dashboard_data/municipios.gpkg"))
 mun_nuts = read.csv("useful_data/mun_nuts.csv") |> rename(nuts=nuts_id, id=mun_id,municipio=name)
 freg_nuts = read.csv("useful_data/freguesias_nuts.csv") |> rename(id=freg_id, group_id=mun_id, freguesia=name, region_id=nuts_id)
 
@@ -95,7 +95,7 @@ municipios_aggregated = municipios
 for(m in modes) {
   message("Mode ", m, "...")
   
-  impt = read.csv(IMPT_URL(sprintf("impt/results/IMPT_PCA_and_Entropy_Scores%s_municipio.csv", m))) |> 
+  impt = read.csv(IMPT_URL(sprintf("/impt/results/IMPT_PCA_and_Entropy_Scores%s_municipio.csv", m))) |> 
     rename(id=mun_id) |>
     mutate(
       # All columns that start with "IMPT_", mutate to 100-.x
@@ -111,7 +111,7 @@ freguesias_aggregated = freguesias
 for(m in modes) {
   message("Mode ", m, "...")
   
-  impt = read.csv(IMPT_URL(sprintf("impt/results/IMPT_PCA_and_Entropy_Scores%s_freguesia.csv", m))) |> 
+  impt = read.csv(IMPT_URL(sprintf("/impt/results/IMPT_PCA_and_Entropy_Scores%s_freguesia.csv", m))) |> 
     rename(id=dtmnfr) |>
     mutate(
       # All columns that start with "IMPT_", mutate to 100-.x
@@ -129,7 +129,7 @@ grid_aggregated = grid
 for(m in modes) {
   message("Mode ", m, "...")
   
-  impt = read.csv(IMPT_URL(sprintf("impt/results/IMPT_PCA_and_Entropy_Scores%s_grid.csv", m))) |> 
+  impt = read.csv(IMPT_URL(sprintf("/impt/results/IMPT_PCA_and_Entropy_Scores%s_grid.csv", m))) |> 
     rename(id=grid_id) |>
     mutate(
       # All columns that start with "IMPT_", mutate to 100-.x
@@ -644,7 +644,7 @@ for (mode in modes) {
 }
 
 # 4. Export to geojson -------------------------------------------------
-DATA_LOCATION = "data" # To store locally
+DATA_LOCATION = "data/" # To store locally
 output_dir = "dashboard_data"
 
 st_write(grid_aggregated, IMPT_URL(paste(output_dir, "grid_aggregated.geojson", sep="/")), delete_dsn = TRUE)
@@ -655,9 +655,9 @@ write.csv(grid_aggregated |> st_drop_geometry(), IMPT_URL(paste(output_dir, "gri
 write.csv(freguesias_aggregated |> st_drop_geometry(), IMPT_URL(paste(output_dir, "freguesias_aggregated.csv", sep="/")), row.names = FALSE)
 write.csv(municipios_aggregated |> st_drop_geometry(), IMPT_URL(paste(output_dir, "municipios_aggregated.csv", sep="/")), row.names = FALSE)
 
-length(names(grid_aggregated)) # 710
-length(names(freguesias_aggregated)) # 970
-length(names(municipios_aggregated)) # 965
+length(names(grid_aggregated)) # 829
+length(names(freguesias_aggregated)) # 1051
+length(names(municipios_aggregated)) # 1042
 
 freguesia_names = names(freguesias_aggregated) |> data.frame()
 grid_names = names(grid_aggregated) |> data.frame()
@@ -669,9 +669,9 @@ grid_names = names(grid_aggregated) |> data.frame()
 #   names()
 
 # Upload to GitHub release ------------------------------------------------
-piggyback::pb_upload(IMPT_URL(paste(output_dir, "grid_aggregated.geojson", sep="/")), repo="U-Shift/IMPT-data", tag="latest")
-piggyback::pb_upload(IMPT_URL(paste(output_dir, "freguesias_aggregated.geojson", sep="/")), repo="U-Shift/IMPT-data", tag="latest")
-piggyback::pb_upload(IMPT_URL(paste(output_dir, "municipios_aggregated.geojson", sep="/")), repo="U-Shift/IMPT-data", tag="latest")
+piggyback::pb_upload(IMPT_URL(paste(output_dir, "grid_aggregated.geojson", sep="/")), repo="u-shift/IMPT-data", tag="latest")
+piggyback::pb_upload(IMPT_URL(paste(output_dir, "freguesias_aggregated.geojson", sep="/")), repo="u-shift/IMPT-data", tag="latest")
+piggyback::pb_upload(IMPT_URL(paste(output_dir, "municipios_aggregated.geojson", sep="/")), repo="u-shift/IMPT-data", tag="latest")
 
 # Upload to IST server for dashboard  ----------------------------------------------------
 files = c("grid_aggregated.geojson", "freguesias_aggregated.geojson", "municipios_aggregated.geojson")
