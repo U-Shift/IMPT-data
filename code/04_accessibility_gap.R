@@ -12,26 +12,29 @@ tt_grid <- read.csv(IMPT_URL("/mobility_commuting/grid_commuting.csv")) |>
 # avg_tt_car and avg_tt_transit_1t_120m_15w are already trip-weighted means.
 # Transit NAs (unreachable within 120 min) → assign 120 min as penalty.
 hex_stats_gap <- tt_grid |>
-    select(
-        grid_id = id_grid_origin, time_car = avg_tt_car,
-        time_pt_peak = avg_tt_transit_1t_120m_15w, trips
-    ) |>
-    filter(!is.na(time_car) & time_car > 0) |>
-    mutate(
-        time_pt_peak_for_gap = if_else(is.na(time_pt_peak), 120, time_pt_peak),
-        # Gap in minutes: positive = PT slower than car
-        accessibility_gap = round(time_pt_peak_for_gap - time_car,2)
-    ) |>
-  # variable to check if gap is large in relative terms in percentage of car time (e.g. 50% slower than car) or -50% (50% faster than car)
-  # if positive, PT is slower than car, if negative, PT is faster than car, and if 0, they are the same
-    mutate(relative_accessibility_gap_time <- ifelse(time_pt_peak_for_gap >= time_car,
-                                  ((time_pt_peak_for_gap / time_car) - 1) * 100,
-                                  -((time_car / time_pt_peak_for_gap) - 1) * 100)
-          ) |>
-    left_join(grid_freg_mun |> select(grid_id, freg_id, mun_id), by = "grid_id")
+  select(
+    grid_id = id_grid_origin, 
+    time_car = avg_tt_car,
+    time_pt_peak = avg_tt_transit_1t_120m_15w, 
+    trips
+  ) |>
+  filter(!is.na(time_car) & time_car > 0) |>
+  mutate(
+    time_pt_peak_for_gap = if_else(is.na(time_pt_peak), 120, time_pt_peak),
+    # Gap in minutes: positive = PT slower than car
+    accessibility_gap = round(time_pt_peak_for_gap - time_car, 2),
+    
+    # Relative index: 0 is parity, positive = PT xtimes slower than car, negative = PT x times faster than car
+    relative_gap_time = ifelse(time_pt_peak_for_gap >= time_car,
+                                (time_pt_peak_for_gap / time_car) - 1,
+                                -((time_car / time_pt_peak_for_gap) - 1)),
+    relative_gap_time = round(relative_gap_time, 2)
+  ) |>
+  left_join(grid_freg_mun |> select(grid_id, freg_id, mun_id), by = "grid_id")
 
 summary(hex_stats_gap)
-mapview(grid |> mutate(grid_id = as.character(id)) |> left_join(hex_stats_gap), zcol = "accessibility_gap")
+# mapview(grid |> mutate(grid_id = as.character(id)) |> left_join(hex_stats_gap), zcol = "accessibility_gap")
+mapview(grid |> mutate(grid_id = as.character(id)) |> left_join(hex_stats_gap), zcol = "relative_gap_time")
 # mapview(grid |> mutate(grid_id = as.character(id)) |> left_join(hex_stats_gap), zcol = "time_car")
 # mapview(grid |> mutate(grid_id = as.character(id)) |> left_join(hex_stats_gap), zcol = "time_pt_peak")
 
@@ -46,14 +49,18 @@ freg_stats_gap <- hex_stats_gap |>
         n_cells_no_transit = sum(is.na(time_pt_peak)),
         .groups = "drop"
     ) |>
-    mutate(
-        accessibility_gap = round(time_pt_peak - time_car,2),
-        freg_id = as.character(freg_id)
-    ) |>
-    mutate(relative_accessibility_gap_time <- ifelse(time_pt_peak_for_gap >= time_car,
-                                     ((time_pt_peak_for_gap / time_car) - 1) * 100,
-                                     -((time_car / time_pt_peak_for_gap) - 1) * 100)
-    ) |>
+  mutate(
+    freg_id   = as.character(freg_id),
+    time_pt_peak_for_gap = if_else(is.na(time_pt_peak), 120, time_pt_peak), # this is irrelevant at this level
+    # Gap in minutes: positive = PT slower than car
+    accessibility_gap = round(time_pt_peak_for_gap - time_car, 2),
+    
+    # Relative index: 0 is parity, positive = PT xtimes slower than car, negative = PT x times faster than car
+    relative_gap_time = ifelse(time_pt_peak_for_gap >= time_car,
+                                (time_pt_peak_for_gap / time_car) - 1,
+                                -((time_car / time_pt_peak_for_gap) - 1)),
+    relative_gap_time = round(relative_gap_time, 2)
+  ) |>
     filter(!is.nan(time_car))
 
 freg_stats_gap_sf <- freguesias |>
@@ -61,6 +68,7 @@ freg_stats_gap_sf <- freguesias |>
     left_join(freg_stats_gap, by = c("dtmnfr" = "freg_id"))
 
 mapview(freg_stats_gap_sf, zcol = "accessibility_gap")
+mapview(freg_stats_gap_sf, zcol = "relative_gap_time")
 # mapview(freg_stats_gap_sf, zcol = "time_car")
 # mapview(freg_stats_gap_sf, zcol = "time_pt_peak")
 
@@ -77,13 +85,17 @@ mun_stats_gap <- hex_stats_gap |>
         n_cells_no_transit = sum(is.na(time_pt_peak)),
         .groups = "drop"
     ) |>
-    mutate(
-        accessibility_gap = round(time_pt_peak - time_car,2),
-        mun_id = as.character(mun_id)
-    ) |>
-  mutate(relative_accessibility_gap_time <- ifelse(time_pt_peak_for_gap >= time_car,
-                                                   ((time_pt_peak_for_gap / time_car) - 1) * 100,
-                                                   -((time_car / time_pt_peak_for_gap) - 1) * 100)
+  mutate(
+    mun_id   = as.character(mun_id),
+    time_pt_peak_for_gap = if_else(is.na(time_pt_peak), 120, time_pt_peak),
+    # Gap in minutes: positive = PT slower than car
+    accessibility_gap = round(time_pt_peak_for_gap - time_car, 2),
+    
+    # Relative index: 0 is parity, positive = PT xtimes slower than car, negative = PT x times faster than car
+    relative_gap_time = ifelse(time_pt_peak_for_gap >= time_car,
+                               (time_pt_peak_for_gap / time_car) - 1,
+                               -((time_car / time_pt_peak_for_gap) - 1)),
+    relative_gap_time = round(relative_gap_time, 2)
   ) |>
     filter(!is.nan(time_car))
 
@@ -93,6 +105,7 @@ mun_stats_gap_sf <- municipios |>
     left_join(mun_stats_gap, by = "mun_id")
 
 mapview(mun_stats_gap_sf, zcol = "accessibility_gap")
+mapview(mun_stats_gap_sf, zcol = "relative_gap_time")
 # mapview(mun_stats_gap_sf, zcol = "time_car")
 # mapview(mun_stats_gap_sf, zcol = "time_pt_peak")
 
@@ -136,24 +149,28 @@ hex_stats_gap_money <- costs_car_grid |>
     left_join(costs_pt_grid, by = "id_grid_origin") |>
     filter(!is.na(cost_car)) |> # only grids where car cost was computed
     rename(grid_id = id_grid_origin) |>
-    mutate(
-        # Where PT has no fare (NA = unreachable or no itinerary), assign ceiling.
-        # Max single fare in AML is ~€10.
-        cost_pt_for_gap = if_else(is.na(cost_pt), 10, cost_pt),
-        # Gap in €: positive = PT more expensive than car (per trip)
-        cost_gap = round(cost_pt_for_gap - cost_car, 2),
-        trips = trips_car # use car trips as reference weight for aggregation
-    ) |>
-  mutate(relative_affordability_gap_cost <- ifelse(cost_pt_for_gap >= cost_car,
-                                                   ((cost_pt_for_gap / cost_car) - 1) * 100,
-                                                   -((cost_car / cost_pt_for_gap) - 1) * 100)
+  mutate(
+    # Assign €10 ceiling if PT is unreachable
+    cost_pt_for_gap = if_else(is.na(cost_pt), 10, cost_pt),
+    
+    # Absolute gap in Euros, positive = PT more expensive than car
+    cost_gap = round(cost_pt_for_gap - cost_car, 2),
+    trips = trips_car,
+    
+    # Relative cost index (0 = same cost)
+    # Positive = PT is more expensive | Negative = PT is cheaper
+    relative_gap_cost = ifelse(cost_pt_for_gap >= cost_car,
+                                 (cost_pt_for_gap / cost_car) - 1,
+                                 -((cost_car / cost_pt_for_gap) - 1)),
+    relative_gap_cost = round(relative_gap_cost, 2)
   ) |>
-    left_join(grid_freg_mun |> select(grid_id, freg_id, mun_id), by = "grid_id")
+  left_join(grid_freg_mun |> select(grid_id, freg_id, mun_id), by = "grid_id")
 
 summary(hex_stats_gap_money)
 
 # Viz Check
 mapview(grid |> mutate(grid_id = as.character(id)) |> left_join(hex_stats_gap_money), zcol = "cost_gap")
+mapview(grid |> mutate(grid_id = as.character(id)) |> left_join(hex_stats_gap_money), zcol = "relative_gap_cost")
 # mapview(grid |> mutate(grid_id = as.character(id)) |> left_join(hex_stats_gap_money), zcol = "cost_car")
 # mapview(grid |> mutate(grid_id = as.character(id)) |> left_join(hex_stats_gap_money), zcol = "cost_pt")
 
@@ -168,13 +185,20 @@ freg_stats_gap_money <- hex_stats_gap_money |>
         n_cells_no_pt_fare = sum(is.na(cost_pt)),
         .groups = "drop"
     ) |>
-    mutate(
-        cost_gap = round(cost_pt - cost_car, 2),
-        freg_id  = as.character(freg_id)
-    ) |>
-  mutate(relative_affordability_gap_cost <- ifelse(cost_pt_for_gap >= cost_car,
-                                                   ((cost_pt_for_gap / cost_car) - 1) * 100,
-                                                   -((cost_car / cost_pt_for_gap) - 1) * 100)
+  mutate(
+    freg_id   = as.character(freg_id),
+    # Assign €10 ceiling if PT is unreachable
+    cost_pt_for_gap = if_else(is.na(cost_pt), 10, cost_pt),
+    
+    # Absolute gap in Euros, positive = PT more expensive than car
+    cost_gap = round(cost_pt_for_gap - cost_car, 2),
+    
+    # Relative cost index (0 = same cost)
+    # Positive = PT is more expensive | Negative = PT is cheaper
+    relative_gap_cost = ifelse(cost_pt_for_gap >= cost_car,
+                               (cost_pt_for_gap / cost_car) - 1,
+                               -((cost_car / cost_pt_for_gap) - 1)),
+    relative_gap_cost = round(relative_gap_cost, 2)
   ) |>
     filter(!is.nan(cost_car))
 
@@ -184,6 +208,7 @@ freg_stats_gap_money_sf <- freguesias |>
     left_join(freg_stats_gap_money, by = c("dtmnfr" = "freg_id"))
 
 mapview(freg_stats_gap_money_sf, zcol = "cost_gap")
+mapview(freg_stats_gap_money_sf, zcol = "relative_gap_cost")
 
 # at municipio level: re-weight grid means by trips --------------------------------
 mun_stats_gap_money <- hex_stats_gap_money |>
@@ -196,13 +221,20 @@ mun_stats_gap_money <- hex_stats_gap_money |>
         n_cells_no_pt_fare = sum(is.na(cost_pt)),
         .groups = "drop"
     ) |>
-    mutate(
-        cost_gap = round(cost_pt - cost_car,2),
-        mun_id   = as.character(mun_id)
-    ) |>
-  mutate(relative_affordability_gap_cost <- ifelse(cost_pt_for_gap >= cost_car,
-                                                   ((cost_pt_for_gap / cost_car) - 1) * 100,
-                                                   -((cost_car / cost_pt_for_gap) - 1) * 100)
+  mutate(
+    mun_id   = as.character(mun_id),
+    # Assign €10 ceiling if PT is unreachable
+    cost_pt_for_gap = if_else(is.na(cost_pt), 10, cost_pt),
+    
+    # Absolute gap in Euros, positive = PT more expensive than car
+    cost_gap = round(cost_pt_for_gap - cost_car, 2),
+    
+    # Relative cost index (0 = same cost)
+    # Positive = PT is more expensive | Negative = PT is cheaper
+    relative_gap_cost = ifelse(cost_pt_for_gap >= cost_car,
+                               (cost_pt_for_gap / cost_car) - 1,
+                               -((cost_car / cost_pt_for_gap) - 1)),
+    relative_gap_cost = round(relative_gap_cost, 2)
   ) |>
     filter(!is.nan(cost_car))
 
@@ -213,6 +245,7 @@ mun_stats_gap_money_sf <- municipios |>
     left_join(mun_stats_gap_money, by = "mun_id")
 
 mapview(mun_stats_gap_money_sf, zcol = "cost_gap")
+mapview(mun_stats_gap_money_sf, zcol = "relative_gap_cost")
 
 # Export ------------------------------------------------------------------
 write.csv(hex_stats_gap_money, IMPT_URL(sprintf("%s/grid_accessibility_gap_money.csv", output_dir)), row.names = FALSE)
