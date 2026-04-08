@@ -1,16 +1,13 @@
 
-### Script inquerito workshop TML
+### Script inquerito workshop TML 9 maio 2026
 
-library(dplyr)
-library(tidyr)
-library(readr)
-library(mapview)
-library(ggplot2)
 library(tidyverse)
+library(sf)
+library(mapview)
 library(ggrepel)
 
 # 1. Carregar os dados (StringsAsFactors garante que tratamos texto como texto)
-respostas_raw <- read_csv("WORKSHOP/IMPTWorkshop (Responses).csv")
+respostas_raw <- read_csv("data/IMPTWorkshop (Responses).csv")
 
 # 2. Identificar as colunas que contêm os nomes das freguesias
 # Procuramos por qualquer coluna que contenha "Freguesia" no nome
@@ -81,7 +78,9 @@ mapview(dados_mapa, zcol = "IMPT", na.color = "transparent") +
 
 ###### IMPORT FREGUESIAS GEOJSON
 
-Resultados_IMPT <- st_read("WORKSHOP/freguesias_aggregated.geojson") |> 
+impt_pca <- st_read("https://ushift.tecnico.ulisboa.pt/content/impt/freguesias_aggregated.geojson")
+
+Resultados_IMPT <- impt_pca|> 
   select("id","name", "IMPT_entropy_pca_pass", "Accessibility_Index", "Affordability_Index_pass", "Safety_Index", "Mobility_Index") |> 
   rename(freguesia = name, 
          IMPT = IMPT_entropy_pca_pass, 
@@ -160,7 +159,7 @@ top_gaps_saf <- comparison_final %>%
 
 print(top_gaps_saf)
   
-top_gaps_mob <- comparison_final %>%
+top_gaps_mob <- comparisAffordability_Indexon_final %>%
   select(freguesia, Mobility_Index_model, Mobility_Index_survey, gap_mob) %>%
   arrange(desc(abs(gap_mob))) %>%
   head(10)  
@@ -286,3 +285,19 @@ ggplot(comparison_final, aes(x = Safety_Index_model, y = Safety_Index_survey)) +
 
 
 
+# mapview side by side -----------------------------------------------------
+
+map_impt = mapview(Resultados_IMPT, zcol = "IMPT", layer.name = "IMPT") +
+  mapview(Resultados_IMPT, zcol = "Accessibility_Index", layer.name = "PCA Accessibility", hide = TRUE) +
+  mapview(Resultados_IMPT, zcol = "Affordability_Index", layer.name = "PCA Affordability (single fare)", hide = TRUE) +
+  mapview(Resultados_IMPT, zcol = "Safety_Index", layer.name = "PCA Safety", hide = TRUE) +
+  mapview(Resultados_IMPT, zcol = "Mobility_Index", layer.name = "PCA Mobility", hide = TRUE)
+
+map_survey = mapview(dados_mapa, zcol = "IMPT", na.color = "transparent") + 
+  mapview(dados_mapa, zcol = "Accessibility_Index", hide = TRUE , na.color = "transparent") +
+  mapview(dados_mapa, zcol = "Affordability_Index", hide = TRUE , na.color = "transparent") +
+  mapview(dados_mapa, zcol = "Safety_Index", hide = TRUE , na.color = "transparent") +
+  mapview(dados_mapa, zcol = "Mobility_Index", hide = TRUE , na.color = "transparent")
+
+map_together <- leafsync::sync(map_impt, map_survey)
+map_together
