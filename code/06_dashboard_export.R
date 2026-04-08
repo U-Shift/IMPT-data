@@ -638,6 +638,7 @@ replace_anywhere <- list(
   # From, to
   c("navegante", "pass"),
   c("singlefare", "no_pass"),
+  c("sf", "no_pass"),
   c("nav", "pass"),
   c("carro", "car"),
   c("private_vehicle", "car"),
