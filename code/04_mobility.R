@@ -1,7 +1,7 @@
 # Compute mobility parameters for every mode
 # Purpose     Determine availability/coverage of PT, shared mobility, existence of infrastructure (pedestrian and cycling)
 # Scale       hex, parish, municipality
-# Issue       -
+# Issues      Service area buffers not working yet (ORS issue)
 
 
 library(tidytransit)
@@ -13,9 +13,13 @@ library(tidygraph)
 library(tidytransit)
 library(sfnetworks)
 library(dplyr)
+library(openrouteservice)
 
 
 # Availability/coverage of public transportation -----------------------------------------------------------------------
+options(openrouteservice.url = "https://server.ushift.pt/ors/v2/")
+openrouteservice::ors_api_key("AMwi5LU1NCe1ERyQuUHTe2pulOFKcdq0=")
+
 
 # Start by getting all PT stops in AML
 gtfs_paths <- list.files(IMPT_URL("/gtfs/processed"), pattern="\\.zip$" , full.names = TRUE)
@@ -30,7 +34,7 @@ for (i in gtfs_paths) {
 }
 # mapview(all_stops, legend=FALSE)
 
-# Create buffers for all PT stops
+# Create euclidean buffers for all PT stops
 all_stops_combined = bind_rows(all_stops) |> st_as_sf() |> st_filter(limit_bbox)
 # mapview(all_stops_combined, legend=FALSE)
 all_stops_combined <- all_stops_combined |> select(stop_id, stop_code, stop_name, geometry)
@@ -38,7 +42,22 @@ stops_buffers <- st_buffer(
   # Convert to 3857 crs
   all_stops_combined |> st_transform(3857), 
   dist = 500
-) #500m buffer around stops
+) #500m euclidean buffer around stops
+
+# # Create service area buffers for all PT stops
+# all_stops_combined_2 <- all_stops_combined |> st_transform(4326)
+# stop_coordinates <- st_coordinates(all_stops_combined_2) |> as.data.frame() |> select(X, Y) |> rename(lon=X, lat=Y)
+# stop_service_areas <- ors_isochrones(
+#   locations = stop_coordinates,
+#   profile = "foot-walking",
+#   range = 500,
+#   range_type = "distance"
+# )
+# stops_service_buffers_500m <- st_buffer(
+#   # Convert to 3857 crs
+#   all_stops_combined |> st_transform(3857), 
+#   dist = 500
+# ) #500m service area buffer around stops
 
 # Evaluate population coverage by PT stop
 # mapview(census, zcol="N_INDIVIDUOS")
