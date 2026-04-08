@@ -5,7 +5,7 @@
 # When updated, data should be uploaded to the IST serve through SSH, to serve the web dashboard
 # install.packages("ssh")
 library(ssh)
-session <- ssh_connect("ist1108284@sigma.ist.utl.pt")
+session <- ssh_connect("ist155593@sigma.ist.utl.pt")
 print(session)
 
 # 2. Associate base layers to nuts  -------------------------------------------------
@@ -214,13 +214,13 @@ grid_aggregated = grid_aggregated |>
       rename_with(~ paste0("affordability_pt_pass_", .), -id),
     by="id"
   ) |> 
-  left_join(
-    grid_affordability_composite |> 
-      rename(id=grid_id) |>
-      select(id, transp_inc_comp_nav, transp_inc_comp_sf, h_transp_inc_comp_nav, h_transp_inc_comp_sf) |>
-      rename_with(~ paste0("affordability_", .), -id),
-    by="id"
-  ) |> 
+  # left_join(
+  #   grid_affordability_composite |> 
+  #     rename(id=grid_id) |>
+  #     select(id, transp_inc_comp_nav, transp_inc_comp_sf, h_transp_inc_comp_nav, h_transp_inc_comp_sf) |>
+  #     rename_with(~ paste0("affordability_", .), -id),
+  #   by="id"
+  # ) |> 
   # Safety
   left_join(
     grid_safety |> 
@@ -705,9 +705,9 @@ write.csv(municipios_aggregated |> st_drop_geometry(), IMPT_URL(paste(output_dir
 
 jsonlite::write_json(champions_list, IMPT_URL(paste(output_dir, "champions.json", sep="/")), pretty = TRUE, auto_unbox = TRUE)
 
-length(names(grid_aggregated)) # 829
-length(names(freguesias_aggregated)) # 1051
-length(names(municipios_aggregated)) # 1042
+length(names(grid_aggregated)) # 830
+length(names(freguesias_aggregated)) # 1056
+length(names(municipios_aggregated)) # 1047
 
 freguesias_aggregated = read.csv(IMPT_URL(paste(output_dir, "freguesias_aggregated.csv", sep="/")))
 grid_aggregated = read.csv(IMPT_URL(paste(output_dir, "grid_aggregated.csv", sep="/")))
