@@ -214,6 +214,13 @@ grid_aggregated = grid_aggregated |>
       rename_with(~ paste0("affordability_pt_pass_", .), -id),
     by="id"
   ) |> 
+  left_join(
+    grid_affordability_composite |> 
+      rename(id=grid_id) |>
+      select(id, transp_inc_comp_nav, transp_inc_comp_sf, h_transp_inc_comp_nav, h_transp_inc_comp_sf) |>
+      rename_with(~ paste0("affordability_", .), -id),
+    by="id"
+  ) |> 
   # Safety
   left_join(
     grid_safety |> 
@@ -362,6 +369,14 @@ freguesias_aggregated = freguesias_aggregated |>
       rename(id=Origin_dicofre24) |>
       mutate(id=as.character(id)) |>
       rename_with(~ paste0("affordability_pt_pass_", .), -id),
+    by="id"
+  ) |>
+  left_join(
+    freguesia_affordability_composite |> 
+      rename(id=dtmnfr) |>
+      mutate(id=as.character(id)) |>
+      select(id, transp_inc_comp_nav, transp_inc_comp_sf, h_transp_inc_comp_nav, h_transp_inc_comp_sf) |>
+      rename_with(~ paste0("affordability_", .), -id),
     by="id"
   ) |>
   # Safety
@@ -524,6 +539,13 @@ municipios_aggregated = municipios_aggregated |>
       left_join(mun_nuts |> select(id, municipio), by="municipio") |>
       select(-municipio) |>
       rename_with(~ paste0("affordability_pt_pass_", .), -id),
+    by="id"
+  ) |>
+  left_join(
+    municipio_affordability_composite |> 
+      rename(id=mun_id) |>
+      select(id, transp_inc_comp_nav, transp_inc_comp_sf, h_transp_inc_comp_nav, h_transp_inc_comp_sf) |>
+      rename_with(~ paste0("affordability_", .), -id),
     by="id"
   ) |>
   # Safety

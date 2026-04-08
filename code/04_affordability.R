@@ -204,6 +204,7 @@ aggregate_to_level <- function(df, lookup, by_col) {
 }
 
 affordability_municipio_composite <- aggregate_to_level(affordability_freguesia_composite, census24_fregmun_pop, "mun_id")
+write_csv(affordability_municipio_composite, "/data/IMPT/affordability/affordability_municipio_composite.csv")
 
 
 
