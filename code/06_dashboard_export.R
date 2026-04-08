@@ -1,4 +1,4 @@
-# ATTENTION! Make sure to run 00_data_load.R and 06_results.R before running this script -------------------------------------------------
+# ATTENTION! Make sure to run 00_data_load.R and 06_results_load.R before running this script -------------------------------------------------
 
 
 # SSH authentication ------------------------------------------------------
@@ -12,8 +12,8 @@ print(session)
 # grid = st_read(IMPT_URL("/geo/grelha_h3_r8.gpkg"))
 # freguesias = st_read(IMPT_URL("/geo/freguesias_2024_unique.gpkg"))
 # municipios = st_read(IMPT_URL("/geo/municipios_2024.gpkg"))
-# 
-# freguesias = freguesias |> 
+#
+# freguesias = freguesias |>
 #   mutate(
 #     nuts2=ifelse(nuts2=="Grande Lisboa", "PT1B", "PT1A"),
 #     group_id = substr(dtmnfr, 1, 4)
@@ -27,11 +27,11 @@ print(session)
 # freguesias
 # mapview(freguesias, zcol="group_id")
 # write.csv(
-#   freguesias |> 
-#     select(id,name,region_id,group_id) |> 
+#   freguesias |>
+#     select(id,name,region_id,group_id) |>
 #     st_drop_geometry() |>
-#     rename(freg_id=id, mun_id=group_id, nuts_id=region_id), 
-#   "useful_data/freguesias_nuts.csv", 
+#     rename(freg_id=id, mun_id=group_id, nuts_id=region_id),
+#   "useful_data/freguesias_nuts.csv",
 #   row.names = FALSE
 # )
 
@@ -54,7 +54,7 @@ print(session)
 # municipios
 # mapview(municipios, zcol="nuts")
 # freguesias = freguesias |> select(-municipio)
-# 
+#
 # grid_centroids = st_centroid(grid)
 # grid_nuts = st_join(grid_centroids, freguesias |> select(id, region_id) |> rename(group_id=id), join = st_within) |>
 #   st_drop_geometry()
@@ -63,553 +63,556 @@ print(session)
 # write.csv(
 #   grid_nuts |> st_drop_geometry() |> rename(grid_id=id, freg_id=group_id, nuts_id=region_id) |>
 #   left_join(freguesias |> st_drop_geometry() |> select(id, group_id) |> rename(freg_id=id, mun_id=group_id), by="freg_id"),
-#   "useful_data/grid_nuts.csv", 
+#   "useful_data/grid_nuts.csv",
 #   row.names = FALSE
 # )
-# 
+#
 # grid = grid |>
 #   left_join(grid_nuts, by = "id") |>
 #   filter(!is.na(region_id)) |>
 #   mutate(name=id)
 # grid
 # mapview(grid, zcol="nuts")
-# 
+#
 # st_write(grid, IMPT_URL("dashboard_data/grid.gpkg"), delete_dsn = TRUE)
 # st_write(freguesias, IMPT_URL("dashboard_data/freguesias.gpkg"), delete_dsn = TRUE)
 # st_write(municipios, IMPT_URL("dashboard_data/municipios.gpkg"), delete_dsn = TRUE)
 
-DATA_LOCATION = "https://impt.server.ushift.pt" # To get data from server
+DATA_LOCATION <- "https://impt.server.ushift.pt" # To get data from server
 
-grid = st_read(IMPT_URL("/dashboard_data/grid.gpkg"))
-freguesias = st_read(IMPT_URL("/dashboard_data/freguesias.gpkg"))
-municipios = st_read(IMPT_URL("/dashboard_data/municipios.gpkg"))
-mun_nuts = read.csv("useful_data/mun_nuts.csv") |> rename(nuts=nuts_id, id=mun_id,municipio=name)
-freg_nuts = read.csv("useful_data/freguesias_nuts.csv") |> rename(id=freg_id, group_id=mun_id, freguesia=name, region_id=nuts_id)
+grid <- st_read(IMPT_URL("/dashboard_data/grid.gpkg"))
+freguesias <- st_read(IMPT_URL("/dashboard_data/freguesias.gpkg"))
+municipios <- st_read(IMPT_URL("/dashboard_data/municipios.gpkg"))
+mun_nuts <- read.csv("useful_data/mun_nuts.csv") |> rename(nuts = nuts_id, id = mun_id, municipio = name)
+freg_nuts <- read.csv("useful_data/freguesias_nuts.csv") |> rename(id = freg_id, group_id = mun_id, freguesia = name, region_id = nuts_id)
 
 # 3.1 Merge with global results  -------------------------------------------------
 # Attention! Run 06_results.R before running this section, to have the global results dataframes available in the environment
 
-modes = c("", "_bike", "_walk", "_pt", "_car")
+modes <- c("", "_bike", "_walk", "_pt", "_car")
 
-municipios_aggregated = municipios 
-for(m in modes) {
+municipios_aggregated <- municipios
+for (m in modes) {
   message("Mode ", m, "...")
-  
-  impt = read.csv(IMPT_URL(sprintf("/impt/results/IMPT_PCA_and_Entropy_Scores%s_municipio.csv", m))) |> 
-    rename(id=mun_id) |>
+
+  impt <- read.csv(IMPT_URL(sprintf("/impt/results/IMPT_PCA_and_Entropy_Scores%s_municipio.csv", m))) |>
+    rename(id = mun_id) |>
     mutate(
       # All columns that start with "IMPT_", mutate to 100-.x
       across(starts_with("IMPT_"), ~ 100 - .)
     )
-  impt = impt |> 
+  impt <- impt |>
     rename_with(~ paste0(., m), contains("_Index"))
-  municipios_aggregated = municipios_aggregated |> left_join(impt, by="id")
+  municipios_aggregated <- municipios_aggregated |> left_join(impt, by = "id")
 }
 names(municipios_aggregated)
 
-freguesias_aggregated = freguesias
-for(m in modes) {
+freguesias_aggregated <- freguesias
+for (m in modes) {
   message("Mode ", m, "...")
-  
-  impt = read.csv(IMPT_URL(sprintf("/impt/results/IMPT_PCA_and_Entropy_Scores%s_freguesia.csv", m))) |> 
-    rename(id=dtmnfr) |>
+
+  impt <- read.csv(IMPT_URL(sprintf("/impt/results/IMPT_PCA_and_Entropy_Scores%s_freguesia.csv", m))) |>
+    rename(id = dtmnfr) |>
     mutate(
       # All columns that start with "IMPT_", mutate to 100-.x
       across(starts_with("IMPT_"), ~ 100 - .)
     )
-  
-  impt = impt |> 
+
+  impt <- impt |>
     rename_with(~ paste0(., m), contains("_Index"))
-  
-  freguesias_aggregated = freguesias_aggregated |> left_join(impt |> mutate(id=as.character(id)), by="id")
+
+  freguesias_aggregated <- freguesias_aggregated |> left_join(impt |> mutate(id = as.character(id)), by = "id")
 }
 names(freguesias_aggregated)
 
-grid_aggregated = grid
-for(m in modes) {
+grid_aggregated <- grid
+for (m in modes) {
   message("Mode ", m, "...")
-  
-  impt = read.csv(IMPT_URL(sprintf("/impt/results/IMPT_PCA_and_Entropy_Scores%s_grid.csv", m))) |> 
-    rename(id=grid_id) |>
+
+  impt <- read.csv(IMPT_URL(sprintf("/impt/results/IMPT_PCA_and_Entropy_Scores%s_grid.csv", m))) |>
+    rename(id = grid_id) |>
     mutate(
       # All columns that start with "IMPT_", mutate to 100-.x
       across(starts_with("IMPT_"), ~ 100 - .)
     )
-  
-  impt = impt |> 
+
+  impt <- impt |>
     rename_with(~ paste0(., m), contains("_Index"))
-  
-  grid_aggregated = grid_aggregated |> left_join(impt, by="id")
+
+  grid_aggregated <- grid_aggregated |> left_join(impt, by = "id")
 }
 names(grid_aggregated)
 
 # 3.2 Merge with dimensions indicators  -------------------------------------------------
-grid_aggregated = grid_aggregated |> 
+grid_aggregated <- grid_aggregated |>
   # Accessibility
   left_join(
-    grid_accessibility |> 
+    grid_accessibility |>
       select(-starts_with("n_")) |> # Remove cols that start with n_ (duplicating pois data)
-      rename_with(~ paste0("census_", .), c(-starts_with("pois_"), -id, -starts_with("access_")))
-    , by="id") |> # Accessibility + census data
+      rename_with(~ paste0("census_", .), c(-starts_with("pois_"), -id, -starts_with("access_"))),
+    by = "id"
+  ) |> # Accessibility + census data
   # Mobility
   left_join(
     grid_mobility_costs |>
-      select(id, starts_with("mobility_cost")),  # Ignore n_ pois repeated from accessibility and census data
-    by="id"
-  ) |> 
-  left_join(
-    grid_commuting |> 
-      rename(id=id_grid_origin) |>
-      select(-starts_with("PNA_"), -starts_with("trips_na")) |>
-      rename_with(~ paste0("mobility_commuting_", .), -id),
-    by="id"
+      select(id, starts_with("mobility_cost")), # Ignore n_ pois repeated from accessibility and census data
+    by = "id"
   ) |>
   left_join(
-    grid_transit |> 
+    grid_commuting |>
+      rename(id = id_grid_origin) |>
+      select(-starts_with("PNA_"), -starts_with("trips_na")) |>
+      rename_with(~ paste0("mobility_commuting_", .), -id),
+    by = "id"
+  ) |>
+  left_join(
+    grid_transit |>
       rename_with(~ paste0("mobility_transit_", .), -id),
-    by="id"
+    by = "id"
   ) |>
   left_join(
     grid_transfers |>
-      rename(id=id_grid_origin) |>
+      rename(id = id_grid_origin) |>
       select(id, weighted_mean_transfers) |>
-      rename(mobility_transit_commuting_mean_transfers=weighted_mean_transfers),
+      rename(mobility_transit_commuting_mean_transfers = weighted_mean_transfers),
     by = "id"
-  ) |> 
-  left_join(
-    grid_stop_coverage |> 
-      select(-X) |>
-      rename(id=grid_id) |>
-      rename_with(~ paste0("mobility_stop_coverage_", .), -id),
-    by="id"
   ) |>
   left_join(
-    grid_shared_mobility |> 
+    grid_stop_coverage |>
+      select(-X) |>
+      rename(id = grid_id) |>
+      rename_with(~ paste0("mobility_stop_coverage_", .), -id),
+    by = "id"
+  ) |>
+  left_join(
+    grid_shared_mobility |>
       select(-X) |>
       rename_with(~ paste0("mobility_", .), -id),
-    by="id"
+    by = "id"
   ) |>
   left_join(
-    grid_mobility_infrastructure |> 
+    grid_mobility_infrastructure |>
       select(-X) |>
       rename_with(~ paste0("mobility_infrastructure_", .), -id),
-    by="id"
+    by = "id"
   ) |>
   # Affordability
   left_join(
-    grid_affordability_car |> 
-      rename(id=id_grid_origin) |>
+    grid_affordability_car |>
+      rename(id = id_grid_origin) |>
       rename_with(~ paste0("affordability_car_", .), -id),
-    by="id"
+    by = "id"
   ) |>
   left_join(
-    grid_affordability_pt_single_fare |> 
-      rename(id=id_grid_origin) |>
+    grid_affordability_pt_single_fare |>
+      rename(id = id_grid_origin) |>
       rename_with(~ paste0("affordability_pt_no_pass_", .), -id),
-    by="id"
+    by = "id"
   ) |>
   left_join(
-    grid_affordability_pt_pass |> 
-      rename(id=id_grid_origin) |>
+    grid_affordability_pt_pass |>
+      rename(id = id_grid_origin) |>
       rename_with(~ paste0("affordability_pt_pass_", .), -id),
-    by="id"
-  ) |> 
+    by = "id"
+  ) |>
   # left_join(
-  #   grid_affordability_composite |> 
+  #   grid_affordability_composite |>
   #     rename(id=grid_id) |>
   #     select(id, transp_inc_comp_nav, transp_inc_comp_sf, h_transp_inc_comp_nav, h_transp_inc_comp_sf) |>
   #     rename_with(~ paste0("affordability_", .), -id),
   #   by="id"
-  # ) |> 
+  # ) |>
   # Safety
   left_join(
-    grid_safety |> 
-      rename(id=grid_id) |>
+    grid_safety |>
+      rename(id = grid_id) |>
       rename_with(~ paste0("safety_", .), -id),
-    by="id"
+    by = "id"
   ) |>
   left_join(
-    grid_safety_inner |> 
-      rename(id=grid_id) |>
-      rename(total_veiculos_car=veh_motorizado, total_veiculos_bike=veh_bicicleta, total_veiculos_walk=veh_peoes) |>
+    grid_safety_inner |>
+      rename(id = grid_id) |>
+      rename(total_veiculos_car = veh_motorizado, total_veiculos_bike = veh_bicicleta, total_veiculos_walk = veh_peoes) |>
       rename_with(~ paste0("safety_inner_", .), -id),
-    by="id"
+    by = "id"
   ) |>
   # Additional indicators
   left_join(
-    grid_pois |> 
+    grid_pois |>
       rename_with(~ paste0("pois_", .), -id),
-    by="id"
+    by = "id"
   ) |>
   left_join(
     grid_modal_share_census |>
-      select(-dicofre, -dtmnfr) |> 
+      select(-dicofre, -dtmnfr) |>
       rename_with(~ paste0("modal_census_", .), -id),
-    by="id"
+    by = "id"
   ) |>
   left_join(
-    grid_veh_ownership |> 
+    grid_veh_ownership |>
       select(-dicofre) |>
       rename_with(~ paste0("veh_ownership_", .), -id),
-    by="id"   
+    by = "id"
   ) |>
   left_join(
     grid_census_income |>
-      rename(id=grid_id) |>
+      rename(id = grid_id) |>
       rename_with(~ paste0("census_income_", .), -id),
-    by="id"
+    by = "id"
   ) |>
   left_join(
     grid_census_landuse |>
       rename_with(~ paste0("census_landuse_", .), -id),
-    by="id"
-  ) |>
-  left_join(
-    grid_modal_share_imob |> 
-      rename(id=grid_id) |>
-      rename_with(~ paste0("modal_imob_", .), -id),
-    by="id"
-  ) |>
-  left_join(
-    grid_access_gap_time |> 
-      rename(id=grid_id) |>
-      rename_with(~ paste0("access_gap_time_", .), -id),
-    by="id"
-  ) |>
-  left_join(
-    grid_access_gap_money |> 
-      rename(id=grid_id) |>
-      rename_with(~ paste0("access_gap_money_", .), -id),
-    by="id"
-  )
-names(grid_aggregated)
-
-freguesias_aggregated = freguesias_aggregated |> 
-  # Accessibility
-  left_join(
-    freguesia_accessibility |> 
-      rename(id=dtmnfr) |>
-      mutate(id=as.character(id)) |>
-      select(-starts_with("n_")) |> # Remove cols that start with n_ (duplicating pois data)
-      rename_with(~ paste0("census_", .), c(-starts_with("pois_"), -id, -starts_with("access_")))
-    , by="id") |> # Accessibility + census data
-  # Mobility
-  left_join(
-    freguesia_mobility_costs |>
-      rename(id=dtmnfr) |>
-      mutate(id=as.character(id)) |>
-      select(id, starts_with("mobility_cost")), # Ignore n_ pois repeated from accessibility and census data
-    by="id"
-  ) |> 
-  left_join(
-    freguesia_commuting |> 
-      rename(id=Origin_dicofre24) |>
-      mutate(id=as.character(id)) |>
-      select(-starts_with("PNA_"), -starts_with("trips_na")) |>
-      rename_with(~ paste0("mobility_commuting_", .), -id),
-    by="id"
-  ) |>
-  left_join(
-    freguesia_transit |> 
-      rename(id=dtmnfr) |>
-      mutate(id=as.character(id)) |>
-      rename_with(~ paste0("mobility_transit_", .), -id),
-    by="id"
-  ) |>
-  left_join(
-    freguesia_transfers |>
-      rename(id=Origin_dicofre24) |>
-      mutate(id=as.character(id)) |>
-      select(id, weighted_mean_transfers) |>
-      rename(mobility_transit_commuting_mean_transfers=weighted_mean_transfers),
     by = "id"
   ) |>
   left_join(
-    freguesia_stop_coverage |> 
+    grid_modal_share_imob |>
+      rename(id = grid_id) |>
+      rename_with(~ paste0("modal_imob_", .), -id),
+    by = "id"
+  ) |>
+  left_join(
+    grid_access_gap_time |>
+      rename(id = grid_id) |>
+      rename_with(~ paste0("access_gap_time_", .), -id),
+    by = "id"
+  ) |>
+  left_join(
+    grid_access_gap_money |>
+      rename(id = grid_id) |>
+      rename_with(~ paste0("access_gap_money_", .), -id),
+    by = "id"
+  )
+names(grid_aggregated)
+
+freguesias_aggregated <- freguesias_aggregated |>
+  # Accessibility
+  left_join(
+    freguesia_accessibility |>
+      rename(id = dtmnfr) |>
+      mutate(id = as.character(id)) |>
+      select(-starts_with("n_")) |> # Remove cols that start with n_ (duplicating pois data)
+      rename_with(~ paste0("census_", .), c(-starts_with("pois_"), -id, -starts_with("access_"))),
+    by = "id"
+  ) |> # Accessibility + census data
+  # Mobility
+  left_join(
+    freguesia_mobility_costs |>
+      rename(id = dtmnfr) |>
+      mutate(id = as.character(id)) |>
+      select(id, starts_with("mobility_cost")), # Ignore n_ pois repeated from accessibility and census data
+    by = "id"
+  ) |>
+  left_join(
+    freguesia_commuting |>
+      rename(id = Origin_dicofre24) |>
+      mutate(id = as.character(id)) |>
+      select(-starts_with("PNA_"), -starts_with("trips_na")) |>
+      rename_with(~ paste0("mobility_commuting_", .), -id),
+    by = "id"
+  ) |>
+  left_join(
+    freguesia_transit |>
+      rename(id = dtmnfr) |>
+      mutate(id = as.character(id)) |>
+      rename_with(~ paste0("mobility_transit_", .), -id),
+    by = "id"
+  ) |>
+  left_join(
+    freguesia_transfers |>
+      rename(id = Origin_dicofre24) |>
+      mutate(id = as.character(id)) |>
+      select(id, weighted_mean_transfers) |>
+      rename(mobility_transit_commuting_mean_transfers = weighted_mean_transfers),
+    by = "id"
+  ) |>
+  left_join(
+    freguesia_stop_coverage |>
       select(-X) |>
-      left_join(freg_nuts |> select(id, freguesia), by="freguesia") |>
+      left_join(freg_nuts |> select(id, freguesia), by = "freguesia") |>
       select(-freguesia) |>
-      mutate(id=as.character(id)) |>
+      mutate(id = as.character(id)) |>
       rename_with(~ paste0("mobility_stop_coverage_", .), -id),
-    by="id"
+    by = "id"
   ) |>
   left_join(
-    freguesia_shared_mobility |> 
+    freguesia_shared_mobility |>
       select(-X) |>
-      rename(id=dtmnfr) |>
-      mutate(id=as.character(id)) |>
+      rename(id = dtmnfr) |>
+      mutate(id = as.character(id)) |>
       rename_with(~ paste0("mobility_", .), -id),
-    by="id"
+    by = "id"
   ) |>
   left_join(
-    freguesia_mobility_infrastructure |> 
+    freguesia_mobility_infrastructure |>
       select(-X) |>
-      rename(id=dtmnfr) |>
-      mutate(id=as.character(id)) |>
+      rename(id = dtmnfr) |>
+      mutate(id = as.character(id)) |>
       rename_with(~ paste0("mobility_infrastructure_", .), -id),
-    by="id"
+    by = "id"
   ) |>
   # Affordability
   left_join(
-    freguesia_affordability_car |> 
-      rename(id=Origin_dicofre24) |>
-      mutate(id=as.character(id)) |>
+    freguesia_affordability_car |>
+      rename(id = Origin_dicofre24) |>
+      mutate(id = as.character(id)) |>
       rename_with(~ paste0("affordability_car_", .), -id),
-    by="id"
+    by = "id"
   ) |>
   left_join(
-    freguesia_affordability_pt_single_fare |> 
-      rename(id=Origin_dicofre24) |>
-      mutate(id=as.character(id)) |>
+    freguesia_affordability_pt_single_fare |>
+      rename(id = Origin_dicofre24) |>
+      mutate(id = as.character(id)) |>
       rename_with(~ paste0("affordability_pt_no_pass_", .), -id),
-    by="id"
+    by = "id"
   ) |>
   left_join(
-    freguesia_affordability_pt_pass |> 
-      rename(id=Origin_dicofre24) |>
-      mutate(id=as.character(id)) |>
+    freguesia_affordability_pt_pass |>
+      rename(id = Origin_dicofre24) |>
+      mutate(id = as.character(id)) |>
       rename_with(~ paste0("affordability_pt_pass_", .), -id),
-    by="id"
+    by = "id"
   ) |>
   left_join(
-    freguesia_affordability_composite |> 
-      rename(id=dtmnfr) |>
-      mutate(id=as.character(id)) |>
+    freguesia_affordability_composite |>
+      rename(id = dtmnfr) |>
+      mutate(id = as.character(id)) |>
       select(id, transp_inc_comp_nav, transp_inc_comp_sf, h_transp_inc_comp_nav, h_transp_inc_comp_sf) |>
       rename_with(~ paste0("affordability_", .), -id),
-    by="id"
+    by = "id"
   ) |>
   # Safety
   left_join(
-    freguesia_safety |> 
-      rename(id=freg_id) |>
-      mutate(id=as.character(id)) |>
+    freguesia_safety |>
+      rename(id = freg_id) |>
+      mutate(id = as.character(id)) |>
       rename_with(~ paste0("safety_", .), -id),
-    by="id"
+    by = "id"
   ) |>
   left_join(
-    freguesia_safety_inner |> 
-      rename(id=freg_id) |>
-      mutate(id=as.character(id)) |>
-      rename(total_veiculos_car=veh_motorizado, total_veiculos_bike=veh_bicicleta, total_veiculos_walk=veh_peoes) |>
+    freguesia_safety_inner |>
+      rename(id = freg_id) |>
+      mutate(id = as.character(id)) |>
+      rename(total_veiculos_car = veh_motorizado, total_veiculos_bike = veh_bicicleta, total_veiculos_walk = veh_peoes) |>
       rename_with(~ paste0("safety_inner_", .), -id),
-    by="id"
+    by = "id"
   ) |>
   # Additional indicators
   left_join(
-    freguesia_pois |> 
-      rename(id=dtmnfr) |>
-      mutate(id=as.character(id)) |>
+    freguesia_pois |>
+      rename(id = dtmnfr) |>
+      mutate(id = as.character(id)) |>
       rename_with(~ paste0("pois_", .), -id),
-    by="id"
+    by = "id"
   ) |>
   left_join(
     freguesia_modal_share_census |>
-      rename(id=dtmnfr) |>
-      mutate(id=as.character(id)) |>
+      rename(id = dtmnfr) |>
+      mutate(id = as.character(id)) |>
       rename_with(~ paste0("modal_census_", .), -id),
-    by="id"
+    by = "id"
   ) |>
   left_join(
-    freguesia_veh_ownership |> 
-      rename(id=dicofre) |>
-      mutate(id=as.character(id)) |>
+    freguesia_veh_ownership |>
+      rename(id = dicofre) |>
+      mutate(id = as.character(id)) |>
       rename_with(~ paste0("veh_ownership_", .), -id),
-    by="id"
+    by = "id"
   ) |>
   left_join(
     freguesia_census_income |>
-      rename(id=freg_id) |>
-      mutate(id=as.character(id)) |>
+      rename(id = freg_id) |>
+      mutate(id = as.character(id)) |>
       rename_with(~ paste0("census_income_", .), -id),
-    by="id"
+    by = "id"
   ) |>
   left_join(
     freguesia_census_landuse |>
-      rename(id=freg_id) |>
-      mutate(id=as.character(id)) |>
+      rename(id = freg_id) |>
+      mutate(id = as.character(id)) |>
       rename_with(~ paste0("census_landuse_", .), -id),
-    by="id"
+    by = "id"
   ) |>
   left_join(
-    freguesia_modal_share_imob |> 
-      rename(id=freg_id) |>
-      mutate(id=as.character(id)) |>
+    freguesia_modal_share_imob |>
+      rename(id = freg_id) |>
+      mutate(id = as.character(id)) |>
       rename_with(~ paste0("modal_imob_", .), -id),
-    by="id"
+    by = "id"
   ) |>
   left_join(
-    freguesia_access_gap_time |> 
-      rename(id=freg_id) |>
-      mutate(id=as.character(id)) |>
+    freguesia_access_gap_time |>
+      rename(id = freg_id) |>
+      mutate(id = as.character(id)) |>
       rename_with(~ paste0("access_gap_time_", .), -id),
-    by="id"
+    by = "id"
   ) |>
   left_join(
-    freguesia_access_gap_money |> 
-      rename(id=freg_id) |>
-      mutate(id=as.character(id)) |>
+    freguesia_access_gap_money |>
+      rename(id = freg_id) |>
+      mutate(id = as.character(id)) |>
       rename_with(~ paste0("access_gap_money_", .), -id),
-    by="id"
+    by = "id"
   )
 names(freguesias_aggregated)
 
 
-municipios_aggregated = municipios_aggregated |> 
+municipios_aggregated <- municipios_aggregated |>
   # Accessibility
   left_join(
-    municipio_accessibility |> 
-      left_join(mun_nuts |> select(id, municipio), by="municipio") |>
+    municipio_accessibility |>
+      left_join(mun_nuts |> select(id, municipio), by = "municipio") |>
       select(-municipio) |>
       select(-starts_with("n_")) |> # Remove cols that start with n_ (duplicating pois data)
-      rename_with(~ paste0("census_", .), c(-starts_with("pois_"), -id, -starts_with("access_")))
-    , by="id") |> # Accessibility + census data
+      rename_with(~ paste0("census_", .), c(-starts_with("pois_"), -id, -starts_with("access_"))),
+    by = "id"
+  ) |> # Accessibility + census data
   # Mobility
   left_join(
     municipio_mobility_costs |>
-      left_join(mun_nuts |> select(id, municipio), by="municipio") |>
+      left_join(mun_nuts |> select(id, municipio), by = "municipio") |>
       select(-municipio) |>
       select(id, starts_with("mobility_cost")), # Ignore n_ pois repeated from accessibility and census data
-    by="id"
-  ) |> 
-  left_join(
-    municipio_commuting |> 
-      left_join(mun_nuts |> select(id, municipio), by="municipio") |>
-      select(-municipio) |>
-      select(-starts_with("PNA_"), -starts_with("trips_na")) |>
-      rename_with(~ paste0("mobility_commuting_", .), -id),
-    by="id"
-  ) |>
-  left_join(
-    municipio_transit |> 
-      left_join(mun_nuts |> select(id, municipio), by="municipio") |>
-      select(-municipio) |>
-      rename_with(~ paste0("mobility_transit_", .), -id),
-    by="id"
-  ) |>
-  left_join(
-    municipio_transfers |>
-      left_join(mun_nuts |> select(id, municipio), by="municipio") |>
-      select(-municipio) |>
-      select(id, weighted_mean_transfers) |>
-      rename(mobility_transit_commuting_mean_transfers=weighted_mean_transfers),
     by = "id"
   ) |>
   left_join(
-    municipio_stop_coverage |> 
+    municipio_commuting |>
+      left_join(mun_nuts |> select(id, municipio), by = "municipio") |>
+      select(-municipio) |>
+      select(-starts_with("PNA_"), -starts_with("trips_na")) |>
+      rename_with(~ paste0("mobility_commuting_", .), -id),
+    by = "id"
+  ) |>
+  left_join(
+    municipio_transit |>
+      left_join(mun_nuts |> select(id, municipio), by = "municipio") |>
+      select(-municipio) |>
+      rename_with(~ paste0("mobility_transit_", .), -id),
+    by = "id"
+  ) |>
+  left_join(
+    municipio_transfers |>
+      left_join(mun_nuts |> select(id, municipio), by = "municipio") |>
+      select(-municipio) |>
+      select(id, weighted_mean_transfers) |>
+      rename(mobility_transit_commuting_mean_transfers = weighted_mean_transfers),
+    by = "id"
+  ) |>
+  left_join(
+    municipio_stop_coverage |>
       select(-X) |>
-      left_join(mun_nuts |> select(id, municipio), by="municipio") |>
+      left_join(mun_nuts |> select(id, municipio), by = "municipio") |>
       select(-municipio) |>
       rename_with(~ paste0("mobility_stop_coverage_", .), -id),
-    by="id"
+    by = "id"
   ) |>
   left_join(
-    municipio_shared_mobility |> 
+    municipio_shared_mobility |>
       select(-X) |>
-      left_join(mun_nuts |> select(id, municipio), by="municipio") |>
+      left_join(mun_nuts |> select(id, municipio), by = "municipio") |>
       select(-municipio) |>
       rename_with(~ paste0("mobility_", .), -id),
-    by="id"
+    by = "id"
   ) |>
   left_join(
-    municipio_mobility_infrastructure |> 
+    municipio_mobility_infrastructure |>
       select(-X) |>
-      left_join(mun_nuts |> select(id, municipio), by="municipio") |>
+      left_join(mun_nuts |> select(id, municipio), by = "municipio") |>
       select(-municipio) |>
       rename_with(~ paste0("mobility_infrastructure_", .), -id),
-    by="id"
+    by = "id"
   ) |>
   # Affordability
   left_join(
-    municipio_affordability_car |> 
-      left_join(mun_nuts |> select(id, municipio), by="municipio") |>
+    municipio_affordability_car |>
+      left_join(mun_nuts |> select(id, municipio), by = "municipio") |>
       select(-municipio) |>
       rename_with(~ paste0("affordability_car_", .), -id),
-    by="id"
+    by = "id"
   ) |>
   left_join(
-    municipio_affordability_pt_single_fare |> 
-      left_join(mun_nuts |> select(id, municipio), by="municipio") |>
+    municipio_affordability_pt_single_fare |>
+      left_join(mun_nuts |> select(id, municipio), by = "municipio") |>
       select(-municipio) |>
       rename_with(~ paste0("affordability_pt_no_pass_", .), -id),
-    by="id"
+    by = "id"
   ) |>
   left_join(
-    municipio_affordability_pt_pass |> 
-      left_join(mun_nuts |> select(id, municipio), by="municipio") |>
+    municipio_affordability_pt_pass |>
+      left_join(mun_nuts |> select(id, municipio), by = "municipio") |>
       select(-municipio) |>
       rename_with(~ paste0("affordability_pt_pass_", .), -id),
-    by="id"
+    by = "id"
   ) |>
   left_join(
-    municipio_affordability_composite |> 
-      rename(id=mun_id) |>
+    municipio_affordability_composite |>
+      rename(id = mun_id) |>
       select(id, transp_inc_comp_nav, transp_inc_comp_sf, h_transp_inc_comp_nav, h_transp_inc_comp_sf) |>
       rename_with(~ paste0("affordability_", .), -id),
-    by="id"
+    by = "id"
   ) |>
   # Safety
   left_join(
-    municipio_safety |> 
-      rename(id=mun_id) |>
+    municipio_safety |>
+      rename(id = mun_id) |>
       rename_with(~ paste0("safety_", .), -id),
-    by="id"
-  ) |> 
+    by = "id"
+  ) |>
   left_join(
-    municipio_safety_inner |> 
-      rename(id=mun_id) |>
-      rename(total_veiculos_car=veh_motorizado, total_veiculos_bike=veh_bicicleta, total_veiculos_walk=veh_peoes) |>
+    municipio_safety_inner |>
+      rename(id = mun_id) |>
+      rename(total_veiculos_car = veh_motorizado, total_veiculos_bike = veh_bicicleta, total_veiculos_walk = veh_peoes) |>
       rename_with(~ paste0("safety_inner_", .), -id),
-    by="id"
+    by = "id"
   ) |>
   # Additional indicators
   left_join(
     municipio_pois |>
-      left_join(mun_nuts |> select(id, municipio), by="municipio") |>
+      left_join(mun_nuts |> select(id, municipio), by = "municipio") |>
       select(-municipio) |>
       rename_with(~ paste0("pois_", .), -id),
-    by="id"
+    by = "id"
   ) |>
   left_join(
-    municipio_modal_share_census |> 
-      rename(id=mun_id) |>
+    municipio_modal_share_census |>
+      rename(id = mun_id) |>
       rename_with(~ paste0("modal_census_", .), -id),
-    by="id"
-  ) |> 
+    by = "id"
+  ) |>
   left_join(
-    municipio_veh_ownership |> 
+    municipio_veh_ownership |>
       rename_with(~ paste0("veh_ownership_", .), -id),
-    by="id"
+    by = "id"
   ) |>
   left_join(
     municipio_census_income |>
-      rename(id=mun_id) |>
+      rename(id = mun_id) |>
       rename_with(~ paste0("census_income_", .), -id),
-    by="id"
+    by = "id"
   ) |>
   left_join(
     municipio_census_landuse |>
-      rename(id=mun_id) |>
+      rename(id = mun_id) |>
       rename_with(~ paste0("census_landuse_", .), -id),
-    by="id"
+    by = "id"
   ) |>
   left_join(
-    municipio_modal_share_imob |> 
-      rename(id=mun_id) |>
+    municipio_modal_share_imob |>
+      rename(id = mun_id) |>
       rename_with(~ paste0("modal_imob_", .), -id),
-    by="id"
+    by = "id"
   ) |>
   left_join(
-    municipio_access_gap_time |> 
-      rename(id=mun_id) |>
+    municipio_access_gap_time |>
+      rename(id = mun_id) |>
       rename_with(~ paste0("access_gap_time_", .), -id),
-    by="id"
-  ) |> 
+    by = "id"
+  ) |>
   left_join(
-    municipio_access_gap_money |> 
-      rename(id=mun_id) |>
+    municipio_access_gap_money |>
+      rename(id = mun_id) |>
       rename_with(~ paste0("access_gap_money_", .), -id),
-    by="id"
+    by = "id"
   )
 names(municipios_aggregated)
 
@@ -617,21 +620,21 @@ names(municipios_aggregated)
 # Normalize data ----------------------------------------------------------
 
 # Rename "União das Freguesias de" to "UF" at freguesias_aggregated
-freguesias_aggregated = freguesias_aggregated |> 
+freguesias_aggregated <- freguesias_aggregated |>
   mutate(name = gsub("União das freguesias de ", "UF ", name)) |>
   mutate(name = gsub("União das freguesias do ", "UF ", name))
 
 # Round all numeric values to 2 digits
-grid_aggregated = grid_aggregated |> 
+grid_aggregated <- grid_aggregated |>
   mutate(across(where(is.numeric), ~ round(., 2)))
-freguesias_aggregated = freguesias_aggregated |> 
+freguesias_aggregated <- freguesias_aggregated |>
   mutate(across(where(is.numeric), ~ round(., 2)))
-municipios_aggregated = municipios_aggregated |> 
+municipios_aggregated <- municipios_aggregated |>
   mutate(across(where(is.numeric), ~ round(., 2)))
 
 # Replace "_nav" with "_pass" on column names, to be compatible with dashboard filters
 # Example: "daily_car_count_nav" becomes "daily_car_count_pass"
-replace_anywhere = list(
+replace_anywhere <- list(
   # From, to
   c("navegante", "pass"),
   c("singlefare", "no_pass"),
@@ -643,15 +646,15 @@ replace_anywhere = list(
   c("transit", "pt")
 )
 for (replacement in replace_anywhere) {
-  names(grid_aggregated) = gsub(paste0("^(.*)", replacement[1], "(.*)$"), paste0("\\1", replacement[2], "\\2"), names(grid_aggregated))
-  names(freguesias_aggregated) = gsub(paste0("^(.*)", replacement[1], "(.*)$"), paste0("\\1", replacement[2], "\\2"), names(freguesias_aggregated))
-  names(municipios_aggregated) = gsub(paste0("^(.*)", replacement[1], "(.*)$"), paste0("\\1", replacement[2], "\\2"), names(municipios_aggregated))
+  names(grid_aggregated) <- gsub(paste0("^(.*)", replacement[1], "(.*)$"), paste0("\\1", replacement[2], "\\2"), names(grid_aggregated))
+  names(freguesias_aggregated) <- gsub(paste0("^(.*)", replacement[1], "(.*)$"), paste0("\\1", replacement[2], "\\2"), names(freguesias_aggregated))
+  names(municipios_aggregated) <- gsub(paste0("^(.*)", replacement[1], "(.*)$"), paste0("\\1", replacement[2], "\\2"), names(municipios_aggregated))
 }
 
 # Col names with "_mode_" in the middle, should end with "_mode" to be compatible with dashboard filters
 # Example: "daily_car_count" becomes "daily_count_car"
 # names(freguesias_aggregated) = gsub("^(.*)_car_(.*)$", "\\1_\\2_car", names(freguesias_aggregated))
-modes = list(
+modes <- list(
   # From, to
   c("car", "car"),
   c("bike", "bike"),
@@ -663,62 +666,66 @@ modes = list(
 )
 
 for (mode in modes) {
-  names(grid_aggregated) = gsub(paste0("^(.*)_", mode[1], "_(.*)$"), paste0("\\1_\\2_", mode[2]), names(grid_aggregated))
-  names(freguesias_aggregated) = gsub(paste0("^(.*)_", mode[1], "_(.*)$"), paste0("\\1_\\2_", mode[2]), names(freguesias_aggregated))
-  names(municipios_aggregated) = gsub(paste0("^(.*)_", mode[1], "_(.*)$"), paste0("\\1_\\2_", mode[2]), names(municipios_aggregated))
+  names(grid_aggregated) <- gsub(paste0("^(.*)_", mode[1], "_(.*)$"), paste0("\\1_\\2_", mode[2]), names(grid_aggregated))
+  names(freguesias_aggregated) <- gsub(paste0("^(.*)_", mode[1], "_(.*)$"), paste0("\\1_\\2_", mode[2]), names(freguesias_aggregated))
+  names(municipios_aggregated) <- gsub(paste0("^(.*)_", mode[1], "_(.*)$"), paste0("\\1_\\2_", mode[2]), names(municipios_aggregated))
 }
 
 
 # Extra: Champions --------------------------------------------------------
 
-dimensions = c("Accessibility", "Mobility", "Safety")
-champions = data.frame()
+dimensions <- c("Accessibility", "Mobility", "Safety")
+champions <- data.frame()
 for (d in dimensions) {
-  content = read.csv(IMPT_URL(paste("/impt/pca_scores/Champions_", d, ".csv", sep=""))) |>
+  content <- read.csv(IMPT_URL(paste("/impt/pca_scores/Champions_", d, ".csv", sep = ""))) |>
     mutate(position = row_number()) |>
     select(-Contribution) |>
-    rename(metric=Indicator)
-  content$dimension = paste(d, "Index", sep="_")
-  
-  champions = rbind(champions, content)
+    rename(metric = Indicator)
+  content$dimension <- paste(d, "Index", sep = "_")
+
+  champions <- rbind(champions, content)
 }
-champions_list = list()
+champions_list <- list()
 for (d in dimensions) {
-  d_name = paste(d, "Index", sep="_")
-  champions_list[[d_name]] = list()
-  for (i in 1:nrow(champions |> filter(dimension == paste(d, "Index", sep="_")))) {
-    champions_list[[d_name]][[i]] = champions |> filter(dimension == paste(d, "Index", sep="_")) |> select(metric) |> slice(i) |> pull()
+  d_name <- paste(d, "Index", sep = "_")
+  champions_list[[d_name]] <- list()
+  for (i in 1:nrow(champions |> filter(dimension == paste(d, "Index", sep = "_")))) {
+    champions_list[[d_name]][[i]] <- champions |>
+      filter(dimension == paste(d, "Index", sep = "_")) |>
+      select(metric) |>
+      slice(i) |>
+      pull()
   }
 }
 
 # 4. Export to geojson -------------------------------------------------
-DATA_LOCATION = "data/" # To store locally
-output_dir = "dashboard_data"
+DATA_LOCATION <- "data/" # To store locally
+output_dir <- "dashboard_data"
 
-st_write(grid_aggregated, IMPT_URL(paste(output_dir, "grid_aggregated.geojson", sep="/")), delete_dsn = TRUE)
-st_write(freguesias_aggregated, IMPT_URL(paste(output_dir, "freguesias_aggregated.geojson", sep="/")), delete_dsn = TRUE)
-st_write(municipios_aggregated, IMPT_URL(paste(output_dir, "municipios_aggregated.geojson", sep="/")), delete_dsn = TRUE)
+st_write(grid_aggregated, IMPT_URL(paste(output_dir, "grid_aggregated.geojson", sep = "/")), delete_dsn = TRUE)
+st_write(freguesias_aggregated, IMPT_URL(paste(output_dir, "freguesias_aggregated.geojson", sep = "/")), delete_dsn = TRUE)
+st_write(municipios_aggregated, IMPT_URL(paste(output_dir, "municipios_aggregated.geojson", sep = "/")), delete_dsn = TRUE)
 
-write.csv(grid_aggregated |> st_drop_geometry(), IMPT_URL(paste(output_dir, "grid_aggregated.csv", sep="/")), row.names = FALSE)
-write.csv(freguesias_aggregated |> st_drop_geometry(), IMPT_URL(paste(output_dir, "freguesias_aggregated.csv", sep="/")), row.names = FALSE)
-write.csv(municipios_aggregated |> st_drop_geometry(), IMPT_URL(paste(output_dir, "municipios_aggregated.csv", sep="/")), row.names = FALSE)
+write.csv(grid_aggregated |> st_drop_geometry(), IMPT_URL(paste(output_dir, "grid_aggregated.csv", sep = "/")), row.names = FALSE)
+write.csv(freguesias_aggregated |> st_drop_geometry(), IMPT_URL(paste(output_dir, "freguesias_aggregated.csv", sep = "/")), row.names = FALSE)
+write.csv(municipios_aggregated |> st_drop_geometry(), IMPT_URL(paste(output_dir, "municipios_aggregated.csv", sep = "/")), row.names = FALSE)
 
-jsonlite::write_json(champions_list, IMPT_URL(paste(output_dir, "champions.json", sep="/")), pretty = TRUE, auto_unbox = TRUE)
+jsonlite::write_json(champions_list, IMPT_URL(paste(output_dir, "champions.json", sep = "/")), pretty = TRUE, auto_unbox = TRUE)
 
 length(names(grid_aggregated)) # 830
 length(names(freguesias_aggregated)) # 1056
 length(names(municipios_aggregated)) # 1047
 
-freguesias_aggregated = read.csv(IMPT_URL(paste(output_dir, "freguesias_aggregated.csv", sep="/")))
-grid_aggregated = read.csv(IMPT_URL(paste(output_dir, "grid_aggregated.csv", sep="/")))
-munipios_aggregated = read.csv(IMPT_URL(paste(output_dir, "municipios_aggregated.csv", sep="/")))
+freguesias_aggregated <- read.csv(IMPT_URL(paste(output_dir, "freguesias_aggregated.csv", sep = "/")))
+grid_aggregated <- read.csv(IMPT_URL(paste(output_dir, "grid_aggregated.csv", sep = "/")))
+munipios_aggregated <- read.csv(IMPT_URL(paste(output_dir, "municipios_aggregated.csv", sep = "/")))
 
-municipio_names = names(municipios_aggregated) |> data.frame()
-freguesia_names = names(freguesias_aggregated) |> data.frame()
-grid_names = names(grid_aggregated) |> data.frame()
+municipio_names <- names(municipios_aggregated) |> data.frame()
+freguesia_names <- names(freguesias_aggregated) |> data.frame()
+grid_names <- names(grid_aggregated) |> data.frame()
 
 # names(freguesias_aggregated)
-# freguesias_aggregated |> 
+# freguesias_aggregated |>
 #   # select(starts_with("IMPT_score_pca_geom")) |> # Filter those that start with "IMPT_score_pca_geom"
 #   # Filter those that contain "affordability"
 #   names()
@@ -729,8 +736,8 @@ grid_names = names(grid_aggregated) |> data.frame()
 # piggyback::pb_upload(IMPT_URL(paste(output_dir, "municipios_aggregated.geojson", sep="/")), repo="u-shift/IMPT-data", tag="latest")
 
 # Upload to IST server for dashboard  ----------------------------------------------------
-files = c("grid_aggregated.geojson", "freguesias_aggregated.geojson", "municipios_aggregated.geojson")
+files <- c("grid_aggregated.geojson", "freguesias_aggregated.geojson", "municipios_aggregated.geojson")
 for (f in files) {
-  scp_upload(session, IMPT_URL(paste(output_dir, f, sep="/")), to = paste("/afs/.ist.utl.pt/groups/ushift/web/content/impt", f, sep="/"))
+  scp_upload(session, IMPT_URL(paste(output_dir, f, sep = "/")), to = paste("/afs/.ist.utl.pt/groups/ushift/web/content/impt", f, sep = "/"))
 }
-scp_upload(session, IMPT_URL(paste(output_dir, "champions.json", sep="/")), to = paste("/afs/.ist.utl.pt/groups/ushift/web/content/impt", "champions.json", sep="/"))
+scp_upload(session, IMPT_URL(paste(output_dir, "champions.json", sep = "/")), to = paste("/afs/.ist.utl.pt/groups/ushift/web/content/impt", "champions.json", sep = "/"))
