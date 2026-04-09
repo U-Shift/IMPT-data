@@ -379,14 +379,14 @@ accidents_grid_redux_localidades = accidents_grid |>
   ungroup() |>
   left_join(landuse_grid |> select(id, population), by = c("grid_id" = "id")) |> 
   mutate(
-    indice_gravidade = vitimas_mortais30 / total_vitimas30,
+    indice_gravidade = ifelse(total_vitimas30 > 0, vitimas_mortais30 / total_vitimas30, NA_real_), # NA se dividido por zero
     indice_gravidade_carro = ifelse(veh_motorizado > 0, vitimas_mortais30 / veh_motorizado, NA_real_), # ignora se não houve carro involvido
     indice_gravidade_bicicleta = ifelse(veh_bicicleta > 0, vitimas_mortais30 / veh_bicicleta, NA_real_),
     indice_gravidade_peoes = ifelse(veh_peoes > 0, vitimas_mortais30 / veh_peoes, NA_real_)
   ) |>
   mutate(
-    acidentes_per_1000res = total_acidentes / population * 1000,
-    vitimas_mortais30_per_1000res = vitimas_mortais30 / population * 1000,
+    acidentes_per_1000res = ifelse(population > 2, total_acidentes / population * 1000, NA_real_), # NA se população =< 2
+    vitimas_mortais30_per_1000res = ifelse(population > 2, vitimas_mortais30 / population * 1000, NA_real_),
     noite_perc = noite / total_acidentes
   )
 
@@ -409,11 +409,12 @@ accidents_grid_localidades_final = accidents_grid_redux_localidades |>
 # confirm with map
 grid |> left_join(accidents_grid_localidades_final, by = c("id" = "grid_id")) |> 
   # mapview::mapview(zcol = "total_acidentes", alpha.regions = 0.5)
-  mapview::mapview(zcol = "vitimas_mortais30", alpha.regions = 0.5)
+  mapview::mapview(zcol = "acidentes_per_1000res", alpha.regions = 0.5)
 
 grid |> left_join(accidents_grid_final, by = c("id" = "grid_id")) |> 
   # mapview::mapview(zcol = "total_acidentes", alpha.regions = 0.5)
   mapview::mapview(zcol = "vitimas_mortais30", alpha.regions = 0.5)
+
 
 
 # ----------------------------
