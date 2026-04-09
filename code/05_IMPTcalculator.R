@@ -192,7 +192,8 @@ Affordability_Norm_singlefare <- Affordability_singlefare |>
   mutate(across(!dtmnfr, ~ normalize_cost(.x)))
 
 Safety_Norm <- Safety |>
-  mutate(across(!dtmnfr, ~ normalize_cost(.x)))
+  # mutate(across(!dtmnfr, ~ normalize_cost(.x)))
+  mutate(across(!dtmnfr, ~ normalize_benefit(.x)))
 
 
 # ── 3.2 Per-mode normalised datasets ──────────────────────────────────────────
@@ -252,9 +253,12 @@ Affordability_car_Norm <- Affordability_car |> mutate(across(!dtmnfr, ~ normaliz
 Affordability_pt_Norm_navegante <- Affordability_pt_navegante |> mutate(across(!dtmnfr, ~ normalize_cost(.x)))
 Affordability_pt_Norm_singlefare <- Affordability_pt_singlefare |> mutate(across(!dtmnfr, ~ normalize_cost(.x)))
 
-Safety_car_Norm <- Safety_car |> mutate(across(!dtmnfr, ~ normalize_cost(.x)))
-Safety_bike_Norm <- Safety_bike |> mutate(across(!dtmnfr, ~ normalize_cost(.x)))
-Safety_walk_Norm <- Safety_walk |> mutate(across(!dtmnfr, ~ normalize_cost(.x)))
+# Safety_car_Norm <- Safety_car |> mutate(across(!dtmnfr, ~ normalize_cost(.x)))
+# Safety_bike_Norm <- Safety_bike |> mutate(across(!dtmnfr, ~ normalize_cost(.x)))
+# Safety_walk_Norm <- Safety_walk |> mutate(across(!dtmnfr, ~ normalize_cost(.x)))
+Safety_car_Norm <- Safety_car |> mutate(across(!dtmnfr, ~ normalize_benefit(.x)))
+Safety_bike_Norm <- Safety_bike |> mutate(across(!dtmnfr, ~ normalize_benefit(.x)))
+Safety_walk_Norm <- Safety_walk |> mutate(across(!dtmnfr, ~ normalize_benefit(.x)))
 
 
 
