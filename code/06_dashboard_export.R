@@ -78,7 +78,7 @@ print(session)
 # st_write(freguesias, IMPT_URL("dashboard_data/freguesias.gpkg"), delete_dsn = TRUE)
 # st_write(municipios, IMPT_URL("dashboard_data/municipios.gpkg"), delete_dsn = TRUE)
 
-DATA_LOCATION <- "https://impt.server.ushift.pt" # To get data from server
+# DATA_LOCATION <- "https://impt.server.ushift.pt" # To get data from server
 
 grid <- st_read(IMPT_URL("/dashboard_data/grid.gpkg"))
 freguesias <- st_read(IMPT_URL("/dashboard_data/freguesias.gpkg"))
@@ -713,9 +713,9 @@ write.csv(municipios_aggregated |> st_drop_geometry(), IMPT_URL(paste(output_dir
 
 jsonlite::write_json(champions_list, IMPT_URL(paste(output_dir, "champions.json", sep = "/")), pretty = TRUE, auto_unbox = TRUE)
 
-length(names(grid_aggregated)) # 830
-length(names(freguesias_aggregated)) # 1056
-length(names(municipios_aggregated)) # 1047
+length(names(grid_aggregated)) # 831
+length(names(freguesias_aggregated)) # 1057
+length(names(municipios_aggregated)) # 1048
 
 freguesias_aggregated <- read.csv(IMPT_URL(paste(output_dir, "freguesias_aggregated.csv", sep = "/")))
 grid_aggregated <- read.csv(IMPT_URL(paste(output_dir, "grid_aggregated.csv", sep = "/")))
