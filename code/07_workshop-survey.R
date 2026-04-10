@@ -5,9 +5,11 @@ library(tidyverse)
 library(sf)
 library(mapview)
 library(ggrepel)
+library(readxl)
 
 # 1. Carregar os dados (StringsAsFactors garante que tratamos texto como texto)
-respostas_raw <- read_csv("data/IMPTWorkshop (Responses).csv")
+respostas_raw <- read_xlsx("data/IMPTworkshop.xlsx")
+respostas_raw = respostas_raw[-c(1:2),]
 
 # 2. Identificar as colunas que contêm os nomes das freguesias
 # Procuramos por qualquer coluna que contenha "Freguesia" no nome
@@ -54,9 +56,12 @@ IMPTWorkshop <- IMPTWorkshop %>%
 
 
 # Read freguesias geopackge
-
-Freguesias <- st_read("WORKSHOP/freguesias_2024_unique.gpkg") |> 
+freguesias = st_read(IMPT_URL("/geo/freguesias_2024_unique.gpkg"))
+Freguesias = freguesias|> 
   select("dtmnfr", "freguesia", "municipio", "geom")
+# Freguesias <- st_read("useful_data/freguesias.gpkg
+#                       freguesias_2024_unique.gpkg") |> 
+#   select("dtmnfr", "freguesia", "municipio", "geom")
 
 
 ### Visualizar en el mapa
@@ -159,7 +164,7 @@ top_gaps_saf <- comparison_final %>%
 
 print(top_gaps_saf)
   
-top_gaps_mob <- comparisAffordability_Indexon_final %>%
+top_gaps_mob <- comparison_final %>%
   select(freguesia, Mobility_Index_model, Mobility_Index_survey, gap_mob) %>%
   arrange(desc(abs(gap_mob))) %>%
   head(10)  
