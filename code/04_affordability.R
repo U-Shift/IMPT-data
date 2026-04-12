@@ -287,9 +287,9 @@ grid_affordability <- grid_affordability_mob |>
   left_join(occ_rate_car_freg |> select(freg_id, taxa_ocup_auto), by = "grid_id") |>
   left_join(households_size_freg |> select(freg_id, pp_hh_avg), by = "grid_id") |>
   mutate(
-    affordability_car_total_money = (affordability_car_total_money / taxa_ocup_auto) * pp_hh_avg * pop_movel_grid,  # adjust car costs by occupancy and household size)
-    affordability_transit_pass_total_money = affordability_transit_pass_total_money * pp_hh_avg * pop_movel_grid, # adjust transit costs by household size
-    affordability_transit_single_fare_total_money = affordability_transit_single_fare_total_money * pp_hh_avg * pop_movel_grid # adjust transit costs by household size
+    affordability_car_total_money = (affordability_car_total_money / taxa_ocup_auto) * pp_hh_avg * pop_movel_grid,  # adjust car costs by occupancy and household size and mobile pop
+    affordability_transit_pass_total_money = affordability_transit_pass_total_money * pp_hh_avg * pop_movel_grid, # adjust transit costs by household size and mobile pop
+    affordability_transit_single_fare_total_money = affordability_transit_single_fare_total_money * pp_hh_avg * pop_movel_grid # adjust transit costs by household size and mobile pop
   )
 
 # Census modal share (used to compute modal-share-weighted affordability)
