@@ -21,10 +21,27 @@ grid_freg_mun = read_csv("useful_data/grid_nuts.csv")
 ## definitions
 trips_commuting_year <- 2 * 250 # 2 trips per day, 250 working days per year (weekends excluded)
 
-# car occupancy rate by freguesia
+##### car occupancy rate and mobile population, by freguesia ####
 # occupancy rate for car by municipality (IMOB_2017_AML.xlsx, sheet "Quadro IV.7 >> Taxa de ocupação dos automóveis por município de residência")
 occ_rate_car_freg <- readr::read_delim(
   "/data/IMPT/trips/imob_taxa_occ_auto.csv",
+  # delim = "\t",
+  escape_double = FALSE,
+  trim_ws = TRUE
+) |>
+  left_join(municipios_id, by = c("Municipio" = "municipio")) |>
+  # mutate(mun_id = as.character(mun_id)) |>
+  select(-Municipio) |>
+  left_join(grid_freg_mun |> select(-grid_id), by = "mun_id") |>
+  distinct() |>
+  mutate(
+    taxa_ocup_auto = taxa_ocup_auto,
+    freg_id = as.integer(freg_id)
+  )
+
+# mobile population by municipality (IMOB_2017_AML.xlsx, sheet "Quadro II.1 >> População móvel por município de residência")
+pop_movel_freg <- readr::read_delim(
+  "/data/IMPT/trips/imob_populacao_movel.csv",
   delim = "\t",
   escape_double = FALSE,
   trim_ws = TRUE
@@ -35,10 +52,12 @@ occ_rate_car_freg <- readr::read_delim(
   left_join(grid_freg_mun |> select(-grid_id), by = "mun_id") |>
   distinct() |>
   mutate(
-    taxa_ocup_auto = taxa_ocup_auto / 100,
+    pop_movel = pop_movel / 1000, # só tinha 1 casa decimal
     freg_id = as.integer(freg_id)
   )
 
+
+#### household size
 households_size_freg <- read_csv("/data/IMPT/landuse/landuse_freguesias.csv") |>
   select(freg_id, population, households) |>
   mutate(pp_hh_avg = population / households)
@@ -55,11 +74,12 @@ freguesia_income <- read_csv("/data/IMPT/landuse/freguesias_income_housing_gini.
 freguesia_affordability <- freguesia_affordability_mob |>
   left_join(freguesia_income, by = "dtmnfr") |>
   left_join(occ_rate_car_freg |> select(freg_id, taxa_ocup_auto), by = c("dtmnfr" = "freg_id")) |>
+  left_join(pop_movel_freg |> select(freg_id, pop_movel), by = c("dtmnfr" = "freg_id")) |>
   left_join(households_size_freg |> select(freg_id, pp_hh_avg), by = c("dtmnfr" = "freg_id")) |>
   mutate(
-    affordability_car_total_money = (affordability_car_total_money / taxa_ocup_auto) * pp_hh_avg,  # adjust car costs by occupancy and household size)
-    affordability_transit_pass_total_money = affordability_transit_pass_total_money * pp_hh_avg, # adjust transit costs by household size
-    affordability_transit_single_fare_total_money = affordability_transit_single_fare_total_money * pp_hh_avg # adjust transit costs by household size
+    affordability_car_total_money = (affordability_car_total_money / taxa_ocup_auto) * pp_hh_avg * pop_movel,  # adjust car costs by occupancy and household size and mobile population)
+    affordability_transit_pass_total_money = affordability_transit_pass_total_money * pp_hh_avg * pop_movel, # adjust transit costs by household size and mobile population
+    affordability_transit_single_fare_total_money = affordability_transit_single_fare_total_money * pp_hh_avg *pop_movel # adjust transit costs by household size and mobile population
   )
 
 # Census modal share (used to compute modal-share-weighted affordability)
@@ -209,12 +229,13 @@ write_csv(affordability_municipio_composite, "/data/IMPT/affordability/affordabi
 
 
 # Grid level --------------------------------------------------------------
+grid_freg_mun <- read.csv("useful_data/grid_nuts.csv")
 
 # car occupancy rate by grid
 # occupancy rate for car by municipality (IMOB_2017_AML.xlsx, sheet "Quadro IV.7 >> Taxa de ocupação dos automóveis por município de residência")
 occ_rate_car_grid <- readr::read_delim(
   "/data/IMPT/trips/imob_taxa_occ_auto.csv",
-  delim = "\t",
+  # delim = "\t",
   escape_double = FALSE,
   trim_ws = TRUE
 ) |>
@@ -224,10 +245,28 @@ occ_rate_car_grid <- readr::read_delim(
   left_join(grid_freg_mun, by = "mun_id") |>
   distinct() |>
   mutate(
-    taxa_ocup_auto = taxa_ocup_auto / 100,
+    taxa_ocup_auto = taxa_ocup_auto,
+    grid_id = as.integer(grid_id)
+  )
+# mobile population by municipality (IMOB_2017_AML.xlsx, sheet "Quadro II.1 >> População móvel por município de residência")
+pop_movel_grid <- readr::read_delim(
+  "/data/IMPT/trips/imob_populacao_movel.csv",
+  delim = "\t",
+  escape_double = FALSE,
+  trim_ws = TRUE
+) |>
+  left_join(municipios_id, by = c("Municipio" = "municipio")) |>
+  # mutate(mun_id = as.character(mun_id)) |>
+  select(-Municipio) |>
+  left_join(grid_freg_mun |> select(-freg_id), by = "mun_id") |>
+  distinct() |>
+  mutate(
+    pop_movel = pop_movel / 1000, # só tinha 1 casa decimal
     grid_id = as.integer(grid_id)
   )
 
+
+#### household size
 households_size_grid <- read_csv("/data/IMPT/landuse/landuse_grid.csv") |>
   select(grid_id = id, population, households) |>
   mutate(pp_hh_avg = population / households)
@@ -248,9 +287,9 @@ grid_affordability <- grid_affordability_mob |>
   left_join(occ_rate_car_freg |> select(freg_id, taxa_ocup_auto), by = "grid_id") |>
   left_join(households_size_freg |> select(freg_id, pp_hh_avg), by = "grid_id") |>
   mutate(
-    affordability_car_total_money = (affordability_car_total_money / taxa_ocup_auto) * pp_hh_avg,  # adjust car costs by occupancy and household size)
-    affordability_transit_pass_total_money = affordability_transit_pass_total_money * pp_hh_avg, # adjust transit costs by household size
-    affordability_transit_single_fare_total_money = affordability_transit_single_fare_total_money * pp_hh_avg # adjust transit costs by household size
+    affordability_car_total_money = (affordability_car_total_money / taxa_ocup_auto) * pp_hh_avg * pop_movel_grid,  # adjust car costs by occupancy and household size)
+    affordability_transit_pass_total_money = affordability_transit_pass_total_money * pp_hh_avg * pop_movel_grid, # adjust transit costs by household size
+    affordability_transit_single_fare_total_money = affordability_transit_single_fare_total_money * pp_hh_avg * pop_movel_grid # adjust transit costs by household size
   )
 
 # Census modal share (used to compute modal-share-weighted affordability)
