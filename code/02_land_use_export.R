@@ -190,7 +190,7 @@ write.csv(landuse_municipios, "/data/IMPT/landuse/landuse_municipios.csv", row.n
 
 # Final check
 sum(census_pts$population)  #2870208
-sum(landuse_grid$population, na.rm = TRUE) #2850646 # some census bgri centroids fall outside the grid cells, so we lose some 1450 population
+sum(landuse_grid$population, na.rm = TRUE) #2850646 # some census bgri centroids fall outside the grid cells, so we lose some 19.562 population
 sum(landuse_municipios$population) #2870206 # 2 missing due round when separating new freguesias
 sum(landuse_freguesias$population) #2870206
 
