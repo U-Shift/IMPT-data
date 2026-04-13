@@ -8,6 +8,9 @@
 tt_grid <- read.csv(IMPT_URL("/mobility_commuting/grid_commuting.csv")) |>
     mutate(id_grid_origin = as.character(id_grid_origin))
 
+grid_freg_mun = read_csv("useful_data/grid_nuts.csv") |> 
+  mutate(grid_id = as.character(grid_id))
+
 # Grid-level time gap -----------------------------------------------
 # avg_tt_car and avg_tt_transit_1t_120m_15w are already trip-weighted means.
 # Transit NAs (unreachable within 120 min) → assign 120 min as penalty.
@@ -16,6 +19,7 @@ hex_stats_gap <- tt_grid |>
     grid_id = id_grid_origin, 
     time_car = avg_tt_car,
     time_pt_peak = avg_tt_transit_1t_120m_15w, 
+    time_bike = avg_tt_bike,
     trips
   ) |>
   filter(!is.na(time_car) & time_car > 0) |>
@@ -23,18 +27,24 @@ hex_stats_gap <- tt_grid |>
     time_pt_peak_for_gap = if_else(is.na(time_pt_peak), 120, time_pt_peak),
     # Gap in minutes: positive = PT slower than car
     accessibility_gap = round(time_pt_peak_for_gap - time_car, 2),
+    accessibility_gap_bike = round(time_bike - time_car, 2), # positive = Bike slower than car
     
     # Relative index: 0 is parity, positive = PT xtimes slower than car, negative = PT x times faster than car
     relative_gap_time = ifelse(time_pt_peak_for_gap >= time_car,
                                 (time_pt_peak_for_gap / time_car) - 1,
                                 -((time_car / time_pt_peak_for_gap) - 1)),
-    relative_gap_time = round(relative_gap_time, 2)
+    relative_gap_time = round(relative_gap_time, 2),
+    relative_gap_bike_time = ifelse(time_bike >= time_car,
+                               (time_bike / time_car) - 1,
+                               -((time_car / time_bike) - 1)),
+    relative_gap_bike_time = round(relative_gap_bike_time, 2)
   ) |>
   left_join(grid_freg_mun |> select(grid_id, freg_id, mun_id), by = "grid_id")
 
 summary(hex_stats_gap)
 # mapview(grid |> mutate(grid_id = as.character(id)) |> left_join(hex_stats_gap), zcol = "accessibility_gap")
 mapview(grid |> mutate(grid_id = as.character(id)) |> left_join(hex_stats_gap), zcol = "relative_gap_time")
+mapview(grid |> mutate(grid_id = as.character(id)) |> left_join(hex_stats_gap), zcol = "relative_gap_bike_time")
 # mapview(grid |> mutate(grid_id = as.character(id)) |> left_join(hex_stats_gap), zcol = "time_car")
 # mapview(grid |> mutate(grid_id = as.character(id)) |> left_join(hex_stats_gap), zcol = "time_pt_peak")
 
@@ -45,6 +55,7 @@ freg_stats_gap <- hex_stats_gap |>
     summarise(
         time_car = round(weighted.mean(time_car, trips, na.rm = TRUE),2),
         time_pt_peak = round(weighted.mean(time_pt_peak_for_gap, trips, na.rm = TRUE),2),
+        time_bike = round(weighted.mean(time_bike, trips, na.rm = TRUE),2),
         total_trips = sum(trips, na.rm = TRUE),
         n_cells_no_transit = sum(is.na(time_pt_peak)),
         .groups = "drop"
@@ -54,14 +65,20 @@ freg_stats_gap <- hex_stats_gap |>
     time_pt_peak_for_gap = if_else(is.na(time_pt_peak), 120, time_pt_peak), # this is irrelevant at this level
     # Gap in minutes: positive = PT slower than car
     accessibility_gap = round(time_pt_peak_for_gap - time_car, 2),
+    accessibility_gap_bike = round(time_bike - time_car, 2), # positive = Bike slower than car
     
     # Relative index: 0 is parity, positive = PT xtimes slower than car, negative = PT x times faster than car
     relative_gap_time = ifelse(time_pt_peak_for_gap >= time_car,
                                 (time_pt_peak_for_gap / time_car) - 1,
                                 -((time_car / time_pt_peak_for_gap) - 1)),
-    relative_gap_time = round(relative_gap_time, 2)
+    relative_gap_time = round(relative_gap_time, 2),
+    relative_gap_bike_time = ifelse(time_bike >= time_car,
+                                    (time_bike / time_car) - 1,
+                                    -((time_car / time_bike) - 1)),
+    relative_gap_bike_time = round(relative_gap_bike_time, 2)
   ) |>
-    filter(!is.nan(time_car))
+    filter(!is.nan(time_car)) |> 
+    filter(!is.nan(time_bike))
 
 freg_stats_gap_sf <- freguesias |>
     select(dtmnfr, geom) |>
@@ -69,6 +86,7 @@ freg_stats_gap_sf <- freguesias |>
 
 mapview(freg_stats_gap_sf, zcol = "accessibility_gap")
 mapview(freg_stats_gap_sf, zcol = "relative_gap_time")
+mapview(freg_stats_gap_sf, zcol = "relative_gap_bike_time")
 # mapview(freg_stats_gap_sf, zcol = "time_car")
 # mapview(freg_stats_gap_sf, zcol = "time_pt_peak")
 
@@ -81,6 +99,7 @@ mun_stats_gap <- hex_stats_gap |>
     summarise(
         time_car = round(weighted.mean(time_car, trips, na.rm = TRUE),2),
         time_pt_peak = round(weighted.mean(time_pt_peak_for_gap, trips, na.rm = TRUE),2),
+        time_bike = round(weighted.mean(time_bike, trips, na.rm = TRUE),2),
         total_trips = sum(trips, na.rm = TRUE),
         n_cells_no_transit = sum(is.na(time_pt_peak)),
         .groups = "drop"
@@ -90,14 +109,19 @@ mun_stats_gap <- hex_stats_gap |>
     time_pt_peak_for_gap = if_else(is.na(time_pt_peak), 120, time_pt_peak),
     # Gap in minutes: positive = PT slower than car
     accessibility_gap = round(time_pt_peak_for_gap - time_car, 2),
-    
+    accessibility_gap_bike = round(time_bike - time_car, 2), # positive = Bike slower than car
     # Relative index: 0 is parity, positive = PT xtimes slower than car, negative = PT x times faster than car
     relative_gap_time = ifelse(time_pt_peak_for_gap >= time_car,
                                (time_pt_peak_for_gap / time_car) - 1,
                                -((time_car / time_pt_peak_for_gap) - 1)),
-    relative_gap_time = round(relative_gap_time, 2)
+    relative_gap_time = round(relative_gap_time, 2),
+    relative_gap_bike_time = ifelse(time_bike >= time_car,
+                                    (time_bike / time_car) - 1,
+                                    -((time_car / time_bike) - 1)),
+    relative_gap_bike_time = round(relative_gap_bike_time, 2)
   ) |>
-    filter(!is.nan(time_car))
+    filter(!is.nan(time_car))|> 
+  filter(!is.nan(time_bike))
 
 mun_stats_gap_sf <- municipios |>
     select(municipio, geom) |>
@@ -106,6 +130,7 @@ mun_stats_gap_sf <- municipios |>
 
 mapview(mun_stats_gap_sf, zcol = "accessibility_gap")
 mapview(mun_stats_gap_sf, zcol = "relative_gap_time")
+mapview(mun_stats_gap_sf, zcol = "relative_gap_bike_time")
 # mapview(mun_stats_gap_sf, zcol = "time_car")
 # mapview(mun_stats_gap_sf, zcol = "time_pt_peak")
 
