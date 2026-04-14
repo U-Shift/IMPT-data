@@ -215,13 +215,13 @@ grid_aggregated <- grid_aggregated |>
       rename_with(~ paste0("affordability_pt_pass_", .), -id),
     by = "id"
   ) |>
-  # left_join(
-  #   grid_affordability_composite |>
-  #     rename(id=grid_id) |>
-  #     select(id, transp_inc_comp_nav, transp_inc_comp_sf, h_transp_inc_comp_nav, h_transp_inc_comp_sf) |>
-  #     rename_with(~ paste0("affordability_", .), -id),
-  #   by="id"
-  # ) |>
+  left_join(
+    grid_affordability_composite |>
+      rename(id = grid_id) |>
+      select(id, transp_inc_comp_nav, transp_inc_comp_sf, h_transp_inc_comp_nav, h_transp_inc_comp_sf) |>
+      rename_with(~ paste0("affordability_", .), -id),
+    by = "id"
+  ) |>
   # Safety
   left_join(
     grid_safety |>
@@ -737,8 +737,10 @@ grid_names <- names(grid_aggregated) |> data.frame()
 # piggyback::pb_upload(IMPT_URL(paste(output_dir, "municipios_aggregated.geojson", sep="/")), repo="u-shift/IMPT-data", tag="latest")
 
 # Upload to IST server for dashboard  ----------------------------------------------------
-files <- c("grid_aggregated.geojson", "freguesias_aggregated.geojson", "municipios_aggregated.geojson",
-           "grid_aggregated.csv", "freguesias_aggregated.csv", "municipios_aggregated.csv")
+files <- c(
+  "grid_aggregated.geojson", "freguesias_aggregated.geojson", "municipios_aggregated.geojson",
+  "grid_aggregated.csv", "freguesias_aggregated.csv", "municipios_aggregated.csv"
+)
 for (f in files) {
   scp_upload(session, IMPT_URL(paste(output_dir, f, sep = "/")), to = paste("/afs/.ist.utl.pt/groups/ushift/web/content/impt", f, sep = "/"))
 }
