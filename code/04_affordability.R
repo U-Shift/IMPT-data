@@ -17,7 +17,7 @@ grid_freg_mun <- read_csv("useful_data/grid_nuts.csv")
 # ── 1. Data Definitions & Imports ─────────────────────────────────────────────
 
 ## definitions
-trips_commuting_year <- 2 * 250 # 2 trips per day, 250 working days per year (weekends excluded)
+trips_commuting_year <- 250 # 250 working days per year (weekends excluded)
 
 ##### car occupancy rate and mobile population, by freguesia ####
 # occupancy rate for car by municipality (IMOB_2017_AML.xlsx, sheet "Quadro IV.7 >> Taxa de ocupação dos automóveis por município de residência")
@@ -63,10 +63,10 @@ households_size_freg <- read_csv(IMPT_URL("/landuse/landuse_freguesias.csv")) |>
 ## import previous computed costs
 freguesia_affordability_mob <- freguesia_affordability_car |>
   rename(dtmnfr = Origin_dicofre24) |>
-  select(dtmnfr, total_money) |>
-  rename(affordability_car_total_money = total_money) |>
-  left_join(freguesia_affordability_pt_pass |> rename(dtmnfr = Origin_dicofre24) |> select(dtmnfr, total_money) |> rename(affordability_transit_pass_total_money = total_money), by = "dtmnfr") |>
-  left_join(freguesia_affordability_pt_single_fare |> rename(dtmnfr = Origin_dicofre24) |> select(dtmnfr, total_money) |> rename(affordability_transit_single_fare_total_money = total_money), by = "dtmnfr")
+  select(dtmnfr, total_money_2ways) |>
+  rename(affordability_car_total_money = total_money_2ways) |>
+  left_join(freguesia_affordability_pt_pass |> rename(dtmnfr = Origin_dicofre24) |> select(dtmnfr, total_money_2ways) |> rename(affordability_transit_pass_total_money = total_money_2ways), by = "dtmnfr") |>
+  left_join(freguesia_affordability_pt_single_fare |> rename(dtmnfr = Origin_dicofre24) |> select(dtmnfr, total_money_2ways) |> rename(affordability_transit_single_fare_total_money = total_money_2ways), by = "dtmnfr")
 
 freguesia_income <- read_csv(IMPT_URL("/landuse/freguesias_income_housing_gini.csv")) |>
   select(-gini_coef) |>
@@ -199,7 +199,7 @@ affordability_freguesia_composite <- freguesia_affordability |>
     h_transp_inc_car, h_transp_inc_pt_nav, h_transp_inc_pt_sf, h_transp_inc_comp_nav, h_transp_inc_comp_sf
   )
 
-write_csv(affordability_freguesia_composite, "/data/IMPT/affordability/affordability_freguesia_composite.csv")
+write_csv(affordability_freguesia_composite, IMPT_URL("/affordability/affordability_freguesia_composite.csv"))
 
 
 ## At Municipio level
@@ -226,8 +226,7 @@ aggregate_to_level <- function(df, lookup, by_col) {
 }
 
 affordability_municipio_composite <- aggregate_to_level(affordability_freguesia_composite, census24_fregmun_pop, "mun_id")
-write_csv(affordability_municipio_composite, "/data/IMPT/affordability/affordability_municipio_composite.csv")
-
+write_csv(affordability_municipio_composite, IMPT_URL("/affordability/affordability_municipio_composite.csv"))
 
 
 # Grid level --------------------------------------------------------------
@@ -276,10 +275,10 @@ households_size_grid <- read_csv(IMPT_URL("/landuse/grid_with_cos.csv")) |>
 ## import previous computed costs
 grid_affordability_mob <- grid_affordability_car |>
   rename(grid_id = id_grid_origin) |>
-  select(grid_id, total_money) |>
-  rename(affordability_car_total_money = total_money) |>
-  left_join(grid_affordability_pt_pass |> rename(grid_id = id_grid_origin) |> select(grid_id, total_money) |> rename(affordability_transit_pass_total_money = total_money), by = "grid_id") |>
-  left_join(grid_affordability_pt_single_fare |> rename(grid_id = id_grid_origin) |> select(grid_id, total_money) |> rename(affordability_transit_single_fare_total_money = total_money), by = "grid_id")
+  select(grid_id, total_money_2ways) |>
+  rename(affordability_car_total_money = total_money_2ways) |>
+  left_join(grid_affordability_pt_pass |> rename(grid_id = id_grid_origin) |> select(grid_id, total_money_2ways) |> rename(affordability_transit_pass_total_money = total_money_2ways), by = "grid_id") |>
+  left_join(grid_affordability_pt_single_fare |> rename(grid_id = id_grid_origin) |> select(grid_id, total_money_2ways) |> rename(affordability_transit_single_fare_total_money = total_money_2ways), by = "grid_id")
 
 grid_income <- read_csv(IMPT_URL("/landuse/grid_income_housing_gini.csv")) |>
   select(-gini_coef) |>
