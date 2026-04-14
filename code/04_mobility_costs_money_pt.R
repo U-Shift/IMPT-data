@@ -7,7 +7,7 @@
 # Compute detailed itineraries -------------------------------------------------
 
 # Start by loading r5r and the following variables from 03_ttm_gridh3.R
-# > r5r_network, root_folder, 
+# > r5r_network, root_folder,
 
 # Also, from 04_mobility_commuting.R
 # > od_freguesias_jittered50, od_freguesias_jittered_OR_geo, od_freguesias_jittered_DE_geo
@@ -15,52 +15,52 @@
 # From 03_ttm_gridh3.R
 # fare_single, fare_pass, fare_single_2
 
-mode = "TRANSIT"
-folder_name = sprintf("%s/mobility_itineraries", root_folder)
-if(!dir.exists(folder_name)) {
+mode <- "TRANSIT"
+folder_name <- sprintf("%s/mobility_itineraries", root_folder)
+if (!dir.exists(folder_name)) {
   dir.create(folder_name, recursive = TRUE)
 }
 
-max_walk_time = 20 # Differs from 03_ttm_gridh3.R, which has computed for 15 minutes
-fare_structures = list("single" = fare_single, "pass" = fare_pass)
-departure_datetime_HP = as.POSIXct("04-02-2026 08:00:00", format = "%d-%m-%Y %H:%M:%S") 
+max_walk_time <- 20 # Differs from 03_ttm_gridh3.R, which has computed for 15 minutes
+fare_structures <- list("single" = fare_single, "pass" = fare_pass)
+departure_datetime_HP <- as.POSIXct("04-02-2026 08:00:00", format = "%d-%m-%Y %H:%M:%S")
 
 for (max_trip_duration in c(120)) {
   # For debug, 11352 has two buses
   # 11412 has bus + train
   message(paste("Running detailed itinerary for mode:", mode, "max trip duration:", max_trip_duration))
-  
-  # Static parameters
-  args = list()
-  args$r5r_network = r5r_network
-  args$origins = od_freguesias_jittered_OR_geo
-  args$destinations = od_freguesias_jittered_DE_geo
-  
-  # Varying parameters
-  args$mode = c(mode)
-  args$max_trip_duration = max_trip_duration 
-  
-  args$max_rides = 10 # Unlimited transfers
-  # args$mode_egress default to WALk
-  args$max_walk_time = max_walk_time
-  args$departure_datetime = departure_datetime_HP
 
-  args$drop_geometry = TRUE # For efficiency
-  args$all_to_all = FALSE # Run only between each origin and its corresponding destination (same index in the list)
-  
-  args$verbose = FALSE # For debug 
-  
+  # Static parameters
+  args <- list()
+  args$r5r_network <- r5r_network
+  args$origins <- od_freguesias_jittered_OR_geo
+  args$destinations <- od_freguesias_jittered_DE_geo
+
+  # Varying parameters
+  args$mode <- c(mode)
+  args$max_trip_duration <- max_trip_duration
+
+  args$max_rides <- 10 # Unlimited transfers
+  # args$mode_egress default to WALk
+  args$max_walk_time <- max_walk_time
+  args$departure_datetime <- departure_datetime_HP
+
+  args$drop_geometry <- TRUE # For efficiency
+  args$all_to_all <- FALSE # Run only between each origin and its corresponding destination (same index in the list)
+
+  args$verbose <- FALSE # For debug
+
   for (fs in names(fare_structures)) {
-    args$fare_structure = fare_structures[[fs]]
-    
-    output_csv = sprintf("%s/itinerary_%s_%dmin", folder_name, tolower(mode), max_trip_duration)
-    output_csv = sprintf("%s_%s_fare", output_csv, fs)
-    
-    if(!dir.exists(output_csv)) {
+    args$fare_structure <- fare_structures[[fs]]
+
+    output_csv <- sprintf("%s/itinerary_%s_%dmin", folder_name, tolower(mode), max_trip_duration)
+    output_csv <- sprintf("%s_%s_fare", output_csv, fs)
+
+    if (!dir.exists(output_csv)) {
       dir.create(output_csv, recursive = TRUE)
     }
-    
-    args$output_dir = output_csv
+
+    args$output_dir <- output_csv
     message("Running detailed itinerary... Storing output to ", output_csv)
     do.call(detailed_itineraries, args) # https://ipeagit.github.io/r5r/reference/detailed_itineraries.html
     message("Done :) Next...")
@@ -70,41 +70,41 @@ for (max_trip_duration in c(120)) {
 # aggregate CSVs into single rds --------------------------------------------------------------
 
 # Filter by those that contain "_fare"
-dirs = list.dirs(folder_name, recursive = FALSE) |> 
+dirs <- list.dirs(folder_name, recursive = FALSE) |>
   keep(~ grepl("_fare", ., ignore.case = TRUE))
 dirs
 
 for (folder in dirs) {
   message("Aggregating CSVs in folder: ", folder)
-  
+
   # Get all CSV file paths in the folder
   csv_files <- list.files(path = folder, pattern = "\\.csv$", full.names = TRUE)
-  
+
   # Read and combine all CSV files into one data frame
   ttm_combined <- map_dfr(csv_files, read_csv, show_col_types = FALSE)
-  
+
   # Save the combined data frame as an RDS file
   rds_file_path <- paste0(folder, ".rds")
   saveRDS(ttm_combined, rds_file_path)
-  
+
   # Clean up: remove the original CSV files
   # file.remove(csv_files)
-  
+
   message("Finished aggregating and cleaning up for folder: ", folder)
 }
 
 # For each itinerary, compute costs -------------------------------------------------
 
 
-fare_base_file = "itinerary_transit_120min_"
-fares = list("pass_fare", "single_fare")
+fare_base_file <- "itinerary_transit_120min_"
+fares <- list("pass_fare", "single_fare")
 
 for (fare in fares) {
   message("Computing costs for fare structure: ", fare)
-  mobility_itineraries_disagregated = readRDS_remote(IMPT_URL(sprintf("mobility_itineraries/%s%s.rds", fare_base_file, fare)))
+  mobility_itineraries_disagregated <- readRDS_remote(IMPT_URL(sprintf("mobility_itineraries/%s%s.rds", fare_base_file, fare)))
   nrow(mobility_itineraries_disagregated)
-  
-  mobility_itineraries_costs = mobility_itineraries_disagregated |>
+
+  mobility_itineraries_costs <- mobility_itineraries_disagregated |>
     group_by(from_id, to_id) |>
     summarise(
       # Select first
@@ -116,45 +116,45 @@ for (fare in fares) {
     )
   nrow(mobility_itineraries_costs) # 18066
   nrow(od_freguesias_jittered50) # 19547
-  
-  mobility_itineraries_costs_sf = od_freguesias_jittered50 |> 
+
+  mobility_itineraries_costs_sf <- od_freguesias_jittered50 |>
     select(id, trips, Origin_dicofre24, Destination_dicofre24) |>
     left_join(
       mobility_itineraries |>
         # Select only revelant columns from itineraries
         select(from_id, to_id, total_duration, total_distance, total_fare),
-      by=c("id" = "from_id")
-    )  |>
+      by = c("id" = "from_id")
+    ) |>
     filter(!is.na(total_fare))
   nrow(mobility_itineraries_costs_sf) # 18066
-  
+
   class(mobility_itineraries_costs_sf)
   # >mapview::mapview(mobility_itineraries_sf |> filter(Origin_dicofre24!=Destination_dicofre24) |> sample_n(1), zcol="total_fare")
-  
+
   summary(mobility_itineraries_costs)
-  
+
   write.csv(mobility_itineraries_costs, IMPT_URL(sprintf("mobility_money_costs/mobility_itineraries_costs_pt_%s.csv", fare)), row.names = FALSE)
-  
+
   # Aggregate by parish and municipality  -------------------------------------------------
   # mobility_itineraries_costs = read.csv(IMPT_URL("mobility_money_costs/mobility_itineraries_costs.csv"))
-  mobility_itineraries_costs_grid = jittering_grid |>
-    left_join(mobility_itineraries_costs, by = c("id" = "from_id")) |> 
+  mobility_itineraries_costs_grid <- jittering_grid |>
+    left_join(mobility_itineraries_costs, by = c("id" = "from_id")) |>
     filter(!is.na(total_fare)) # 1429 NAs (r5r could not compute itinerary, possibly because 120 min threshold)
   summary(mobility_itineraries_costs_grid)
   nrow(mobility_itineraries_costs_grid) # 17568
-  
-  aggregated_commuting_money_for_geometry = function(grid) {
-    return (
-      grid |> 
+
+  aggregated_commuting_money_for_geometry <- function(grid) {
+    return(
+      grid |>
         summarise(
           # 1. Weighted total cost
-          total_money = round(weighted.mean(total_fare, trips, na.rm = TRUE), digits=2),
+          total_money = round(weighted.mean(total_fare, trips, na.rm = TRUE), digits = 2),
           # 2. Weighted duration and distance
-          avg_tt = round(weighted.mean(total_duration, trips, na.rm = TRUE), digits=2),
-          avg_distance = round(weighted.mean(total_distance, trips, na.rm = TRUE), digits=2),
+          avg_tt = round(weighted.mean(total_duration, trips, na.rm = TRUE), digits = 2),
+          avg_distance = round(weighted.mean(total_distance, trips, na.rm = TRUE), digits = 2),
           # 3. Total trips for the group
-          trips = round(sum(trips), digits=2)
-        ) |> 
+          trips = round(sum(trips), digits = 2)
+        ) |>
         ungroup() |>
         mutate(
           # When total_money is 0, set variables to NA
@@ -165,43 +165,46 @@ for (fare in fares) {
         )
     )
   }
-  
-  grid_commuting_money = aggregated_commuting_money_for_geometry(mobility_itineraries_costs_grid |> group_by(id_grid_origin))
+
+  grid_commuting_money <- aggregated_commuting_money_for_geometry(mobility_itineraries_costs_grid |> group_by(id_grid_origin))
   summary(grid_commuting_money)
-  
-  grid_commuting_money_sf = grid |> select(id, geom) |> left_join(grid_commuting_money, by=c("id" = "id_grid_origin"))
+
+  grid_commuting_money_sf <- grid |>
+    select(id, geom) |>
+    left_join(grid_commuting_money, by = c("id" = "id_grid_origin"))
   # mapview(grid_commuting_money_sf, zcol = "total_money")
   # mapview(grid_commuting_money_sf, zcol = "avg_tt")
   # mapview(grid_commuting_money_sf, zcol = "avg_distance")
-  
-  freguesia_commuting_money = aggregated_commuting_money_for_geometry(mobility_itineraries_costs_grid |> group_by(Origin_dicofre24))
+
+  freguesia_commuting_money <- aggregated_commuting_money_for_geometry(mobility_itineraries_costs_grid |> group_by(Origin_dicofre24))
   summary(freguesia_commuting_money)
-  
-  freguesia_commuting_money_sf = freguesias |> select(dtmnfr, geom) |> left_join(freguesia_commuting_money, by=c("dtmnfr" = "Origin_dicofre24"))
+
+  freguesia_commuting_money_sf <- freguesias |>
+    select(dtmnfr, geom) |>
+    left_join(freguesia_commuting_money, by = c("dtmnfr" = "Origin_dicofre24"))
   # mapview(freguesia_commuting_money_sf, zcol = "total_money")
   # mapview(freguesia_commuting_money_sf, zcol = "avg_tt")
   # mapview(freguesia_commuting_money_sf, zcol = "avg_distance")
-  
-  municipio_commuting_money = aggregated_commuting_money_for_geometry(
+
+  municipio_commuting_money <- aggregated_commuting_money_for_geometry(
     mobility_itineraries_costs_grid |>
-      left_join(freguesias |> select(dtmnfr, municipio), by=c("Origin_dicofre24" = "dtmnfr")) |>
-      group_by(municipio) 
+      left_join(freguesias |> select(dtmnfr, municipio), by = c("Origin_dicofre24" = "dtmnfr")) |>
+      group_by(municipio)
   )
   summary(municipio_commuting_money)
-  
-  municipio_commuting_money_sf = municipios |> select(municipio, geom) |> left_join(municipio_commuting_money, by=c("municipio" = "municipio"))
+
+  municipio_commuting_money_sf <- municipios |>
+    select(municipio, geom) |>
+    left_join(municipio_commuting_money, by = c("municipio" = "municipio"))
   # mapview(municipio_commuting_money_sf, zcol = "total_money")
   # mapview(municipio_commuting_money_sf, zcol = "avg_tt")
   # mapview(municipio_commuting_money_sf, zcol = "avg_distance")
-  
-  output_dir = "mobility_money_costs"
+
+  output_dir <- "mobility_money_costs"
   st_write(grid_commuting_money_sf, IMPT_URL(sprintf("%s/grid_commuting_money_pt_%s.gpkg", output_dir, fare)), delete_dsn = TRUE)
-  write.csv(grid_commuting_money, IMPT_URL(sprintf("%s/grid_commuting_money_pt_%s.csv", output_dir, fare)), row.names = FALSE) 
+  write.csv(grid_commuting_money, IMPT_URL(sprintf("%s/grid_commuting_money_pt_%s.csv", output_dir, fare)), row.names = FALSE)
   st_write(freguesia_commuting_money_sf, IMPT_URL(sprintf("%s/freguesia_commuting_money_pt_%s.gpkg", output_dir, fare)), delete_dsn = TRUE)
-  write.csv(freguesia_commuting_money, IMPT_URL(sprintf("%s/freguesia_commuting_money_pt_%s.csv", output_dir, fare)), row.names = FALSE) 
+  write.csv(freguesia_commuting_money, IMPT_URL(sprintf("%s/freguesia_commuting_money_pt_%s.csv", output_dir, fare)), row.names = FALSE)
   st_write(municipio_commuting_money_sf, IMPT_URL(sprintf("%s/municipio_commuting_money_pt_%s.gpkg", output_dir, fare)), delete_dsn = TRUE)
   write.csv(municipio_commuting_money, IMPT_URL(sprintf("%s/municipio_commuting_money_pt_%s.csv", output_dir, fare)), row.names = FALSE)
 }
-
-
-
