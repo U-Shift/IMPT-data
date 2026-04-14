@@ -77,7 +77,7 @@ grid_affordability_pt_pass <- read.csv(IMPT_URL("/mobility_money_costs/grid_comm
 
 freguesia_affordability_composite <- read.csv(IMPT_URL("/affordability/affordability_freguesia_composite.csv"))
 municipio_affordability_composite <- read.csv(IMPT_URL("/affordability/affordability_municipio_composite.csv"))
-# grid_affordability_composite = read.csv(IMPT_URL("/affordability/affordability_grid_composite.csv"))
+grid_affordability_composite <- read.csv(IMPT_URL("/affordability/affordability_grid_composite.csv"))
 
 
 # Safety ------------------------------------------------------------------
