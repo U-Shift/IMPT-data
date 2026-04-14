@@ -334,14 +334,9 @@ accidents_grid_redux = accidents_grid |>
   ungroup()
 
 
-landuse_grid = read.csv("/data/IMPT/landuse/landuse_grid.csv")
+landuse_grid = read.csv("/data/IMPT/landuse/grid_with_cos.csv")
 accidents_grid_redux = accidents_grid_redux |> 
-  left_join(landuse_grid |> select(id, population), by = c("grid_id" = "id"))
-
-sum(accidents_grid_redux$vitimas_mortais30[is.na(accidents_grid_redux$population)]) #37 não tem dados de população...
-
-
-accidents_grid_redux = accidents_grid_redux |> 
+  left_join(landuse_grid |> select(id, population), by = c("grid_id" = "id")) |> 
   mutate(
     indice_gravidade = vitimas_mortais30 / total_vitimas30,
     indice_gravidade_carro = ifelse(veh_motorizado > 0, vitimas_mortais30 / veh_motorizado, NA_real_), # ignora se não houve carro involvido
