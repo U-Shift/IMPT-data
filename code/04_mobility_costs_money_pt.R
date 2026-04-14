@@ -120,7 +120,7 @@ for (fare in fares) {
   mobility_itineraries_costs_sf <- od_freguesias_jittered50 |>
     select(id, trips, Origin_dicofre24, Destination_dicofre24) |>
     left_join(
-      mobility_itineraries |>
+      mobility_itineraries_costs |>
         # Select only revelant columns from itineraries
         select(from_id, to_id, total_duration, total_distance, total_fare),
       by = c("id" = "from_id")
@@ -133,10 +133,10 @@ for (fare in fares) {
 
   summary(mobility_itineraries_costs)
 
+  DATA_LOCATION <- "data" # When running locally, get data from local folder
   write.csv(mobility_itineraries_costs, IMPT_URL(sprintf("mobility_money_costs/mobility_itineraries_costs_pt_%s.csv", fare)), row.names = FALSE)
 
   # Aggregate by parish and municipality  -------------------------------------------------
-  # mobility_itineraries_costs = read.csv(IMPT_URL("mobility_money_costs/mobility_itineraries_costs.csv"))
   mobility_itineraries_costs_grid <- jittering_grid |>
     left_join(mobility_itineraries_costs, by = c("id" = "from_id")) |>
     filter(!is.na(total_fare)) # 1429 NAs (r5r could not compute itinerary, possibly because 120 min threshold)
@@ -149,6 +149,8 @@ for (fare in fares) {
         summarise(
           # 1. Weighted total cost
           total_money = round(weighted.mean(total_fare, trips, na.rm = TRUE), digits = 2),
+          total_money_return = total_money,
+          total_money_2ways = total_money * 2,
           # 2. Weighted duration and distance
           avg_tt = round(weighted.mean(total_duration, trips, na.rm = TRUE), digits = 2),
           avg_distance = round(weighted.mean(total_distance, trips, na.rm = TRUE), digits = 2),
@@ -207,4 +209,5 @@ for (fare in fares) {
   write.csv(freguesia_commuting_money, IMPT_URL(sprintf("%s/freguesia_commuting_money_pt_%s.csv", output_dir, fare)), row.names = FALSE)
   st_write(municipio_commuting_money_sf, IMPT_URL(sprintf("%s/municipio_commuting_money_pt_%s.gpkg", output_dir, fare)), delete_dsn = TRUE)
   write.csv(municipio_commuting_money, IMPT_URL(sprintf("%s/municipio_commuting_money_pt_%s.csv", output_dir, fare)), row.names = FALSE)
+  DATA_LOCATION <- "https://impt.server.ushift.pt" # When running locally, get data from remote server
 }
