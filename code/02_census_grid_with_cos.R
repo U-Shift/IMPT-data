@@ -172,6 +172,10 @@ grid_final <- grid %>%
     youth_dependency = if_else(is.nan(youth_dependency), 0, youth_dependency),
     elderly_dependency = if_else(is.infinite(elderly_dependency), 100, elderly_dependency)
   ) |>
+  mutate( # Solve pp_hh_avg too high because low number of households
+    pp_hh_avg = if_else(households < 3, NA_real_, pp_hh_avg),
+    pp_hh_avg = if_else(pp_hh_avg > 50, NA_real_, pp_hh_avg)
+  ) |>
   mutate(across(c(buildings, buildings_pre1945, population, youth, elderly, adults, women), ceiling)) %>%
   st_transform(4326)
 
