@@ -90,23 +90,21 @@ for (folder in list.dirs(folder_name, recursive = FALSE)) {
   message("Finished aggregating and cleaning up for folder: ", folder)
 }
 
-
-# |>
-#   mutate(
-#     # Remove "[" and "]" and split by ",", casting to int
-#     osm_id_list_int = str_remove_all(osm_id_list, "\\[|\\]") |>
-#       str_split(",") |>
-#       map(~ as.integer(.x))
-#   )
-
 # For each itinerary, compute costs -------------------------------------------------
 
-mobility_itineraries <- readRDS_remote(IMPT_URL("mobility_itineraries/itinerary_car_120min.rds"))
+# library(purrr) # for map()
+mobility_itineraries <- readRDS_remote(IMPT_URL("mobility_itineraries/itinerary_car_120min.rds")) |>
+  mutate(
+    # Remove "[" and "]" and split by ",", casting to int
+    osm_id_list_int = str_remove_all(osm_id_list, "\\[|\\]") |>
+      str_split(",") |>
+      map(~ as.integer(.x))
+  )
 cost_per_km <- 0.4 # https://diariodarepublica.pt/dr/detalhe/portaria/1553-d-2008-243733
 
 mobility_itineraries_sf <- mobility_itineraries |>
   # Select only revelant columns from itineraries
-  select(from_id, to_id, total_duration, total_distance, geometry) |>
+  select(from_id, to_id, total_duration, total_distance, osm_id_list_int, geometry) |>
   # Recover trips weight from jittering
   left_join(od_freguesias_jittered50 |> select(id, trips, Origin_dicofre24, Destination_dicofre24) |> st_drop_geometry(), by = c("from_id" = "id")) |>
   # Convert to sf, using column geometry, a column with syntax: LINESTRING (x1 y1, x2 y2, ...)
@@ -151,10 +149,10 @@ mobility_itineraries_tools <- mobility_itineraries_sf |>
   rowwise() |>
   mutate(tools = compute_tools_for_itinerary(cur_data())) |>
   unnest_wider(tools, names_sep = "_") |>
-  st_droiop_geometry()
+  st_drop_geometry()
 
 nrow(mobility_itineraries_tools |> filter(tools_C1 != 0)) # 2188
-mapview::mapview(mobility_itineraries_sf |> left_join(mobility_itineraries_tools, by = c("from_id", "to_id")) |> filter(tools_C1 != 0), zcol = "tools_C1")
+mapview::mapview(mobility_itineraries_sf |> select(from_id, to_id) |> left_join(mobility_itineraries_tools |> select(-osm_id_list_int), by = c("from_id", "to_id")) |> filter(tools_C1 != 0), zcol = "tools_C1")
 
 # skimr::skim(mobility_itineraries_tools)
 summary(mobility_itineraries_tools)
@@ -162,24 +160,48 @@ summary(mobility_itineraries_tools |> filter(tools_C1 != 0))
 # mapview::mapview(mobility_itineraries_sf |> left_join(mobility_itineraries_tools, by=c("from_id", "to_id")) |> filter(tools_C1!=0), zcol="tools_C1")
 # mapview::mapview(mobility_itineraries_sf |> left_join(mobility_itineraries_tools, by=c("from_id", "to_id")) |> filter(tools_C1>0 & tools_C1<2) |> sample_n(1), zcol="tools_C1")
 
+# 25 de Abril Bridge costs from https://www.lusoponte.pt/25-de-abril/informacoes-gerais
+nrow(mobility_itineraries_tools |> rowwise() |> filter(22286596 %in% osm_id_list_int) |> ungroup()) # 25 de Abril Bridge, Sul > Norte, 2.25€
+nrow(mobility_itineraries_tools |> rowwise() |> filter(10073105 %in% osm_id_list_int) |> ungroup()) # 25 de Abril Bridge, Norte > Sul, 0€
+# Vasco da Gama bridge costs from https://www.lusoponte.pt/vasco-da-gama/informacoes-gerais
+nrow(mobility_itineraries_tools |> rowwise() |> filter(29104538 %in% osm_id_list_int) |> ungroup()) # Vasco da Gama Bridge, Sul > Norte, 3.40€
+nrow(mobility_itineraries_tools |> rowwise() |> filter(344085225 %in% osm_id_list_int) |> ungroup()) # Vasco da Gama Bridge, Norte > Sul, 0€
+
 
 mobility_itineraries_costs <- mobility_itineraries_tools |>
   rename(cost_tools = tools_C1) |>
   select(-starts_with("tools_")) |>
   mutate(
     cost_tools = round(cost_tools, digits = 2),
-    cost_distance = round(total_distance / 1000 * cost_per_km, digits = 2),
-    total_cost = cost_tools + cost_distance
+    cost_distance = round(total_distance / 1000 * cost_per_km, digits = 2)
+  ) |>
+  rowwise() |>
+  mutate( # Compute return trip cost (on 25 de Abril and Vasco da Gama bridges, values differ)
+    cost_tools_return = case_when(
+      # If tool charged (Sul > Norte), remove cost from return trip (Norte > Sul)
+      22286596 %in% osm_id_list_int ~ cost_tools - 2.25,
+      29104538 %in% osm_id_list_int ~ cost_tools - 3.40,
+      # If tool not charged because Norte > Sul, add cost to return trip (Sul > Norte)
+      10073105 %in% osm_id_list_int ~ cost_tools + 2.25,
+      344085225 %in% osm_id_list_int ~ cost_tools + 3.40,
+      TRUE ~ cost_tools
+    ),
+    cost_tools_2ways = cost_tools + cost_tools_return
+  ) |>
+  ungroup() |>
+  mutate(
+    total_cost = cost_tools + cost_distance,
+    total_cost_return = cost_tools_return + cost_distance,
+    total_cost_2ways = cost_tools_2ways + cost_distance * 2
   )
-summary(mobility_itineraries_costs)
+summary(mobility_itineraries_costs |> select(-osm_id_list_int))
 
 # mapview::mapview(mobility_itineraries_sf |> left_join(mobility_itineraries_costs, by=c("from_id", "to_id")) |> filter(total_cost>30) |> sample_n(1), zcol="tools_C1")
-
-write.csv(mobility_itineraries_costs, IMPT_URL("mobility_money_costs/mobility_itineraries_costs.csv"), row.names = FALSE)
+write.csv(mobility_itineraries_costs |> select(-osm_id_list_int, -geometry), IMPT_URL("mobility_money_costs/mobility_itineraries_costs_car.csv"), row.names = FALSE)
 
 
 # Aggregate by parish and municipality  -------------------------------------------------
-mobility_itineraries_costs <- read.csv(IMPT_URL("mobility_money_costs/mobility_itineraries_costs.csv"))
+mobility_itineraries_costs <- read.csv(IMPT_URL("mobility_money_costs/mobility_itineraries_costs_car.csv"))
 mobility_itineraries_costs_grid <- jittering_grid |>
   select(-Origin_dicofre24, -Destination_dicofre24, -trips) |>
   left_join(mobility_itineraries_costs, by = c("id" = "from_id")) |>
@@ -192,6 +214,8 @@ aggregated_commuting_money_for_geometry <- function(grid) {
       summarise(
         # 1. Weighted total cost
         total_money = round(weighted.mean(total_cost, trips, na.rm = TRUE), digits = 2),
+        total_money_return = round(weighted.mean(total_cost_return, trips, na.rm = TRUE), digits = 2),
+        total_money_2ways = round(weighted.mean(total_cost_2ways, trips, na.rm = TRUE), digits = 2),
         # 2. Weighted duration and distance
         avg_tt = round(weighted.mean(total_duration, trips, na.rm = TRUE), digits = 2),
         avg_distance = round(weighted.mean(total_distance, trips, na.rm = TRUE), digits = 2),
