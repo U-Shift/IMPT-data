@@ -189,3 +189,5 @@ summary(grid_final$population_density) # sounds good
 # export
 st_write(grid_final, IMPT_URL("/landuse/grid_with_cos.gpkg"), delete_dsn = TRUE)
 write.csv(grid_final |> st_drop_geometry(), IMPT_URL("/landuse/grid_with_cos.csv"), row.names = FALSE)
+
+st_write(cos_clean, IMPT_URL("/geo/grid_with_cos.geojson"), delete_dsn = TRUE)

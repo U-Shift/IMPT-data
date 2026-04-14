@@ -745,3 +745,4 @@ for (f in files) {
   scp_upload(session, IMPT_URL(paste(output_dir, f, sep = "/")), to = paste("/afs/.ist.utl.pt/groups/ushift/web/content/impt", f, sep = "/"))
 }
 scp_upload(session, IMPT_URL(paste(output_dir, "champions.json", sep = "/")), to = paste("/afs/.ist.utl.pt/groups/ushift/web/content/impt", "champions.json", sep = "/"))
+# scp_upload(session, IMPT_URL("/geo/cos_builtarea.geojson"), to = paste("/afs/.ist.utl.pt/groups/ushift/web/content/impt", "cos_builtarea.geojson", sep = "/"))
