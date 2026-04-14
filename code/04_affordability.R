@@ -274,14 +274,12 @@ households_size_grid <- read_csv("/data/IMPT/landuse/landuse_grid.csv") |>
 
 ## import previous computed costs
 grid_affordability_mob <- read_csv("/data/IMPT/results_data/grid_affordability.csv")
-### Does not exist - something in /data/IMPT/mobility_money_costs ??
 
 grid_income <- read_csv("/data/IMPT/landuse/grid_income_housing_gini.csv") |>
   select(-gini_coef) |>
   mutate(housing_costs_year = housing_costs * 12) # yearly costs
 
 
-### will not work from here due costs at grid level !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 grid_affordability <- grid_affordability_mob |>
   left_join(grid_income, by = "grid_id") |>
   left_join(occ_rate_car_freg |> select(freg_id, taxa_ocup_auto), by = "grid_id") |>
