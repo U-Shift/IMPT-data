@@ -1,0 +1,155 @@
+# Data Sources {#sec-data-sources}
+
+```{r}
+#| label: setup
+#| include: false
+library(knitr)
+library(kableExtra)
+options(knitr.table.format = "html")
+```
+
+## Primary Data Sources
+
+```{r}
+#| label: tbl-datasources
+#| tbl-cap: "Primary data sources used in the IMPT pipeline"
+
+sources <- data.frame(
+    Code = c("CAOP", "BGRI21", "IMOB", "GTFS", "OSM-RN", "OSM-POI", "CM", "ANSR", "INE-Inc", "INE-Hous", "GBA", "PMUS", "COS", "IP"),
+    Name = c(
+        "CAOP 2024.1 — Administrative Boundaries",
+        "Census 2021 — Base Geográfica de Referenciação de Informação",
+        "IMOB 2017/18 — Inquérito à Mobilidade nas Áreas Metropolitanas",
+        "GTFS — General Transit Feed Specification (all AML operators)",
+        "OpenStreetMap (OSM) — Road network",
+        "OpenStreetMap (OSM) — POIs",
+        "Carris Metropolitana — Health centres and schools datasets",
+        "ANSR — Road accident data (Sinistralidade Rodoviária)",
+        "INE — Household income by parish (Rendimento agregado 2023)",
+        "INE — Housing costs by parish (Habitação custos 2021)",
+        "Global Building Atlas - Building heights",
+        "TML PMUS - Shared mobility docks",
+        "COS 2023 v1 — Land use Map",
+        "Infraestruturas de Portugal — Toll cost"
+    ),
+    Year = c("2024", "2021", "2018", "2026-02", "2026-01", "2024-04", "2024", "2019–2023", "2023", "2021", "2026", "2025", "2023", "2026"),
+    URL = c(
+        "https://www.dgterritorio.gov.pt/sites/default/files/ficheiros-cartografia/CAOP_Continente_2024.1-gpkg.zip",
+        "https://mapas.ine.pt/download/filesGPG/2021/nuts3/BGRI21_170.zip",
+        "https://www.ine.pt/xurl/pub/349495406",
+        "Multiple operators — see <a href='#sec-gtfs-operators'>GTFS Operators</a>",
+        "https://export.hotosm.org/exports/4782f0b8-6778-4c0e-8e4f-97fc62e7f240",
+        "https://export.hotosm.org / https://github.com/U-Shift/SiteSelection/releases/download/0.1/osm_poi_landuse.gpkg",
+        "https://github.com/carrismetropolitana/datasets",
+        "https://pmmus.tmlmobilidade.pt/",
+        "https://www.ine.pt/xurl/pub/66303599",
+        "https://www.ine.pt/xurl/pub/65586079",
+        "https://github.com/zhu-xlab/GlobalBuildingAtlas",
+        "https://pmmus.tmlmobilidade.pt/",
+        "https://geo2.dgterritorio.gov.pt/cos/S2/COS2023/COS2023v1-S2-gpkg.zip",
+        "https://portagens.infraestruturasdeportugal.pt"
+    ),
+    stringsAsFactors = FALSE
+)
+
+# Convert URLs to clickable HTML links
+sources$URL <- ifelse(grepl("^http", sources$URL),
+    paste0("<a href=\"", sources$URL, "\" target=\"_blank\">", sources$URL, "</a>"),
+    sources$URL
+)
+
+kbl(sources,
+    col.names = c("Code", "Dataset", "Reference period", "Source"),
+    booktabs = TRUE, longtable = TRUE, escape = FALSE
+) |>
+    kable_styling(font_size = 9, full_width = FALSE) |>
+    column_spec(2, width = "9cm") |>
+    column_spec(4, width = "5.5cm")
+```
+
+## GTFS Transit Operators {#sec-gtfs-operators}
+
+Travel time matrices for public transit and stop-level frequency statistics were computed using GTFS feeds downloaded on **04/02/2026** from the following operators:
+
+```{r}
+#| label: tbl-gtfs
+#| tbl-cap: "GTFS feeds used in the IMPT pipeline"
+
+gtfs <- data.frame(
+    Operator = c(
+        "Carris Metropolitana", "Carris Municipal (Lisboa)", "MobiCascais",
+        "Metropolitano de Lisboa (Metro)", "Comboios de Portugal (CP)",
+        "Fertagus", "Metro Transportes do Sul (MTS)", "Transtejo/Soflusa (TTSL)"
+    ),
+    Mode = c("Bus", "Bus", "Bus", "Metro", "Rail", "Rail", "Light Rail", "Ferry"),
+    URL = c(
+        "https://api.carrismetropolitana.pt/gtfs",
+        "https://gateway.carris.pt/gateway/gtfs/api/v2.8/GTFS",
+        "https://drive.google.com/u/0/uc?id=13ucYiAJRtu-gXsLa02qKJrGOgDjbnUWX&export=download",
+        "https://metrolisboa.pt/google_transit/googleTransit.zip",
+        "https://publico.cp.pt/gtfs/gtfs.zip",
+        "https://mts.pt/imt/MTS-20240129.zip",
+        "https://fertagus.pt/GTFSTMLzip/Fertagus_GTFS.zip",
+        "https://api.transtejo.pt/files/GTFS.zip"
+    )
+)
+
+# Convert URLs to clickable HTML links
+gtfs$URL <- ifelse(grepl("^http", gtfs$URL),
+    paste0("<a href=\"", gtfs$URL, "\" target=\"_blank\">", gtfs$URL, "</a>"),
+    gtfs$URL
+)
+
+kbl(gtfs, col.names = c("Operator", "Mode", "GTFS URL"), booktabs = TRUE, escape = FALSE) |>
+    kable_styling(font_size = 9, full_width = FALSE) |>
+    column_spec(3, width = "8cm")
+```
+
+## R Packages {#sec-packages}
+
+The following R packages are used across the pipeline:
+
+```{r}
+#| label: tbl-packages
+#| tbl-cap: "Key R packages used in the IMPT pipeline"
+
+pkgs <- data.frame(
+    Package = c(
+        "readr", "readxl", "openxlsx", "lubridate",
+        "dplyr", "tidyr", "stringr", "tidyverse",
+        "sf", "terra", "mapview", "stplanr", "h3jsr",
+        "r5r", "accessibility", "odjitter", "tidytransit", "GTFShift",
+        "FactoMineR", "assertthat", "piggyback"
+    ),
+    Purpose = c(
+        "Fast CSV reading/writing", "Excel file reading (INE data)", "Excel file reading (safety data)", "Date/time manipulation",
+        "Data manipulation", "Data reshaping", "String manipulation", "Collection of data science packages",
+        "Spatial data handling (read, write, join, transform)", "DEM raster data processing", "Interactive map visualisation", "OD line-to-point conversion", "H3 hexagonal grid generation",
+        "Multimodal travel time matrix computation", "Cumulative accessibility and cost-to-closest measures", "Origin-Destination jittering", "GTFS feed processing and stop frequencies", "GTFS loading, route frequency, filtering",
+        "Principal Component Analysis", "Runtime assertion checks", "GitHub release asset upload/download"
+    ),
+    CRAN = c(
+        "Yes", "Yes", "Yes", "Yes",
+        "Yes", "Yes", "Yes", "Yes",
+        "Yes", "Yes", "Yes", "Yes", "No*",
+        "Yes", "Yes", "No*", "Yes", "No*",
+        "Yes", "Yes", "Yes"
+    )
+)
+
+kbl(pkgs,
+    col.names = c("Package", "Primary purpose in IMPT", "CRAN?"),
+    booktabs = TRUE, longtable = TRUE, escape = FALSE
+) |>
+    kable_styling(font_size = 9, full_width = FALSE) |>
+    column_spec(2, width = "9cm") |>
+    pack_rows("Data reading", 1, 4) |>
+    pack_rows("Data manipulation", 5, 8) |>
+    pack_rows("Geo spatial data", 9, 13) |>
+    pack_rows("Routing and accessibility", 14, 18) |>
+    pack_rows("PCA", 19, 19) |>
+    pack_rows("Tests", 20, 20) |>
+    pack_rows("Piggyback", 21, 21)
+```
+
+\* *Installed from GitHub: `odjitter` (`itsleeds/odjitter`, R subdirectory), `GTFShift` (`U-Shift/GTFShift`), `h3jsr` (`obrl-soil/h3jsr`).*

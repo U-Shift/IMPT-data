@@ -1,0 +1,41 @@
+# Output and Dashboard {#sec-output}
+
+## Output Files
+
+Final results are stored in three geographic formats for each spatial level:
+
+| Level | Format | Variables |
+|-------|--------|-----------|
+| Parish (*freguesia*) | CSV + GeoPackage | All dimension scores + IMPT scores |
+| Municipality (*município*) | CSV + GeoPackage | Population-weighted means |
+| H3 Grid | CSV + GeoPackage | Assigned from host parish |
+
+: Output file formats {#tbl-output}
+
+Results are uploaded to the project data server at `https://server.ushift.pt/impt` using `piggyback` for publishing to the GitHub release.
+
+## Dashboard Export {#sec-dashboard}
+
+**Script:** `06b_dashboard_export.R`
+
+The dashboard export script joins all indicator tables (accessibility, mobility, affordability, safety, census/land use, IMPT scores) with the spatial geometry files and exports them as three aggregated **GeoJSON** files for direct use in the web dashboard:
+
+- `grid_aggregated.geojson`
+- `freguesias_aggregated.geojson`
+- `municipios_aggregated.geojson`
+
+A champions lookup file (`champions.json`) is also exported, identifying the **top contributing indicators** to each dimension's PC1, for display in the dashboard sidebar.
+
+## Web Dashboard
+
+The IMPT results are visualised in an interactive web dashboard built with **React + TypeScript + Vite**, using **Leaflet/MapLibre** for map rendering. The dashboard is available at:
+
+> [ushift.pt/apps/impt](https://ushift.pt/apps/impt)
+
+The dashboard supports:
+
+- Map visualisation by metric, mode, and geographic level
+- Metric cards with legend, description, and top contributor indicators
+- Dynamic IMPT score computation with user-defined dimension weights
+- PT fare scenario switching (single fare vs. Navegante pass)
+- Download results and indicators as CSV and GeoJSON

@@ -1,0 +1,44 @@
+
+# Appendix: PCA Diagnostics {#sec-appendix-pca}
+
+The following table summarises the variance explained by PC1 in each PCA run:
+
+```{r}
+#| label: setup-appendix
+#| include: false
+library(knitr)
+library(kableExtra)
+```
+
+```{r}
+#| label: tbl-pca-summary
+#| tbl-cap: "PCA diagnostics — variance explained by PC1 (indicative values; run 05_IMPTcalculator.R for up-to-date results)"
+
+# This table would be populated from the PCA variance report CSV once available
+# Placeholder structure:
+pca_summary <- data.frame(
+    Dimension_Mode = c(
+        "Accessibility (global)", "Mobility (global)", "Safety (global)",
+        "Accessibility – Car", "Accessibility – PT", "Accessibility – Bike", "Accessibility – Walk",
+        "Mobility – Car", "Mobility – PT", "Mobility – Bike", "Mobility – Walk",
+        "Safety – Car", "Safety – Bike", "Safety – Walk"
+    ),
+    PC1_Variance = c(
+        "[run script]", "[run script]", "[run script]",
+        "[run script]", "[run script]", "[run script]", "[run script]",
+        "[run script]", "[run script]", "[run script]", "[run script]",
+        "[run script]", "[run script]", "[run script]"
+    ),
+    Top_Variable = rep("[run script]", 14)
+)
+
+kable(pca_summary,
+    col.names = c("Dimension / Mode", "PC1 Variance (%)", "Top contributing variable"),
+    booktabs = TRUE
+) |>
+    kable_styling(font_size = 10, full_width = FALSE)
+```
+
+::: {.callout-tip}
+To populate this table automatically, source `05_IMPTcalculator.R` and read `PCA_Variance_Table.csv` and `PCA_Variance_and_Correlations.csv` from the results folder.
+:::

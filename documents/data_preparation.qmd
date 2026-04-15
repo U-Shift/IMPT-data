@@ -1,0 +1,209 @@
+# Data Preparation {#sec-data-prep}
+
+::: callout-note
+This phase corresponds to scripts **`00a`**, **`00b`**, **`01`**, **`02_*`** in the pipeline.
+:::
+
+## Infrastructure and Helper Functions {#sec-helper}
+
+**`00a_impt_data_handle.R`** defines two core helper functions:
+
+- `impt_read(path)`: reads CSV, GeoPackage, GeoJSON, or RDS files. When running on the `ushift-alfa` server, it reads from the local `/data/IMPT/` directory; on any other machine, it fetches via HTTPS from `https://impt.server.ushift.pt` using an API key.
+- `impt_write(content, path)`: writes to the same location logic (server vs. local `data/` folder).
+
+These functions abstract away the data storage location, making the pipeline portable.
+
+**`00b_data_load.R`** sets up globally-used variables (study area boundaries, grid, ids correspondence between levels, etc.) that are reused across scripts.
+
+## Administrative Boundaries {#sec-data-prep-boundaries}
+
+**Source:** CAOP 2024.1 (DGT — Direção-Geral do Território)
+
+The full continental Portugal polygon file is filtered to the **Grande Lisboa** and **Península de Setúbal** NUTS-II sub-regions. For the municipality of Lisboa, parish boundaries with the Tagus estuary are replaced by clipped geometries (`FREGUESIASgeo.gpkg` - using CAOP 2016 parish limits) to remove the water area in Lisbon municipality.
+
+For parishes with multiple polygon features (due to small islands), only the polygon with the largest area is retained.
+
+### Conversion of 2016 to 2024 Parish Codes {#sec-dicofre}
+
+The Census 2021 and IMOB 2017 travel survey use 2016 parish codes (*DICOFRE*). Several parishes were split between 2016 and 2024. A manual conversion table was created after inspecting the differences:
+
+| Old DICOFRE (2016) | New DICOFRE(s) (2024) |
+|--------------------|-----------------------|
+| 151007 | 151008, 151009, 151010 |
+| 111127 | 111134, 111135 |
+| 111123 | 111129, 111131, 111132 |
+| 111126 | 111130, 111133 |
+
+: Parish code conversions from 2016 to 2024 {#tbl-dicofre}
+
+Trips associated with split parishes were redistributed proportionally to the area of the new parishes. Conservation of total trip counts was validated using `assertthat`.
+
+## H3 Hexagonal Grid {#sec-grid}
+
+```{mermaid}
+%%| label: fig-grid-overview
+%%| fig-cap: "H3 grid generation and spatial assignment"
+flowchart LR
+    AML["AML boundary<br/>CAOP 2024"] --> H3["h3jsr::polygon_to_cells<br/>Resolution 8"]
+    H3 --> Cells["3,686 hexagons<br/>531m edge, 0.74 km2 avg"]
+    Cells --> C["Grid centroids<br/>for routing"]
+    Cells --> G["Grid index table<br/>mapping levels"]
+```
+
+The H3 hexagonal grid is generated at **Resolution 8** using the `h3jsr` package [@Uber_H3_2018]. Resolution 8 provides a spatial unit with an average edge length of ~531 m and average area of ~0.74 km², which offers a good balance between spatial detail and computational tractability for routing-based accessibility measures.
+
+The H3 grid covers the AML with **3,686 active hexagons** (those intersecting the administrative boundaries). At the limits, if a hexagon covers less than 50% of the administrative area, it is excluded from the analysis.
+Each hexagon is assigned to a parish and municipality via a cross-reference table (`grid_nuts.csv`).
+
+## Census Data Processing {#sec-census}
+
+**Source:** INE Census 2021, BGRI 2021 at the base statistical unit level (BGRI — Base Geográfica de Referenciação de Informação), NUTS-3 Área Metropolitana de Lisboa (code 170).
+
+Census BGRI polygons are converted to **centroids**. The following variables are extracted:
+
+| Variable | INE field | Description |
+|----------|-----------|-------------|
+| `population` | `N_INDIVIDUOS` | Total residents |
+| `households` | `N_NUCLEOS_FAMILIARES` | Total households |
+| `youth` | `N_INDIVIDUOS_0_14` | Residents aged 0–14 |
+| `adults` | `N_INDIVIDUOS_15_24` + `N_INDIVIDUOS_25_64` | Residents aged 15–64 |
+| `elderly` | `N_INDIVIDUOS_65_OU_MAIS` | Residents aged 65+ |
+| `women` | `N_INDIVIDUOS_M` | Female residents |
+| `buildings` | `N_EDIFICIOS_CLASSICOS` | Classic buildings |
+| `buildings_pre1945` | `N_EDIFICIOS_CONSTR_ANTES_1945` | Buildings built before 1945 |
+
+: Census variables used in IMPT {#tbl-census-vars}
+
+For parish- and municipality-level aggregation, census data from 2016-era parishes are redistributed to 2024 parishes using the area-weighted conversion table described in @sec-dicofre.
+
+## Dasymetric Grid Population Redistribution (COS 2023) {#sec-cos}
+
+**Source:** COS 2023 v1 (Direção-Geral do Território), residential land use classes
+
+To achieve a more accurate population distribution within the H3 grid, a **dasymetric mapping** approach is applied using the Carta de Ocupação do Solo (COS) 2023.
+This is a relevan method, in particular when dealing with BGRI polygons that cover large areas, accross multiple hexagons cells - preventing that one single hexagon is assigned the entire population of the BGRI polygon with it's centroid.
+
+Residential areas are extracted with the following classes and assigned weighting factors:
+
+| COS 2023 classification | Weight |
+|------------------------|--------|
+| Contínuas predominantemente verticais | 3.0 |
+| Contínuas predominantemente horizontais | 1.0 |
+| Descontínuas | 0.6 |
+| Descontínuas esparsas | 0.3 |
+
+: COS 2023 residential classes and dasymetric weights {#tbl-cos-weights}
+
+The procedure (`02_census_grid_with_cos.R`):
+
+1. Census BGRI polygons are intersected with COS residential patches and H3 grid cells.
+2. For each BGRI fragment, a weighted score is computed as `fragment_area × weight`.
+3. Each BGRI's population is distributed proportionally to the weighted score of each fragment.
+4. Results are summed per H3 cell.
+
+This recovers approximately 99.4% of the total AML population (2,854,660 vs. 2,870,208 in the census), a significant improvement over simple centroid assignment.
+
+::: {.callout-important}
+The land use and census data from the dasymetric method is only used at the grid level for the calculation of fine-grain indicators. For the other levels, the Census 2021 BGRI data is used directly.
+:::
+
+## Points of Interest (POIs) {#sec-pois}
+
+POIs are collected from three sources: OpenStreetMap, Carris Metropolitana open datasets, and GTFS feeds. The following categories are used:
+
+```{r}
+#| label: setup-pois
+#| include: false
+library(knitr)
+library(kableExtra)
+```
+
+```{r}
+#| label: tbl-pois
+#| tbl-cap: "POI categories, sources, and filters"
+
+pois <- data.frame(
+    Category = c(
+        "Healthcare (all)", "Hospitals", "Primary care centres",
+        "Supermarkets/grocery", "Green spaces", "Recreation",
+        "Schools (all)", "Primary schools", "Transit stops (all)",
+        "Transit stops (bus)", "Transit stops (mass transit)", "Jobs"
+    ),
+    Identifier = c(
+        "health", "health_hospital", "health_primary",
+        "groceries", "greenspaces", "recreation",
+        "schools", "schools_primary", "transit", "transit_bus", "transit_mass", "jobs"
+    ),
+    Source = c(
+        "CM", "CM", "CM",
+        "OSM", "OSM", "OSM",
+        "CM", "CM",
+        "GTFS (all operators)", "GTFS (Carris, CM, TCB, Cascais próxima)", "GTFS (CP, Fertagus, Metro, MTS, TTSL)",
+        "IMOB 2018"
+    ),
+    Filter = c(
+        "All health centres", "name contains 'Hospital' or 'Centro de Medicina'",
+        "name contains 'Centro de Saúde'",
+        "`type %in% c('supermarket','convenience')`",
+        "`group == 'leisure' & type %in% c('park','garden')`",
+        "`type %in% c('library','theatre','cinema','restaurant','cafe','bar','pub','pitch','fitness_station','swimming_pool','sports_centre','fitness_center')`",
+        "All school types", "pre_school==1 | basic_1==1 | basic_2==1 | basic_3==1",
+        "All stops from all operators",
+        "Bus operators only",
+        "Rail, metro, ferry operators",
+        "Jittered OD destinations (see [#sec-jittering])"
+    )
+)
+kable(pois,
+    col.names = c("Category", "Identifier", "Source", "Filter / Description"),
+    booktabs = TRUE, longtable = TRUE, escape = FALSE
+) |>
+    kable_styling(font_size = 9, full_width = FALSE) |>
+    column_spec(4, width = "7cm")
+```
+
+
+## Travel Survey Data and OD Jittering {#sec-jittering}
+
+**Source:** IMOB 2017/18 — Inquérito à Mobilidade nas Áreas Metropolitanas do Porto e de Lisboa (INE / AMT). `https://www.ine.pt/xurl/pub/349495406`
+
+The IMOB survey served as base to produce the OD matrix at parish level with modal split (walk, bike, car, public transit, other), available at [biclaR project](https://github.com/U-Shift/biclar/releases/download/0.0.1/TRIPSmode_freguesias.Rds).
+
+### Jobs as a proxy
+Since high-resolution employment data was not available (or open) for the AML during the report development, **employment locations** were proxied using the jittered destinations of trips from the IMOB 2017 travel survey.
+Specifically, trips with the purpose **"Ir para o trabalho"** (Commute to work) and **"Tratar de assuntos profissionais"** (Work-related business) were extracted, and their jittered destination points were used as POIs representing the spatial distribution of jobs.
+
+Since accessibility and cost computations require disaggregated spatial locations, **jittering** is applied to generate point-level OD pairs.
+
+### Jittering Algorithm
+
+Jittering is performed using the `odjitter` R package [@Lovelace_odjitter_2022], following the approach described in @Lovelace_2022.
+
+The algorithm disaggregates parish-level trip counts into point-to-point flows. The following layers and weights are used:
+
+- **Origins**: Randomly sampled points within residential buildings.
+- **Destinations**: Sampled from a building layer (from `GDA`), weighted by **building volume** (estimated as `height * footprint_m2`). This ensures that areas with higher office and industrial density attract more jittered trips.
+- **Threshold**: A **disaggregation threshold of 50 trips** is applied, meaning any OD flow with more than 50 trips is split into multiple point-to-point pairs to provide higher spatial resolution.
+- **Deterministic Randomization**: A fixed seed (`rng_seed = 42`) is used to ensure the generated points are consistent across pipeline runs.
+
+The process generates approximately **18,500 jittered OD pairs** representing the daily commuting pattern in the AML. This is then expanded to the real number of trips using the `PESOFIN` weights.
+
+## Road Network and DEM {#sec-network}
+
+**Road network:** Exported from [HOT Export Tool](https://export.hotosm.org/exports/4782f0b8-6778-4c0e-8e4f-97fc62e7f240) in `.pbf` format for use with `r5r`. The network includes all OSM road types and GTFS transit feeds.
+
+**Elevation:** Digital Elevation Model at 30 m resolution downloaded from [Copernicus ESA](https://browser.dataspace.copernicus.eu/) (Copernicus DEM GLO-30). Used to account for topographic effects on walking and cycling travel times via the Minetti metabolic-equivalent cost function.
+
+The `r5r` network is built using `r5r::build_network()` with the `elevation = "MINETTI"` option.
+
+## Modal Share from Census {#sec-modal-share}
+
+**Source:** Census 2021 — question on mode used for the daily commute.
+
+Script `02_census_modalShare.R` extracts and computes modal shares (private vehicle, public transit, active modes) at parish and municipality level. These are used to compute **modal-share-weighted affordability** metrics (see @sec-affordability).
+
+## Vehicle Ownership {#sec-veh-ownership}
+
+**Source:** IMOB 2017 data (`02_veh_ownership.R`).
+
+Vehicle ownership variables include average motorised vehicles per household and percentage of households without a vehicle, aggregated at parish and municipality level.

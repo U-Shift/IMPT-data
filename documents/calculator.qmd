@@ -1,0 +1,95 @@
+# Index Computation — IMPT Calculator {#sec-calculator}
+
+**Script:** `05_IMPTcalculator.R`  
+**Package:** `FactoMineR` (PCA)
+
+```{mermaid}
+%%| label: fig-calculator-flow
+%%| fig-cap: "IMPT index computation pipeline"
+flowchart TB
+    subgraph Inputs["Input Dimension Tables (by parish)"]
+        AccIn["Accessibility indicators"]
+        MobIn["Mobility indicators"]
+        AffIn["Affordability indicators<br/>(two fare scenarios)"]
+        SafIn["Safety indicators"]
+    end
+    
+    Inputs --> Normalise
+    
+    subgraph Normalise["Normalisation to [1,100]"]
+        direction TB
+        Ben["Benefit indicators<br/>min→1, max→100<br/>normalize_benefit()"]
+        Cost["Cost indicators<br/>min→100, max→1<br/>normalize_cost()"]
+    end
+    
+    Normalise --> PCA
+    
+    subgraph PCA["PCA per dimension (global & per mode)"]
+        direction TB
+        Run["FactoMineR::PCA()<br/>extract PC1 scores"]
+        Scale["Rescale PC1 to [1,100]<br/>scale_0_100()"]
+        Direction["Validate direction:<br/>check correlation with<br/>top indicator"]
+    end
+    
+    PCA --> Composite
+    
+    subgraph Composite["Composite IMPT Score"]
+        direction TB
+        Geom["Geometric mean<br/>(Acc × Mob × Aff × Safety)^(1/4)"]
+        EntrW["Entropy-weighted geometric mean<br/>compute_entropy_weights()"]
+        Simple["Simple arithmetic mean<br/>(Acc + Mob + Aff + Safety) / 4"]
+    end
+    
+    Composite --> Agg["Population-weighted aggregation<br/>to municipality and grid levels"]
+    Agg --> Out["Final IMPT scores:<br/>freiguesia, municipality, grid<br/>× global and per mode"]
+```
+
+## Normalisation {#sec-normalisation}
+
+All indicators are normalised to the range [1, 100] using min-max scaling:
+
+**Benefit indicators** (higher raw value → better):
+$$X_{norm} = 1 + \frac{X - X_{min}}{X_{max} - X_{min}} \times 99$$
+
+**Cost indicators** (lower raw value → better):
+$$X_{norm} = 1 + \frac{X_{max} - X}{X_{max} - X_{min}} \times 99$$
+
+Accessibility metrics (`access_*`) are benefit indicators; mobility cost metrics (`mobility_cost_*`), PT waiting times, and all affordability indicators are cost indicators.
+
+Missing values in accessibility indicators (arising from infeasible PT routes) are imputed with the mean of the respective variable prior to PCA.
+
+## PCA-Based Dimension Scores {#sec-pca}
+
+For each dimension (Accessibility, Mobility, Safety) and at the global (all-mode) and per-mode levels, a PCA is run using `FactoMineR::PCA()` with `dtmnfr` (parish ID) as a supplementary qualitative variable.
+
+The **first principal component (PC1)** score is used as the dimension index, after rescaling to [1, 100]. PC1 captures the dominant axis of variation among the normalised indicators.
+
+For **Affordability**, PCA is not applied (too few indicators); instead, the normalised composite `h_transp_inc_comp` (housing + transport cost as share of income, modal-share weighted) is used directly as the Affordability Index.
+
+For **Safety per mode**, an equal-weight average of the severity index (inverted) and frequency (vehicle involvement count) is used instead of PCA.
+
+## Composite IMPT Scores {#sec-composite}
+
+Three aggregation methods are computed for the global IMPT and each per-mode IMPT:
+
+1. **Geometric mean** (equal weights):
+$$IMPT_{geom} = \left(\prod_{d} (S_d + 1)\right)^{1/n} - 1$$
+
+2. **Arithmetic mean** (equal weights):
+$$IMPT_{avg} = \frac{1}{n} \sum_d S_d$$
+
+3. **Entropy-weighted geometric mean**:
+$$IMPT_{entropy} = \prod_d (S_d + 1)^{w_d} - 1$$
+
+where weights $w_d$ are derived from the **entropy weighting method**:
+
+$$w_d = \frac{d_d}{\sum_j d_j}, \quad d_d = 1 - e_d, \quad e_d = -k \sum_i p_{id} \ln(p_{id})$$
+
+with $k = 1/\ln(n)$ and $p_{id}$ being the proportion of the dimension score for area $i$.
+
+## Spatial Aggregation {#sec-aggregation}
+
+Once scores are computed at parish level, they are aggregated to higher levels:
+
+- **Municipality level:** population-weighted mean of parish scores.
+- **Grid level:** parishes are assigned to grid cells via the `grid_nuts.csv` cross-reference table; scores are assigned from the host parish (no further averaging at this stage).

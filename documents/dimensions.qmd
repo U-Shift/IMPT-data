@@ -1,0 +1,273 @@
+# Dimension Calculations {#sec-dimensions}
+
+## Accessibility {#sec-accessibility}
+
+**Script:** `04_access_opportunities.R`  
+**Package:** `accessibility` [@Pereira_accessibility_2022]
+
+```{mermaid}
+%%| label: fig-accessibility-flow
+%%| fig-cap: "Accessibility computation flowchart"
+flowchart TB
+    TTM["Travel Time Matrix<br/>5 modes × 2 transfer scenarios"] --> CumCut
+    POIs["POIs per H3 cell<br/>(13 categories, spatially joined)"] --> CumCut
+    Census["Population per H3 cell<br/>(residents, kids, elder, active)"] --> CumCut
+    
+    subgraph CumCut["Cumulative Accessibility"]
+        direction TB
+        Loop1["For each POI category"] --> Loop2["For each transport mode"]
+        Loop2 --> Loop3["For each time cutoff<br/>5,10,15,30,45,60,75,90 min"]
+        Loop3 --> Calc["accessibility::cumulative_cutoff()<br/>Count opportunities reachable<br/>within cutoff time"]
+    end
+    
+    CumCut --> Agg["Aggregate to parish/municipality<br/>(weighted mean by population segment)"]
+    Agg --> Out["Output: access_{poi}_{mode}_{time}_{census}"]
+```
+
+### Metric naming convention
+
+Accessibility metrics follow the pattern:  
+`access_{poi_type}_{mode}_{time}_{census_group}`
+
+For example: `access_health_pt_30min_residents` = number of health facilities reachable by public transit within 30 minutes, for the total resident population.
+
+### Aggregation to parish and municipality level
+
+Grid-level accessibility values are aggregated to parishes and municipalities using a **population-weighted mean**, separately for each demographic group (residents, kids, active, elderly).
+
+### Time to closest opportunity (mobility costs)
+
+**Script:** `04_mobility_costs_time.R`  
+**Function:** `accessibility::cost_to_closest()`
+
+The travel time to the 1st, 2nd, and 3rd closest opportunity of each POI category is also computed, allowing measurement of baseline access time for the nearest facilities.
+
+## Mobility {#sec-mobility}
+
+Mobility indicators cover infrastructure availability and quality, public transport coverage and service levels, commuting patterns, and shared mobility provision.
+
+### Walking infrastructure ratio
+
+**Script:** `04_mobility.R`
+
+The pedestrian infrastructure ratio is the proportion of road length that includes pedestrian infrastructure, computed using OSM data:
+
+$$R_{ped} = \frac{\text{pedestrian path length}}{\text{road length}}$$
+
+Road classification uses highway tags: `motorway`, `trunk`, `primary`, `secondary`, `tertiary`, `unclassified`, `residential`, `living_street`, plus link variants.
+
+Pedestrian infrastructure uses tags: `highway = footway | pedestrian | steps | residential` and `footway = sidewalk | crossing | path | platform | corridor | alley | track`, and `sidewalk = both | left | right`.
+
+### Cycling infrastructure ratio and quality
+
+**Script:** `04_mobility.R`
+
+The cycling infrastructure ratio is computed analogously to the pedestrian ratio. Cycling infrastructure data comes from the classified cycle network layer `AML_cycle_class.gpkg` (TML PMUS 2024), which categorises cycleways into:
+
+- Segregated cycleway (*ciclovia segregada*)
+- Painted cycle lane (*ciclofaixa pintada na via*)
+- Shared pedestrian infrastructure (*infraestrutura pedonal partilhada*)
+- Shared road with vehicles, signed (*via partilhada com veículos motorizados, sinalizada*)
+
+The cycling quality ratio is:
+$$R_{cyc,q} = \frac{\text{segregated cycleway length}}{\text{total cycleway length}}$$
+
+### PT stop coverage
+
+**Script:** `04_mobility.R` / `04_mobility_transit.R`
+
+The proportion of population within 500 m of a public transport stop is computed by:
+
+1. Creating a 500 m buffer around every PT stop in the AML (all operators, from GTFS).
+2. Counting BGRI centroids whose population falls within these buffers.
+3. Dividing by total parish population.
+
+**Limitation:** This is a binary coverage measure (served/not served); it does not account for service frequency or the number of modes available at each stop.
+
+### PT headways and waiting times
+
+**Script:** `04_mobility_transit.R`  
+**Package:** `tidytransit`
+
+Stop-level service frequencies are computed with `tidytransit::get_stop_frequency()` for four time windows:
+
+| Period | Date | Time window |
+|--------|------|-------------|
+| Weekday peak | Wed 04/02/2026 | 08:00–09:00 |
+| Weekday full day | Wed 04/02/2026 | 00:00–48:00 |
+| Weekday night | Wed 04/02/2026 | 22:00–23:00 |
+| Weekend | Sun 08/02/2026 | 10:00–11:00 |
+
+: PT service frequency periods {#tbl-periods}
+
+A 500 m buffer per stop is used to allocate stops to census population centroids. Results are aggregated to parishes and municipalities as **population-weighted mean headway and waiting time**.
+
+Additionally, frequency reduction factors are computed to characterise night and weekend service reduction.
+
+### Commuting travel times
+
+**Script:** `04_mobility_commuting.R`
+
+Using the jittered IMOB OD pairs and the travel time matrices, average commuting travel times are computed for each geographical unit and mode, weighted by number of trips. Trips with no feasible route within the constraints are assigned the maximum travel time (120 min) and counted separately as "not accomplishable" trips (PNA — *Percentagem Não Alcançáveis*).
+
+```{mermaid}
+%%| label: fig-commuting-flow
+%%| fig-cap: "Commuting travel time computation"
+flowchart TB
+    TTM["Travel Time Matrix<br/>(all modes)"] --> Match
+    ODs["Jittered OD pairs<br/>(IMOB 2017 commuting)"] --> Match
+    Grid["H3 Grid"] --> Match
+    
+    subgraph Match["Spatial Assignment & Matching"]
+        direction TB
+        JoinGrid["Assign each OD<br/>to origin grid cell"] --> Lookup["Look up travel time<br/>for each OD pair<br/>in TTM"]
+        Lookup --> Fill["Fill missing:<br/>max_duration = 120 min<br/>(NAs = not accomplishable)"]
+    end
+    
+    Match --> AggMode["Aggregate by<br/>geographic unit × mode"]
+    AggMode --> Output["avg_tt_{mode}<br/>trips, trips_na_{mode}<br/>PNA_{mode}"]
+```
+
+### Number of PT transfers
+
+**Script:** `04_mobility_commuting.R` (line ~181)
+
+For each commuting OD pair, the minimum number of transfers required is determined by checking whether a route exists in the matrices computed for 0, 1, 2, and 3 transfers. The minimum number of transfers for which a route exists is assigned to each OD pair, and population-weighted mean transfers are computed per geographical unit.
+
+### Shared mobility
+
+**Source:** TML PMUS (Shared mobility dock locations). `https://pmmus.tmlmobilidade.pt/`
+
+The number of shared mobility points (physical and virtual docks) is counted per parish and per H3 cell.
+
+## Affordability {#sec-affordability}
+
+**Script:** `04_affordability.R`, `04_mobility_costs_money_car.R`, `04_mobility_costs_money_pt.R`, `04_mobility_costs_money_pt_cost_structure.R`
+
+Affordability is assessed by comparing transport and housing costs against household income. Commuting costs are computed for both car and public transport using `r5r::detailed_itineraries()` on the full set of jittered IMOB OD pairs, regardless of the reported travel mode.
+
+### Car costs
+
+**Script:** `04_mobility_costs_money_car.R`
+
+Car commuting cost per trip = distance cost + tolls:
+
+$$C_{car} = d \times 0.40\text{ €/km} + C_{toll}$$
+
+The fixed cost of **0.40 €/km** is based on [Portaria n.º 1553-D/2008 de 31 de dezembro](https://diariodarepublica.pt/dr/detalhe/portaria/1553-d-2008-243733), which sets mileage allowance covering fuel and maintenance.
+
+Tolls are computed via the [Infraestruturas de Portugal toll API](https://portagens.infraestruturasdeportugal.pt/) using the route geometry returned by `r5r::detailed_itineraries()`.
+
+### Public transport costs — Two scenarios
+
+**Scripts:** `04_mobility_costs_money_pt.R`, `04_mobility_costs_money_pt_cost_structure.R`
+
+To account for uncertainty in PT fare payment practices, two cost scenarios are defined:
+
+**Scenario A — Single fare (pre-Navegante baseline):**  
+Based on Carris Lisboa revenue data:
+
+- Total single ticket validations: 17,424,000
+- Total single ticket revenue: 33,278,000 €
+- Average cost per single ticket: **~1.91 €**
+
+Free transfers within the same mode for 60 minutes are assumed. Different-mode transfers incur an additional charge.
+
+**Scenario B — Monthly pass (Navegante):**  
+Based on operator revenue data for monthly passes:
+
+| Pass type | Volume (months) | Price |
+|-----------|----------------|-------|
+| Navegante Metropolitano | 5,063,510 | 40 € |
+| Navegante Municipal | 887,190 | 30 € |
+| Sub-23 | 1,103,782 | 20 € |
+| Senior (65+) | 243,784 | 80 € |
+| Free (youth) | 3,425,013 | 0 € |
+
+Average monthly cost paid per pass holder: **~25.25 €**  
+Assuming 44 journeys/month (2 trips × 22 working days): **~0.57 €/trip**
+
+### Composite affordability indicators
+
+Transport expenditure is expressed as a share of household income, with two variants (with and without housing costs):
+
+$$\text{transp\_inc}_{car} = \frac{C_{car,year}}{I_{hh}}$$
+
+$$\text{h\_transp\_inc}_{car} = \frac{C_{car,year} + C_{housing,year}}{I_{hh}}$$
+
+A **modal-share-weighted composite** indicator combines car and PT costs proportionally to Census 2021 modal shares:
+
+$$\text{transp\_inc\_comp} = \frac{C_{car} \cdot s_{car} + C_{PT} \cdot s_{PT}}{s_{car} + s_{PT} + s_{active}}$$
+
+where $s_m$ is the modal share of mode $m$ from Census 2021.
+
+Car costs are additionally adjusted for **vehicle occupancy rate** (from IMOB 2017, Table IV.7) and **household size** and **mobile population fraction** (from IMOB 2017, Table II.1), to convert per-trip costs to a household-level annual burden.
+
+**Income data:** household income per parish from INE (*Rendimento agregado 2023*). `https://www.ine.pt/xurl/pub/66303599`  
+**Housing costs:** median monthly housing cost per parish from INE (*Habitação custos 2021*). `https://www.ine.pt/xurl/pub/65586079`
+
+::: {.callout-note}
+## Canha parish
+The parish of Canha (dtmnfr = 150701) is not served by any GTFS operator, resulting in NA PT costs. These values are imputed using the mean of neighbouring parishes within the same municipality (Montijo).
+:::
+
+## Safety {#sec-safety}
+
+**Script:** `04_safety.R`  
+**Source:** ANSR — Autoridade Nacional de Segurança Rodoviária, road accident georeferenced point data (2019–2023).
+
+```{mermaid}
+%%| label: fig-safety-flow
+%%| fig-cap: "Safety indicators computation"
+flowchart TB
+    Acc["ANSR Road Accidents<br/>2019–2023<br/>(georeferenced points)"] --> Filter
+    Pop["Census Population<br/>(parish and grid)"] --> JoinPop
+    Geo["Geographic units<br/>(parishes, municipalities, H3 grid)"] --> SJoin
+    
+    Filter["Filter: last 5 years<br/>(2019–2023)"] --> SJoin
+    SJoin["st_join: assign accidents<br/>to geographic units"] --> ExcludeOuter["Exclude accidents<br/>outside built-up areas<br/>(ponts/bridges)"]
+    ExcludeOuter --> Aggregate
+    
+    subgraph Aggregate["Aggregate per geographic unit"]
+        direction TB
+        TotalAcc["Total accidents (5 years)"] 
+        Victims["Victim counts:<br/>fatal, serious, slight (30-day)"]
+        Vehicles["Vehicles involved:<br/>motorised, cycle, pedestrian"]
+        Context["Context flags:<br/>at night, within localities"]
+    end
+    
+    Aggregate --> JoinPop["Join census population"] --> CalcIdx
+    
+    subgraph CalcIdx["Compute indexes"]
+        direction TB
+        SevIdx["Severity index:<br/>fatalities / total victims"]
+        ModeIdx["Mode-specific severity:<br/>fatalities / vehicles involved (per mode)"]
+        Rate1000["Accident rate per 1,000 residents"]
+        FatalRate["Fatality rate per 1,000 residents"]
+    end
+    
+    CalcIdx --> BothSets["All accidents<br/>+<br/>Within-localities only"]
+```
+
+### Accident data filtering
+
+Accidents located outside administrative parish boundaries are excluded. This includes accidents on major bridges (Ponte 25 de Abril, Ponte Vasco da Gama) which cannot be assigned to a parish. Only accidents reported as occurring **within localities** (*dentro das localidades*) are used for the IMPT normalisation.
+
+### Safety indicators computed
+
+For each geographical unit and transport mode:
+
+| Indicator | Formula |
+|-----------|---------|
+| Total accidents (5 years) | Count |
+| Fatalities (30-day) | Sum `VM_30d` |
+| Serious injuries (30-day) | Sum `FG_30d` |
+| Slight injuries (30-day) | Sum `FL_30d` |
+| Accident rate | `total_acidentes / population × 1000` |
+| Fatality rate | `vitimas_mortais30 / population × 1000` |
+| Severity index (total) | `fatalities / total_victims` |
+| Severity index (motorised) | `fatalities / motorised_vehicles_involved` |
+| Severity index (cycling) | `fatalities / cycling_involved` |
+| Severity index (pedestrian) | `fatalities / pedestrians_involved` |
+
+: Safety indicators {#tbl-safety-indicators}
