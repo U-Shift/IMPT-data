@@ -5,26 +5,11 @@ library(stringr)
 library(openxlsx)
 
 # ----------------------------
-# 0) IMPT URL helper
-# ----------------------------
-DATA_LOCATION <- "/data/IMPT" 
-# DATA_LOCATION <- "https://impt.server.ushift.pt" # se estiveres local
-API_KEY <- Sys.getenv("IMPT_DATA_KEY")
-
-IMPT_URL <- function(path) {
-  if (startsWith(DATA_LOCATION, "http")) {
-    if (API_KEY == "") stop("IMPT_DATA_KEY env var não está definida. Define e reinicia o R.")
-    return(sprintf("%s%s?key=%s", DATA_LOCATION, path, API_KEY))
-  }
-  sprintf("%s%s", DATA_LOCATION, path)
-}
-
-# ----------------------------
 # 1) Ler freguesias (2024) e acidentes (IG)
 # ----------------------------
-freguesias <- st_read(IMPT_URL("/geo/freguesias_2024_unique.gpkg"), quiet = TRUE)
+freguesias <- impt_read("/geo/freguesias_2024_unique.gpkg")
 
-acidentes_path <- IMPT_URL("/safety/13-SegurançaRodoviária.gpkg")
+acidentes_path <- impt_read(URLencode("/safety/13-SegurançaRodoviária.gpkg"))
 # stopifnot(file.exists(path.expand(acidentes_path)))
 
 ig <- st_read(
@@ -38,7 +23,7 @@ ig <- st_read(
 # ----------------------------
 ig_freg <- st_join(
   ig |>
-    select(-Freguesia) |> 
+    select(-Freguesia) |>
     st_transform(st_crs(freguesias)),
   freguesias %>% select(dtmnfr, freguesia)
 )
@@ -46,7 +31,7 @@ ig_freg <- st_join(
 table(is.na(ig_freg$freguesia)) # 173
 mapview::mapview(ig_freg) + mapview::mapview(freguesias, alpha.regions = 0.2)
 
-ig_freg = ig_freg |> filter(!is.na(freguesia)) # remove os 173 sem freguesia (pontes!) (que são poucos, e não vale a pena resolver por nearest)
+ig_freg <- ig_freg |> filter(!is.na(freguesia)) # remove os 173 sem freguesia (pontes!) (que são poucos, e não vale a pena resolver por nearest)
 
 # ----------------------------
 # 3) Variáveis auxiliares (modos, VM30, filtros arruamento/noite)
@@ -59,7 +44,6 @@ ig_tab <- ig_freg %>%
     bicicleta = X_Velocípe > 0,
     pedestre = grepl("Atropelamento", Natureza),
     VM30 = as.numeric(VM.30d),
-    
     arruamento = grepl("Arruamento", Tipos.Vias, ignore.case = TRUE),
     noturno = grepl("Noite", Luminosida, ignore.case = TRUE)
   )
@@ -180,15 +164,15 @@ vm30_sobre_todas_vitimas_modo_freg <- ig_freg %>%
   st_drop_geometry() %>%
   mutate(
     # modos (mantém a tua definição)
-    carro     = X_Veículo  > 0,
+    carro = X_Veículo > 0,
     bicicleta = X_Velocípe > 0,
-    pedestre  = grepl("Atropelamento", Natureza),
-    
+    pedestre = grepl("Atropelamento", Natureza),
+
     # vítimas (30 dias)
     VM30 = as.numeric(VM.30d),
     FG30 = as.numeric(FG.30d),
     FL30 = as.numeric(FL.30d),
-    
+
     # total de vítimas no acidente
     total_vitimas_30 = VM30 + FG30 + FL30
   ) %>%
@@ -198,17 +182,16 @@ vm30_sobre_todas_vitimas_modo_freg <- ig_freg %>%
     VM30_carro = sum(VM30[carro], na.rm = TRUE),
     vitimas_carro = sum(total_vitimas_30[carro], na.rm = TRUE),
     indice_carro = ifelse(vitimas_carro > 0, VM30_carro / vitimas_carro, NA_real_),
-    
+
     # --- BICICLETA ---
     VM30_bicicleta = sum(VM30[bicicleta], na.rm = TRUE),
     vitimas_bicicleta = sum(total_vitimas_30[bicicleta], na.rm = TRUE),
     indice_bicicleta = ifelse(vitimas_bicicleta > 0, VM30_bicicleta / vitimas_bicicleta, NA_real_),
-    
+
     # --- PEDESTRE ---
     VM30_pedestre = sum(VM30[pedestre], na.rm = TRUE),
     vitimas_pedestre = sum(total_vitimas_30[pedestre], na.rm = TRUE),
     indice_pedestre = ifelse(vitimas_pedestre > 0, VM30_pedestre / vitimas_pedestre, NA_real_),
-    
     .groups = "drop"
   ) %>%
   arrange(freguesia)
@@ -221,7 +204,7 @@ write.xlsx(
 )
 
 
-#iteração-----------------------------------------------------------------------
+# iteração-----------------------------------------------------------------------
 # ==========================================================
 # Índice de gravidade: VM30 / (VM30 + FG30 + FL30)
 # por MODO e por FREGUESIA
@@ -230,15 +213,14 @@ indice_gravidade_classico_modo_freg <- ig_freg %>%
   st_drop_geometry() %>%
   mutate(
     # modos (mantém a tua definição)
-    carro     = X_Veículo  > 0,
+    carro = X_Veículo > 0,
     bicicleta = X_Velocípe > 0,
-    pedestre  = grepl("Atropelamento", Natureza),
-    
+    pedestre = grepl("Atropelamento", Natureza),
+
     # vítimas a 30 dias
     VM30 = as.numeric(VM.30d),
     FG30 = as.numeric(FG.30d),
     FL30 = as.numeric(FL.30d),
-    
     total_vitimas_30 = VM30 + FG30 + FL30
   ) %>%
   group_by(dtmnfr, freguesia) %>%
@@ -247,22 +229,21 @@ indice_gravidade_classico_modo_freg <- ig_freg %>%
     VM30_carro = sum(VM30[carro], na.rm = TRUE),
     vitimas_carro = sum(total_vitimas_30[carro], na.rm = TRUE),
     IG_carro = ifelse(vitimas_carro > 0, VM30_carro / vitimas_carro, NA_real_),
-    
+
     # --- BICICLETA ---
     VM30_bicicleta = sum(VM30[bicicleta], na.rm = TRUE),
     vitimas_bicicleta = sum(total_vitimas_30[bicicleta], na.rm = TRUE),
     IG_bicicleta = ifelse(vitimas_bicicleta > 0, VM30_bicicleta / vitimas_bicicleta, NA_real_),
-    
+
     # --- PEDESTRE ---
     VM30_pedestre = sum(VM30[pedestre], na.rm = TRUE),
     vitimas_pedestre = sum(total_vitimas_30[pedestre], na.rm = TRUE),
     IG_pedestre = ifelse(vitimas_pedestre > 0, VM30_pedestre / vitimas_pedestre, NA_real_),
-    
+
     # --- TOTAL (todos os modos juntos) ---
     VM30_total = sum(VM30, na.rm = TRUE),
     vitimas_total = sum(total_vitimas_30, na.rm = TRUE),
     IG_total = ifelse(vitimas_total > 0, VM30_total / vitimas_total, NA_real_),
-    
     .groups = "drop"
   ) %>%
   arrange(freguesia)

@@ -262,9 +262,9 @@ municipio_commuting_money_sf <- municipios |>
 # mapview(municipio_commuting_money_sf, zcol = "avg_distance")
 
 output_dir <- "mobility_money_costs"
-impt_write(grid_commuting_money_sf, sprintf("%s/grid_commuting_money_car.gpkg", output_dir)
-impt_write(grid_commuting_money, sprintf("%s/grid_commuting_money_car.csv", output_dir)
-impt_write(freguesia_commuting_money_sf, sprintf("%s/freguesia_commuting_money_car.gpkg", output_dir)
-impt_write(freguesia_commuting_money, sprintf("%s/freguesia_commuting_money_car.csv", output_dir)
-impt_write(municipio_commuting_money_sf, sprintf("%s/municipio_commuting_money_car.gpkg", output_dir)
-impt_write(municipio_commuting_money, sprintf("%s/municipio_commuting_money_car.csv", output_dir)
+impt_write(grid_commuting_money_sf, sprintf("%s/grid_commuting_money_car.gpkg", output_dir))
+impt_write(grid_commuting_money, sprintf("%s/grid_commuting_money_car.csv", output_dir))
+impt_write(freguesia_commuting_money_sf, sprintf("%s/freguesia_commuting_money_car.gpkg", output_dir))
+impt_write(freguesia_commuting_money, sprintf("%s/freguesia_commuting_money_car.csv", output_dir))
+impt_write(municipio_commuting_money_sf, sprintf("%s/municipio_commuting_money_car.gpkg", output_dir))
+impt_write(municipio_commuting_money, sprintf("%s/municipio_commuting_money_car.csv", output_dir))

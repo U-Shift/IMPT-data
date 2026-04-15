@@ -27,7 +27,7 @@ store_by_mode <- function(data, cols, data_name, destination_folder) {
     var_name <- paste(data_name, mode, sep = "_")
     assign(var_name, data_mode)
 
-    impt_write(data_mode, paste(destination_folder, paste0(var_name, ".csv")
+    impt_write(data_mode, paste(destination_folder, paste0(var_name, ".csv")))
   }
 }
 
