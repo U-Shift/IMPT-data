@@ -199,7 +199,7 @@ affordability_freguesia_composite <- freguesia_affordability |>
     h_transp_inc_car, h_transp_inc_pt_nav, h_transp_inc_pt_sf, h_transp_inc_comp_nav, h_transp_inc_comp_sf
   )
 
-write_csv(affordability_freguesia_composite, IMPT_URL("/affordability/affordability_freguesia_composite.csv"))
+impt_write(affordability_freguesia_composite, "/affordability/affordability_freguesia_composite.csv")
 
 
 ## At Municipio level
@@ -226,7 +226,7 @@ aggregate_to_level <- function(df, lookup, by_col) {
 }
 
 affordability_municipio_composite <- aggregate_to_level(affordability_freguesia_composite, census24_fregmun_pop, "mun_id")
-write_csv(affordability_municipio_composite, IMPT_URL("/affordability/affordability_municipio_composite.csv"))
+impt_write(affordability_municipio_composite, "/affordability/affordability_municipio_composite.csv")
 
 
 # Grid level --------------------------------------------------------------
@@ -381,4 +381,4 @@ affordability_grid_composite <- grid_affordability |>
     h_transp_inc_car, h_transp_inc_pt_nav, h_transp_inc_pt_sf, h_transp_inc_comp_nav, h_transp_inc_comp_sf
   )
 
-write_csv(affordability_grid_composite, IMPT_URL("/affordability/affordability_grid_composite.csv"))
+impt_write(affordability_grid_composite, "/affordability/affordability_grid_composite.csv")

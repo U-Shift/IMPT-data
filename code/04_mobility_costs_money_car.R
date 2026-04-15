@@ -197,7 +197,7 @@ mobility_itineraries_costs <- mobility_itineraries_tools |>
 summary(mobility_itineraries_costs |> select(-osm_id_list_int))
 
 # mapview::mapview(mobility_itineraries_sf |> left_join(mobility_itineraries_costs, by=c("from_id", "to_id")) |> filter(total_cost>30) |> sample_n(1), zcol="tools_C1")
-write.csv(mobility_itineraries_costs |> select(-osm_id_list_int, -geometry), IMPT_URL("mobility_money_costs/mobility_itineraries_costs_car.csv"), row.names = FALSE)
+impt_write(mobility_itineraries_costs |> select(-osm_id_list_int, -geometry), "mobility_money_costs/mobility_itineraries_costs_car.csv")
 
 
 # Aggregate by parish and municipality  -------------------------------------------------
@@ -262,9 +262,9 @@ municipio_commuting_money_sf <- municipios |>
 # mapview(municipio_commuting_money_sf, zcol = "avg_distance")
 
 output_dir <- "mobility_money_costs"
-st_write(grid_commuting_money_sf, IMPT_URL(sprintf("%s/grid_commuting_money_car.gpkg", output_dir)), delete_dsn = TRUE)
-write.csv(grid_commuting_money, IMPT_URL(sprintf("%s/grid_commuting_money_car.csv", output_dir)), row.names = FALSE)
-st_write(freguesia_commuting_money_sf, IMPT_URL(sprintf("%s/freguesia_commuting_money_car.gpkg", output_dir)), delete_dsn = TRUE)
-write.csv(freguesia_commuting_money, IMPT_URL(sprintf("%s/freguesia_commuting_money_car.csv", output_dir)), row.names = FALSE)
-st_write(municipio_commuting_money_sf, IMPT_URL(sprintf("%s/municipio_commuting_money_car.gpkg", output_dir)), delete_dsn = TRUE)
-write.csv(municipio_commuting_money, IMPT_URL(sprintf("%s/municipio_commuting_money_car.csv", output_dir)), row.names = FALSE)
+impt_write(grid_commuting_money_sf, sprintf("%s/grid_commuting_money_car.gpkg", output_dir)
+impt_write(grid_commuting_money, sprintf("%s/grid_commuting_money_car.csv", output_dir)
+impt_write(freguesia_commuting_money_sf, sprintf("%s/freguesia_commuting_money_car.gpkg", output_dir)
+impt_write(freguesia_commuting_money, sprintf("%s/freguesia_commuting_money_car.csv", output_dir)
+impt_write(municipio_commuting_money_sf, sprintf("%s/municipio_commuting_money_car.gpkg", output_dir)
+impt_write(municipio_commuting_money, sprintf("%s/municipio_commuting_money_car.csv", output_dir)

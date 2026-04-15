@@ -7,6 +7,10 @@ library(tidyr)
 # This methods handle the logic to load/store IMPT data. They should be used to handle all files
 # They handle internally all the logic to decide where to gather/store the data, deppending on the machine you are running the code at :)
 
+# How does it work?
+# When working at ushift@alfa, reads and writes at /data/IMPT folder
+# When working at other machine, reads from ushift@alfa through https and writes to <local_repo>/data folder
+
 impt_read <- function(path, root = NULL) {
     # If does not start with "/", add it
     if (!startsWith(path, "/")) {
@@ -64,7 +68,7 @@ impt_write <- function(content, path, root = NULL) {
         if (machine_id == "a8709380ae1e4b72904a93456ccfb874") {
             path_root <- "/data"
         } else {
-            path_root <- "data/"
+            path_root <- "data"
             current_location <- getwd()
             warning(sprintf("You are working outside ushift@alfa!\nData will be stored locally inside the data folder of this repo, at %s/data.\nMind that this folder is not synced with GitHub. You should manually upload it to ushift@alfa:/data/IMPT using https://server.ushift.pt/rstudio/", current_location))
         }
@@ -72,20 +76,20 @@ impt_write <- function(content, path, root = NULL) {
     # Read file and return
     file_path <- paste(path_root, path, path_append, sep = "")
     # Get folder from file_path
-    file_folder <- os.path.dirname(file_path)
+    file_folder <- dirname(file_path)
     if (!dir.exists(file_folder)) {
         dir.create(file_folder, recursive = TRUE)
     }
     message(sprintf("Writing file to %s...", file_path))
     # If file exists, warn
-    if (os.path.exists(file_path)) {
+    if (file.exists(file_path)) {
         warning("File path already exists, overwritting...")
     }
     if (grepl(".csv", file_path, ignore.case = TRUE)) {
-        return(write.csv(content, file_path))
+        return(write.csv(content, file_path, row.names = FALSE))
     }
     if (grepl(".geojson", file_path, ignore.case = TRUE) | grepl(".gpkg", file_path, ignore.case = TRUE)) {
-        return(sf::st_write(conent, file_path, delete_dns = TRUE))
+        return(sf::st_write(content, file_path, delete_dsn = TRUE))
     }
     if (grepl(".rds", file_path, ignore.case = TRUE) | grepl(".Rds", file_path, ignore.case = TRUE)) {
         return(saveRDS(content, file_path))

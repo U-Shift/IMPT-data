@@ -134,7 +134,7 @@ for (fare in fares) {
   summary(mobility_itineraries_costs)
 
   DATA_LOCATION <- "data" # When running locally, get data from local folder
-  write.csv(mobility_itineraries_costs, IMPT_URL(sprintf("mobility_money_costs/mobility_itineraries_costs_pt_%s.csv", fare)), row.names = FALSE)
+  impt_write(mobility_itineraries_costs, sprintf("mobility_money_costs/mobility_itineraries_costs_pt_%s.csv", fare)
 
   # Aggregate by parish and municipality  -------------------------------------------------
   mobility_itineraries_costs_grid <- jittering_grid |>
@@ -203,11 +203,11 @@ for (fare in fares) {
   # mapview(municipio_commuting_money_sf, zcol = "avg_distance")
 
   output_dir <- "mobility_money_costs"
-  st_write(grid_commuting_money_sf, IMPT_URL(sprintf("%s/grid_commuting_money_pt_%s.gpkg", output_dir, fare)), delete_dsn = TRUE)
-  write.csv(grid_commuting_money, IMPT_URL(sprintf("%s/grid_commuting_money_pt_%s.csv", output_dir, fare)), row.names = FALSE)
-  st_write(freguesia_commuting_money_sf, IMPT_URL(sprintf("%s/freguesia_commuting_money_pt_%s.gpkg", output_dir, fare)), delete_dsn = TRUE)
-  write.csv(freguesia_commuting_money, IMPT_URL(sprintf("%s/freguesia_commuting_money_pt_%s.csv", output_dir, fare)), row.names = FALSE)
-  st_write(municipio_commuting_money_sf, IMPT_URL(sprintf("%s/municipio_commuting_money_pt_%s.gpkg", output_dir, fare)), delete_dsn = TRUE)
-  write.csv(municipio_commuting_money, IMPT_URL(sprintf("%s/municipio_commuting_money_pt_%s.csv", output_dir, fare)), row.names = FALSE)
+  impt_write(grid_commuting_money_sf, sprintf("%s/grid_commuting_money_pt_%s.gpkg", output_dir, fare)
+  impt_write(grid_commuting_money, sprintf("%s/grid_commuting_money_pt_%s.csv", output_dir, fare)
+  impt_write(freguesia_commuting_money_sf, sprintf("%s/freguesia_commuting_money_pt_%s.gpkg", output_dir, fare)
+  impt_write(freguesia_commuting_money, sprintf("%s/freguesia_commuting_money_pt_%s.csv", output_dir, fare)
+  impt_write(municipio_commuting_money_sf, sprintf("%s/municipio_commuting_money_pt_%s.gpkg", output_dir, fare)
+  impt_write(municipio_commuting_money, sprintf("%s/municipio_commuting_money_pt_%s.csv", output_dir, fare)
   DATA_LOCATION <- "https://impt.server.ushift.pt" # When running locally, get data from remote server
 }

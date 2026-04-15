@@ -141,7 +141,7 @@ for (i in 1:length(pois_list)) {
         rename(!!ncolname := sym(pois_name))
 
       # mapview(grid |> left_join(grid_points_access), zcol = colname)
-      write.csv(grid_points_access, IMPT_URL(sprintf("%s/%s.csv", output_dir, colname)), row.names = FALSE)
+      impt_write(grid_points_access, sprintf("%s/%s.csv", output_dir, colname)
       message(paste(">>> Saved result for", colname, ", procedding with next..."))
     }
   }
@@ -291,12 +291,12 @@ for (i in 1:length(accessibility_measures)) {
   }
 }
 
-st_write(freguesia_accessibility, IMPT_URL(sprintf("%s/accessibility_freguesia.gpkg", output_dir)), delete_dsn = TRUE)
-write.csv(freguesia_accessibility |> st_drop_geometry(), IMPT_URL(sprintf("%s/accessibility_freguesia.csv", output_dir)), row.names = FALSE)
-st_write(municipio_accessibility, IMPT_URL(sprintf("%s/accessibility_municipio.gpkg", output_dir)), delete_dsn = TRUE)
-write.csv(municipio_accessibility |> st_drop_geometry(), IMPT_URL(sprintf("%s/accessibility_municipio.csv", output_dir)), row.names = FALSE)
-st_write(grid_access, IMPT_URL(sprintf("%s/accessibility_grid.gpkg", output_dir)), delete_dsn = TRUE)
-write.csv(grid_access |> st_drop_geometry(), IMPT_URL(sprintf("%s/accessibility_grid.csv", output_dir)), row.names = FALSE)
+impt_write(freguesia_accessibility, sprintf("%s/accessibility_freguesia.gpkg", output_dir)
+impt_write(freguesia_accessibility |> st_drop_geometry(), sprintf("%s/accessibility_freguesia.csv", output_dir)
+impt_write(municipio_accessibility, sprintf("%s/accessibility_municipio.gpkg", output_dir)
+impt_write(municipio_accessibility |> st_drop_geometry(), sprintf("%s/accessibility_municipio.csv", output_dir)
+impt_write(grid_access, sprintf("%s/accessibility_grid.gpkg", output_dir)
+impt_write(grid_access |> st_drop_geometry(), sprintf("%s/accessibility_grid.csv", output_dir)
 #
 # mapview(municipio_accessibility, zcol = "access_transit_bus_transit_1t_5min_residents")
 # mapview(freguesia_accessibility, zcol = "access_transit_transit_1t_5min_residents")

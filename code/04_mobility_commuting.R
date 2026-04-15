@@ -105,7 +105,7 @@ jittering_grid <- jittering_grid_original |>
     )
   )
 
-write.csv(jittering_grid, IMPT_URL(sprintf("%s/jittering_grid.csv", output_dir)))
+impt_write(jittering_grid, sprintf("%s/jittering_grid.csv", output_dir)
 
 
 # Aggregate by parish and municipality  -------------------------------------------------
@@ -197,12 +197,12 @@ municipio_commuting_sf <- municipios |>
 # mapview(municipio_commuting_sf, zcol = "PNA_transit_4t_240m_15w")
 
 
-st_write(grid_commuting_sf, IMPT_URL(sprintf("%s/grid_commuting.gpkg", output_dir)), delete_dsn = TRUE)
-write.csv(grid_commuting, IMPT_URL(sprintf("%s/grid_commuting.csv", output_dir)), row.names = FALSE)
-st_write(freguesia_commuting_sf, IMPT_URL(sprintf("%s/freguesia_commuting.gpkg", output_dir)), delete_dsn = TRUE)
-write.csv(freguesia_commuting, IMPT_URL(sprintf("%s/freguesia_commuting.csv", output_dir)), row.names = FALSE)
-st_write(municipio_commuting_sf, IMPT_URL(sprintf("%s/municipio_commuting.gpkg", output_dir)), delete_dsn = TRUE)
-write.csv(municipio_commuting, IMPT_URL(sprintf("%s/municipio_commuting.csv", output_dir)), row.names = FALSE)
+impt_write(grid_commuting_sf, sprintf("%s/grid_commuting.gpkg", output_dir)
+impt_write(grid_commuting, sprintf("%s/grid_commuting.csv", output_dir)
+impt_write(freguesia_commuting_sf, sprintf("%s/freguesia_commuting.gpkg", output_dir)
+impt_write(freguesia_commuting, sprintf("%s/freguesia_commuting.csv", output_dir)
+impt_write(municipio_commuting_sf, sprintf("%s/municipio_commuting.gpkg", output_dir)
+impt_write(municipio_commuting, sprintf("%s/municipio_commuting.csv", output_dir)
 
 # Debug
 grid_population # From 04_accessibility.R
@@ -376,9 +376,9 @@ municipio_transfers_sf <- municipios |>
 # mapview(municipio_transfers_sf, zcol = "weighted_mean_transfers")
 
 
-st_write(grid_transfers_sf, IMPT_URL(sprintf("%s/grid_transfers.gpkg", output_dir)), delete_dsn = TRUE)
-write.csv(grid_transfers, IMPT_URL(sprintf("%s/grid_transfers.csv", output_dir)), row.names = FALSE)
-st_write(freguesia_transfers_sf, IMPT_URL(sprintf("%s/freguesia_transfers.gpkg", output_dir)), delete_dsn = TRUE)
-write.csv(freguesia_transfers, IMPT_URL(sprintf("%s/freguesia_transfers.csv", output_dir)), row.names = FALSE)
-st_write(municipio_transfers_sf, IMPT_URL(sprintf("%s/municipio_transfers.gpkg", output_dir)), delete_dsn = TRUE)
-write.csv(municipio_transfers, IMPT_URL(sprintf("%s/municipio_transfers.csv", output_dir)), row.names = FALSE)
+impt_write(grid_transfers_sf, sprintf("%s/grid_transfers.gpkg", output_dir)
+impt_write(grid_transfers, sprintf("%s/grid_transfers.csv", output_dir)
+impt_write(freguesia_transfers_sf, sprintf("%s/freguesia_transfers.gpkg", output_dir)
+impt_write(freguesia_transfers, sprintf("%s/freguesia_transfers.csv", output_dir)
+impt_write(municipio_transfers_sf, sprintf("%s/municipio_transfers.gpkg", output_dir)
+impt_write(municipio_transfers, sprintf("%s/municipio_transfers.csv", output_dir)

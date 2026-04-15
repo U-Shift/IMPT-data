@@ -274,7 +274,7 @@ summary(vehicles_by_dicofre$pct_no_vehicle)
 summary(vehicles_by_dicofre_new$pct_hh_no_vehicle)
 
 # export
-saveRDS(vehicles_by_parish, IMPT_URL("imob/imob_vehicles_freg.Rds"))
-write.csv(vehicles_by_parish, IMPT_URL("imob/imob_vehicles_freg.csv"), row.names = FALSE)
-write.csv(vehicles_by_municipality, IMPT_URL("imob/imob_vehicles_mun.csv"), row.names = FALSE)
-write.csv(vehicles_by_grid, IMPT_URL("imob/imob_vehicles_grid.csv"), row.names = FALSE)
+impt_write(vehicles_by_parish, "imob/imob_vehicles_freg.Rds")
+impt_write(vehicles_by_parish, "imob/imob_vehicles_freg.csv")
+impt_write(vehicles_by_municipality, "imob/imob_vehicles_mun.csv")
+impt_write(vehicles_by_grid, "imob/imob_vehicles_grid.csv")

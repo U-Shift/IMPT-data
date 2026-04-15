@@ -74,9 +74,9 @@ print(session)
 # grid
 # mapview(grid, zcol="nuts")
 #
-# st_write(grid, IMPT_URL("dashboard_data/grid.gpkg"), delete_dsn = TRUE)
-# st_write(freguesias, IMPT_URL("dashboard_data/freguesias.gpkg"), delete_dsn = TRUE)
-# st_write(municipios, IMPT_URL("dashboard_data/municipios.gpkg"), delete_dsn = TRUE)
+# impt_write(grid, "dashboard_data/grid.gpkg")
+# impt_write(freguesias, "dashboard_data/freguesias.gpkg")
+# impt_write(municipios, "dashboard_data/municipios.gpkg")
 
 # DATA_LOCATION <- "https://impt.server.ushift.pt" # To get data from server
 
@@ -703,13 +703,13 @@ for (d in dimensions) {
 DATA_LOCATION <- "data/" # To store locally
 output_dir <- "dashboard_data"
 
-st_write(grid_aggregated, IMPT_URL(paste(output_dir, "grid_aggregated.geojson", sep = "/")), delete_dsn = TRUE)
-st_write(freguesias_aggregated, IMPT_URL(paste(output_dir, "freguesias_aggregated.geojson", sep = "/")), delete_dsn = TRUE)
-st_write(municipios_aggregated, IMPT_URL(paste(output_dir, "municipios_aggregated.geojson", sep = "/")), delete_dsn = TRUE)
+impt_write(grid_aggregated, paste(output_dir, "grid_aggregated.geojson", sep = "/")
+impt_write(freguesias_aggregated, paste(output_dir, "freguesias_aggregated.geojson", sep = "/")
+impt_write(municipios_aggregated, paste(output_dir, "municipios_aggregated.geojson", sep = "/")
 
-write.csv(grid_aggregated |> st_drop_geometry(), IMPT_URL(paste(output_dir, "grid_aggregated.csv", sep = "/")), row.names = FALSE)
-write.csv(freguesias_aggregated |> st_drop_geometry(), IMPT_URL(paste(output_dir, "freguesias_aggregated.csv", sep = "/")), row.names = FALSE)
-write.csv(municipios_aggregated |> st_drop_geometry(), IMPT_URL(paste(output_dir, "municipios_aggregated.csv", sep = "/")), row.names = FALSE)
+impt_write(grid_aggregated |> st_drop_geometry(), paste(output_dir, "grid_aggregated.csv", sep = "/")
+impt_write(freguesias_aggregated |> st_drop_geometry(), paste(output_dir, "freguesias_aggregated.csv", sep = "/")
+impt_write(municipios_aggregated |> st_drop_geometry(), paste(output_dir, "municipios_aggregated.csv", sep = "/")
 
 jsonlite::write_json(champions_list, IMPT_URL(paste(output_dir, "champions.json", sep = "/")), pretty = TRUE, auto_unbox = TRUE)
 

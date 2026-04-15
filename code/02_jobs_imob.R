@@ -15,29 +15,27 @@ library(stplanr)
 
 # load imob data
 # IMOB = readRDS("data/IMOB_trips.Rds")
-IMOB = readRDS("/data/IMPT/trips/IMOB_trips.Rds")
+IMOB <- readRDS("/data/IMPT/trips/IMOB_trips.Rds")
 names(IMOB)
 
 table(IMOB$D0500_Dsg)
 
 
-
-IMOB = IMOB |>
+IMOB <- IMOB |>
   mutate(trip_purpose = case_when(
-    
     # --- Work ---
     D0500_Dsg == "Ir para o trabalho" ~ "Commute to Work",
     D0500_Dsg == "Tratar de assuntos profissionais" ~ "Work (Other)",
-    
+
     # --- Education ---
     D0500_Dsg == "Ir para a escola ou atividades escolares" ~ "Education",
-    
+
     # --- Return home ---
     D0500_Dsg == "Regressar a casa" ~ "Return Home",
-    
+
     # --- Escort trips ---
     D0500_Dsg == "Levar/buscar/acompanhar familiares ou amigos (crianças à escola, etc)" ~ "Escort",
-    
+
     # --- Leisure ---
     D0500_Dsg %in% c(
       "Assistir a eventos desportivos ou culturais (cinema, teatro, concerto, futebol, etc.)",
@@ -48,86 +46,89 @@ IMOB = IMOB |>
       "Realizar atividade em grupo ou em contexto coletivo (em associações, comícios, igrejas, voluntariado, ...)",
       "Visitar familiares ou amigos"
     ) ~ "Leisure",
-    
+
     # --- Utilitarian / personal maintenance ---
     D0500_Dsg %in% c(
       "Fazer compras (supermercado, mercearia, utilidades, etc)",
       "Ir a consulta, tratamentos, exames médicos e similares",
       "Tratar de assuntos pessoais (ir ao banco, lavandaria, cabeleireiro, levar ou buscar coisas pessoais, etc)"
     ) ~ "Utilitarian",
-    
+
     # --- Other ---
     D0500_Dsg == "Outra atividade" ~ "Other",
-    
     TRUE ~ "Other"
   ))
 
 table(IMOB$trip_purpose)
-# Commute to Work       Education          Escort         Leisure           Other     Return Home     Utilitarian    Work (Other) 
-# 19409            7262           10032           13314             896           48500           10180            1531 
+# Commute to Work       Education          Escort         Leisure           Other     Return Home     Utilitarian    Work (Other)
+# 19409            7262           10032           13314             896           48500           10180            1531
 
 prop.table(table(IMOB$trip_purpose))
-# Commute to Work       Education          Escort         Leisure           Other     Return Home     Utilitarian    Work (Other) 
-# 0.174660739     0.065350419     0.090277528     0.119812102     0.008063065     0.436449372     0.091609373     0.013777402 
+# Commute to Work       Education          Escort         Leisure           Other     Return Home     Utilitarian    Work (Other)
+# 0.174660739     0.065350419     0.090277528     0.119812102     0.008063065     0.436449372     0.091609373     0.013777402
 
 table(IMOB$modo)
 
 ## groupped by OD, mode, trip purpose
 
-OD_all = IMOB |>
+OD_all <- IMOB |>
   mutate(modo = case_when(
     modo == "Motorcycle" ~ "Car",
-    TRUE ~ modo)) |> 
-  group_by(Origin_dicofre16, Destination_dicofre16,
-           modo, # is mode necessary??
-           trip_purpose) |> 
+    TRUE ~ modo
+  )) |>
+  group_by(
+    Origin_dicofre16, Destination_dicofre16,
+    modo, # is mode necessary??
+    trip_purpose
+  ) |>
   summarise(
-    trips = sum(PESOFIN, na.rm = TRUE),   # expanded number of trips
-    n_obs = n(),                          # number of survey records (optional but useful)
+    trips = sum(PESOFIN, na.rm = TRUE), # expanded number of trips
+    n_obs = n(), # number of survey records (optional but useful)
     .groups = "drop"
   )
 
-sum(OD_all$trips) #5266475
-sum(IMOB$PESOFIN) #5266475
+sum(OD_all$trips) # 5266475
+sum(IMOB$PESOFIN) # 5266475
 
 ## Convert to new freguesias 21/24
-OD_all_new = OD_all |>
+OD_all_new <- OD_all |>
   left_join(conversion_dicofre_weight, by = c("Origin_dicofre16" = "dtmnfr16")) |>
   mutate(trips = trips * weight) |>
   rename(Origin_dicofre24 = "dtmnfr24") |>
-  select(-Origin_dicofre16, -weight) |> 
+  select(-Origin_dicofre16, -weight) |>
   left_join(conversion_dicofre_weight, by = c("Destination_dicofre16" = "dtmnfr16")) |>
   mutate(trips = trips * weight) |>
   rename(Destination_dicofre24 = "dtmnfr24") |>
-  select(-Destination_dicofre16, -weight) |> 
+  select(-Destination_dicofre16, -weight) |>
   group_by(Origin_dicofre24, Destination_dicofre24, modo, trip_purpose) |>
   summarise(
     trips = sum(trips, na.rm = TRUE),
     .groups = "drop"
   )
 
-sum(OD_all_new$trips) #5266475
-
+sum(OD_all_new$trips) # 5266475
 
 
 # jobs --------------------------------------------------------------------
 
-OD_jobs = OD_all_new |> 
-  filter(trip_purpose == "Commute to Work") |> 
-  select(-trip_purpose) |> 
-  group_by(Origin_dicofre24, Destination_dicofre24) |>  # hide this if consider by mode
-  summarise(trips = sum(trips),
-            .groups = "drop_last") |> 
+OD_jobs <- OD_all_new |>
+  filter(trip_purpose == "Commute to Work") |>
+  select(-trip_purpose) |>
+  group_by(Origin_dicofre24, Destination_dicofre24) |> # hide this if consider by mode
+  summarise(
+    trips = sum(trips),
+    .groups = "drop_last"
+  ) |>
   ungroup()
-sum(OD_jobs$trips) #839142
-summary(OD_jobs$trips) #median 30 or 43
+sum(OD_jobs$trips) # 839142
+summary(OD_jobs$trips) # median 30 or 43
 
 # jitter in freguesias - choose road network or builgings, not both!
 
 # with road network
-road_network = st_read("/data/IMPT/geo/IMPT_Road_network.gpkg")
+road_network <- st_read("/data/IMPT/geo/IMPT_Road_network.gpkg")
 
-od_jobs_jittered = odjitter::jitter(
+od_jobs_jittered <- odjitter::jitter(
   od = OD_jobs,
   zones = freguesias,
   subpoints = road_network,
@@ -138,13 +139,13 @@ od_jobs_jittered = odjitter::jitter(
 
 
 # with buildings, weighted by construction area (ABC)
-buildings = st_read("/data/IMPT/pois/lisbon_metro_buildings_height.geojson")
-buildings = buildings |>
-  mutate(volume = height * footprint_m2) |>  # volume
+buildings <- st_read("/data/IMPT/pois/lisbon_metro_buildings_height.geojson")
+buildings <- buildings |>
+  mutate(volume = height * footprint_m2) |> # volume
   rename(weight = volume)
 
 
-od_jobs_jittered_buildings = odjitter::jitter(
+od_jobs_jittered_buildings <- odjitter::jitter(
   od = OD_jobs,
   zones = freguesias,
   subpoints_origins = buildings,
@@ -154,59 +155,62 @@ od_jobs_jittered_buildings = odjitter::jitter(
   disaggregation_threshold = 50,
   rng_seed = 42 # deterministic randomization
 )
-od_jobs_jittered = od_jobs_jittered_buildings
+od_jobs_jittered <- od_jobs_jittered_buildings
 
 
 # add an id to the jittered pairs, so we can join later
-od_jobs_jittered_id = od_jobs_jittered
-od_jobs_jittered_id$id = 1:nrow(od_jobs_jittered_id)
-sf::st_write(od_jobs_jittered_id, "/data/IMPT/trips/od_jobs_jt50_buildings.gpkg", delete_dsn = TRUE)
+od_jobs_jittered_id <- od_jobs_jittered
+od_jobs_jittered_id$id <- 1:nrow(od_jobs_jittered_id)
+sf::impt_write(od_jobs_jittered_id, "/trips/od_jobs_jt50_buildings.gpkg")
 
 
-#with stplanr
-od_jobs_jittered_points = line2df(od_jobs_jittered)
-od_jobs_jittered_OR = od_jobs_jittered_points |>
+# with stplanr
+od_jobs_jittered_points <- line2df(od_jobs_jittered)
+od_jobs_jittered_OR <- od_jobs_jittered_points |>
   select(L1, fx, fy) |> # from
-  rename(id = L1,
-         lon = fx,
-         lat = fy)
-od_jobs_jittered_DE = od_jobs_jittered_points |>
+  rename(
+    id = L1,
+    lon = fx,
+    lat = fy
+  )
+od_jobs_jittered_DE <- od_jobs_jittered_points |>
   select(L1, tx, ty) |> # to
-  rename(id = L1,
-         lon = tx,
-         lat = ty)
+  rename(
+    id = L1,
+    lon = tx,
+    lat = ty
+  )
 
 # as sf
-od_jobs_jittered_OR_geo = st_as_sf(od_jobs_jittered_OR,
-                                         coords = c("lon", "lat"),
-                                         crs = 4326)
-od_jobs_jittered_DE_geo = st_as_sf(od_jobs_jittered_DE,
-                                         coords = c("lon", "lat"),
-                                         crs = 4326)
+od_jobs_jittered_OR_geo <- st_as_sf(od_jobs_jittered_OR,
+  coords = c("lon", "lat"),
+  crs = 4326
+)
+od_jobs_jittered_DE_geo <- st_as_sf(od_jobs_jittered_DE,
+  coords = c("lon", "lat"),
+  crs = 4326
+)
 
-sf::st_write(od_jobs_jittered_OR_geo, "/data/IMPT/trips/od_jobs_jt50_buildings_OR.gpkg", delete_dsn = TRUE)
-sf::st_write(od_jobs_jittered_DE_geo, "/data/IMPT/trips/od_jobs_jt50_buildings_DE.gpkg", delete_dsn = TRUE)
+sf::impt_write(od_jobs_jittered_OR_geo, "/trips/od_jobs_jt50_buildings_OR.gpkg")
+sf::impt_write(od_jobs_jittered_DE_geo, "/trips/od_jobs_jt50_buildings_DE.gpkg")
 
 ## POIS
 
-pois_jobs = od_jobs_jittered_DE_geo |>
+pois_jobs <- od_jobs_jittered_DE_geo |>
   left_join(od_jobs_jittered_id |> st_drop_geometry() |> select(id, trips))
 
-pois_jobs_check = pois_jobs |> 
-  group_by(geometry) |> 
+pois_jobs_check <- pois_jobs |>
+  group_by(geometry) |>
   summarize(trips = sum(trips))
 
 mapview::mapview(pois_jobs_check, zcol = "trips")
 
 # st_write(pois_jobs, "data/pois/pois_jobs_imob_jt50.gpkg", delete_dsn = TRUE)
-# st_write(pois_jobs, "/data/IMPT/pois/pois_jobs_imob_jt50_buildings.gpkg", delete_dsn = TRUE)
+# impt_write(pois_jobs, "/pois/pois_jobs_imob_jt50_buildings.gpkg")
 
 
 ## Save OD mode and trip purpose for other ttm statistics?
 saveRDS(OD_all_new, "data/IMOB_od_freg_mode_purpose.Rds")
-
-
-
 
 
 ## Modal share from IMOB - EXPORT -----------------------------------
@@ -255,8 +259,7 @@ write.csv(modal_share_mun, "/data/IMPT/trips/imob_modal_share_mun.csv", row.name
 # via grid_freg_mun lookup (generalised assumption).
 modal_share_grid <- grid_freg_mun |>
   select(grid_id, freg_id) |>
-  left_join(modal_share_freg |> select(-trips_total), by = "freg_id") |> 
+  left_join(modal_share_freg |> select(-trips_total), by = "freg_id") |>
   select(-freg_id)
 
 write.csv(modal_share_grid, "/data/IMPT/trips/imob_modal_share_grid.csv", row.names = FALSE)
-

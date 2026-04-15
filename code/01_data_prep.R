@@ -45,8 +45,8 @@ freguesias <- CAOP_GLPS_UNIQUE_dtmnfr
 # mapview(CAOP_GLPS)
 # View(CAOP_GLPS)
 
-st_write(CAOP_GLPS, "/data/IMPT/geo/freguesias_2024.gpkg", delete_dsn = TRUE)
-st_write(CAOP_GLPS_UNIQUE_dtmnfr, "/data/IMPT/geo/freguesias_2024_unique.gpkg", delete_dsn = TRUE)
+impt_write(CAOP_GLPS, "/geo/freguesias_2024.gpkg")
+impt_write(CAOP_GLPS_UNIQUE_dtmnfr, "/geo/freguesias_2024_unique.gpkg")
 freguesias <- st_read("/data/IMPT/geo/freguesias_2024_unique.gpkg")
 
 # group sf by municipio
@@ -57,14 +57,14 @@ municipios <- CAOP_GLPS |>
 municipios <- municipios[-6, ] # Remove strange Lisbon
 
 # mapview(municipios)
-st_write(municipios, "/data/IMPT/geo/municipios_2024.gpkg", delete_dsn = TRUE)
+impt_write(municipios, "/geo/municipios_2024.gpkg")
 municipios <- st_read("/data/IMPT/geo/municipios_2024.gpkg")
 
 # for the whole limit (to HOT export tool)
 municipios_union <- municipios |>
   sf::st_union() |>
   sf::st_make_valid()
-st_write(municipios_union, "/data/IMPT/geo/municipios_union_2024.geojson", delete_dsn = TRUE)
+impt_write(municipios_union, "/geo/municipios_union_2024.geojson")
 municipios_union <- st_read("/data/IMPT/geo/municipios_union_2024.geojson")
 
 # for the bbox (to Copernicus)
@@ -89,8 +89,8 @@ road_network_base <- road_network_main |>
   filter(!highway %in% "tertiary")
 mapview::mapview(road_network_base, zcol = "highway")
 
-st_write(road_network_main, "/data/IMPT/geo/road_network_main.gpkg", delete_dsn = TRUE)
-st_write(road_network_base, "/data/IMPT/geo/road_network_base.gpkg", delete_dsn = TRUE)
+impt_write(road_network_main, "/geo/road_network_main.gpkg")
+impt_write(road_network_base, "/geo/road_network_base.gpkg")
 
 # Trips -------------------------------------------------------------------
 
@@ -111,8 +111,8 @@ trips_freguesias_2016_sf <- trips_freguesias_2016 |>
 difference_created <- setdiff(freguesias$dtmnfr, trips_freguesias_2016_sf$Origin_dicofre16)
 difference_removed <- setdiff(trips_freguesias_2016_sf$Origin_dicofre16, freguesias$dtmnfr)
 
-st_write(freguesias |> filter(dtmnfr %in% difference_created), "/data/IMPT/geo/freguesias_created_2024.geojson", delete_dsn = TRUE)
-st_write(trips_freguesias_2016_sf |> filter(Origin_dicofre16 %in% difference_removed) |> unique(), "/data/IMPT/geo/freguesias_removed_2024.geojson", delete_dsn = TRUE)
+impt_write(freguesias |> filter(dtmnfr %in% difference_created), "/geo/freguesias_created_2024.geojson")
+impt_write(trips_freguesias_2016_sf |> filter(Origin_dicofre16 %in% difference_removed) |> unique(), "/geo/freguesias_removed_2024.geojson")
 
 
 # After QGIS inspection, manual conversion table created
@@ -365,7 +365,7 @@ mapview::mapview(od_freguesias_jittered, lwd = 0.2)
 od_freguesias_jittered_id <- od_freguesias_jittered
 od_freguesias_jittered_id$id <- 1:nrow(od_freguesias_jittered_id)
 
-st_write(od_freguesias_jittered_id, "/data/IMPT/trips/od_freguesias_jittered_2024.gpkg", delete_dsn = TRUE)
+impt_write(od_freguesias_jittered_id, "/trips/od_freguesias_jittered_2024.gpkg")
 od_freguesias_jittered_id <- st_read("/data/IMPT/trips/od_freguesias_jittered_2024.gpkg")
 
 
@@ -403,8 +403,8 @@ od_freguesias_jittered_DE_geo <- st_as_sf(od_freguesias_jittered_DE,
 # mapview(od_freguesias_jittered_OR_geo, col.regions = "red") +
 #   mapview(od_freguesias_jittered_DE_geo, col.regions = "blue")
 
-st_write(od_freguesias_jittered_OR_geo, "/data/IMPT/trips/od_freguesias_jittered200_OR.gpkg", delete_dsn = TRUE)
-st_write(od_freguesias_jittered_DE_geo, "/data/IMPT/trips/od_freguesias_jittered200_DE.gpkg", delete_dsn = TRUE)
+impt_write(od_freguesias_jittered_OR_geo, "/trips/od_freguesias_jittered200_OR.gpkg")
+impt_write(od_freguesias_jittered_DE_geo, "/trips/od_freguesias_jittered200_DE.gpkg")
 od_freguesias_jittered_OR_geo <- st_read("/data/IMPT/trips/od_freguesias_jittered200_OR.gpkg")
 od_freguesias_jittered_DE_geo <- st_read("/data/IMPT/trips/od_freguesias_jittered200_DE.gpkg")
 
@@ -467,7 +467,7 @@ census_points24 <- census_points21 |>
   select(id, everything())
 
 # save
-st_write(census_points24, "/data/IMPT/geo/census24_points.gpkg", delete_dsn = TRUE)
+impt_write(census_points24, "/geo/census24_points.gpkg")
 census_points24 <- st_read("/data/IMPT/geo/census24_points.gpkg")
 
 # auxiliary table for freguesias and municipios with no data lost (no geom)
@@ -504,7 +504,7 @@ table(pois$group)
 # mapview::mapview(pois, zcol = "group")
 
 # save and load
-st_write(pois, "/data/IMPT/geo/pois_osm2024.gpkg", delete_dsn = TRUE)
+impt_write(pois, "/geo/pois_osm2024.gpkg")
 pois <- impt_read("/geo/pois_osm2024.gpkg")
 View(data.frame(table(pois$type |> as.factor() |> forcats::fct_infreq())))
 
@@ -533,7 +533,7 @@ pois_health <- read.csv("https://github.com/carrismetropolitana/datasets/raw/ref
   ) |>
   st_as_sf(coords = c("lon", "lat"), crs = 4326)
 mapview(pois_health, zcol = "type")
-st_write(pois_health, IMPT_URL("/pois/healthcare.gpkg"), delete_dsn = TRUE)
+impt_write(pois_health, "/pois/healthcare.gpkg")
 
 pois_schools <- read.csv("https://github.com/carrismetropolitana/datasets/raw/refs/heads/latest/facilities/schools/schools.csv") |>
   mutate(
@@ -550,15 +550,15 @@ pois_schools <- read.csv("https://github.com/carrismetropolitana/datasets/raw/re
   ) |>
   st_as_sf(coords = c("lon", "lat"), crs = 4326)
 mapview(pois_schools, zcol = "type")
-st_write(pois_schools, IMPT_URL("/pois/schools.gpkg"), delete_dsn = TRUE)
+impt_write(pois_schools, "/pois/schools.gpkg")
 
 pois_green <- pois |> filter(group == "leisure" & type %in% c("park", "garden")) # include playgrouds?
 mapview(pois_green, zcol = "type")
-st_write(pois_green, IMPT_URL("/pois/green.gpkg"), delete_dsn = TRUE)
+impt_write(pois_green, "/pois/green.gpkg")
 
 pois_supermarket <- pois |> filter(type == "supermarket" | type == "convenience")
 mapview(pois_supermarket, zcol = "type")
-st_write(pois_supermarket, IMPT_URL("/pois/supermarket.gpkg"), delete_dsn = TRUE)
+impt_write(pois_supermarket, "/pois/supermarket.gpkg")
 
 pois_recreation <- pois |> filter(type %in% c(
   # amenity
@@ -567,7 +567,7 @@ pois_recreation <- pois |> filter(type %in% c(
   "pitch", "fitness_station", "swimming_pool", "sports_centre", "fitness_center"
 ))
 mapview(pois_recreation, zcol = "type")
-st_write(pois_recreation, IMPT_URL("/pois/recreation.gpkg"), delete_dsn = TRUE)
+impt_write(pois_recreation, "/pois/recreation.gpkg")
 
 # GTFS data ---------------------------------------------------------------
 
@@ -751,12 +751,12 @@ pois_transit <- pois_transit |> st_filter(limit_bbox)
 table(pois_transit$agency)
 summary(pois_transit)
 # mapview(pois_transit, zcol="agency")
-st_write(pois_transit, IMPT_URL("/pois/transit_stops.gpkg"), delete_dsn = TRUE)
+impt_write(pois_transit, "/pois/transit_stops.gpkg")
 
 pois_transit_headways <- pois_transit_headways |> st_filter(limit_bbox)
 table(pois_transit_headways$agency)
 summary(pois_transit_headways)
-st_write(pois_transit_headways, IMPT_URL("/mobility_transit/transit_stops_headways.gpkg"), delete_dsn = TRUE)
+impt_write(pois_transit_headways, "/mobility_transit/transit_stops_headways.gpkg")
 # mapview(pois_transit, zcol="headway_peak")
 # mapview(pois_transit, zcol="headway_day")
 # table((pois_transit |> filter(is.na(frequency_day)))$agency)
@@ -870,7 +870,7 @@ grelha_tml_cropped <- grelha_tml |>
 
 nrow(grelha_tml_cropped)
 # mapview(grelha_tml_cropped)
-st_write(grelha_tml_cropped |> select(id), "/data/IMPT/geo/grelha_tml_d500.gpkg", delete_dsn = TRUE)
+impt_write(grelha_tml_cropped |> select(id), "/geo/grelha_tml_d500.gpkg")
 
 # We will keep using the TML grid for now, but in the future we can produce a new one with h3, which is replicable and has nice properties (equal area, hierarchical, etc).
 library(h3jsr)
@@ -893,9 +893,9 @@ h3_index <- GRID_h3 |> st_drop_geometry() # save h3_address for later
 
 mapview(GRID_h3)
 
-# st_write(GRID_h3 |> select(id), "/data/IMPT/geo/grelha_h3_r8.gpkg", delete_dsn = TRUE)
+# impt_write(GRID_h3 |> select(id), "/geo/grelha_h3_r8.gpkg")
 # saveRDS(h3_index, "/data/IMPT/geo/grelha_h3_r8_index.Rds")
-st_write(GRID_h3 |> select(id), "/data/IMPT/geo/grelha_h3_r9.gpkg", delete_dsn = TRUE)
+impt_write(GRID_h3 |> select(id), "/geo/grelha_h3_r9.gpkg")
 saveRDS(h3_index, "/data/IMPT/geo/grelha_h3_r9_index.Rds")
 
 
@@ -923,5 +923,5 @@ GRID_h3_centroids <- st_centroid(GRID_h3) |>
   select(id, h3_address)
 
 
-# st_write(GRID_h3_centroids, "/data/IMPT/geo/grelha_h3_r8_centroids.gpkg", delete_dsn = TRUE)
-# st_write(GRID_h3_centroids, "/data/IMPT/geo/grelha_h3_r9_centroids.gpkg", delete_dsn = TRUE)
+# impt_write(GRID_h3_centroids, "/geo/grelha_h3_r8_centroids.gpkg")
+# impt_write(GRID_h3_centroids, "/geo/grelha_h3_r9_centroids.gpkg")

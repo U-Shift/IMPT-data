@@ -88,7 +88,7 @@ bboxes <- list(
 
 lisbon_buildings <- fetch_building_points("Lisbon", bboxes, lisbon_file_dir)
 
-st_write(lisbon_buildings, "/data/IMPT/pois/lisbon_metro_buildings_height.geojson", delete_dsn = TRUE)
+impt_write(lisbon_buildings, "/pois/lisbon_metro_buildings_height.geojson")
 
 summary(lisbon_buildings$est_floor) # median: 1, mean: 1.64
 
@@ -116,6 +116,6 @@ mapview(lisbon_buildings_city,
 
 
 # upload to github --------------------------------------------------------
-lisbon_metro_buildings_height = st_read("https://github.com/temospena/Sydney/releases/download/0.1/lisbon_metro_buildings_height.geojson")
+lisbon_metro_buildings_height <- st_read("https://github.com/temospena/Sydney/releases/download/0.1/lisbon_metro_buildings_height.geojson")
 st_write(lisbon_metro_buildings_height, "data/lisbon_metro_buildings_height.geojson", delete_dsn = TRUE)
 piggyback::pb_upload("data/lisbon_metro_buildings_height.geojson")

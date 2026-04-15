@@ -34,7 +34,7 @@ library(mapview)
 # mapview(cos_residential_aml, zcol = "COS23_n4_L")
 
 # export
-# st_write(cos_residential_aml, "/data/IMPT/geo/cos_residential_aml.gpkg", delete_dsn = TRUE)
+# impt_write(cos_residential_aml, "/geo/cos_residential_aml.gpkg")
 
 # with grid ---------------------------------------------------------------
 
@@ -187,7 +187,7 @@ mapview(grid_final |> filter(population > 0), zcol = "elderly_dependency")
 summary(grid_final$population_density) # sounds good
 
 # export
-st_write(grid_final, IMPT_URL("/landuse/grid_with_cos.gpkg"), delete_dsn = TRUE)
-write.csv(grid_final |> st_drop_geometry(), IMPT_URL("/landuse/grid_with_cos.csv"), row.names = FALSE)
+impt_write(grid_final, "/landuse/grid_with_cos.gpkg")
+impt_write(grid_final |> st_drop_geometry(), "/landuse/grid_with_cos.csv")
 
-st_write(cos_clean |> st_transform(4326), IMPT_URL("/geo/cos_builtarea.geojson"), delete_dsn = TRUE)
+impt_write(cos_clean |> st_transform(4326), "/geo/cos_builtarea.geojson")

@@ -93,8 +93,8 @@ mapview(grid_headways_sf, zcol = "frequency_reduction_night")
 mapview(grid_headways_sf, zcol = "frequency_reduction_weekend")
 mapview(grid_headways_sf |> mutate(total_population_served_str = ifelse(total_population_served > 0, "ANY", "NONE")), zcol = "total_population_served_str")
 
-st_write(grid_headways_sf, IMPT_URL("/mobility_transit/grid_headways.gpkg"), delete_dsn = TRUE)
-st_write(grid_headways, IMPT_URL("/mobility_transit/grid_headways.csv"))
+impt_write(grid_headways_sf, "/mobility_transit/grid_headways.gpkg")
+impt_write(grid_headways, "/mobility_transit/grid_headways.csv")
 
 freguesia_headways <- aggregated_transit_times_for_geometry(
   freguesias |> st_join(pois_transit_headways_population, join = st_intersects) |>
@@ -111,8 +111,8 @@ mapview(freguesia_headways_sf, zcol = "frequency_reduction_weekend")
 
 # mapview(freguesia_headways_sf, zcol="weighted_frequency_peak") + mapview(pois_transit_headways_population)
 
-st_write(freguesia_headways_sf, IMPT_URL("/mobility_transit/freguesias_headways.gpkg"), delete_dsn = TRUE)
-st_write(freguesia_headways, IMPT_URL("/mobility_transit/freguesias_headways.csv"))
+impt_write(freguesia_headways_sf, "/mobility_transit/freguesias_headways.gpkg")
+impt_write(freguesia_headways, "/mobility_transit/freguesias_headways.csv")
 
 municipios_headways <- aggregated_transit_times_for_geometry(
   municipios |> st_join(pois_transit_headways_population, join = st_intersects) |>
@@ -128,5 +128,5 @@ mapview(municipios_headways_sf, zcol = "weighted_frequency_reduction_night")
 mapview(municipios_headways_sf, zcol = "frequency_reduction_weekend")
 mapview(municipios_headways_sf, zcol = "weighted_frequency_reduction_weekend")
 
-st_write(municipios_headways_sf, IMPT_URL("/mobility_transit/municipios_headways.gpkg"), delete_dsn = TRUE)
-st_write(municipios_headways, IMPT_URL("/mobility_transit/municipios_headways.csv"))
+impt_write(municipios_headways_sf, "/mobility_transit/municipios_headways.gpkg")
+impt_write(municipios_headways, "/mobility_transit/municipios_headways.csv")

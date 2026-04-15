@@ -100,12 +100,12 @@ grid_by_stops <- census_stops_grid |>
   )
 # mapview(grid |> left_join(grid_by_stops, by = c("id" = "grid_id")), zcol = "ratio_served_population")
 
-saveRDS(freguesias_by_stops, IMPT_URL("/mobility/freguesias_stops_coverage.rds"))
-saveRDS(municipios_by_stops, IMPT_URL("/mobility/municipios_stops_coverage.rds"))
-saveRDS(grid_by_stops, IMPT_URL("/mobility/grid_stops_coverage.rds"))
-write.csv(freguesias_by_stops, IMPT_URL("/mobility/freguesias_stops_coverage.csv"))
-write.csv(municipios_by_stops, IMPT_URL("/mobility/municipios_stops_coverage.csv"))
-write.csv(grid_by_stops, IMPT_URL("/mobility/grid_stops_coverage.csv"))
+impt_write(freguesias_by_stops, "/mobility/freguesias_stops_coverage.rds")
+impt_write(municipios_by_stops, "/mobility/municipios_stops_coverage.rds")
+impt_write(grid_by_stops, "/mobility/grid_stops_coverage.rds")
+impt_write(freguesias_by_stops, "/mobility/freguesias_stops_coverage.csv")
+impt_write(municipios_by_stops, "/mobility/municipios_stops_coverage.csv")
+impt_write(grid_by_stops, "/mobility/grid_stops_coverage.csv")
 
 
 # Shared Mobility Availability --------------------------------------------
@@ -122,16 +122,16 @@ grid_shared_mob$shared_mobility_points <- lengths(st_intersects(grid_shared_mob,
 freguesias_shared_mob$shared_mobility_points <- lengths(st_intersects(freguesias_shared_mob, aml_shared_mobility))
 municipios_shared_mob$shared_mobility_points <- lengths(st_intersects(municipios_shared_mob, aml_shared_mobility))
 
-# st_write(grid_shared_mob, IMPT_URL("/mobility/grid_shared_mobility.gpkg"), delete_dsn = TRUE)
-# st_write(municipios_shared_mob, IMPT_URL("/mobility/municipios_shared_mobility.gpkg"), delete_dsn = TRUE)
-# st_write(freguesias_shared_mob, IMPT_URL("/mobility/freguesias_shared_mobility.gpkg"), delete_dsn = TRUE)
-saveRDS(freguesias_shared_mob, IMPT_URL("mobility/freguesias_shared_mobility.rds"))
-saveRDS(municipios_shared_mob, IMPT_URL("mobility/municipios_shared_mobility.rds"))
-saveRDS(grid_shared_mob, IMPT_URL("mobility/grid_shared_mobility.rds"))
+# impt_write(grid_shared_mob, "/mobility/grid_shared_mobility.gpkg")
+# impt_write(municipios_shared_mob, "/mobility/municipios_shared_mobility.gpkg")
+# impt_write(freguesias_shared_mob, "/mobility/freguesias_shared_mobility.gpkg")
+impt_write(freguesias_shared_mob, "mobility/freguesias_shared_mobility.rds")
+impt_write(municipios_shared_mob, "mobility/municipios_shared_mobility.rds")
+impt_write(grid_shared_mob, "mobility/grid_shared_mobility.rds")
 
-write.csv(freguesias_shared_mob |> select(dtmnfr, shared_mobility_points) |> st_drop_geometry(), IMPT_URL("mobility/freguesias_shared_mobility.csv"))
-write.csv(municipios_shared_mob |> select(municipio, shared_mobility_points) |> st_drop_geometry(), IMPT_URL("mobility/municipios_shared_mobility.csv"))
-write.csv(grid_shared_mob |> select(id, shared_mobility_points) |> st_drop_geometry(), IMPT_URL("mobility/grid_shared_mobility.csv"))
+impt_write(freguesias_shared_mob |> select(dtmnfr, shared_mobility_points) |> st_drop_geometry(), "mobility/freguesias_shared_mobility.csv")
+impt_write(municipios_shared_mob |> select(municipio, shared_mobility_points) |> st_drop_geometry(), "mobility/municipios_shared_mobility.csv")
+impt_write(grid_shared_mob |> select(id, shared_mobility_points) |> st_drop_geometry(), "mobility/grid_shared_mobility.csv")
 # mapview(grid |> left_join(grid_shared_mob |> st_drop_geometry() |> select(id, shared_mobility_points), by = c("id" = "id")), zcol = "shared_mobility_points")
 # mapview(freguesias |> left_join(freguesias_shared_mob |> st_drop_geometry() |> select(dtmnfr, shared_mobility_points), by = c("dtmnfr" = "dtmnfr")), zcol = "shared_mobility_points")
 # mapview(municipios |> left_join(municipios_shared_mob |> st_drop_geometry() |> select(municipio, shared_mobility_points), by = c("municipio" = "municipio")), zcol = "shared_mobility_points")
@@ -362,9 +362,9 @@ grid_by_infrastructure <- grid |>
 
 
 ### Save results ----
-# st_write(freguesias_by_infrastructure, IMPT_URL("/mobility/freguesias_infrastructure_ratio.gpkg"), delete_dsn = TRUE)
-# saveRDS(freguesias_by_infrastructure |> st_drop_geometry(), IMPT_URL("/mobility/freguesias_infrastructure_ratio.rds"))
+# impt_write(freguesias_by_infrastructure, "/mobility/freguesias_infrastructure_ratio.gpkg")
+# impt_write(freguesias_by_infrastructure |> st_drop_geometry(), "/mobility/freguesias_infrastructure_ratio.rds")
 
-write.csv(freguesias_by_infrastructure |> st_drop_geometry(), IMPT_URL("/mobility/freguesias_infrastructure_ratio.csv"))
-write.csv(municipios_by_infrastructure |> st_drop_geometry(), IMPT_URL("/mobility/municipios_infrastructure_ratio.csv"))
-write.csv(grid_by_infrastructure |> st_drop_geometry(), IMPT_URL("/mobility/grid_infrastructure_ratio.csv"))
+impt_write(freguesias_by_infrastructure |> st_drop_geometry(), "/mobility/freguesias_infrastructure_ratio.csv")
+impt_write(municipios_by_infrastructure |> st_drop_geometry(), "/mobility/municipios_infrastructure_ratio.csv")
+impt_write(grid_by_infrastructure |> st_drop_geometry(), "/mobility/grid_infrastructure_ratio.csv")

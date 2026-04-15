@@ -142,12 +142,12 @@ mapview(mun_stats_gap_sf, zcol = "relative_gap_bike_time")
 
 # Export ------------------------------------------------------------------
 output_dir <- "/mobility_commuting"
-write.csv(hex_stats_gap, IMPT_URL(sprintf("%s/grid_accessibility_gap_time.csv", output_dir)), row.names = FALSE)
-write.csv(freg_stats_gap, IMPT_URL(sprintf("%s/freg_accessibility_gap_time.csv", output_dir)), row.names = FALSE)
-write.csv(mun_stats_gap, IMPT_URL(sprintf("%s/mun_accessibility_gap_time.csv", output_dir)), row.names = FALSE)
+impt_write(hex_stats_gap, sprintf("%s/grid_accessibility_gap_time.csv", output_dir)
+impt_write(freg_stats_gap, sprintf("%s/freg_accessibility_gap_time.csv", output_dir)
+impt_write(mun_stats_gap, sprintf("%s/mun_accessibility_gap_time.csv", output_dir)
 
-# st_write(freg_stats_gap_sf, IMPT_URL(sprintf("%s/freg_stats_gap.gpkg", output_dir)), delete_dsn = TRUE)
-# st_write(mun_stats_gap_sf,  IMPT_URL(sprintf("%s/mun_stats_gap.gpkg",  output_dir)), delete_dsn = TRUE)
+# impt_write(freg_stats_gap_sf, sprintf("%s/freg_stats_gap.gpkg", output_dir)
+# impt_write(mun_stats_gap_sf, sprintf("%s/mun_stats_gap.gpkg",  output_dir)
 
 
 # Accessibility Gap - Money -------------------------------------------------------
@@ -282,6 +282,6 @@ mapview(mun_stats_gap_money_sf, zcol = "cost_gap")
 mapview(mun_stats_gap_money_sf, zcol = "relative_gap_cost")
 
 # Export ------------------------------------------------------------------
-write.csv(hex_stats_gap_money, IMPT_URL(sprintf("%s/grid_accessibility_gap_money.csv", output_dir)), row.names = FALSE)
-write.csv(freg_stats_gap_money, IMPT_URL(sprintf("%s/freg_accessibility_gap_money.csv", output_dir)), row.names = FALSE)
-write.csv(mun_stats_gap_money, IMPT_URL(sprintf("%s/mun_accessibility_gap_money.csv", output_dir)), row.names = FALSE)
+impt_write(hex_stats_gap_money, sprintf("%s/grid_accessibility_gap_money.csv", output_dir)
+impt_write(freg_stats_gap_money, sprintf("%s/freg_accessibility_gap_money.csv", output_dir)
+impt_write(mun_stats_gap_money, sprintf("%s/mun_accessibility_gap_money.csv", output_dir)
