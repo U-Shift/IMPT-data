@@ -12,7 +12,7 @@ library(mapview)
 
 
 # # explore cos
-# cos_raw = st_read("/data/IMPT/original/COS2023v1-S2.gpkg")
+# cos_raw = impt_read("/original/COS2023v1-S2.gpkg")
 # unique(cos_raw$COS23_n4_L)
 # unique(cos_raw$COS23_n4_C)
 #
@@ -27,7 +27,7 @@ library(mapview)
 #
 #
 # # filter aml
-# clip_bbox = st_read("/data/IMPT/geo/clipping_boundary.geojson")
+# clip_bbox = impt_read("/geo/clipping_boundary.geojson")
 # cos_residential_aml = cos_residential |> st_transform(crs = st_crs(clip_bbox))
 # cos_residential_aml = cos_residential_aml[clip_bbox,]
 # cos_residential_aml = cos_residential_aml |> select(-ID)

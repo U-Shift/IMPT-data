@@ -280,7 +280,7 @@ sum(accidents_localidades_final$total_acidentes) # 35344
 
 
 # acidentes por grid -------------------------------------------------
-grid <- st_read("/data/IMPT/geo/grelha_h3_r8.gpkg", quiet = TRUE)
+grid <- impt_read("/geo/grelha_h3_r8.gpkg", quiet = TRUE)
 
 ig_grid <- st_join(
   ig |>
@@ -344,7 +344,7 @@ accidents_grid_redux <- accidents_grid |>
   ungroup()
 
 
-landuse_grid <- read.csv("/data/IMPT/landuse/grid_with_cos.csv")
+landuse_grid <- impt_read("/landuse/grid_with_cos.csv")
 accidents_grid_redux <- accidents_grid_redux |>
   left_join(landuse_grid |> select(id, population), by = c("grid_id" = "id")) |>
   mutate(
@@ -430,11 +430,11 @@ grid |> left_join(accidents_grid_final, by = c("id" = "grid_id")) |>
 # 4) Exportar csv
 # ----------------------------
 
-write.csv(accidents_final, "/data/IMPT/safety/accidents_by_freguesia_5years.csv", row.names = FALSE)
-write.csv(accidents_localidades_final, "/data/IMPT/safety/accidents_by_freguesia_5years_dentrolocalidades.csv", row.names = FALSE)
+impt_write(accidents_final, "/safety/accidents_by_freguesia_5years.csv")
+impt_write(accidents_localidades_final, "/safety/accidents_by_freguesia_5years_dentrolocalidades.csv")
 
-write.csv(accidents_final_municipio, "/data/IMPT/safety/accidents_by_municipio_5years.csv", row.names = FALSE)
-write.csv(accidents_final_municipio_localidades, "/data/IMPT/safety/accidents_by_municipio_5years_dentrolocalidades.csv", row.names = FALSE)
+impt_write(accidents_final_municipio, "/safety/accidents_by_municipio_5years.csv")
+impt_write(accidents_final_municipio_localidades, "/safety/accidents_by_municipio_5years_dentrolocalidades.csv")
 
-write.csv(accidents_grid_final, "/data/IMPT/safety/accidents_by_grid_5years.csv", row.names = FALSE)
-write.csv(accidents_grid_localidades_final, "/data/IMPT/safety/accidents_by_grid_5years_dentrolocalidades.csv", row.names = FALSE)
+impt_write(accidents_grid_final, "/safety/accidents_by_grid_5years.csv")
+impt_write(accidents_grid_localidades_final, "/safety/accidents_by_grid_5years_dentrolocalidades.csv")

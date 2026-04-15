@@ -12,7 +12,7 @@ library(mapview)
 
 
 # # explore cos
-# cos_raw = st_read("/data/IMPT/original/COS2023v1-S2.gpkg")
+# cos_raw = impt_read("/original/COS2023v1-S2.gpkg")
 # unique(cos_raw$COS23_n4_L)
 # unique(cos_raw$COS23_n4_C)
 #
@@ -27,7 +27,7 @@ library(mapview)
 #
 #
 # # filter aml
-# clip_bbox = st_read("/data/IMPT/geo/clipping_boundary.geojson")
+# clip_bbox = impt_read("/geo/clipping_boundary.geojson")
 # cos_residential_aml = cos_residential |> st_transform(crs = st_crs(clip_bbox))
 # cos_residential_aml = cos_residential_aml[clip_bbox,]
 # cos_residential_aml = cos_residential_aml |> select(-ID)
@@ -38,9 +38,9 @@ library(mapview)
 
 # with grid ---------------------------------------------------------------
 
-cos_residential_aml <- st_read("/data/IMPT/geo/cos_residential_aml.gpkg")
-grid <- st_read("/data/IMPT/geo/grelha_h3_r8.gpkg")
-census_bgri <- st_read("/data/IMPT/original/BGRI21_170.gpkg")
+cos_residential_aml <- impt_read("/geo/cos_residential_aml.gpkg")
+grid <- impt_read("/geo/grelha_h3_r8.gpkg")
+census_bgri <- impt_read("/original/BGRI21_170.gpkg")
 
 mapview(cos_residential_aml, zcol = "COS23_n4_L") +
   mapview(grid, alpha = 0.3)

@@ -27,14 +27,14 @@ library(mapview)
 
 # ── 1.1 Accessibility ─────────────────────────────────────────────────────────
 
-Accessibility <- read_csv("/data/IMPT/results_data/freguesia_accessibility.csv") |>
+Accessibility <- impt_read("/results_data/freguesia_accessibility.csv") |>
   select(-nuts)
 
 
 # ── 1.2 Mobility ──────────────────────────────────────────────────────────────
 
 # Infrastructure ratios
-freguesias_infrastructure_ratio <- read_csv("/data/IMPT/mobility/freguesias_infrastructure_ratio.csv") |>
+freguesias_infrastructure_ratio <- impt_read("/mobility/freguesias_infrastructure_ratio.csv") |>
   select(
     dtmnfr, road_length, pedpath_length, cycleway_length,
     segregated_cycleway_length, pedpath_to_road_ratio,
@@ -42,11 +42,11 @@ freguesias_infrastructure_ratio <- read_csv("/data/IMPT/mobility/freguesias_infr
   )
 
 # Stops coverage — requires a name-to-code lookup from the GeoPackage
-freguesias_names <- st_read("/data/IMPT/geo/freguesias_2024_unique.gpkg") |>
+freguesias_names <- impt_read("/geo/freguesias_2024_unique.gpkg") |>
   st_drop_geometry() |>
   select(dtmnfr, freguesia)
 
-freguesias_stops_coverage <- read_csv("/data/IMPT/mobility/freguesias_stops_coverage.csv") |>
+freguesias_stops_coverage <- impt_read("/mobility/freguesias_stops_coverage.csv") |>
   select(freguesia, ratio_served_population) |>
   left_join(freguesias_names, by = "freguesia") |>
   select(-freguesia) |>
@@ -54,16 +54,16 @@ freguesias_stops_coverage <- read_csv("/data/IMPT/mobility/freguesias_stops_cove
   rename(Stops_coverage = ratio_served_population)
 
 # Shared mobility
-freguesias_shared_mobility <- read_csv("/data/IMPT/mobility/freguesias_shared_mobility.csv") |>
+freguesias_shared_mobility <- impt_read("/mobility/freguesias_shared_mobility.csv") |>
   select(dtmnfr, shared_mobility_points) |>
   rename(Shared_mobility = shared_mobility_points)
 
 # Pre-aggregated mobility results
-freguesias_mobility <- read_csv("/data/IMPT/results_data/freguesia_mobility.csv") |>
+freguesias_mobility <- impt_read("/results_data/freguesia_mobility.csv") |>
   select(-nuts)
 
 # Transit headways
-freguesias_headways <- read_csv("/data/IMPT/mobility_transit/freguesias_headways.csv") |>
+freguesias_headways <- impt_read("/mobility_transit/freguesias_headways.csv") |>
   select(dtmnfr, weighted_frequency_peak, weighted_waiting_time_peak) |>
   rename(
     PT_Weight_frequency_peak = weighted_frequency_peak,
@@ -80,13 +80,14 @@ Mobility <- freguesias_infrastructure_ratio |>
 
 # ── 1.3 Safety ────────────────────────────────────────────────────────────────
 
-Safety <- read_csv("/data/IMPT/safety/accidents_by_freguesia_5years_dentrolocalidades.csv") |>
+Safety <- impt_read("/safety/accidents_by_freguesia_5years_dentrolocalidades.csv") |>
   select(-freguesia, -mun_id, -population, -noite) |>
-  mutate(veh_motorizado_per = veh_motorizado/total_veiculos,
-         veh_bicicleta_per = veh_bicicleta/total_veiculos,
-         veh_peoes_per = veh_peoes/total_veiculos
-         ) |> 
-  # select(-total_veiculos, -veh_motorizado, -veh_bicicleta, -veh_peoes) |> 
+  mutate(
+    veh_motorizado_per = veh_motorizado / total_veiculos,
+    veh_bicicleta_per = veh_bicicleta / total_veiculos,
+    veh_peoes_per = veh_peoes / total_veiculos
+  ) |>
+  # select(-total_veiculos, -veh_motorizado, -veh_bicicleta, -veh_peoes) |>
   rename(dtmnfr = freg_id) |>
   mutate(across(where(is.numeric), ~ ifelse(is.na(.x), 0, .x))) # NAs → 0
 
@@ -96,7 +97,7 @@ Safety <- read_csv("/data/IMPT/safety/accidents_by_freguesia_5years_dentrolocali
 # Note: The computation of the raw affordability metrics has been moved out to 04_affordability.R.
 # We now simply read the output from that script to assemble the scenario tables.
 
-Affordability_composite <- read_csv("/data/IMPT/affordability/affordability_freguesia_composite.csv")
+Affordability_composite <- impt_read("/affordability/affordability_freguesia_composite.csv")
 
 Affordability_navegante <- Affordability_composite |>
   select(
@@ -261,33 +262,31 @@ Safety_bike_Norm <- Safety_bike |> mutate(across(!dtmnfr, ~ normalize_benefit(.x
 Safety_walk_Norm <- Safety_walk |> mutate(across(!dtmnfr, ~ normalize_benefit(.x)))
 
 
-
-
 # ── 3.4 Export normalised datasets ────────────────────────────────────────────
 
-write_csv(Mobility_Norm, "/data/IMPT/impt/norm/Mobility_Norm.csv")
-write_csv(Accessibility_Norm, "/data/IMPT/impt/norm/Accessibility_Norm.csv")
-write_csv(Affordability_Norm_navegante, "/data/IMPT/impt/norm/Affordability_Norm_navegante.csv")
-write_csv(Affordability_Norm_singlefare, "/data/IMPT/impt/norm/Affordability_Norm_singlefare.csv")
-write_csv(Safety_Norm, "/data/IMPT/impt/norm/Safety_Norm.csv")
+impt_write(Mobility_Norm, "/impt/norm/Mobility_Norm.csv")
+impt_write(Accessibility_Norm, "/impt/norm/Accessibility_Norm.csv")
+impt_write(Affordability_Norm_navegante, "/impt/norm/Affordability_Norm_navegante.csv")
+impt_write(Affordability_Norm_singlefare, "/impt/norm/Affordability_Norm_singlefare.csv")
+impt_write(Safety_Norm, "/impt/norm/Safety_Norm.csv")
 
-write_csv(Mobility_car_Norm, "/data/IMPT/impt/norm/Mobility_car_Norm.csv")
-write_csv(Mobility_pt_Norm, "/data/IMPT/impt/norm/Mobility_pt_Norm.csv")
-write_csv(Mobility_bike_Norm, "/data/IMPT/impt/norm/Mobility_bike_Norm.csv")
-write_csv(Mobility_walk_Norm, "/data/IMPT/impt/norm/Mobility_walk_Norm.csv")
+impt_write(Mobility_car_Norm, "/impt/norm/Mobility_car_Norm.csv")
+impt_write(Mobility_pt_Norm, "/impt/norm/Mobility_pt_Norm.csv")
+impt_write(Mobility_bike_Norm, "/impt/norm/Mobility_bike_Norm.csv")
+impt_write(Mobility_walk_Norm, "/impt/norm/Mobility_walk_Norm.csv")
 
-write_csv(Accessibility_car_Norm, "/data/IMPT/impt/norm/Accessibility_car_Norm.csv")
-write_csv(Accessibility_pt_Norm, "/data/IMPT/impt/norm/Accessibility_pt_Norm.csv")
-write_csv(Accessibility_bike_Norm, "/data/IMPT/impt/norm/Accessibility_bike_Norm.csv")
-write_csv(Accessibility_walk_Norm, "/data/IMPT/impt/norm/Accessibility_walk_Norm.csv")
+impt_write(Accessibility_car_Norm, "/impt/norm/Accessibility_car_Norm.csv")
+impt_write(Accessibility_pt_Norm, "/impt/norm/Accessibility_pt_Norm.csv")
+impt_write(Accessibility_bike_Norm, "/impt/norm/Accessibility_bike_Norm.csv")
+impt_write(Accessibility_walk_Norm, "/impt/norm/Accessibility_walk_Norm.csv")
 
-write_csv(Affordability_car_Norm, "/data/IMPT/impt/norm/Affordability_car_Norm.csv")
-write_csv(Affordability_pt_Norm_singlefare, "/data/IMPT/impt/norm/Affordability_pt_Norm_singlefare.csv")
-write_csv(Affordability_pt_Norm_navegante, "/data/IMPT/impt/norm/Affordability_pt_Norm_navegante.csv")
+impt_write(Affordability_car_Norm, "/impt/norm/Affordability_car_Norm.csv")
+impt_write(Affordability_pt_Norm_singlefare, "/impt/norm/Affordability_pt_Norm_singlefare.csv")
+impt_write(Affordability_pt_Norm_navegante, "/impt/norm/Affordability_pt_Norm_navegante.csv")
 
-write_csv(Safety_car_Norm, "/data/IMPT/impt/norm/Safety_car_Norm.csv")
-write_csv(Safety_bike_Norm, "/data/IMPT/impt/norm/Safety_bike_Norm.csv")
-write_csv(Safety_walk_Norm, "/data/IMPT/impt/norm/Safety_walk_Norm.csv")
+impt_write(Safety_car_Norm, "/impt/norm/Safety_car_Norm.csv")
+impt_write(Safety_bike_Norm, "/impt/norm/Safety_bike_Norm.csv")
+impt_write(Safety_walk_Norm, "/impt/norm/Safety_walk_Norm.csv")
 
 
 # =============================================================================
@@ -313,7 +312,8 @@ champions <- function(pca_obj, dim = 1, n = 10) {
 pca_access <- PCA(Accessibility_Norm, quali.sup = 1, graph = FALSE)
 pca_mobility <- PCA(Mobility_Norm, quali.sup = 1, graph = FALSE)
 pca_safety <- PCA(Safety_Norm |> select(-total_veiculos, -veh_motorizado, -veh_bicicleta, -veh_peoes),
-                  quali.sup = 1, graph = FALSE)
+  quali.sup = 1, graph = FALSE
+)
 
 # Extract global dimension scores (PC1, rescaled to [1, 100])
 acc_scores <- data.frame(
@@ -359,8 +359,8 @@ pca_bike_mobility <- PCA(Mobility_bike_Norm, quali.sup = 1, graph = FALSE)
 pca_walk_mobility <- PCA(Mobility_walk_Norm, quali.sup = 1, graph = FALSE)
 
 pca_car_safety <- PCA(Safety_car_Norm |> select(-veh_motorizado), quali.sup = 1, graph = FALSE)
-pca_bike_safety <- PCA(Safety_bike_Norm|> select(-veh_bicicleta), quali.sup = 1, graph = FALSE)
-pca_walk_safety <- PCA(Safety_walk_Norm|> select(-veh_peoes), quali.sup = 1, graph = FALSE)
+pca_bike_safety <- PCA(Safety_bike_Norm |> select(-veh_bicicleta), quali.sup = 1, graph = FALSE)
+pca_walk_safety <- PCA(Safety_walk_Norm |> select(-veh_peoes), quali.sup = 1, graph = FALSE)
 
 # Per-mode accessibility scores
 acc_car_scores <- data.frame(
@@ -485,42 +485,42 @@ print(direction_results)
 
 # ── 4.4 Export PCA scores & diagnostics ───────────────────────────────────────
 
-write_csv(acc_scores, "/data/IMPT/impt/pca_scores/Accessibility_PCA_Scores.csv")
-write_csv(saf_scores, "/data/IMPT/impt/pca_scores/Safety_PCA_Scores.csv")
-write_csv(mob_scores, "/data/IMPT/impt/pca_scores/Mobility_PCA_Scores.csv")
+impt_write(acc_scores, "/impt/pca_scores/Accessibility_PCA_Scores.csv")
+impt_write(saf_scores, "/impt/pca_scores/Safety_PCA_Scores.csv")
+impt_write(mob_scores, "/impt/pca_scores/Mobility_PCA_Scores.csv")
 
-write_csv(acc_car_scores, "/data/IMPT/impt/pca_scores/Accessibility_PCA_car_Scores.csv")
-write_csv(acc_pt_scores, "/data/IMPT/impt/pca_scores/Accessibility_PCA_pt_Scores.csv")
-write_csv(acc_bike_scores, "/data/IMPT/impt/pca_scores/Accessibility_PCA_bike_Scores.csv")
-write_csv(acc_walk_scores, "/data/IMPT/impt/pca_scores/Accessibility_PCA_walk_Scores.csv")
+impt_write(acc_car_scores, "/impt/pca_scores/Accessibility_PCA_car_Scores.csv")
+impt_write(acc_pt_scores, "/impt/pca_scores/Accessibility_PCA_pt_Scores.csv")
+impt_write(acc_bike_scores, "/impt/pca_scores/Accessibility_PCA_bike_Scores.csv")
+impt_write(acc_walk_scores, "/impt/pca_scores/Accessibility_PCA_walk_Scores.csv")
 
-write_csv(aff_car_scores, "/data/IMPT/impt/pca_scores/Affordability_car_Scores.csv")
-write_csv(aff_pt_scores_singlefare, "/data/IMPT/impt/pca_scores/Affordability_pt_Scores_singlefare.csv")
-write_csv(aff_pt_scores_navegante, "/data/IMPT/impt/pca_scores/Affordability_pt_Scores_navegante.csv")
+impt_write(aff_car_scores, "/impt/pca_scores/Affordability_car_Scores.csv")
+impt_write(aff_pt_scores_singlefare, "/impt/pca_scores/Affordability_pt_Scores_singlefare.csv")
+impt_write(aff_pt_scores_navegante, "/impt/pca_scores/Affordability_pt_Scores_navegante.csv")
 
-write_csv(saf_car_scores, "/data/IMPT/impt/pca_scores/Safety_car_Scores.csv")
-write_csv(saf_bike_scores, "/data/IMPT/impt/pca_scores/Safety_bike_Scores.csv")
-write_csv(saf_walk_scores, "/data/IMPT/impt/pca_scores/Safety_walk_Scores.csv")
+impt_write(saf_car_scores, "/impt/pca_scores/Safety_car_Scores.csv")
+impt_write(saf_bike_scores, "/impt/pca_scores/Safety_bike_Scores.csv")
+impt_write(saf_walk_scores, "/impt/pca_scores/Safety_walk_Scores.csv")
 
-write_csv(mob_car_scores, "/data/IMPT/impt/pca_scores/Mobility_PCA_car_Scores.csv")
-write_csv(mob_pt_scores, "/data/IMPT/impt/pca_scores/Mobility_PCA_pt_Scores.csv")
-write_csv(mob_bike_scores, "/data/IMPT/impt/pca_scores/Mobility_PCA_bike_Scores.csv")
-write_csv(mob_walk_scores, "/data/IMPT/impt/pca_scores/Mobility_PCA_walk_Scores.csv")
+impt_write(mob_car_scores, "/impt/pca_scores/Mobility_PCA_car_Scores.csv")
+impt_write(mob_pt_scores, "/impt/pca_scores/Mobility_PCA_pt_Scores.csv")
+impt_write(mob_bike_scores, "/impt/pca_scores/Mobility_PCA_bike_Scores.csv")
+impt_write(mob_walk_scores, "/impt/pca_scores/Mobility_PCA_walk_Scores.csv")
 
-write_csv(pca_variance_report, "/data/IMPT/impt/pca_scores/PCA_Variance_and_Correlations.csv")
-write_csv(pca_summary_table, "/data/IMPT/impt/pca_scores/PCA_Variance_Table.csv")
+impt_write(pca_variance_report, "/impt/pca_scores/PCA_Variance_and_Correlations.csv")
+impt_write(pca_summary_table, "/impt/pca_scores/PCA_Variance_Table.csv")
 
-write_csv(
+impt_write(
   data.frame(Indicator = names(Champions_access), Contribution = Champions_access),
-  "/data/IMPT/impt/pca_scores/Champions_Accessibility.csv"
+  "/impt/pca_scores/Champions_Accessibility.csv"
 )
-write_csv(
+impt_write(
   data.frame(Indicator = names(Champions_mobility), Contribution = Champions_mobility),
-  "/data/IMPT/impt/pca_scores/Champions_Mobility.csv"
+  "/impt/pca_scores/Champions_Mobility.csv"
 )
-write_csv(
+impt_write(
   data.frame(Indicator = names(Champions_safety), Contribution = Champions_safety),
-  "/data/IMPT/impt/pca_scores/Champions_Safety.csv"
+  "/impt/pca_scores/Champions_Safety.csv"
 )
 
 
@@ -584,7 +584,7 @@ Final_Results_Master <- Final_Results_Master |>
     ) - 1
   )
 
-write_csv(Final_Results_Master, "/data/IMPT/impt/results/IMPT_PCA_and_Entropy_Scores_freguesia.csv")
+impt_write(Final_Results_Master, "/impt/results/IMPT_PCA_and_Entropy_Scores_freguesia.csv")
 
 
 # ── 5.2 Per-mode IMPT ─────────────────────────────────────────────────────────
@@ -689,10 +689,10 @@ Final_Results_Master_walk <- Final_Results_Master_walk |>
     ) - 1
   )
 
-write_csv(Final_Results_Master_car, "/data/IMPT/impt/results/IMPT_PCA_and_Entropy_Scores_car_freguesia.csv")
-write_csv(Final_Results_Master_pt, "/data/IMPT/impt/results/IMPT_PCA_and_Entropy_Scores_pt_freguesia.csv")
-write_csv(Final_Results_Master_bike, "/data/IMPT/impt/results/IMPT_PCA_and_Entropy_Scores_bike_freguesia.csv")
-write_csv(Final_Results_Master_walk, "/data/IMPT/impt/results/IMPT_PCA_and_Entropy_Scores_walk_freguesia.csv")
+impt_write(Final_Results_Master_car, "/impt/results/IMPT_PCA_and_Entropy_Scores_car_freguesia.csv")
+impt_write(Final_Results_Master_pt, "/impt/results/IMPT_PCA_and_Entropy_Scores_pt_freguesia.csv")
+impt_write(Final_Results_Master_bike, "/impt/results/IMPT_PCA_and_Entropy_Scores_bike_freguesia.csv")
+impt_write(Final_Results_Master_walk, "/impt/results/IMPT_PCA_and_Entropy_Scores_walk_freguesia.csv")
 
 
 # =============================================================================
@@ -727,11 +727,11 @@ Final_Results_Master_pt_municipio <- aggregate_to_level(Final_Results_Master_pt,
 Final_Results_Master_bike_municipio <- aggregate_to_level(Final_Results_Master_bike, census24_fregmun_pop, "mun_id")
 Final_Results_Master_walk_municipio <- aggregate_to_level(Final_Results_Master_walk, census24_fregmun_pop, "mun_id")
 
-write_csv(Final_Results_Master_municipio, "/data/IMPT/impt/results/IMPT_PCA_and_Entropy_Scores_municipio.csv")
-write_csv(Final_Results_Master_car_municipio, "/data/IMPT/impt/results/IMPT_PCA_and_Entropy_Scores_car_municipio.csv")
-write_csv(Final_Results_Master_pt_municipio, "/data/IMPT/impt/results/IMPT_PCA_and_Entropy_Scores_pt_municipio.csv")
-write_csv(Final_Results_Master_bike_municipio, "/data/IMPT/impt/results/IMPT_PCA_and_Entropy_Scores_bike_municipio.csv")
-write_csv(Final_Results_Master_walk_municipio, "/data/IMPT/impt/results/IMPT_PCA_and_Entropy_Scores_walk_municipio.csv")
+impt_write(Final_Results_Master_municipio, "/impt/results/IMPT_PCA_and_Entropy_Scores_municipio.csv")
+impt_write(Final_Results_Master_car_municipio, "/impt/results/IMPT_PCA_and_Entropy_Scores_car_municipio.csv")
+impt_write(Final_Results_Master_pt_municipio, "/impt/results/IMPT_PCA_and_Entropy_Scores_pt_municipio.csv")
+impt_write(Final_Results_Master_bike_municipio, "/impt/results/IMPT_PCA_and_Entropy_Scores_bike_municipio.csv")
+impt_write(Final_Results_Master_walk_municipio, "/impt/results/IMPT_PCA_and_Entropy_Scores_walk_municipio.csv")
 
 
 # ── 6.2 Grid level ────────────────────────────────────────────────────────────
@@ -748,11 +748,11 @@ Final_Results_Master_grid_pt <- join_to_grid(Final_Results_Master_pt)
 Final_Results_Master_grid_bike <- join_to_grid(Final_Results_Master_bike)
 Final_Results_Master_grid_walk <- join_to_grid(Final_Results_Master_walk)
 
-write.csv(Final_Results_Master_grid, "/data/IMPT/impt/results/IMPT_PCA_and_Entropy_Scores_grid.csv", row.names = FALSE)
-write.csv(Final_Results_Master_grid_car, "/data/IMPT/impt/results/IMPT_PCA_and_Entropy_Scores_car_grid.csv", row.names = FALSE)
-write.csv(Final_Results_Master_grid_pt, "/data/IMPT/impt/results/IMPT_PCA_and_Entropy_Scores_pt_grid.csv", row.names = FALSE)
-write.csv(Final_Results_Master_grid_bike, "/data/IMPT/impt/results/IMPT_PCA_and_Entropy_Scores_bike_grid.csv", row.names = FALSE)
-write.csv(Final_Results_Master_grid_walk, "/data/IMPT/impt/results/IMPT_PCA_and_Entropy_Scores_walk_grid.csv", row.names = FALSE)
+impt_write(Final_Results_Master_grid, "/impt/results/IMPT_PCA_and_Entropy_Scores_grid.csv")
+impt_write(Final_Results_Master_grid_car, "/impt/results/IMPT_PCA_and_Entropy_Scores_car_grid.csv")
+impt_write(Final_Results_Master_grid_pt, "/impt/results/IMPT_PCA_and_Entropy_Scores_pt_grid.csv")
+impt_write(Final_Results_Master_grid_bike, "/impt/results/IMPT_PCA_and_Entropy_Scores_bike_grid.csv")
+impt_write(Final_Results_Master_grid_walk, "/impt/results/IMPT_PCA_and_Entropy_Scores_walk_grid.csv")
 
 
 # =============================================================================
@@ -760,9 +760,9 @@ write.csv(Final_Results_Master_grid_walk, "/data/IMPT/impt/results/IMPT_PCA_and_
 # =============================================================================
 
 # source("code/00_data_load.R")   # uncomment if `freguesias` is not already in memory
-freguesias = st_read("/data/IMPT/geo/freguesias_2024_unique.gpkg")
+freguesias <- impt_read("/geo/freguesias_2024_unique.gpkg")
 
-impt_pca <- read.csv("/data/IMPT/impt/results/IMPT_PCA_and_Entropy_Scores_freguesia.csv")
+impt_pca <- impt_read("/impt/results/IMPT_PCA_and_Entropy_Scores_freguesia.csv")
 
 impt_pca_sf <- freguesias |>
   select(-nuts2, -area_ha) |>

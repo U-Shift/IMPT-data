@@ -15,7 +15,7 @@ library(stplanr)
 
 # load imob data
 # IMOB = readRDS("data/IMOB_trips.Rds")
-IMOB <- readRDS("/data/IMPT/trips/IMOB_trips.Rds")
+IMOB <- impt_read("/trips/IMOB_trips.Rds")
 names(IMOB)
 
 table(IMOB$D0500_Dsg)
@@ -126,7 +126,7 @@ summary(OD_jobs$trips) # median 30 or 43
 # jitter in freguesias - choose road network or builgings, not both!
 
 # with road network
-road_network <- st_read("/data/IMPT/geo/IMPT_Road_network.gpkg")
+road_network <- impt_read("/geo/IMPT_Road_network.gpkg")
 
 od_jobs_jittered <- odjitter::jitter(
   od = OD_jobs,
@@ -139,7 +139,7 @@ od_jobs_jittered <- odjitter::jitter(
 
 
 # with buildings, weighted by construction area (ABC)
-buildings <- st_read("/data/IMPT/pois/lisbon_metro_buildings_height.geojson")
+buildings <- impt_read("/pois/lisbon_metro_buildings_height.geojson")
 buildings <- buildings |>
   mutate(volume = height * footprint_m2) |> # volume
   rename(weight = volume)
@@ -217,7 +217,7 @@ saveRDS(OD_all_new, "data/IMOB_od_freg_mode_purpose.Rds")
 # file from 01_data_prep.R
 
 # --- Load raw OD data ---
-od_raw <- readRDS("/data/IMPT/trips/TRIPSmode_freguesias_2024.Rds") |>
+od_raw <- impt_read("/trips/TRIPSmode_freguesias_2024.Rds") |>
   mutate(freg_id = as.character(Origin_dicofre24))
 
 # --- FREGUESIA LEVEL ---
@@ -234,7 +234,7 @@ modal_share_freg <- od_raw |>
   )
 # sum(modal_share_freg$trips_total) #5299854
 
-write.csv(modal_share_freg, "/data/IMPT/trips/imob_modal_share_freg.csv", row.names = FALSE)
+impt_write(modal_share_freg, "/trips/imob_modal_share_freg.csv")
 
 # --- MUNICIPALITY LEVEL ---
 # Aggregate raw trips directly to avoid double-weighting
@@ -252,7 +252,7 @@ modal_share_mun <- od_raw |>
   )
 # sum(modal_share_mun$trips_total) #5299853
 
-write.csv(modal_share_mun, "/data/IMPT/trips/imob_modal_share_mun.csv", row.names = FALSE)
+impt_write(modal_share_mun, "/trips/imob_modal_share_mun.csv")
 
 # --- GRID LEVEL ---
 # IMOB OD is at freguesia resolution; freg-level shares assigned to grid cells
@@ -262,4 +262,4 @@ modal_share_grid <- grid_freg_mun |>
   left_join(modal_share_freg |> select(-trips_total), by = "freg_id") |>
   select(-freg_id)
 
-write.csv(modal_share_grid, "/data/IMPT/trips/imob_modal_share_grid.csv", row.names = FALSE)
+impt_write(modal_share_grid, "/trips/imob_modal_share_grid.csv")

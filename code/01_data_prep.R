@@ -13,7 +13,7 @@ library(mapview)
 # temp <- "/data/IMPT/original/caop2024.zip"
 # download.file(link_DGT, temp, mode = "wb")
 # unzip(temp, exdir = "/data/IMPT/original/")
-CAOP_PT <- st_read("/data/IMPT/original/Continente_CAOP2024_1.gpkg")
+CAOP_PT <- impt_read("/original/Continente_CAOP2024_1.gpkg")
 
 # selecionar apenas NUT II Lisboa
 CAOP_GLPS <- CAOP_PT |>
@@ -23,8 +23,8 @@ CAOP_GLPS <- CAOP_PT |>
 names(CAOP_GLPS)
 
 # recortar freguesias de Lisboa para remover rio
-freguesias_lx_recortadas <- st_read("/data/IMPT/mqat/FREGUESIASgeo.gpkg") |>
-  left_join(readRDS("/data/IMPT/mqat/Metadata_Freguesias.Rds") |> select(Dicofre, Freguesia), by = "Dicofre") |>
+freguesias_lx_recortadas <- impt_read("/mqat/FREGUESIASgeo.gpkg") |>
+  left_join(impt_read("/mqat/Metadata_Freguesias.Rds") |> select(Dicofre, Freguesia), by = "Dicofre") |>
   filter(Concelho == "Lisboa") |>
   select(Dicofre, geom) |>
   rename(dtmnfr = Dicofre) |>
@@ -47,7 +47,7 @@ freguesias <- CAOP_GLPS_UNIQUE_dtmnfr
 
 impt_write(CAOP_GLPS, "/geo/freguesias_2024.gpkg")
 impt_write(CAOP_GLPS_UNIQUE_dtmnfr, "/geo/freguesias_2024_unique.gpkg")
-freguesias <- st_read("/data/IMPT/geo/freguesias_2024_unique.gpkg")
+freguesias <- impt_read("/geo/freguesias_2024_unique.gpkg")
 
 # group sf by municipio
 municipios <- CAOP_GLPS |>
@@ -58,14 +58,14 @@ municipios <- municipios[-6, ] # Remove strange Lisbon
 
 # mapview(municipios)
 impt_write(municipios, "/geo/municipios_2024.gpkg")
-municipios <- st_read("/data/IMPT/geo/municipios_2024.gpkg")
+municipios <- impt_read("/geo/municipios_2024.gpkg")
 
 # for the whole limit (to HOT export tool)
 municipios_union <- municipios |>
   sf::st_union() |>
   sf::st_make_valid()
 impt_write(municipios_union, "/geo/municipios_union_2024.geojson")
-municipios_union <- st_read("/data/IMPT/geo/municipios_union_2024.geojson")
+municipios_union <- impt_read("/geo/municipios_union_2024.geojson")
 
 # for the bbox (to Copernicus)
 municipios_union_bbox <- st_as_sfc(st_bbox(municipios_union))
@@ -74,7 +74,7 @@ st_write(municipios_union_bbox, st, delete_dsn = TRUE)
 # OSM data ----------------------------------------------------------------
 
 # Road network exported using Hot Exports Tool, https://export.hotosm.org/exports/4782f0b8-6778-4c0e-8e4f-97fc62e7f240, to generate .pbf file for r5r
-road_network <- st_read("/data/IMPT/geo/IMPT_Road_network.gpkg")
+road_network <- impt_read("/geo/IMPT_Road_network.gpkg")
 
 # # filter main roads
 # 1-4
@@ -329,8 +329,8 @@ assertthat::assert_that(sum(trips_freguesias_2016$Car) == sum(trips_freguesias_2
 assertthat::assert_that(sum(trips_freguesias_2016$PTransit) == sum(trips_freguesias_2024$PTransit))
 assertthat::assert_that(sum(trips_freguesias_2016$Other) == sum(trips_freguesias_2024$Other))
 
-saveRDS(trips_freguesias_2024, "/data/IMPT/trips/TRIPSmode_freguesias_2024.Rds")
-trips_freguesias_2024 <- readRDS("/data/IMPT/trips/TRIPSmode_freguesias_2024.Rds")
+impt_write(trips_freguesias_2024, "/trips/TRIPSmode_freguesias_2024.Rds")
+trips_freguesias_2024 <- impt_read("/trips/TRIPSmode_freguesias_2024.Rds")
 
 
 # Jittering ---------------------------------------------------------------
@@ -366,7 +366,7 @@ od_freguesias_jittered_id <- od_freguesias_jittered
 od_freguesias_jittered_id$id <- 1:nrow(od_freguesias_jittered_id)
 
 impt_write(od_freguesias_jittered_id, "/trips/od_freguesias_jittered_2024.gpkg")
-od_freguesias_jittered_id <- st_read("/data/IMPT/trips/od_freguesias_jittered_2024.gpkg")
+od_freguesias_jittered_id <- impt_read("/trips/od_freguesias_jittered_2024.gpkg")
 
 
 ## Origins and Destinations as points
@@ -405,8 +405,8 @@ od_freguesias_jittered_DE_geo <- st_as_sf(od_freguesias_jittered_DE,
 
 impt_write(od_freguesias_jittered_OR_geo, "/trips/od_freguesias_jittered200_OR.gpkg")
 impt_write(od_freguesias_jittered_DE_geo, "/trips/od_freguesias_jittered200_DE.gpkg")
-od_freguesias_jittered_OR_geo <- st_read("/data/IMPT/trips/od_freguesias_jittered200_OR.gpkg")
-od_freguesias_jittered_DE_geo <- st_read("/data/IMPT/trips/od_freguesias_jittered200_DE.gpkg")
+od_freguesias_jittered_OR_geo <- impt_read("/trips/od_freguesias_jittered200_OR.gpkg")
+od_freguesias_jittered_DE_geo <- impt_read("/trips/od_freguesias_jittered200_DE.gpkg")
 
 
 # Census 21 data ----------------------------------------------------------
@@ -416,7 +416,7 @@ od_freguesias_jittered_DE_geo <- st_read("/data/IMPT/trips/od_freguesias_jittere
 # temp <- "/data/IMPT/original/census2021.zip"
 # download.file(ceunsus_url, temp, mode = "wb")
 # unzip(temp, exdir = "/data/IMPT/original/")
-Census21_BGRI <- st_read("/data/IMPT/original/BGRI21_170.gpkg")
+Census21_BGRI <- impt_read("/original/BGRI21_170.gpkg")
 
 census21_fregmun <- Census21_BGRI |>
   st_drop_geometry() |>
@@ -468,7 +468,7 @@ census_points24 <- census_points21 |>
 
 # save
 impt_write(census_points24, "/geo/census24_points.gpkg")
-census_points24 <- st_read("/data/IMPT/geo/census24_points.gpkg")
+census_points24 <- impt_read("/geo/census24_points.gpkg")
 
 # auxiliary table for freguesias and municipios with no data lost (no geom)
 conversion_dicofre_weight <- readRDS("useful_data/dicofre_16_24_conversion_full_with_weights.Rds")
@@ -853,7 +853,7 @@ mapview::mapview(detailed_transit, zcol = "mode")
 # Keep using the TML grid, or produce a new one, replicable, with h3?
 # https://u-shift.github.io/Traffic-Simulation-Models/pois.html#hexagonal-using-h3jsr
 
-grelha_tml <- sf::st_read("/data/IMPT/BaseDados_PMMUS/Grelha/GrelhaHexagAML/GrelhaHexagAML.shp")
+grelha_tml <- sf::impt_read("/BaseDados_PMMUS/Grelha/GrelhaHexagAML/GrelhaHexagAML.shp")
 mapview(grelha_tml)
 nrow(grelha_tml)
 grelha_tml_centroids <- st_centroid(grelha_tml)
@@ -895,9 +895,9 @@ h3_index <- GRID_h3 |> st_drop_geometry() # save h3_address for later
 mapview(GRID_h3)
 
 # impt_write(GRID_h3 |> select(id), "/geo/grelha_h3_r8.gpkg")
-# saveRDS(h3_index, "/data/IMPT/geo/grelha_h3_r8_index.Rds")
+# impt_write(h3_index, "/geo/grelha_h3_r8_index.Rds")
 impt_write(GRID_h3 |> select(id), "/geo/grelha_h3_r9.gpkg")
-saveRDS(h3_index, "/data/IMPT/geo/grelha_h3_r9_index.Rds")
+impt_write(h3_index, "/geo/grelha_h3_r9_index.Rds")
 
 
 # # Hex manual

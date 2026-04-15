@@ -41,7 +41,6 @@ r5r_network
 # fare_single <- r5r::read_fare_structure(fare_stucture_single_file)
 
 # set r5r parameters
-# root_folder = "/data/IMPT"
 root_folder <- "data" # Set to "/data/IMPT/ when running at server.ushift.pt, or "data" when running locally
 points <- points_h3
 nrow(points) # 3686 - this is the res 8 h3 grid, and 25890 for res 9
