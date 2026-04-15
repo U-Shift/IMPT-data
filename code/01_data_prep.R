@@ -677,7 +677,8 @@ for (i in 1:nrow(gtfs_db)) {
 
 # Get all AML PT stops
 library(tidytransit)
-gtfs_paths <- list.files(IMPT_URL("/gtfs/processed"), pattern = "\\.zip$", full.names = TRUE)
+# Attention! Make sure to addapt the path to your local repo if you are not working at ushift@alfa!
+gtfs_paths <- list.files("/data/gtfs/processed", pattern = "\\.zip$", full.names = TRUE)
 pois_transit <- data.frame()
 pois_transit_headways <- data.frame()
 for (i in gtfs_paths) {

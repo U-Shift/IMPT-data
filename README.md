@@ -2,22 +2,18 @@
 
 This repository aims to document the data treatment and processing steps for the IMPT (Insert Meaningful Project Title) calculation.
 
-## Data 
+## Data
 
-## Load
+Due to GitHub data storage restrictions, data is ignored by git control version and is stored instead at ushift@alfa server in `/data/IMPT`.
 
-Please use `data_load.R` to load the already preprocessed data.
+To access it, use `impt_read(<file path>)` where `<file path>` is relative to `/data/IMPT`.
 
-### Access
+To store it, use `impt_write(<data>, <file path>)` where `<file path>` is relative to `/data/IMPT`.
 
-Data should be stored in the `/data/IMPT` directory at `ushift@alfa` server. 
-For this reason, the usage of https://server.ushift.pt/rstudio/ is recommended to work with this repository.
+> When working locally, these methods automatically detect you are not working at ushift@alfa and read data remotelly from there. Writting will be handled locally and should be uploaded to the server manually. Nevertheless, both methods log information about where the data is being read from or written to and warn you when manual upload is required.
 
-To run locally, use `IMPT_URL(<file path>)`, with a file path relative to `/data/IMPT`. This method is defined at `code/data_load.R`
-and allows to read data directly from the remote server. It requires the environment variable `IMPT_SERVER_KEY` to be set with 
+> To access the data remotelly, environment variable `IMPT_SERVER_KEY` is required to be set with 
 the authorization key (run `usethis::edit_r_environ()` to set it and make sure to restart R before using it, with CTRL+F10).
-
-If you run locally, please make sure to upload relevant outputs to the remote server!
 
 ### Permissions
 

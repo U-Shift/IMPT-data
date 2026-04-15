@@ -11,8 +11,8 @@ library(readr)
 library(stringr)
 
 # 0. Load external data ---------------------------------------------------
-municipios_id <- read_csv("useful_data/municipios_id.csv")
-grid_freg_mun <- read_csv("useful_data/grid_nuts.csv")
+municipios_id <- read.csv("useful_data/municipios_id.csv")
+grid_freg_mun <- read.csv("useful_data/grid_nuts.csv")
 
 # ── 1. Data Definitions & Imports ─────────────────────────────────────────────
 
@@ -21,12 +21,7 @@ trips_commuting_year <- 250 # 250 working days per year (weekends excluded)
 
 ##### car occupancy rate and mobile population, by freguesia ####
 # occupancy rate for car by municipality (IMOB_2017_AML.xlsx, sheet "Quadro IV.7 >> Taxa de ocupação dos automóveis por município de residência")
-occ_rate_car_freg <- readr::read_delim(
-  IMPT_URL("/trips/imob_taxa_occ_auto.csv"),
-  # delim = "\t",
-  escape_double = FALSE,
-  trim_ws = TRUE
-) |>
+occ_rate_car_freg <- impt_read("trips/imob_taxa_occ_auto.csv") |>
   left_join(municipios_id, by = c("Municipio" = "municipio")) |>
   # mutate(mun_id = as.character(mun_id)) |>
   select(-Municipio) |>
@@ -38,12 +33,7 @@ occ_rate_car_freg <- readr::read_delim(
   )
 
 # mobile population by municipality (IMOB_2017_AML.xlsx, sheet "Quadro II.1 >> População móvel por município de residência")
-pop_movel_freg <- readr::read_delim(
-  IMPT_URL("/trips/imob_populacao_movel.csv"),
-  delim = "\t",
-  escape_double = FALSE,
-  trim_ws = TRUE
-) |>
+pop_movel_freg <- impt_read("trips/imob_populacao_movel.csv", csv_sep = "\t") |>
   left_join(municipios_id, by = c("Municipio" = "municipio")) |>
   # mutate(mun_id = as.character(mun_id)) |>
   select(-Municipio) |>
@@ -234,12 +224,7 @@ grid_freg_mun <- read.csv("useful_data/grid_nuts.csv")
 
 # car occupancy rate by grid
 # occupancy rate for car by municipality (IMOB_2017_AML.xlsx, sheet "Quadro IV.7 >> Taxa de ocupação dos automóveis por município de residência")
-occ_rate_car_grid <- readr::read_delim(
-  IMPT_URL("/trips/imob_taxa_occ_auto.csv"),
-  # delim = "\t",
-  escape_double = FALSE,
-  trim_ws = TRUE
-) |>
+occ_rate_car_grid <- impt_read("trips/imob_taxa_occ_auto.csv") |>
   left_join(municipios_id, by = c("Municipio" = "municipio")) |>
   # mutate(mun_id = as.character(mun_id)) |>
   select(-Municipio) |>
@@ -250,12 +235,7 @@ occ_rate_car_grid <- readr::read_delim(
     grid_id = as.integer(grid_id)
   )
 # mobile population by municipality (IMOB_2017_AML.xlsx, sheet "Quadro II.1 >> População móvel por município de residência")
-pop_movel_grid <- readr::read_delim(
-  IMPT_URL("/trips/imob_populacao_movel.csv"),
-  delim = "\t",
-  escape_double = FALSE,
-  trim_ws = TRUE
-) |>
+pop_movel_grid <- impt_read("trips/imob_populacao_movel.csv", csv_sep = "\t") |>
   left_join(municipios_id, by = c("Municipio" = "municipio")) |>
   # mutate(mun_id = as.character(mun_id)) |>
   select(-Municipio) |>

@@ -1118,33 +1118,6 @@ write.csv(Final_Results_Master_grid_walk, "/data/IMPT/impt/results/IMPT_PCA_and_
 library(mapview)
 freguesias # Read from 00_data_load.R
 
-# DATA_LOCATION = "https://impt.server.ushift.pt" # When running locally, get data from remote server
-# API_KEY = Sys.getenv("IMPT_DATA_KEY") # Set it using usethis::edit_r_environ(), followed by CTRL+F10
-#
-# IMPT_URL = function(path) {
-#   # If does not start with "/", add it
-#   if (!startsWith(path, "/")) {
-#     path = paste0("/", path)
-#   }
-#   local_path = sprintf("%s%s", DATA_LOCATION, path)
-#   # If data location starts with "http", add api key to url
-#   if (startsWith(DATA_LOCATION, "http")) {
-#     # If API_KEY empty or not defined, throw error
-#     if (API_KEY == "") {
-#       stop("IMPT_DATA_KEY env var is not defined. Please set it using usethis::edit_r_environ() and restart R.")
-#     }
-#     return(sprintf("%s%s?key=%s", DATA_LOCATION, path, API_KEY))
-#   } else {
-#     # If local folder does not exist, create, recursively if needed
-#     if (!dir.exists(dirname(local_path))) {
-#       dir.create(dirname(local_path), recursive = TRUE)
-#     }
-#   }
-#   # Otherwise, return local path
-#   return(local_path)
-# }
-
-
 # IMPT PCA and Entropy scores
 # impt_pca = impt_read("results_aggregated/20260330/IMPT_PCA_and_Entropy_Scores.csv")
 impt_pca <- read.csv("/data/IMPT/impt/results/IMPT_PCA_and_Entropy_Scores_freguesia.csv")

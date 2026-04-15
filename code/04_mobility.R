@@ -22,7 +22,8 @@ openrouteservice::ors_api_key("AMwi5LU1NCe1ERyQuUHTe2pulOFKcdq0=")
 
 
 # Start by getting all PT stops in AML
-gtfs_paths <- list.files(IMPT_URL("/gtfs/processed"), pattern = "\\.zip$", full.names = TRUE)
+# Attention! Must be run at ushift@alfa, or addapted to use local (make sure to upload to server after)
+gtfs_paths <- list.files("/data/gtfs/processed", pattern = "\\.zip$", full.names = TRUE)
 all_stops <- list()
 for (i in gtfs_paths) {
   gtfs_original <- tidytransit::read_gtfs(i)
@@ -114,7 +115,7 @@ impt_write(grid_by_stops, "/mobility/grid_stops_coverage.csv")
 grid_shared_mob <- grid
 freguesias_shared_mob <- freguesias
 municipios_shared_mob <- municipios
-aml_shared_mobility <- st_read(IMPT_URL("/BaseDados_PMMUS/11-ModosPartilhados/11 - ModosPartilhados.gpkg"), layer = "Pontos-partilha_amL") |>
+aml_shared_mobility <- impt_read(URLencode("/BaseDados_PMMUS/11-ModosPartilhados/11 - ModosPartilhados.gpkg"), st_layer = "Pontos-partilha_amL") |>
   st_transform(st_crs(grid_shared_mob))
 # mapview(aml_shared_mobility)
 # Get number of shared mobility locations for different scales

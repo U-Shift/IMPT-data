@@ -142,9 +142,9 @@ mapview(mun_stats_gap_sf, zcol = "relative_gap_bike_time")
 
 # Export ------------------------------------------------------------------
 output_dir <- "/mobility_commuting"
-impt_write(hex_stats_gap, sprintf("%s/grid_accessibility_gap_time.csv", output_dir)
-impt_write(freg_stats_gap, sprintf("%s/freg_accessibility_gap_time.csv", output_dir)
-impt_write(mun_stats_gap, sprintf("%s/mun_accessibility_gap_time.csv", output_dir)
+impt_write(hex_stats_gap, sprintf("%s/grid_accessibility_gap_time.csv", output_dir))
+impt_write(freg_stats_gap, sprintf("%s/freg_accessibility_gap_time.csv", output_dir))
+impt_write(mun_stats_gap, sprintf("%s/mun_accessibility_gap_time.csv", output_dir))
 
 # impt_write(freg_stats_gap_sf, sprintf("%s/freg_stats_gap.gpkg", output_dir)
 # impt_write(mun_stats_gap_sf, sprintf("%s/mun_stats_gap.gpkg",  output_dir)
@@ -159,15 +159,15 @@ impt_write(mun_stats_gap, sprintf("%s/mun_accessibility_gap_time.csv", output_di
 # total_money is already the trip-weighted mean cost per origin grid cell.
 # Produced by 04_mobility_costs_money_car.R and 04_mobility_costs_money_pt.R.
 
-money_dir <- IMPT_URL("mobility_money_costs")
+money_dir <- "mobility_money_costs"
 
-costs_car_grid <- read.csv(file.path(money_dir, "grid_commuting_money_car.csv")) |>
+costs_car_grid <- impt_read(file.path(money_dir, "grid_commuting_money_car.csv")) |>
   rename(cost_car = total_money, trips_car = trips) |>
   select(id_grid_origin, cost_car, trips_car) |>
   mutate(id_grid_origin = as.character(id_grid_origin))
 summary(costs_car_grid) # max 39.9
 
-costs_pt_grid <- read.csv(file.path(money_dir, "grid_commuting_money_pt_single_fare.csv")) |> # we are using single fare, can change for navegante
+costs_pt_grid <- impt_read(file.path(money_dir, "grid_commuting_money_pt_single_fare.csv")) |> # we are using single fare, can change for navegante
   rename(cost_pt = total_money, trips_pt = trips) |>
   select(id_grid_origin, cost_pt, trips_pt) |>
   mutate(id_grid_origin = as.character(id_grid_origin))
@@ -282,6 +282,6 @@ mapview(mun_stats_gap_money_sf, zcol = "cost_gap")
 mapview(mun_stats_gap_money_sf, zcol = "relative_gap_cost")
 
 # Export ------------------------------------------------------------------
-impt_write(hex_stats_gap_money, sprintf("%s/grid_accessibility_gap_money.csv", output_dir)
-impt_write(freg_stats_gap_money, sprintf("%s/freg_accessibility_gap_money.csv", output_dir)
-impt_write(mun_stats_gap_money, sprintf("%s/mun_accessibility_gap_money.csv", output_dir)
+impt_write(hex_stats_gap_money, sprintf("%s/grid_accessibility_gap_money.csv", output_dir))
+impt_write(freg_stats_gap_money, sprintf("%s/freg_accessibility_gap_money.csv", output_dir))
+impt_write(mun_stats_gap_money, sprintf("%s/mun_accessibility_gap_money.csv", output_dir))

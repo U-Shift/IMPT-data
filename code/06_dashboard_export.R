@@ -78,8 +78,6 @@ print(session)
 # impt_write(freguesias, "dashboard_data/freguesias.gpkg")
 # impt_write(municipios, "dashboard_data/municipios.gpkg")
 
-# DATA_LOCATION <- "https://impt.server.ushift.pt" # To get data from server
-
 grid <- impt_read("/dashboard_data/grid.gpkg")
 freguesias <- impt_read("/dashboard_data/freguesias.gpkg")
 municipios <- impt_read("/dashboard_data/municipios.gpkg")
@@ -700,18 +698,18 @@ for (d in dimensions) {
 }
 
 # 4. Export to geojson -------------------------------------------------
-DATA_LOCATION <- "data/" # To store locally
 output_dir <- "dashboard_data"
 
-impt_write(grid_aggregated, paste(output_dir, "grid_aggregated.geojson", sep = "/")
-impt_write(freguesias_aggregated, paste(output_dir, "freguesias_aggregated.geojson", sep = "/")
-impt_write(municipios_aggregated, paste(output_dir, "municipios_aggregated.geojson", sep = "/")
+output_location <- impt_write(grid_aggregated, paste(output_dir, "grid_aggregated.geojson", sep = "/"))
+impt_write(freguesias_aggregated, paste(output_dir, "freguesias_aggregated.geojson", sep = "/"))
+impt_write(municipios_aggregated, paste(output_dir, "municipios_aggregated.geojson", sep = "/"))
 
-impt_write(grid_aggregated |> st_drop_geometry(), paste(output_dir, "grid_aggregated.csv", sep = "/")
-impt_write(freguesias_aggregated |> st_drop_geometry(), paste(output_dir, "freguesias_aggregated.csv", sep = "/")
-impt_write(municipios_aggregated |> st_drop_geometry(), paste(output_dir, "municipios_aggregated.csv", sep = "/")
+impt_write(grid_aggregated |> st_drop_geometry(), paste(output_dir, "grid_aggregated.csv", sep = "/"))
+impt_write(freguesias_aggregated |> st_drop_geometry(), paste(output_dir, "freguesias_aggregated.csv", sep = "/"))
+impt_write(municipios_aggregated |> st_drop_geometry(), paste(output_dir, "municipios_aggregated.csv", sep = "/"))
 
-jsonlite::write_json(champions_list, IMPT_URL(paste(output_dir, "champions.json", sep = "/")), pretty = TRUE, auto_unbox = TRUE)
+json_str <- jsonlite::toJSON(champions_list, auto_unbox = TRUE, pretty = TRUE)
+impt_write(json_str, paste(output_dir, "champions.json", sep = "/"))
 
 length(names(grid_aggregated)) # 831
 length(names(freguesias_aggregated)) # 1057
@@ -731,18 +729,14 @@ grid_names <- names(grid_aggregated) |> data.frame()
 #   # Filter those that contain "affordability"
 #   names()
 
-# Upload to GitHub release ------------------------------------------------
-# piggyback::pb_upload(IMPT_URL(paste(output_dir, "grid_aggregated.geojson", sep="/")), repo="u-shift/IMPT-data", tag="latest")
-# piggyback::pb_upload(IMPT_URL(paste(output_dir, "freguesias_aggregated.geojson", sep="/")), repo="u-shift/IMPT-data", tag="latest")
-# piggyback::pb_upload(IMPT_URL(paste(output_dir, "municipios_aggregated.geojson", sep="/")), repo="u-shift/IMPT-data", tag="latest")
-
 # Upload to IST server for dashboard  ----------------------------------------------------
+output_location <- dirname(output_location)
 files <- c(
   "grid_aggregated.geojson", "freguesias_aggregated.geojson", "municipios_aggregated.geojson",
   "grid_aggregated.csv", "freguesias_aggregated.csv", "municipios_aggregated.csv"
 )
 for (f in files) {
-  scp_upload(session, IMPT_URL(paste(output_dir, f, sep = "/")), to = paste("/afs/.ist.utl.pt/groups/ushift/web/content/impt", f, sep = "/"))
+  scp_upload(session, paste(output_location, f, sep = "/"), to = paste("/afs/.ist.utl.pt/groups/ushift/web/content/impt", f, sep = "/"))
 }
-scp_upload(session, IMPT_URL(paste(output_dir, "champions.json", sep = "/")), to = paste("/afs/.ist.utl.pt/groups/ushift/web/content/impt", "champions.json", sep = "/"))
-# scp_upload(session, IMPT_URL("/geo/cos_builtarea.geojson"), to = paste("/afs/.ist.utl.pt/groups/ushift/web/content/impt", "cos_builtarea.geojson", sep = "/"))
+scp_upload(session, paste(output_location, "champions.json", sep = "/"), to = paste("/afs/.ist.utl.pt/groups/ushift/web/content/impt", "champions.json", sep = "/"))
+# scp_upload(session, "/data/geo/cos_builtarea.geojson", to = paste("/afs/.ist.utl.pt/groups/ushift/web/content/impt", "cos_builtarea.geojson", sep = "/"))

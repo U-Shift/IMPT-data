@@ -11,7 +11,7 @@ library(tidyr)
 # When working at ushift@alfa, reads and writes at /data/IMPT folder
 # When working at other machine, reads from ushift@alfa through https and writes to <local_repo>/data folder
 
-impt_read <- function(path, root = NULL) {
+impt_read <- function(path, root = NULL, csv_sep = ",", st_layer = NULL, write_to = NULL) {
     # If does not start with "/", add it
     if (!startsWith(path, "/")) {
         path <- paste0("/", path)
@@ -37,10 +37,22 @@ impt_read <- function(path, root = NULL) {
     file_path <- paste(path_root, path, path_append, sep = "")
     message(sprintf("Downloading file from %s...", file_path))
     if (grepl(".csv", file_path, ignore.case = TRUE)) {
-        return(read.csv(file_path))
+        content <- readr::read_delim(file_path, delim = csv_sep, show_col_types = FALSE)
+        if (!is.null(write_to)) {
+            impt_write(content, write_to)
+        }
+        return(content)
     }
     if (grepl(".geojson", file_path, ignore.case = TRUE) | grepl(".gpkg", file_path, ignore.case = TRUE)) {
-        return(sf::st_read(file_path))
+        if (!is.null(st_layer)) {
+            content <- sf::st_read(file_path, layer = st_layer)
+        } else {
+            content <- sf::st_read(file_path)
+        }
+        if (!is.null(write_to)) {
+            impt_write(content, write_to)
+        }
+        return(content)
     }
     if (grepl(".rds", file_path, ignore.case = TRUE) | grepl(".Rds", file_path, ignore.case = TRUE)) {
         if (grepl("^http", file_path, ignore.case = TRUE)) {
@@ -48,7 +60,18 @@ impt_read <- function(path, root = NULL) {
             download.file(file_path, file_local, quiet = TRUE, mode = "wb")
             file_path <- file_local
         }
-        return(readRDS(file_path))
+        content <- readRDS(file_path)
+        if (!is.null(write_to)) {
+            impt_write(content, write_to)
+        }
+        return(content)
+    }
+    # If write_to, download file and return its local path
+    if (!is.null(write_to)) {
+        destination <- file.path(write_to, basename(path))
+        message(sprintf("Storing file at %s...", destination))
+        download.file(file_path, destination)
+        return(destination)
     }
     # If got here, throw error, as file format is not supported
     stop("Invalid file extension! Consult the IMPT team to improve this method!")
@@ -86,13 +109,25 @@ impt_write <- function(content, path, root = NULL) {
         warning("File path already exists, overwritting...")
     }
     if (grepl(".csv", file_path, ignore.case = TRUE)) {
-        return(write.csv(content, file_path, row.names = FALSE))
+        write.csv(content, file_path, row.names = FALSE)
+        return(file_path)
     }
     if (grepl(".geojson", file_path, ignore.case = TRUE) | grepl(".gpkg", file_path, ignore.case = TRUE)) {
-        return(sf::st_write(content, file_path, delete_dsn = TRUE))
+        sf::st_write(content, file_path, delete_dsn = TRUE)
+        return(file_path)
     }
     if (grepl(".rds", file_path, ignore.case = TRUE) | grepl(".Rds", file_path, ignore.case = TRUE)) {
-        return(saveRDS(content, file_path))
+        saveRDS(content, file_path)
+        return(file_path)
+    }
+    if (grepl(".json", file_path, ignore.case = TRUE)) {
+        # Consider content a json string
+        if (is.character(content)) {
+            writeLines(content, con = file_path)
+            return(file_path)
+        }
+        jsonlite::write_json(content, file_path, auto_unbox = TRUE, pretty = TRUE)
+        return(file_path)
     }
     # If got here, throw error, as file format is not supported
     stop("Invalid file extension! Consult the IMPT team to improve this method!")

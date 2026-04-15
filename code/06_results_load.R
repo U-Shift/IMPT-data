@@ -1,30 +1,3 @@
-# All .csv files should be available as .csv with the same name!
-
-DATA_LOCATION <- "/data/IMPT" # When running at server.ushift.pt, use server local data
-
-IMPT_URL <- function(path) {
-  # If does not start with "/", add it
-  if (!startsWith(path, "/")) {
-    path <- paste0("/", path)
-  }
-  local_path <- sprintf("%s%s", DATA_LOCATION, path)
-  # If data location starts with "http", add api key to url
-  if (startsWith(DATA_LOCATION, "http")) {
-    # If API_KEY empty or not defined, throw error
-    if (API_KEY == "") {
-      stop("IMPT_DATA_KEY env var is not defined. Please set it using usethis::edit_r_environ() and restart R.")
-    }
-    return(sprintf("%s%s?key=%s", DATA_LOCATION, path, API_KEY))
-  } else {
-    # If local folder does not exist, create, recursively if needed
-    if (!dir.exists(dirname(local_path))) {
-      dir.create(dirname(local_path), recursive = TRUE)
-    }
-  }
-  # Otherwise, return local path
-  return(local_path)
-}
-
 # Accessibility  -------------------------------------------------
 
 freguesia_accessibility <- impt_read("/accessibility/r8/accessibility_freguesia.csv")

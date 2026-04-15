@@ -6,9 +6,6 @@
 library(mapview)
 
 output_dir <- "/mobility_costs/r8"
-if (!dir.exists(IMPT_URL(output_dir))) {
-  dir.create(IMPT_URL(output_dir), recursive = TRUE)
-}
 
 # Travel time matrix ---------------------------------------------------------------
 # Defined in 04_accessibility.R
@@ -69,7 +66,7 @@ for (i in 1:length(pois_list)) {
     ncolname <- paste("n_", pois_name, sep = "")
     grid_points_mode <- grid_points_mode |> rename(!!ncolname := sym(pois_name))
     # mapview(grid |> left_join(grid_points_mode), zcol = ncolname)
-    impt_write(grid_points_mode, sprintf("%s/%s.csv", output_dir, colname)
+    impt_write(grid_points_mode, sprintf("%s/%s.csv", output_dir, colname))
     message(paste(">>> Saved result for", colname, ", procedding with next..."))
   }
 }
@@ -191,12 +188,12 @@ for (i in 1:length(accessibility_measures)) {
   }
 }
 
-impt_write(freguesia_mobility, sprintf("%s/mobility_freguesia.gpkg", output_dir)
-impt_write(freguesia_mobility |> st_drop_geometry(), sprintf("%s/mobility_freguesia.csv", output_dir)
-impt_write(municipio_mobility, sprintf("%s/mobility_municipio.gpkg", output_dir)
-impt_write(municipio_mobility |> st_drop_geometry(), sprintf("%s/mobility_municipio.csv", output_dir)
-impt_write(grid_mobility, sprintf("%s/mobility_grid.gpkg", output_dir)
-impt_write(grid_mobility |> st_drop_geometry(), sprintf("%s/mobility_grid.csv", output_dir)
+impt_write(freguesia_mobility, sprintf("%s/mobility_freguesia.gpkg", output_dir))
+impt_write(freguesia_mobility |> st_drop_geometry(), sprintf("%s/mobility_freguesia.csv", output_dir))
+impt_write(municipio_mobility, sprintf("%s/mobility_municipio.gpkg", output_dir))
+impt_write(municipio_mobility |> st_drop_geometry(), sprintf("%s/mobility_municipio.csv", output_dir))
+impt_write(grid_mobility, sprintf("%s/mobility_grid.gpkg", output_dir))
+impt_write(grid_mobility |> st_drop_geometry(), sprintf("%s/mobility_grid.csv", output_dir))
 #
 # mapview(freguesia_mobility, zcol = "mobility_cost_health_walk_n1_residents")
 # mapview(freguesia_mobility, zcol = "mobility_cost_health_walk_n1_elder")
