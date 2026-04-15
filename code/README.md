@@ -10,7 +10,8 @@ The scripts are naturally organized in a sequential data processing pipeline. To
 
 These scripts set up the environment and prepare base spatial or demographic datasets.
 
-- **`00_data_load.R`**: Helper script that sets up global settings like data paths and defines functions to load and download datasets remotely. It handles the initial referencing for geometries and statistical data.
+- **`00a_impt_data_handle.R`**: Helper script that sets up method to access and manage data.
+- **`00b_data_load.R`**: Helper script that sets up useful global variables that are used across the entire pipeline. 
 - **`01_data_prep.R`**: Core geometry preparation script. It handles administrative boundaries, road network downloading and filtering, processes OSM point of interest (POI) layers, parses GTFS transit routes, sets up the origins and destinations (via jittering), and prepares the building footprints.
 
 ### Phase 2: Socio-Demographics and Land Use
