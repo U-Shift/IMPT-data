@@ -38,9 +38,9 @@ library(mapview)
 
 # with grid ---------------------------------------------------------------
 
-cos_residential_aml <- st_read(IMPT_URL("/geo/cos_residential_aml.gpkg"))
-grid <- st_read(IMPT_URL("/geo/grelha_h3_r8.gpkg"))
-census_bgri <- st_read(IMPT_URL("/original/BGRI21_170.gpkg"))
+cos_residential_aml <- impt_read("/geo/cos_residential_aml.gpkg")
+grid <- impt_read("/geo/grelha_h3_r8.gpkg")
+census_bgri <- impt_read("/original/BGRI21_170.gpkg")
 
 mapview(cos_residential_aml, zcol = "COS23_n4_L") +
   mapview(grid, alpha = 0.3)
@@ -191,4 +191,3 @@ st_write(grid_final, IMPT_URL("/landuse/grid_with_cos.gpkg"), delete_dsn = TRUE)
 write.csv(grid_final |> st_drop_geometry(), IMPT_URL("/landuse/grid_with_cos.csv"), row.names = FALSE)
 
 st_write(cos_clean |> st_transform(4326), IMPT_URL("/geo/cos_builtarea.geojson"), delete_dsn = TRUE)
-

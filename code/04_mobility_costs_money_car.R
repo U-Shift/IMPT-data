@@ -93,7 +93,7 @@ for (folder in list.dirs(folder_name, recursive = FALSE)) {
 # For each itinerary, compute costs -------------------------------------------------
 
 # library(purrr) # for map()
-mobility_itineraries <- readRDS_remote(IMPT_URL("mobility_itineraries/itinerary_car_120min.rds")) |>
+mobility_itineraries <- impt_read("mobility_itineraries/itinerary_car_120min.rds") |>
   mutate(
     # Remove "[" and "]" and split by ",", casting to int
     osm_id_list_int = str_remove_all(osm_id_list, "\\[|\\]") |>
@@ -201,7 +201,7 @@ write.csv(mobility_itineraries_costs |> select(-osm_id_list_int, -geometry), IMP
 
 
 # Aggregate by parish and municipality  -------------------------------------------------
-mobility_itineraries_costs <- read.csv(IMPT_URL("mobility_money_costs/mobility_itineraries_costs_car.csv"))
+mobility_itineraries_costs <- impt_read("mobility_money_costs/mobility_itineraries_costs_car.csv")
 mobility_itineraries_costs_grid <- jittering_grid |>
   select(-Origin_dicofre24, -Destination_dicofre24, -trips) |>
   left_join(mobility_itineraries_costs, by = c("id" = "from_id")) |>

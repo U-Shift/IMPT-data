@@ -13,77 +13,79 @@ library(mapview)
 # temp <- "/data/IMPT/original/caop2024.zip"
 # download.file(link_DGT, temp, mode = "wb")
 # unzip(temp, exdir = "/data/IMPT/original/")
-CAOP_PT = st_read("/data/IMPT/original/Continente_CAOP2024_1.gpkg")
+CAOP_PT <- st_read("/data/IMPT/original/Continente_CAOP2024_1.gpkg")
 
 # selecionar apenas NUT II Lisboa
-CAOP_GLPS = CAOP_PT |> 
+CAOP_GLPS <- CAOP_PT |>
   filter(nuts2 %in% c("Grande Lisboa", "Península de Setúbal")) |>
-  select(-id, -nuts1, -nuts3, - tipo_area_administrativa, -distrito_ilha, -perimetro_km) |>
+  select(-id, -nuts1, -nuts3, -tipo_area_administrativa, -distrito_ilha, -perimetro_km) |>
   st_transform(crs = 4326)
 names(CAOP_GLPS)
 
-# recortar freguesias de Lisboa para remover rio 
-freguesias_lx_recortadas = st_read("/data/IMPT/mqat/FREGUESIASgeo.gpkg") |> 
-  left_join(readRDS("/data/IMPT/mqat/Metadata_Freguesias.Rds") |> select(Dicofre, Freguesia), by="Dicofre") |>
+# recortar freguesias de Lisboa para remover rio
+freguesias_lx_recortadas <- st_read("/data/IMPT/mqat/FREGUESIASgeo.gpkg") |>
+  left_join(readRDS("/data/IMPT/mqat/Metadata_Freguesias.Rds") |> select(Dicofre, Freguesia), by = "Dicofre") |>
   filter(Concelho == "Lisboa") |>
-  select(Dicofre, geom) |> 
-  rename(dtmnfr=Dicofre) |> 
-  left_join(CAOP_GLPS |> sf::st_drop_geometry(), by="dtmnfr")
+  select(Dicofre, geom) |>
+  rename(dtmnfr = Dicofre) |>
+  left_join(CAOP_GLPS |> sf::st_drop_geometry(), by = "dtmnfr")
 
-CAOP_GLPS = CAOP_GLPS |> 
-  filter(municipio != "Lisboa") |> 
+CAOP_GLPS <- CAOP_GLPS |>
+  filter(municipio != "Lisboa") |>
   rbind(freguesias_lx_recortadas)
 
 # For freguesias with multiple polygons, choose the one with greatest area_ha, without loosing other attributes
-CAOP_GLPS_UNIQUE_dtmnfr = CAOP_GLPS |> 
+CAOP_GLPS_UNIQUE_dtmnfr <- CAOP_GLPS |>
   group_by(dtmnfr) |>
-  slice_max(order_by = area_ha, n=1, with_ties = FALSE) |>
+  slice_max(order_by = area_ha, n = 1, with_ties = FALSE) |>
   ungroup()
 
-freguesias = CAOP_GLPS_UNIQUE_dtmnfr
+freguesias <- CAOP_GLPS_UNIQUE_dtmnfr
 
 # mapview(CAOP_GLPS)
 # View(CAOP_GLPS)
 
 st_write(CAOP_GLPS, "/data/IMPT/geo/freguesias_2024.gpkg", delete_dsn = TRUE)
 st_write(CAOP_GLPS_UNIQUE_dtmnfr, "/data/IMPT/geo/freguesias_2024_unique.gpkg", delete_dsn = TRUE)
-freguesias = st_read("/data/IMPT/geo/freguesias_2024_unique.gpkg")
+freguesias <- st_read("/data/IMPT/geo/freguesias_2024_unique.gpkg")
 
 # group sf by municipio
-municipios = CAOP_GLPS |> 
+municipios <- CAOP_GLPS |>
   group_by(municipio) |>
   summarise(geometry = st_union(geom)) |>
   st_transform(crs = 4326)
-municipios = municipios [-6, ] # Remove strange Lisbon
+municipios <- municipios[-6, ] # Remove strange Lisbon
 
 # mapview(municipios)
 st_write(municipios, "/data/IMPT/geo/municipios_2024.gpkg", delete_dsn = TRUE)
-municipios = st_read("/data/IMPT/geo/municipios_2024.gpkg")
+municipios <- st_read("/data/IMPT/geo/municipios_2024.gpkg")
 
 # for the whole limit (to HOT export tool)
-municipios_union = municipios |> sf::st_union() |> sf::st_make_valid()
+municipios_union <- municipios |>
+  sf::st_union() |>
+  sf::st_make_valid()
 st_write(municipios_union, "/data/IMPT/geo/municipios_union_2024.geojson", delete_dsn = TRUE)
-municipios_union = st_read("/data/IMPT/geo/municipios_union_2024.geojson")
+municipios_union <- st_read("/data/IMPT/geo/municipios_union_2024.geojson")
 
 # for the bbox (to Copernicus)
-municipios_union_bbox = st_as_sfc(st_bbox(municipios_union))
+municipios_union_bbox <- st_as_sfc(st_bbox(municipios_union))
 st_write(municipios_union_bbox, st, delete_dsn = TRUE)
 
 # OSM data ----------------------------------------------------------------
 
 # Road network exported using Hot Exports Tool, https://export.hotosm.org/exports/4782f0b8-6778-4c0e-8e4f-97fc62e7f240, to generate .pbf file for r5r
-road_network = st_read("/data/IMPT/geo/IMPT_Road_network.gpkg")
+road_network <- st_read("/data/IMPT/geo/IMPT_Road_network.gpkg")
 
 # # filter main roads
 # 1-4
-road_network_main = road_network |>
+road_network_main <- road_network |>
   filter(highway %in% c("primary", "secondary", "tertiary", "trunk", "motorway")) |>
   select(osm_id, name, highway)
 mapview::mapview(road_network_main, zcol = "highway")
 
 # filter even more roads
 # 1-3
-road_network_base = road_network_main |>
+road_network_base <- road_network_main |>
   filter(!highway %in% "tertiary")
 mapview::mapview(road_network_base, zcol = "highway")
 
@@ -93,87 +95,88 @@ st_write(road_network_base, "/data/IMPT/geo/road_network_base.gpkg", delete_dsn 
 # Trips -------------------------------------------------------------------
 
 # trips_freguesias_2011 = readRDS(url("https://github.com/U-Shift/biclar/releases/download/0.0.1/TRIPSmode_freguesias.Rds"))
-trips_freguesias_2016 = readRDS(url("https://github.com/U-Shift/MQAT/raw/refs/heads/main/data/TRIPSmode_freg.Rds"))
+trips_freguesias_2016 <- readRDS(url("https://github.com/U-Shift/MQAT/raw/refs/heads/main/data/TRIPSmode_freg.Rds"))
 
-FREGUESIASgeo_2016 = readRDS(url("https://github.com/U-Shift/biclar/releases/download/0.0.1/FREGUESIASgeo.Rds"))
-trips_freguesias_2016_sf = trips_freguesias_2016 |> 
+FREGUESIASgeo_2016 <- readRDS(url("https://github.com/U-Shift/biclar/releases/download/0.0.1/FREGUESIASgeo.Rds"))
+trips_freguesias_2016_sf <- trips_freguesias_2016 |>
   select(Origin_dicofre16) |>
   distinct() |>
-  left_join(FREGUESIASgeo_2016 |> select(Dicofre), by=c("Origin_dicofre16"="Dicofre")) |>
-  st_as_sf(crs=4326)
+  left_join(FREGUESIASgeo_2016 |> select(Dicofre), by = c("Origin_dicofre16" = "Dicofre")) |>
+  st_as_sf(crs = 4326)
 
 
 ## conversion --------------------------------------------------------------
 
 # Identify freguesias that were created or removed between 2016 and 2024
-difference_created = setdiff(freguesias$dtmnfr, trips_freguesias_2016_sf$Origin_dicofre16)
-difference_removed = setdiff(trips_freguesias_2016_sf$Origin_dicofre16, freguesias$dtmnfr)
+difference_created <- setdiff(freguesias$dtmnfr, trips_freguesias_2016_sf$Origin_dicofre16)
+difference_removed <- setdiff(trips_freguesias_2016_sf$Origin_dicofre16, freguesias$dtmnfr)
 
 st_write(freguesias |> filter(dtmnfr %in% difference_created), "/data/IMPT/geo/freguesias_created_2024.geojson", delete_dsn = TRUE)
 st_write(trips_freguesias_2016_sf |> filter(Origin_dicofre16 %in% difference_removed) |> unique(), "/data/IMPT/geo/freguesias_removed_2024.geojson", delete_dsn = TRUE)
 
 
 # After QGIS inspection, manual conversion table created
-conversion_dicofre = data.frame(old=character(), new=character())
-conversion_dicofre = conversion_dicofre |> bind_rows(data.frame(old="151007", new="151008"))
-conversion_dicofre = conversion_dicofre |> bind_rows(data.frame(old="151007", new="151009"))
-conversion_dicofre = conversion_dicofre |> bind_rows(data.frame(old="151007", new="151010"))
-conversion_dicofre = conversion_dicofre |> bind_rows(data.frame(old="111127", new="111134"))
-conversion_dicofre = conversion_dicofre |> bind_rows(data.frame(old="111127", new="111135"))
-conversion_dicofre = conversion_dicofre |> bind_rows(data.frame(old="111123", new="111129"))
-conversion_dicofre = conversion_dicofre |> bind_rows(data.frame(old="111123", new="111131"))
-conversion_dicofre = conversion_dicofre |> bind_rows(data.frame(old="111123", new="111132"))
-conversion_dicofre = conversion_dicofre |> bind_rows(data.frame(old="111126", new="111130"))
-conversion_dicofre = conversion_dicofre |> bind_rows(data.frame(old="111126", new="111133"))
+conversion_dicofre <- data.frame(old = character(), new = character())
+conversion_dicofre <- conversion_dicofre |> bind_rows(data.frame(old = "151007", new = "151008"))
+conversion_dicofre <- conversion_dicofre |> bind_rows(data.frame(old = "151007", new = "151009"))
+conversion_dicofre <- conversion_dicofre |> bind_rows(data.frame(old = "151007", new = "151010"))
+conversion_dicofre <- conversion_dicofre |> bind_rows(data.frame(old = "111127", new = "111134"))
+conversion_dicofre <- conversion_dicofre |> bind_rows(data.frame(old = "111127", new = "111135"))
+conversion_dicofre <- conversion_dicofre |> bind_rows(data.frame(old = "111123", new = "111129"))
+conversion_dicofre <- conversion_dicofre |> bind_rows(data.frame(old = "111123", new = "111131"))
+conversion_dicofre <- conversion_dicofre |> bind_rows(data.frame(old = "111123", new = "111132"))
+conversion_dicofre <- conversion_dicofre |> bind_rows(data.frame(old = "111126", new = "111130"))
+conversion_dicofre <- conversion_dicofre |> bind_rows(data.frame(old = "111126", new = "111133"))
 
 write.csv(conversion_dicofre, "useful_data/dicofre_16_24_conversion.csv", row.names = FALSE)
-conversion_dicofre = read.csv("useful_data/dicofre_16_24_conversion.csv")
+conversion_dicofre <- read.csv("useful_data/dicofre_16_24_conversion.csv")
 
 ## create a useful conversion dicofre with all, even the ones that did not change
-freguesias16 = trips_freguesias_2016 |> 
-  
+freguesias16 <- trips_freguesias_2016 |>
   select(Origin_dicofre16) |>
   distinct() |>
   rename(dtmnfr16 = Origin_dicofre16)
 
-all_dicofre_conversion = freguesias16 |> 
-  filter(!dtmnfr16 %in% conversion_dicofre$old) |> 
+all_dicofre_conversion <- freguesias16 |>
+  filter(!dtmnfr16 %in% conversion_dicofre$old) |>
   mutate(dtmnfr24 = dtmnfr16) |>
-  bind_rows(conversion_dicofre |> 
-              mutate(old = as.character(old),
-                     new = as.character(new)) |>
-              rename(dtmnfr16 = old, dtmnfr24 = new))
+  bind_rows(conversion_dicofre |>
+    mutate(
+      old = as.character(old),
+      new = as.character(new)
+    ) |>
+    rename(dtmnfr16 = old, dtmnfr24 = new))
 
 # provide a weight based on the area changed, for the ones the same, weight = 1
 
-all_dicofre_conversion_weight = all_dicofre_conversion |>
+all_dicofre_conversion_weight <- all_dicofre_conversion |>
   left_join(
     freguesias |> st_drop_geometry() |> select(dtmnfr, area_ha) |> rename(dtmnfr16 = dtmnfr, area_ha_16 = area_ha),
-    by=c("dtmnfr16")
+    by = c("dtmnfr16")
   ) |>
   left_join(
     freguesias |> st_drop_geometry() |> select(dtmnfr, area_ha) |> rename(dtmnfr24 = dtmnfr, area_ha_24 = area_ha),
-    by=c("dtmnfr24")
+    by = c("dtmnfr24")
   ) |>
   mutate(
     area_change = abs(area_ha_24 - area_ha_16),
     weight = ifelse(area_change == 0, 1, area_ha_24 / (area_ha_16 + area_change))
   )
 
-all_dicofre_conversion_weight_subset = all_dicofre_conversion_weight |> 
-  filter(is.na(area_change)) |> 
+all_dicofre_conversion_weight_subset <- all_dicofre_conversion_weight |>
+  filter(is.na(area_change)) |>
   group_by(dtmnfr16) |>
   summarise(area_ha_16 = sum(area_ha_24))
-all_dicofre_conversion_weight_subset = all_dicofre_conversion_weight |> 
-  filter(is.na(area_change)) |> 
+all_dicofre_conversion_weight_subset <- all_dicofre_conversion_weight |>
+  filter(is.na(area_change)) |>
   select(dtmnfr16, dtmnfr24, area_ha_24) |>
   left_join(all_dicofre_conversion_weight_subset)
-all_dicofre_conversion_weight_subset = all_dicofre_conversion_weight_subset |>
-  mutate(weight = area_ha_24 / area_ha_16 ) 
+all_dicofre_conversion_weight_subset <- all_dicofre_conversion_weight_subset |>
+  mutate(weight = area_ha_24 / area_ha_16)
 
-all_dicofre_conversion_weight = all_dicofre_conversion_weight |> 
-  filter(!is.na(area_change)) |> 
-  bind_rows(all_dicofre_conversion_weight_subset) |> 
+all_dicofre_conversion_weight <- all_dicofre_conversion_weight |>
+  filter(!is.na(area_change)) |>
+  bind_rows(all_dicofre_conversion_weight_subset) |>
   select(-area_change)
 
 rm(all_dicofre_conversion_weight_subset)
@@ -184,33 +187,33 @@ saveRDS(all_dicofre_conversion, "useful_data/dicofre_16_24_conversion_full.Rds")
 write.csv(all_dicofre_conversion_weight, "useful_data/dicofre_16_24_conversion_full_with_weights.csv", row.names = FALSE)
 saveRDS(all_dicofre_conversion_weight, "useful_data/dicofre_16_24_conversion_full_with_weights.Rds")
 # load
-all_dicofre_conversion = readRDS("useful_data/dicofre_16_24_conversion_full.Rds")
-all_dicofre_conversion_weight = readRDS("useful_data/dicofre_16_24_conversion_full_with_weights.Rds")
+all_dicofre_conversion <- readRDS("useful_data/dicofre_16_24_conversion_full.Rds")
+all_dicofre_conversion_weight <- readRDS("useful_data/dicofre_16_24_conversion_full_with_weights.Rds")
 
 # Adjust trips to new dicofre ids
-trips_freguesias_to_convert = trips_freguesias_2016 |> filter(
+trips_freguesias_to_convert <- trips_freguesias_2016 |> filter(
   Origin_dicofre16 %in% conversion_dicofre$old |
-  Destination_dicofre16 %in% conversion_dicofre$old
+    Destination_dicofre16 %in% conversion_dicofre$old
 )
 nrow(trips_freguesias_to_convert) # 535
 
 # Some freguesias have multiple entries (different polygons)
 # mapview(freguesias |> filter(dtmnfr=="110501"), zcol="area_ha")
 # mapview(freguesias |> filter(dtmnfr=="110508"), zcol="area_ha")
-freguesias_unique_dtmnfr = freguesias |> 
+freguesias_unique_dtmnfr <- freguesias |>
   st_drop_geometry() |>
   group_by(dtmnfr) |>
-  summarise(area_ha = sum(area_ha)) |> 
+  summarise(area_ha = sum(area_ha)) |>
   ungroup()
 
 # Add columns with converted dicofre ids and areas for weighted distribution
-trips_freguesias_conversion = trips_freguesias_to_convert |>
+trips_freguesias_conversion <- trips_freguesias_to_convert |>
   # Convert DICOFRE
-  left_join(conversion_dicofre |> rename(Origin_dicofre24 = new), by =c("Origin_dicofre16"="old"), relationship = "many-to-many")  |>
-  left_join(conversion_dicofre |> rename(Destination_dicofre24 = new), by =c("Destination_dicofre16"="old"), relationship = "many-to-many") |>
+  left_join(conversion_dicofre |> rename(Origin_dicofre24 = new), by = c("Origin_dicofre16" = "old"), relationship = "many-to-many") |>
+  left_join(conversion_dicofre |> rename(Destination_dicofre24 = new), by = c("Destination_dicofre16" = "old"), relationship = "many-to-many") |>
   # Get areas for weighted distribution
-  left_join(freguesias_unique_dtmnfr |> rename(Origin_area_ha = area_ha), by=c("Origin_dicofre24"="dtmnfr")) |>
-  left_join(freguesias_unique_dtmnfr |> rename(Destination_area_ha = area_ha), by=c("Destination_dicofre24"="dtmnfr")) 
+  left_join(freguesias_unique_dtmnfr |> rename(Origin_area_ha = area_ha), by = c("Origin_dicofre24" = "dtmnfr")) |>
+  left_join(freguesias_unique_dtmnfr |> rename(Destination_area_ha = area_ha), by = c("Destination_dicofre24" = "dtmnfr"))
 nrow(trips_freguesias_conversion) # 1375
 
 nrow(trips_freguesias_conversion |> filter(is.na(Origin_dicofre24) | is.na(Destination_dicofre24)))
@@ -220,7 +223,7 @@ nrow(trips_freguesias_conversion |> filter(!is.na(Origin_dicofre24) & !is.na(Des
 
 # Distribute trips proportionally to area
 # Different calculation depending on whether origin, destination or both were changed
-trips_freguesias_conversion_origin_disaggregated = trips_freguesias_conversion |> 
+trips_freguesias_conversion_origin_disaggregated <- trips_freguesias_conversion |>
   filter(!is.na(Origin_dicofre24) & is.na(Destination_dicofre24)) |>
   group_by(Origin_dicofre16, Destination_dicofre16) |>
   mutate(
@@ -229,7 +232,7 @@ trips_freguesias_conversion_origin_disaggregated = trips_freguesias_conversion |
   ungroup()
 # View(trips_freguesias_conversion_origin_disaggregated)
 
-trips_freguesias_conversion_destination_disaggregated = trips_freguesias_conversion |> 
+trips_freguesias_conversion_destination_disaggregated <- trips_freguesias_conversion |>
   filter(is.na(Origin_dicofre24) & !is.na(Destination_dicofre24)) |>
   group_by(Origin_dicofre16, Destination_dicofre16) |>
   mutate(
@@ -238,39 +241,39 @@ trips_freguesias_conversion_destination_disaggregated = trips_freguesias_convers
   ungroup()
 # View(trips_freguesias_conversion_destination_disaggregated)
 
-trips_freguesias_conversion_both_disaggregated = trips_freguesias_conversion |> 
+trips_freguesias_conversion_both_disaggregated <- trips_freguesias_conversion |>
   filter(!is.na(Origin_dicofre24) & !is.na(Destination_dicofre24)) |>
   group_by(Origin_dicofre16, Destination_dicofre16) |>
   mutate(
-    weight = (Origin_area_ha+Destination_area_ha) / (sum(Destination_area_ha)+sum(Origin_area_ha))
+    weight = (Origin_area_ha + Destination_area_ha) / (sum(Destination_area_ha) + sum(Origin_area_ha))
   ) |>
   ungroup()
 # View(trips_freguesias_conversion_both_disaggregated)
 
-trips_freguesias_converted = trips_freguesias_conversion_origin_disaggregated |>
+trips_freguesias_converted <- trips_freguesias_conversion_origin_disaggregated |>
   bind_rows(trips_freguesias_conversion_destination_disaggregated) |>
-  bind_rows(trips_freguesias_conversion_both_disaggregated) 
+  bind_rows(trips_freguesias_conversion_both_disaggregated)
 nrow(trips_freguesias_converted)
 
 # Validate results
 assertthat::assert_that(nrow(trips_freguesias_converted) == nrow(trips_freguesias_conversion))
 nrow(trips_freguesias_converted |> select(Origin_dicofre16, Destination_dicofre16) |> distinct()) # 535
-table( (trips_freguesias_converted |> 
+table((trips_freguesias_converted |>
   group_by(Origin_dicofre16, Destination_dicofre16) |>
-  summarise(total_weight = sum(weight)))$total_weight ) # Must return 1 x 535
+  summarise(total_weight = sum(weight)))$total_weight) # Must return 1 x 535
 
 # Recalculate trip counts
-trips_freguesias_adjusted = trips_freguesias_converted |>
+trips_freguesias_adjusted <- trips_freguesias_converted |>
   mutate(
-    Total = Total*weight,
-    Walk = Walk*weight,
-    Bike = Bike*weight,
-    Car = Car*weight,
-    PTransit = PTransit*weight,
-    Other = Other*weight,
+    Total = Total * weight,
+    Walk = Walk * weight,
+    Bike = Bike * weight,
+    Car = Car * weight,
+    PTransit = PTransit * weight,
+    Other = Other * weight,
     Origin_dicofre24 = ifelse(is.na(Origin_dicofre24), Origin_dicofre16, Origin_dicofre24),
     Destination_dicofre24 = ifelse(is.na(Destination_dicofre24), Destination_dicofre16, Destination_dicofre24)
-  ) 
+  )
 
 # Validate total values remain the same
 assertthat::assert_that(sum(trips_freguesias_adjusted$Total) == sum(trips_freguesias_to_convert$Total))
@@ -281,12 +284,12 @@ assertthat::assert_that(sum(trips_freguesias_adjusted$PTransit) == sum(trips_fre
 assertthat::assert_that(sum(trips_freguesias_adjusted$Other) == sum(trips_freguesias_to_convert$Other))
 
 # Finally, replace original data
-trips_freguesias_2024 = trips_freguesias_2016 |> 
+trips_freguesias_2024 <- trips_freguesias_2016 |>
   # Remove those that changed DICOFRE
   filter(
-    !Origin_dicofre16 %in% conversion_dicofre$old
-    & !Destination_dicofre16 %in% conversion_dicofre$old
-  ) |> 
+    !Origin_dicofre16 %in% conversion_dicofre$old &
+      !Destination_dicofre16 %in% conversion_dicofre$old
+  ) |>
   # The ones that remain, did not change, so just rename DICOFRE columns
   rename(
     Origin_dicofre24 = Origin_dicofre16,
@@ -294,7 +297,7 @@ trips_freguesias_2024 = trips_freguesias_2016 |>
   ) |>
   # Add the adjusted ones
   bind_rows(
-    trips_freguesias_adjusted |> 
+    trips_freguesias_adjusted |>
       select(
         Origin_dicofre24,
         Destination_dicofre24,
@@ -312,11 +315,12 @@ assertthat::assert_that(
   # Final rows
   nrow(trips_freguesias_2024) == (
     # Remove those that changed DICOFRE
-    nrow(trips_freguesias_2016 |> 
+    nrow(trips_freguesias_2016 |>
       filter(
-        !Origin_dicofre16 %in% conversion_dicofre$old
-        & !Destination_dicofre16 %in% conversion_dicofre$old
-    )) + nrow(trips_freguesias_conversion)))
+        !Origin_dicofre16 %in% conversion_dicofre$old &
+          !Destination_dicofre16 %in% conversion_dicofre$old
+      )) + nrow(trips_freguesias_conversion))
+)
 
 assertthat::assert_that(sum(trips_freguesias_2016$Total) == sum(trips_freguesias_2024$Total))
 assertthat::assert_that(sum(trips_freguesias_2016$Walk) == sum(trips_freguesias_2024$Walk))
@@ -326,7 +330,7 @@ assertthat::assert_that(sum(trips_freguesias_2016$PTransit) == sum(trips_fregues
 assertthat::assert_that(sum(trips_freguesias_2016$Other) == sum(trips_freguesias_2024$Other))
 
 saveRDS(trips_freguesias_2024, "/data/IMPT/trips/TRIPSmode_freguesias_2024.Rds")
-trips_freguesias_2024 = readRDS("/data/IMPT/trips/TRIPSmode_freguesias_2024.Rds")
+trips_freguesias_2024 <- readRDS("/data/IMPT/trips/TRIPSmode_freguesias_2024.Rds")
 
 
 # Jittering ---------------------------------------------------------------
@@ -339,10 +343,10 @@ library(odjitter)
 
 
 # Jitter with disagregation threshold of 200 trips
-od_freguesias_jittered = odjitter::jitter(  
+od_freguesias_jittered <- odjitter::jitter(
   od = trips_freguesias_2024,
   zones = freguesias,
-  subpoints = road_network, 
+  subpoints = road_network,
   disaggregation_key = "Total",
   disaggregation_threshold = 200
 )
@@ -358,46 +362,51 @@ assertthat::assert_that(sum(od_freguesias_jittered$Other) == sum(trips_freguesia
 mapview::mapview(od_freguesias_jittered, lwd = 0.2)
 
 # add an id to the jittered pairs, so we can join later
-od_freguesias_jittered_id = od_freguesias_jittered
-od_freguesias_jittered_id$id = 1:nrow(od_freguesias_jittered_id)
+od_freguesias_jittered_id <- od_freguesias_jittered
+od_freguesias_jittered_id$id <- 1:nrow(od_freguesias_jittered_id)
 
 st_write(od_freguesias_jittered_id, "/data/IMPT/trips/od_freguesias_jittered_2024.gpkg", delete_dsn = TRUE)
-od_freguesias_jittered_id = st_read("/data/IMPT/trips/od_freguesias_jittered_2024.gpkg")
+od_freguesias_jittered_id <- st_read("/data/IMPT/trips/od_freguesias_jittered_2024.gpkg")
 
 
 ## Origins and Destinations as points
 
 library(stplanr)
 
-#with stplanr
-od_freguesias_jittered_points = line2df(od_freguesias_jittered)
-od_freguesias_jittered_OR = od_freguesias_jittered_points |>
+# with stplanr
+od_freguesias_jittered_points <- line2df(od_freguesias_jittered)
+od_freguesias_jittered_OR <- od_freguesias_jittered_points |>
   select(L1, fx, fy) |> # from
-  rename(id = L1,
-         lon = fx,
-         lat = fy)
-od_freguesias_jittered_DE = od_freguesias_jittered_points |>
+  rename(
+    id = L1,
+    lon = fx,
+    lat = fy
+  )
+od_freguesias_jittered_DE <- od_freguesias_jittered_points |>
   select(L1, tx, ty) |> # to
-  rename(id = L1,
-         lon = tx,
-         lat = ty)
+  rename(
+    id = L1,
+    lon = tx,
+    lat = ty
+  )
 
 # as sf
-od_freguesias_jittered_OR_geo = st_as_sf(od_freguesias_jittered_OR,
-                                            coords = c("lon", "lat"),
-                                            crs = 4326)
-od_freguesias_jittered_DE_geo = st_as_sf(od_freguesias_jittered_DE,
-                                            coords = c("lon", "lat"),
-                                            crs = 4326)
+od_freguesias_jittered_OR_geo <- st_as_sf(od_freguesias_jittered_OR,
+  coords = c("lon", "lat"),
+  crs = 4326
+)
+od_freguesias_jittered_DE_geo <- st_as_sf(od_freguesias_jittered_DE,
+  coords = c("lon", "lat"),
+  crs = 4326
+)
 
-# mapview(od_freguesias_jittered_OR_geo, col.regions = "red") + 
+# mapview(od_freguesias_jittered_OR_geo, col.regions = "red") +
 #   mapview(od_freguesias_jittered_DE_geo, col.regions = "blue")
 
 st_write(od_freguesias_jittered_OR_geo, "/data/IMPT/trips/od_freguesias_jittered200_OR.gpkg", delete_dsn = TRUE)
 st_write(od_freguesias_jittered_DE_geo, "/data/IMPT/trips/od_freguesias_jittered200_DE.gpkg", delete_dsn = TRUE)
-od_freguesias_jittered_OR_geo = st_read("/data/IMPT/trips/od_freguesias_jittered200_OR.gpkg")
-od_freguesias_jittered_DE_geo = st_read("/data/IMPT/trips/od_freguesias_jittered200_DE.gpkg")
-
+od_freguesias_jittered_OR_geo <- st_read("/data/IMPT/trips/od_freguesias_jittered200_OR.gpkg")
+od_freguesias_jittered_DE_geo <- st_read("/data/IMPT/trips/od_freguesias_jittered200_DE.gpkg")
 
 
 # Census 21 data ----------------------------------------------------------
@@ -407,70 +416,78 @@ od_freguesias_jittered_DE_geo = st_read("/data/IMPT/trips/od_freguesias_jittered
 # temp <- "/data/IMPT/original/census2021.zip"
 # download.file(ceunsus_url, temp, mode = "wb")
 # unzip(temp, exdir = "/data/IMPT/original/")
-Census21_BGRI = st_read("/data/IMPT/original/BGRI21_170.gpkg")
+Census21_BGRI <- st_read("/data/IMPT/original/BGRI21_170.gpkg")
 
-census21_fregmun = Census21_BGRI |> 
-  st_drop_geometry() |> 
-  select(DTMNFR21, DTMN21, N_INDIVIDUOS, N_NUCLEOS_FAMILIARES,
-         N_INDIVIDUOS_0_14, N_INDIVIDUOS_65_OU_MAIS, N_INDIVIDUOS_M,
-         N_EDIFICIOS_CLASSICOS, N_EDIFICIOS_CONSTR_ANTES_1945) |>
-  rename(population = N_INDIVIDUOS,
-         households = N_NUCLEOS_FAMILIARES,
-         youth = N_INDIVIDUOS_0_14,
-         elderly = N_INDIVIDUOS_65_OU_MAIS,
-         women = N_INDIVIDUOS_M,
-         buildings = N_EDIFICIOS_CLASSICOS,
-         buildings_pre1945 = N_EDIFICIOS_CONSTR_ANTES_1945) |> 
+census21_fregmun <- Census21_BGRI |>
+  st_drop_geometry() |>
+  select(
+    DTMNFR21, DTMN21, N_INDIVIDUOS, N_NUCLEOS_FAMILIARES,
+    N_INDIVIDUOS_0_14, N_INDIVIDUOS_65_OU_MAIS, N_INDIVIDUOS_M,
+    N_EDIFICIOS_CLASSICOS, N_EDIFICIOS_CONSTR_ANTES_1945
+  ) |>
+  rename(
+    population = N_INDIVIDUOS,
+    households = N_NUCLEOS_FAMILIARES,
+    youth = N_INDIVIDUOS_0_14,
+    elderly = N_INDIVIDUOS_65_OU_MAIS,
+    women = N_INDIVIDUOS_M,
+    buildings = N_EDIFICIOS_CLASSICOS,
+    buildings_pre1945 = N_EDIFICIOS_CONSTR_ANTES_1945
+  ) |>
   group_by(DTMNFR21, DTMN21) |>
-  summarise(population = sum(population),
-            households = sum(households),
-            youth = sum(youth),
-            elderly = sum(elderly),
-            women = sum(women),
-            buildings = sum(buildings),
-            buildings_pre1945 = sum(buildings_pre1945)) |> 
+  summarise(
+    population = sum(population),
+    households = sum(households),
+    youth = sum(youth),
+    elderly = sum(elderly),
+    women = sum(women),
+    buildings = sum(buildings),
+    buildings_pre1945 = sum(buildings_pre1945)
+  ) |>
   ungroup()
-         
+
 
 ## make sure there is no polygon missing or exclude extra ones
 # mapview::mapview(Census21_BGRI) + mapview(municipios_union, col.regions = "red")
 # they are the same areas!
 
 # from polygons to points
-census_points21 = Census21_BGRI |> 
-  st_centroid() |> 
+census_points21 <- Census21_BGRI |>
+  st_centroid() |>
   st_transform(4326) # make sue it is in universal CRS
 plot(census_points21$geom) # census units in points
 names(census_points21)
 
 # create a new variable dicofre24 that match the freguesias spatially intersection the census points with the freguesias polygons
-census_points24 = census_points21 |> 
-  st_join(freguesias |> select(dtmnfr, freguesia, municipio), join = st_intersects, left=TRUE) |> 
-  rename(dicofre24 = dtmnfr) |> 
-  mutate(id = BGRI2021) |> 
-  #move id var for the beginning
+census_points24 <- census_points21 |>
+  st_join(freguesias |> select(dtmnfr, freguesia, municipio), join = st_intersects, left = TRUE) |>
+  rename(dicofre24 = dtmnfr) |>
+  mutate(id = BGRI2021) |>
+  # move id var for the beginning
   select(id, everything())
- 
+
 # save
 st_write(census_points24, "/data/IMPT/geo/census24_points.gpkg", delete_dsn = TRUE)
-census_points24 = st_read("/data/IMPT/geo/census24_points.gpkg")
+census_points24 <- st_read("/data/IMPT/geo/census24_points.gpkg")
 
 # auxiliary table for freguesias and municipios with no data lost (no geom)
-conversion_dicofre_weight = readRDS("useful_data/dicofre_16_24_conversion_full_with_weights.Rds")
-census24_fregmun = census21_fregmun |>
-  left_join(conversion_dicofre_weight, by = c("DTMNFR21" = "dtmnfr16")) |> 
-  mutate(population = round(population * weight),
-         households = round(households * weight),
-         youth = round(youth * weight),
-         elderly = round(elderly * weight),
-         women = round(women * weight),
-         buildings = round(buildings * weight),
-         buildings_pre1945 = round(buildings_pre1945 * weight)
+conversion_dicofre_weight <- readRDS("useful_data/dicofre_16_24_conversion_full_with_weights.Rds")
+census24_fregmun <- census21_fregmun |>
+  left_join(conversion_dicofre_weight, by = c("DTMNFR21" = "dtmnfr16")) |>
+  mutate(
+    population = round(population * weight),
+    households = round(households * weight),
+    youth = round(youth * weight),
+    elderly = round(elderly * weight),
+    women = round(women * weight),
+    buildings = round(buildings * weight),
+    buildings_pre1945 = round(buildings_pre1945 * weight)
   ) |>
   select(
     freg_id = dtmnfr24,
     mun_id = DTMN21,
-    population, households, youth, elderly, women, buildings, buildings_pre1945)
+    population, households, youth, elderly, women, buildings, buildings_pre1945
+  )
 
 sum(census24_fregmun$population) # 2870206 - less 2 persons due rounding, which is acceptable for our purposes
 write.csv(census24_fregmun, "useful_data/census24_fregmun.csv", row.names = FALSE)
@@ -478,32 +495,32 @@ write.csv(census24_fregmun, "useful_data/census24_fregmun.csv", row.names = FALS
 
 # POIs --------------------------------------------------------------------
 
-pois_pt = st_read("https://github.com/U-Shift/SiteSelection/releases/download/0.1/osm_poi_landuse.gpkg")
-pois = pois_pt[municipios_union,] # spatial filter
+pois_pt <- st_read("https://github.com/U-Shift/SiteSelection/releases/download/0.1/osm_poi_landuse.gpkg")
+pois <- pois_pt[municipios_union, ] # spatial filter
 table(pois$group)
-# amenity healthcare    leisure       shop      sport    tourism 
-# 13761        757       3150      11245       2984       1620 
+# amenity healthcare    leisure       shop      sport    tourism
+# 13761        757       3150      11245       2984       1620
 
 # mapview::mapview(pois, zcol = "group")
 
 # save and load
 st_write(pois, "/data/IMPT/geo/pois_osm2024.gpkg", delete_dsn = TRUE)
-pois = st_read(IMPT_URL("/geo/pois_osm2024.gpkg"))
-View(data.frame(table(pois$type|> as.factor() |> forcats::fct_infreq())))
+pois <- impt_read("/geo/pois_osm2024.gpkg")
+View(data.frame(table(pois$type |> as.factor() |> forcats::fct_infreq())))
 
 # Filter Var1 contains "market"
-data.frame(table(pois$type|> as.factor() |> forcats::fct_infreq())) |> filter(grepl("market", Var1))
+data.frame(table(pois$type |> as.factor() |> forcats::fct_infreq())) |> filter(grepl("market", Var1))
 table(pois$group)
-table((pois |> filter(group=="amenity"))$type|> as.factor() |> forcats::fct_infreq())
-View(data.frame(table((pois |> filter(group=="shop"))$type|> as.factor() |> forcats::fct_infreq())))
+table((pois |> filter(group == "amenity"))$type |> as.factor() |> forcats::fct_infreq())
+View(data.frame(table((pois |> filter(group == "shop"))$type |> as.factor() |> forcats::fct_infreq())))
 
-pois_health = read.csv("https://github.com/carrismetropolitana/datasets/raw/refs/heads/latest/facilities/health_centers/health_centers.csv") |>
+pois_health <- read.csv("https://github.com/carrismetropolitana/datasets/raw/refs/heads/latest/facilities/health_centers/health_centers.csv") |>
   filter(
     # https://www.cm-seixal.pt/noticia/autarquia-participa-em-audicao-sobre-hospital-no-seixal
-    name!="futuro Hospital do Seixal"
+    name != "futuro Hospital do Seixal"
   ) |>
   mutate(
-    lon = ifelse(id=="HC0077", -1*lon, lon)
+    lon = ifelse(id == "HC0077", -1 * lon, lon)
   ) |>
   select(id, name, lat, lon) |>
   mutate(
@@ -515,10 +532,10 @@ pois_health = read.csv("https://github.com/carrismetropolitana/datasets/raw/refs
     )
   ) |>
   st_as_sf(coords = c("lon", "lat"), crs = 4326)
-mapview(pois_health, zcol="type")
+mapview(pois_health, zcol = "type")
 st_write(pois_health, IMPT_URL("/pois/healthcare.gpkg"), delete_dsn = TRUE)
 
-pois_schools = read.csv("https://github.com/carrismetropolitana/datasets/raw/refs/heads/latest/facilities/schools/schools.csv") |>
+pois_schools <- read.csv("https://github.com/carrismetropolitana/datasets/raw/refs/heads/latest/facilities/schools/schools.csv") |>
   mutate(
     type = case_when(
       pre_school == 1 ~ "Pre-school",
@@ -532,24 +549,24 @@ pois_schools = read.csv("https://github.com/carrismetropolitana/datasets/raw/ref
     )
   ) |>
   st_as_sf(coords = c("lon", "lat"), crs = 4326)
-mapview(pois_schools, zcol="type")
+mapview(pois_schools, zcol = "type")
 st_write(pois_schools, IMPT_URL("/pois/schools.gpkg"), delete_dsn = TRUE)
 
-pois_green = pois |> filter(group == "leisure" & type %in% c("park", "garden")) # include playgrouds?
-mapview(pois_green, zcol="type")
+pois_green <- pois |> filter(group == "leisure" & type %in% c("park", "garden")) # include playgrouds?
+mapview(pois_green, zcol = "type")
 st_write(pois_green, IMPT_URL("/pois/green.gpkg"), delete_dsn = TRUE)
 
-pois_supermarket= pois |> filter(type == "supermarket" | type == "convenience")
-mapview(pois_supermarket, zcol="type")
+pois_supermarket <- pois |> filter(type == "supermarket" | type == "convenience")
+mapview(pois_supermarket, zcol = "type")
 st_write(pois_supermarket, IMPT_URL("/pois/supermarket.gpkg"), delete_dsn = TRUE)
 
-pois_recreation = pois |> filter(type %in% c(
+pois_recreation <- pois |> filter(type %in% c(
   # amenity
   "library", "theatre", "cinema", "restaurant", "cafe", "bar", "pub",
   # sport
   "pitch", "fitness_station", "swimming_pool", "sports_centre", "fitness_center"
 ))
-mapview(pois_recreation, zcol="type")
+mapview(pois_recreation, zcol = "type")
 st_write(pois_recreation, IMPT_URL("/pois/recreation.gpkg"), delete_dsn = TRUE)
 
 # GTFS data ---------------------------------------------------------------
@@ -557,122 +574,122 @@ st_write(pois_recreation, IMPT_URL("/pois/recreation.gpkg"), delete_dsn = TRUE)
 library(GTFShift)
 library(lubridate)
 
-gtfs_db = data.frame(
-  operator=character(),
-  url=character(),
-  shapes=logical(),
-  outside_area=logical(),
-  calendar_add_years=numeric() # For outdated calendars
+gtfs_db <- data.frame(
+  operator = character(),
+  url = character(),
+  shapes = logical(),
+  outside_area = logical(),
+  calendar_add_years = numeric() # For outdated calendars
 )
 
-gtfs_db = gtfs_db |> bind_rows(data.frame(
-  operator="Carris Metropolitana",
-  url="https://api.carrismetropolitana.pt/gtfs",
-  shapes=TRUE, outside_area=FALSE, calendar_add_years=NA
+gtfs_db <- gtfs_db |> bind_rows(data.frame(
+  operator = "Carris Metropolitana",
+  url = "https://api.carrismetropolitana.pt/gtfs",
+  shapes = TRUE, outside_area = FALSE, calendar_add_years = NA
 ))
-gtfs_db = gtfs_db |> bind_rows(data.frame(
-  operator="Carris Municipal",
-  url="https://gateway.carris.pt/gateway/gtfs/api/v2.8/GTFS",
-  shapes=TRUE, outside_area=FALSE, calendar_add_years=NA
+gtfs_db <- gtfs_db |> bind_rows(data.frame(
+  operator = "Carris Municipal",
+  url = "https://gateway.carris.pt/gateway/gtfs/api/v2.8/GTFS",
+  shapes = TRUE, outside_area = FALSE, calendar_add_years = NA
 ))
-gtfs_db = gtfs_db |> bind_rows(data.frame(
-  operator="Comboios de Portugal",
-  url="https://publico.cp.pt/gtfs/gtfs.zip",
-  shapes=FALSE, outside_area=TRUE, calendar_add_years=NA
+gtfs_db <- gtfs_db |> bind_rows(data.frame(
+  operator = "Comboios de Portugal",
+  url = "https://publico.cp.pt/gtfs/gtfs.zip",
+  shapes = FALSE, outside_area = TRUE, calendar_add_years = NA
 ))
-gtfs_db = gtfs_db |> bind_rows(data.frame(
-  operator="MobiCascais",
-  url="https://drive.google.com/u/0/uc?id=13ucYiAJRtu-gXsLa02qKJrGOgDjbnUWX&export=download",
-  shapes=TRUE, outside_area=FALSE, calendar_add_years=NA
+gtfs_db <- gtfs_db |> bind_rows(data.frame(
+  operator = "MobiCascais",
+  url = "https://drive.google.com/u/0/uc?id=13ucYiAJRtu-gXsLa02qKJrGOgDjbnUWX&export=download",
+  shapes = TRUE, outside_area = FALSE, calendar_add_years = NA
 ))
-gtfs_db = gtfs_db |> bind_rows(data.frame(
-  operator="Metropolitano de Lisboa",
-  url="https://www.metrolisboa.pt/google_transit/googleTransit.zip",
-  shapes=TRUE, outside_area=FALSE, calendar_add_years=NA
+gtfs_db <- gtfs_db |> bind_rows(data.frame(
+  operator = "Metropolitano de Lisboa",
+  url = "https://www.metrolisboa.pt/google_transit/googleTransit.zip",
+  shapes = TRUE, outside_area = FALSE, calendar_add_years = NA
 ))
-gtfs_db = gtfs_db |> bind_rows(data.frame(
-  operator="Transtejo Soflusa",
-  url="https://api.transtejo.pt/files/GTFS.zip",
-  shapes=TRUE, outside_area=FALSE, calendar_add_years=NA
+gtfs_db <- gtfs_db |> bind_rows(data.frame(
+  operator = "Transtejo Soflusa",
+  url = "https://api.transtejo.pt/files/GTFS.zip",
+  shapes = TRUE, outside_area = FALSE, calendar_add_years = NA
 ))
-gtfs_db = gtfs_db |> bind_rows(data.frame(
-  operator="Fertagus",
-  url="https://www.fertagus.pt/GTFSTMLzip/Fertagus_GTFS.zip",
-  shapes=TRUE, outside_area=FALSE, calendar_add_years=NA
+gtfs_db <- gtfs_db |> bind_rows(data.frame(
+  operator = "Fertagus",
+  url = "https://www.fertagus.pt/GTFSTMLzip/Fertagus_GTFS.zip",
+  shapes = TRUE, outside_area = FALSE, calendar_add_years = NA
 ))
-gtfs_db = gtfs_db |> bind_rows(data.frame(
-  operator="Transportes Colectivos do Barreiro",
-  url="https://www.tcbarreiro.pt/front/files/sample_gtfs/GTFS-TCB_24.zip?68960872ed168",
-  shapes=TRUE, outside_area=FALSE, calendar_add_years=NA
+gtfs_db <- gtfs_db |> bind_rows(data.frame(
+  operator = "Transportes Colectivos do Barreiro",
+  url = "https://www.tcbarreiro.pt/front/files/sample_gtfs/GTFS-TCB_24.zip?68960872ed168",
+  shapes = TRUE, outside_area = FALSE, calendar_add_years = NA
 ))
-gtfs_db = gtfs_db |> bind_rows(data.frame(
-  operator="Metro Transportes do Sul",
-  url="https://mts.pt/imt/MTS-20240129.zip",
-  shapes=TRUE, outside_area=FALSE, calendar_add_years=1
+gtfs_db <- gtfs_db |> bind_rows(data.frame(
+  operator = "Metro Transportes do Sul",
+  url = "https://mts.pt/imt/MTS-20240129.zip",
+  shapes = TRUE, outside_area = FALSE, calendar_add_years = 1
 ))
 
 write.csv(gtfs_db, "useful_data/gtfs_db.csv", row.names = FALSE)
 
 
-gtfs_to_aggregate = list()
-for(i in 1:nrow(gtfs_db)){
-  gtfs = gtfs_db[i, ]
-  operator = gtfs$operator
+gtfs_to_aggregate <- list()
+for (i in 1:nrow(gtfs_db)) {
+  gtfs <- gtfs_db[i, ]
+  operator <- gtfs$operator
   message(sprintf("Importing GTFS for %s...", operator))
-  
-  gtfs_imported = GTFShift::load_feed(gtfs$url, create_transfers=FALSE)
-  
+
+  gtfs_imported <- GTFShift::load_feed(gtfs$url, create_transfers = FALSE)
+
   # Write original GTFS
   tidytransit::write_gtfs(gtfs_imported, paste0("/data/IMPT/gtfs/original/gtfs_", gsub(" ", "_", tolower(operator)), ".zip"))
-  
+
   # No need to fix shapes, as GTFShift::load_feed does that by default
-  # if (gtfs_db$shapes[i] == FALSE) 
-  
+  # if (gtfs_db$shapes[i] == FALSE)
+
   if (gtfs$outside_area == TRUE) {
     message("Feed outside area, filtering...")
-    gtfs_imported = tidytransit::filter_feed_by_area(
-      gtfs_imported, 
+    gtfs_imported <- tidytransit::filter_feed_by_area(
+      gtfs_imported,
       st_bbox(municipios_union)
     )
   }
-  
+
   if (!is.na(gtfs$calendar_add_years)) {
     message("Feed with outdated calendar, updating...")
-    gtfs_imported$calendar = gtfs_imported$calendar |> mutate(
-      start_date = date(start_date)+years(gtfs$calendar_add_years),
-      end_date = date(end_date)+years(gtfs$calendar_add_years)
+    gtfs_imported$calendar <- gtfs_imported$calendar |> mutate(
+      start_date = date(start_date) + years(gtfs$calendar_add_years),
+      end_date = date(end_date) + years(gtfs$calendar_add_years)
     )
-    
+
     # If gtfs_imported$calendar_dates, also update
     if ("calendar_dates" %in% names(gtfs_imported)) {
-      gtfs_imported$calendar_dates = gtfs_imported$calendar_dates |> mutate(
-        date = date(date)+years(gtfs$calendar_add_years)
+      gtfs_imported$calendar_dates <- gtfs_imported$calendar_dates |> mutate(
+        date = date(date) + years(gtfs$calendar_add_years)
       )
     }
-    gtfs_imported = tidytransit::as_tidygtfs(gtfs_imported)
+    gtfs_imported <- tidytransit::as_tidygtfs(gtfs_imported)
   }
-  
-  gtfs_to_aggregate = append(gtfs_to_aggregate, list(gtfs_imported))
-  
+
+  gtfs_to_aggregate <- append(gtfs_to_aggregate, list(gtfs_imported))
+
   tidytransit::write_gtfs(gtfs_imported, paste0("/data/IMPT/gtfs/processed/gtfs_", gsub(" ", "_", tolower(operator)), ".zip"))
   tidytransit::write_gtfs(gtfs_imported, paste0("/data/IMPT/geo/r5r/gtfs_", gsub(" ", "_", tolower(operator)), ".zip"))
 }
 
-# Get all AML PT stops 
+# Get all AML PT stops
 library(tidytransit)
-gtfs_paths <- list.files(IMPT_URL("/gtfs/processed"), pattern="\\.zip$" , full.names = TRUE)
-pois_transit = data.frame()
-pois_transit_headways = data.frame()
+gtfs_paths <- list.files(IMPT_URL("/gtfs/processed"), pattern = "\\.zip$", full.names = TRUE)
+pois_transit <- data.frame()
+pois_transit_headways <- data.frame()
 for (i in gtfs_paths) {
   message(sprintf("Processing GTFS %s...", i))
   gtfs_original <- read_gtfs(i)
-  
-  gtfs_weekend = filter_feed_by_date(gtfs_original, "2026-02-08")
+
+  gtfs_weekend <- filter_feed_by_date(gtfs_original, "2026-02-08")
   summary(gtfs_weekend)
-  stops_frequency_weekend = get_stop_frequency(gtfs_weekend, start_time="10:00:00", end_time="11:00:00", service_ids=unique(gtfs_weekend$calendar$service_id)) |>
+  stops_frequency_weekend <- get_stop_frequency(gtfs_weekend, start_time = "10:00:00", end_time = "11:00:00", service_ids = unique(gtfs_weekend$calendar$service_id)) |>
     group_by(stop_id) |>
     summarise(frequency_weekend = sum(n_departures))
-  stop_headway_weekend = get_stop_frequency(gtfs_weekend, start_time="10:00:00", end_time="11:00:00", service_ids=unique(gtfs_weekend$calendar$service_id)) |>
+  stop_headway_weekend <- get_stop_frequency(gtfs_weekend, start_time = "10:00:00", end_time = "11:00:00", service_ids = unique(gtfs_weekend$calendar$service_id)) |>
     group_by(stop_id) |> # When multiple stop_id, stick with mean_headway for the one with more n_departures
     summarise(headway_weekend = mean_headway[which.max(n_departures)])
   # View(
@@ -682,9 +699,9 @@ for (i in gtfs_paths) {
   #   summarize(frequency=sum(frequency)) |>
   #   arrange(hour)
   # )
-  
-  
-  gtfs = filter_feed_by_date(gtfs_original, "2026-02-04")
+
+
+  gtfs <- filter_feed_by_date(gtfs_original, "2026-02-04")
   summary(gtfs)
   # View(
   #   GTFShift::get_route_frequency_hourly(gtfs, date="2026-02-04") |>
@@ -694,49 +711,49 @@ for (i in gtfs_paths) {
   #     arrange(hour)
   # )
   stops_sf <- stops_as_sf(gtfs$stops) |> select(stop_id, geometry)
-  stops_sf$agency = gtfs$agency$agency_name[[1]]
-  pois_transit = rbind(pois_transit, stops_sf)
-  
-  stops_frequency_peak = get_stop_frequency(gtfs, start_time="08:00:00", end_time="09:00:00", service_ids=unique(gtfs$calendar$service_id)) |>
+  stops_sf$agency <- gtfs$agency$agency_name[[1]]
+  pois_transit <- rbind(pois_transit, stops_sf)
+
+  stops_frequency_peak <- get_stop_frequency(gtfs, start_time = "08:00:00", end_time = "09:00:00", service_ids = unique(gtfs$calendar$service_id)) |>
     group_by(stop_id) |>
     summarise(frequency_peak = sum(n_departures))
-  stops_frequency_night = get_stop_frequency(gtfs, start_time="22:00:00", end_time="23:00:00", service_ids=unique(gtfs$calendar$service_id)) |>
+  stops_frequency_night <- get_stop_frequency(gtfs, start_time = "22:00:00", end_time = "23:00:00", service_ids = unique(gtfs$calendar$service_id)) |>
     group_by(stop_id) |>
     summarise(frequency_night = sum(n_departures))
-  stops_frequency_day = get_stop_frequency(gtfs, start_time="00:00:00", end_time="48:00:00", service_ids=unique(gtfs$calendar$service_id)) |>
+  stops_frequency_day <- get_stop_frequency(gtfs, start_time = "00:00:00", end_time = "48:00:00", service_ids = unique(gtfs$calendar$service_id)) |>
     group_by(stop_id) |>
     summarise(frequency_day = sum(n_departures))
-  
-  stop_headway_peak = get_stop_frequency(gtfs, start_time="08:00:00", end_time="09:00:00", service_ids=unique(gtfs$calendar$service_id)) |>
+
+  stop_headway_peak <- get_stop_frequency(gtfs, start_time = "08:00:00", end_time = "09:00:00", service_ids = unique(gtfs$calendar$service_id)) |>
     group_by(stop_id) |> # When multiple stop_id, stick with mean_headway for the one with more n_departures
     summarise(headway_peak = mean_headway[which.max(n_departures)])
-  stop_headway_night = get_stop_frequency(gtfs, start_time="22:00:00", end_time="23:00:00", service_ids=unique(gtfs$calendar$service_id)) |>
+  stop_headway_night <- get_stop_frequency(gtfs, start_time = "22:00:00", end_time = "23:00:00", service_ids = unique(gtfs$calendar$service_id)) |>
     group_by(stop_id) |> # When multiple stop_id, stick with mean_headway for the one with more n_departures
     summarise(headway_night = mean_headway[which.max(n_departures)])
-  stop_headway_day = get_stop_frequency(gtfs, start_time="00:00:00", end_time="23:59:59", service_ids=unique(gtfs$calendar$service_id)) |>
+  stop_headway_day <- get_stop_frequency(gtfs, start_time = "00:00:00", end_time = "23:59:59", service_ids = unique(gtfs$calendar$service_id)) |>
     group_by(stop_id) |> # When multiple stop_id, stick with mean_headway for the one with more n_departures
     summarise(headway_day = mean_headway[which.max(n_departures)])
-  
-  stops_sf = stops_sf |>
-    left_join(stops_frequency_peak, by="stop_id") |>
-    left_join(stops_frequency_day, by="stop_id") |> 
-    left_join(stop_headway_peak, by="stop_id") |> 
-    left_join(stop_headway_day, by="stop_id") |> 
-    left_join(stops_frequency_weekend, by="stop_id") |>
-    left_join(stop_headway_weekend, by="stop_id") |>
-    left_join(stops_frequency_night, by="stop_id") |>
-    left_join(stop_headway_night, by="stop_id")
-    
-  pois_transit_headways = rbind(pois_transit_headways, stops_sf)
+
+  stops_sf <- stops_sf |>
+    left_join(stops_frequency_peak, by = "stop_id") |>
+    left_join(stops_frequency_day, by = "stop_id") |>
+    left_join(stop_headway_peak, by = "stop_id") |>
+    left_join(stop_headway_day, by = "stop_id") |>
+    left_join(stops_frequency_weekend, by = "stop_id") |>
+    left_join(stop_headway_weekend, by = "stop_id") |>
+    left_join(stops_frequency_night, by = "stop_id") |>
+    left_join(stop_headway_night, by = "stop_id")
+
+  pois_transit_headways <- rbind(pois_transit_headways, stops_sf)
 }
 # Filter inside limit_bbox
-pois_transit = pois_transit |> st_filter(limit_bbox)
+pois_transit <- pois_transit |> st_filter(limit_bbox)
 table(pois_transit$agency)
 summary(pois_transit)
 # mapview(pois_transit, zcol="agency")
 st_write(pois_transit, IMPT_URL("/pois/transit_stops.gpkg"), delete_dsn = TRUE)
 
-pois_transit_headways = pois_transit_headways |> st_filter(limit_bbox)
+pois_transit_headways <- pois_transit_headways |> st_filter(limit_bbox)
 table(pois_transit_headways$agency)
 summary(pois_transit_headways)
 st_write(pois_transit_headways, IMPT_URL("/mobility_transit/transit_stops_headways.gpkg"), delete_dsn = TRUE)
@@ -752,7 +769,7 @@ st_write(pois_transit_headways, IMPT_URL("/mobility_transit/transit_stops_headwa
 # followed the Coipernicus DEM instructions at https://u-shift.github.io/Traffic-Simulation-Models/network.html#elevation
 
 # check DEM
-dem = terra::rast("/data/IMPT/geo/r5r/GLPS_DEM_COPERNICUS_30_DEM_2026.tif") # rename the extension to .tif !!
+dem <- terra::rast("/data/IMPT/geo/r5r/GLPS_DEM_COPERNICUS_30_DEM_2026.tif") # rename the extension to .tif !!
 terra::plot(dem)
 terra::res(dem) # 30m resolution
 terra::crs(dem) # WGS84
@@ -768,11 +785,11 @@ terra::crs(dem) # WGS84
 # Load packages
 library(tidyverse)
 library(sf)
-options(java.parameters = '-Xmx30G') # allocate memory for 8GB 
+options(java.parameters = "-Xmx30G") # allocate memory for 8GB
 library(r5r)
 
-data_path= "/data/IMPT/geo/r5r"
-network = r5r::build_network(
+data_path <- "/data/IMPT/geo/r5r"
+network <- r5r::build_network(
   data_path,
   verbose = FALSE,
   elevation = "MINETTI" # optional. TOBLER or NONE
@@ -781,8 +798,7 @@ network = r5r::build_network(
 # piggyback::pb_upload("/data/IMPT/geo/r5r/network.dat", tag = "latest")
 
 
-
-transit_net = transit_network_to_sf(network)
+transit_net <- transit_network_to_sf(network)
 mapview::mapview(transit_net$routes, zcol = "mode")
 
 origins <- st_sf(
@@ -811,8 +827,8 @@ destinations <- st_sf(
 )
 
 
-departure_datetime = as.POSIXct("03-02-2026 06:00:00", format = "%d-%m-%Y %H:%M:%S")
-detailed_transit = detailed_itineraries(
+departure_datetime <- as.POSIXct("03-02-2026 06:00:00", format = "%d-%m-%Y %H:%M:%S")
+detailed_transit <- detailed_itineraries(
   r5r_network = network,
   origins = origins,
   destinations = destinations,
@@ -836,21 +852,21 @@ mapview::mapview(detailed_transit, zcol = "mode")
 # Keep using the TML grid, or produce a new one, replicable, with h3?
 # https://u-shift.github.io/Traffic-Simulation-Models/pois.html#hexagonal-using-h3jsr
 
-grelha_tml = sf::st_read("/data/IMPT/BaseDados_PMMUS/Grelha/GrelhaHexagAML/GrelhaHexagAML.shp")
+grelha_tml <- sf::st_read("/data/IMPT/BaseDados_PMMUS/Grelha/GrelhaHexagAML/GrelhaHexagAML.shp")
 mapview(grelha_tml)
 nrow(grelha_tml)
-grelha_tml_centroids = st_centroid(grelha_tml)
+grelha_tml_centroids <- st_centroid(grelha_tml)
 
-grelha_tml_cropped = grelha_tml |>
-  st_transform(crs=4326) |>
+grelha_tml_cropped <- grelha_tml |>
+  st_transform(crs = 4326) |>
   # Filter polygons inside limit$geom, removing those that are only partially inside (<50%)
   st_intersection(limit$geom) |>
-  mutate(area_ha = as.numeric(st_area(geometry))/10000) |>
-  filter(area_ha >= 0.5 * (as.numeric(st_area(st_transform(grelha_tml[1, ], crs=4326)))/10000) ) |> # at least 50% of original area  
+  mutate(area_ha = as.numeric(st_area(geometry)) / 10000) |>
+  filter(area_ha >= 0.5 * (as.numeric(st_area(st_transform(grelha_tml[1, ], crs = 4326))) / 10000)) |> # at least 50% of original area
   st_drop_geometry() |>
-  left_join(grelha_tml |> select(id, geometry) |> st_transform(crs=4326), by="id") |> # keep original geometry
-  st_as_sf(crs=4326)
-  
+  left_join(grelha_tml |> select(id, geometry) |> st_transform(crs = 4326), by = "id") |> # keep original geometry
+  st_as_sf(crs = 4326)
+
 
 nrow(grelha_tml_cropped)
 # mapview(grelha_tml_cropped)
@@ -858,22 +874,22 @@ st_write(grelha_tml_cropped |> select(id), "/data/IMPT/geo/grelha_tml_d500.gpkg"
 
 # We will keep using the TML grid for now, but in the future we can produce a new one with h3, which is replicable and has nice properties (equal area, hierarchical, etc).
 library(h3jsr)
-# 
+#
 # Resolution: https://h3geo.org/docs/core-library/restable/
 # h3_res = 10 # 150m diameter
-h3_res = 9 # 400m diameter
+h3_res <- 9 # 400m diameter
 # h3_res = 8 # 1060m diameter - use for the MVP
 
-GRID_h3 = limit |>
+GRID_h3 <- limit |>
   polygon_to_cells(res = h3_res, simple = FALSE)
-GRID_h3 = GRID_h3$h3_addresses |>
+GRID_h3 <- GRID_h3$h3_addresses |>
   cell_to_polygon(simple = FALSE)
 nrow(GRID_h3)
 # mapview(GRID_h3) + mapview(grelha_tml_centroids |> st_transform(crs=4326), col.regions="red")
 
-GRID_h3 = GRID_h3 |>
-  mutate(id = seq(1:nrow(GRID_h3)))  # give an ID to each cell
-h3_index = GRID_h3 |> st_drop_geometry() # save h3_address for later
+GRID_h3 <- GRID_h3 |>
+  mutate(id = seq(1:nrow(GRID_h3))) # give an ID to each cell
+h3_index <- GRID_h3 |> st_drop_geometry() # save h3_address for later
 
 mapview(GRID_h3)
 
@@ -881,7 +897,6 @@ mapview(GRID_h3)
 # saveRDS(h3_index, "/data/IMPT/geo/grelha_h3_r8_index.Rds")
 st_write(GRID_h3 |> select(id), "/data/IMPT/geo/grelha_h3_r9.gpkg", delete_dsn = TRUE)
 saveRDS(h3_index, "/data/IMPT/geo/grelha_h3_r9_index.Rds")
-
 
 
 # # Hex manual
@@ -902,10 +917,9 @@ saveRDS(h3_index, "/data/IMPT/geo/grelha_h3_r9_index.Rds")
 # mapview(GRID, alpha.regions = 0.2)+ mapview(grelha_tml_centroids |> st_transform(crs=4326), col.regions="red")
 
 
-
 ## Grid centroids
 
-GRID_h3_centroids = st_centroid(GRID_h3) |> 	
+GRID_h3_centroids <- st_centroid(GRID_h3) |>
   select(id, h3_address)
 
 

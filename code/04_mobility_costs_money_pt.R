@@ -101,7 +101,7 @@ fares <- list("pass_fare", "single_fare")
 
 for (fare in fares) {
   message("Computing costs for fare structure: ", fare)
-  mobility_itineraries_disagregated <- readRDS_remote(IMPT_URL(sprintf("mobility_itineraries/%s%s.rds", fare_base_file, fare)))
+  mobility_itineraries_disagregated <- impt_read(sprintf("mobility_itineraries/%s%s.rds", fare_base_file, fare))
   nrow(mobility_itineraries_disagregated)
 
   mobility_itineraries_costs <- mobility_itineraries_disagregated |>

@@ -10,17 +10,17 @@
 output_dir <- "mobility_commuting"
 
 # ODs
-od_freguesias_jittered200 <- st_read(IMPT_URL("/trips/od_freguesias_jittered_2024.gpkg")) # lines
+od_freguesias_jittered200 <- impt_read("/trips/od_freguesias_jittered_2024.gpkg") # lines
 nrow(od_freguesias_jittered200) # 31891
 sum(od_freguesias_jittered200$Total) # 5299853
-od_freguesias_jittered50 <- st_read(IMPT_URL("/trips/od_jobs_jt50_buildings.gpkg")) # lines
+od_freguesias_jittered50 <- impt_read("/trips/od_jobs_jt50_buildings.gpkg") # lines
 nrow(od_freguesias_jittered50) # 19547
 sum(od_freguesias_jittered50$trips) # 839142.1
 
-od_freguesias_jittered_OR_geo <- st_read(IMPT_URL("/trips/od_jobs_jt50_buildings_OR.gpkg")) # points origin
+od_freguesias_jittered_OR_geo <- impt_read("/trips/od_jobs_jt50_buildings_OR.gpkg") # points origin
 # mapview(od_freguesias_jittered_OR_geo)
 nrow(od_freguesias_jittered_OR_geo)
-od_freguesias_jittered_DE_geo <- st_read(IMPT_URL("/trips/od_jobs_jt50_buildings_DE.gpkg")) # points destination
+od_freguesias_jittered_DE_geo <- impt_read("/trips/od_jobs_jt50_buildings_DE.gpkg") # points destination
 nrow(od_freguesias_jittered_DE_geo)
 
 # Fill transparent, only border, tick
@@ -69,7 +69,7 @@ for (i in seq_along(ttm_list)) {
   message(sprintf("Processing mode: %s", mode))
 
   # Load the travel time matrix
-  ttm <- readRDS_remote(IMPT_URL(ttm_file)) |>
+  ttm <- impt_read(ttm_file) |>
     mutate(from_id = as.integer(from_id), to_id = as.integer(to_id))
 
   tt_var <- paste("tt", mode, sep = "_")
@@ -214,9 +214,9 @@ grid_debug <- grid_commuting_sf |>
   )
 grid_centroids <- points |> filter(id %in% grid_debug$id)
 points <- points_h3 # From 00_data_load.R
-pois_transit <- st_read(IMPT_URL("/pois/transit_stops.gpkg")) # From 01_data_prep.R
-od_jobs_jittered_OR_geo <- st_read(IMPT_URL("/trips/od_jobs_jt50_buildings_OR.gpkg")) # From 03_ttm_gridh3.R
-od_jobs_jittered_DE_geo <- st_read(IMPT_URL("/trips/od_jobs_jt50_buildings_DE.gpkg"))
+pois_transit <- impt_read("/pois/transit_stops.gpkg") # From 01_data_prep.R
+od_jobs_jittered_OR_geo <- impt_read("/trips/od_jobs_jt50_buildings_OR.gpkg") # From 03_ttm_gridh3.R
+od_jobs_jittered_DE_geo <- impt_read("/trips/od_jobs_jt50_buildings_DE.gpkg")
 
 
 # Travel Time
@@ -264,9 +264,9 @@ mapview(municipios, col.regions = "grey", alpha.regions = 0.1, layer.name = "Mun
 # II. Congestion related travel time (car)  -------------------------------------------------
 
 ttm_root <- "/ttm/ttm_h3_res8"
-ttm_peak <- readRDS_remote(IMPT_URL(paste0(ttm_root, "/ttm_car_120min_202602040800.rds")))
-ttm_dawn <- readRDS_remote(IMPT_URL(paste0(ttm_root, "/ttm_car_120min_202602040300.rds")))
-ttm_weekend <- readRDS_remote(IMPT_URL(paste0(ttm_root, "/ttm_car_120min_202602082000.rds")))
+ttm_peak <- impt_read(paste0(ttm_root, "/ttm_car_120min_202602040800.rds"))
+ttm_dawn <- impt_read(paste0(ttm_root, "/ttm_car_120min_202602040300.rds"))
+ttm_weekend <- impt_read(paste0(ttm_root, "/ttm_car_120min_202602082000.rds"))
 
 summary(ttm_peak)
 summary(ttm_dawn)
@@ -276,15 +276,15 @@ summary(ttm_weekend)
 # III. Number of transfers for key destinations (transit) -------------------------------------------------
 
 ttm_root <- "/ttm/ttm_h3_res8"
-ttm_0t <- readRDS_remote(IMPT_URL(paste0(ttm_root, "/ttm_transit_120min_202602040800_0transfers.rds"))) |>
+ttm_0t <- impt_read(paste0(ttm_root, "/ttm_transit_120min_202602040800_0transfers.rds")) |>
   mutate(from_id = as.integer(from_id), to_id = as.integer(to_id))
-ttm_1t <- readRDS_remote(IMPT_URL(paste0(ttm_root, "/ttm_transit_120min_202602040800_1transfers.rds"))) |>
+ttm_1t <- impt_read(paste0(ttm_root, "/ttm_transit_120min_202602040800_1transfers.rds")) |>
   mutate(from_id = as.integer(from_id), to_id = as.integer(to_id))
-ttm_2t <- readRDS_remote(IMPT_URL(paste0(ttm_root, "/ttm_transit_120min_202602040800_2transfers.rds"))) |>
+ttm_2t <- impt_read(paste0(ttm_root, "/ttm_transit_120min_202602040800_2transfers.rds")) |>
   mutate(from_id = as.integer(from_id), to_id = as.integer(to_id))
-ttm_3t <- readRDS_remote(IMPT_URL(paste0(ttm_root, "/ttm_transit_120min_202602040800_3transfers.rds"))) |>
+ttm_3t <- impt_read(paste0(ttm_root, "/ttm_transit_120min_202602040800_3transfers.rds")) |>
   mutate(from_id = as.integer(from_id), to_id = as.integer(to_id))
-ttm_4t <- readRDS_remote(IMPT_URL(paste0(ttm_root, "/ttm_transit_120min_202602040800_4transfers.rds"))) |>
+ttm_4t <- impt_read(paste0(ttm_root, "/ttm_transit_120min_202602040800_4transfers.rds")) |>
   mutate(from_id = as.integer(from_id), to_id = as.integer(to_id))
 summary(ttm_0t)
 summary(ttm_1t)

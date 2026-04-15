@@ -1,4 +1,3 @@
-
 ### Script inquerito workshop TML 9 maio 2026
 
 library(tidyverse)
@@ -9,7 +8,7 @@ library(readxl)
 
 # 1. Carregar os dados (StringsAsFactors garante que tratamos texto como texto)
 respostas_raw <- read_xlsx("data/IMPTworkshop.xlsx")
-respostas_raw = respostas_raw[-c(1:2),]
+respostas_raw <- respostas_raw[-c(1:2), ]
 
 # 2. Identificar as colunas que contêm os nomes das freguesias
 # Procuramos por qualquer coluna que contenha "Freguesia" no nome
@@ -24,7 +23,7 @@ respostas_limpas <- respostas_raw %>%
   # Limpeza: Remove espaços, converte para maiúsculas e remove NA's acidentais
   mutate(
     freguesia_unificada = (trimws(as.character(freguesia_unificada)))
-  ) 
+  )
 
 IMPTWorkshop <- respostas_limpas %>%
   select(-all_of(colunas_freguesia)) %>% # Remove as colunas originais de freguesia
@@ -32,35 +31,40 @@ IMPTWorkshop <- respostas_limpas %>%
 
 ### Rename the columns so that they are more intuitive e.g. Accessibility_index, Affordability_index, etc.
 IMPTWorkshop <- IMPTWorkshop %>%
-  rename(`Accessibility_Index` = `Como avalia a acessibilidade na sua freguesia?`,
-         `Municipio` = `Selecione o seu Município (Concelho):`, 
-         `Affordability_Index` = `Como avalia os gastos em transporte na sua freguesia?`,
-         `Safety_Index` = `Como avalia a segurança rodoviária na sua freguesia?`,
-         `Mobility_Index` = `Como avalia a mobilidade na sua freguesia?`,
-         `IMPT` = `Como avalia o IMPT global na sua freguesia?`,
-         `freguesia` = `Freguesia`
-         ) |> 
-  #Multiply numeric columns by 10
-  mutate(Accessibility_Index = as.numeric(Accessibility_Index) * 10,
-         Affordability_Index = as.numeric(Affordability_Index) * 10,
-         Safety_Index = as.numeric(Safety_Index) * 10,
-         Mobility_Index = as.numeric(Mobility_Index) * 10,
-         IMPT = 100 - as.numeric(IMPT) * 10)  |> 
-  group_by(freguesia, Municipio) |> 
-  summarise(IMPT = mean(IMPT, na.rm = TRUE),
-            Accessibility_Index = mean(Accessibility_Index, na.rm = TRUE),
-            Affordability_Index = mean(Affordability_Index, na.rm = TRUE),
-            Safety_Index = mean(Safety_Index, na.rm = TRUE),
-            Mobility_Index = mean(Mobility_Index, na.rm = TRUE),
-            .groups = "drop")
+  rename(
+    `Accessibility_Index` = `Como avalia a acessibilidade na sua freguesia?`,
+    `Municipio` = `Selecione o seu Município (Concelho):`,
+    `Affordability_Index` = `Como avalia os gastos em transporte na sua freguesia?`,
+    `Safety_Index` = `Como avalia a segurança rodoviária na sua freguesia?`,
+    `Mobility_Index` = `Como avalia a mobilidade na sua freguesia?`,
+    `IMPT` = `Como avalia o IMPT global na sua freguesia?`,
+    `freguesia` = `Freguesia`
+  ) |>
+  # Multiply numeric columns by 10
+  mutate(
+    Accessibility_Index = as.numeric(Accessibility_Index) * 10,
+    Affordability_Index = as.numeric(Affordability_Index) * 10,
+    Safety_Index = as.numeric(Safety_Index) * 10,
+    Mobility_Index = as.numeric(Mobility_Index) * 10,
+    IMPT = 100 - as.numeric(IMPT) * 10
+  ) |>
+  group_by(freguesia, Municipio) |>
+  summarise(
+    IMPT = mean(IMPT, na.rm = TRUE),
+    Accessibility_Index = mean(Accessibility_Index, na.rm = TRUE),
+    Affordability_Index = mean(Affordability_Index, na.rm = TRUE),
+    Safety_Index = mean(Safety_Index, na.rm = TRUE),
+    Mobility_Index = mean(Mobility_Index, na.rm = TRUE),
+    .groups = "drop"
+  )
 
 
 # Read freguesias geopackge
-freguesias = st_read(IMPT_URL("/geo/freguesias_2024_unique.gpkg"))
-Freguesias = freguesias|> 
+freguesias <- impt_read("/geo/freguesias_2024_unique.gpkg")
+Freguesias <- freguesias |>
   select("dtmnfr", "freguesia", "municipio", "geom")
 # Freguesias <- st_read("useful_data/freguesias.gpkg
-#                       freguesias_2024_unique.gpkg") |> 
+#                       freguesias_2024_unique.gpkg") |>
 #   select("dtmnfr", "freguesia", "municipio", "geom")
 
 
@@ -68,43 +72,44 @@ Freguesias = freguesias|>
 
 # Unir os dados do workshop com as freguesias usando o nome da freguesia
 dados_mapa <- Freguesias %>%
-  left_join(IMPTWorkshop, by = "freguesia") |> 
-  select( -Municipio) 
-  
+  left_join(IMPTWorkshop, by = "freguesia") |>
+  select(-Municipio)
 
 
-mapview(dados_mapa, zcol = "IMPT", na.color = "transparent") + 
-  mapview(dados_mapa, zcol = "Accessibility_Index", hide = TRUE , na.color = "transparent") +
-  mapview(dados_mapa, zcol = "Affordability_Index", hide = TRUE , na.color = "transparent") +
-  mapview(dados_mapa, zcol = "Safety_Index", hide = TRUE , na.color = "transparent") +
-  mapview(dados_mapa, zcol = "Mobility_Index", hide = TRUE , na.color = "transparent")
-
+mapview(dados_mapa, zcol = "IMPT", na.color = "transparent") +
+  mapview(dados_mapa, zcol = "Accessibility_Index", hide = TRUE, na.color = "transparent") +
+  mapview(dados_mapa, zcol = "Affordability_Index", hide = TRUE, na.color = "transparent") +
+  mapview(dados_mapa, zcol = "Safety_Index", hide = TRUE, na.color = "transparent") +
+  mapview(dados_mapa, zcol = "Mobility_Index", hide = TRUE, na.color = "transparent")
 
 
 ###### IMPORT FREGUESIAS GEOJSON
 
 impt_pca <- st_read("https://ushift.tecnico.ulisboa.pt/content/impt/freguesias_aggregated.geojson")
 
-Resultados_IMPT <- impt_pca|> 
-  select("id","name", "IMPT_entropy_pca_pass", "Accessibility_Index", "Affordability_Index_pass", "Safety_Index", "Mobility_Index") |> 
-  rename(freguesia = name, 
-         IMPT = IMPT_entropy_pca_pass, 
-         Affordability_Index = Affordability_Index_pass,
-         dtmnfr = id) 
+Resultados_IMPT <- impt_pca |>
+  select("id", "name", "IMPT_entropy_pca_pass", "Accessibility_Index", "Affordability_Index_pass", "Safety_Index", "Mobility_Index") |>
+  rename(
+    freguesia = name,
+    IMPT = IMPT_entropy_pca_pass,
+    Affordability_Index = Affordability_Index_pass,
+    dtmnfr = id
+  )
 
 
-###### COMPARE IMPT WORKSHOP vs RESULTADOS_IMPT USING SCATTER PLOT POR DIMENSÃO 
+###### COMPARE IMPT WORKSHOP vs RESULTADOS_IMPT USING SCATTER PLOT POR DIMENSÃO
 
 # Step 1: Add the dtmnfr to the Survey using the Reference Table
 # (Replace 'freguesia_name_col' with the column name in your survey)
 IMPTWorkshop_dtmnfr <- IMPTWorkshop %>%
-  left_join(Freguesias %>% select(dtmnfr, freguesia), 
-            by = c("freguesia" = "freguesia"))
+  left_join(Freguesias %>% select(dtmnfr, freguesia),
+    by = c("freguesia" = "freguesia")
+  )
 
 # Step 2: Now perform the Inner Join for the comparison
 # This keeps only the freguesias that were in the survey
 comparison_final <- IMPTWorkshop_dtmnfr %>%
-  inner_join(Resultados_IMPT, by = "dtmnfr", suffix = c("_survey", "_model")) |> 
+  inner_join(Resultados_IMPT, by = "dtmnfr", suffix = c("_survey", "_model")) |>
   rename(freguesia = freguesia_survey)
 
 
@@ -118,7 +123,7 @@ comparison_final <- comparison_final %>%
     abs_gap = abs(gap),
     # Label only the top 10 biggest discrepancies to keep the graph clean
     label_flag = if_else(rank(-abs_gap) <= 10, freguesia, "")
-  ) |> 
+  ) |>
   mutate(
     gap_acc = Accessibility_Index_model - Accessibility_Index_survey,
     abs_gap_acc = abs(gap_acc),
@@ -133,7 +138,7 @@ comparison_final <- comparison_final %>%
     label_flag_saf = if_else(rank(-abs_gap_saf) <= 10, freguesia, ""),
     label_flag_mob = if_else(rank(-abs_gap_mob) <= 10, freguesia, "")
   )
-  
+
 
 # 2. Create the Discrepancy Table
 top_gaps <- comparison_final %>%
@@ -158,16 +163,16 @@ top_gaps_aff <- comparison_final %>%
 print(top_gaps_aff)
 
 top_gaps_saf <- comparison_final %>%
-  select(freguesia, Safety_Index_model, Safety_Index_survey, gap_saf) |> 
+  select(freguesia, Safety_Index_model, Safety_Index_survey, gap_saf) |>
   arrange(desc(abs(gap_saf))) %>%
   head(10)
 
 print(top_gaps_saf)
-  
+
 top_gaps_mob <- comparison_final %>%
   select(freguesia, Mobility_Index_model, Mobility_Index_survey, gap_mob) %>%
   arrange(desc(abs(gap_mob))) %>%
-  head(10)  
+  head(10)
 
 print(top_gaps_mob)
 
@@ -176,16 +181,16 @@ print(top_gaps_mob)
 ggplot(comparison_final, aes(x = IMPT_model, y = IMPT_survey)) +
   # 1. The "Perfect Agreement" Line
   geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "grey60", size = 1) +
-  
+
   # 2. The Data Points
   geom_point(aes(size = abs_gap, color = gap), alpha = 0.7) +
-  
+
   # 3. Coloring: Orange for 'Model > Survey', Blue for 'Survey > Model'
   scale_color_gradient2(low = "#FF8A65", mid = "#E0E0E0", high = "#1E88E5", midpoint = 0) +
-  
+
   # 4. Smart Labels (prevents text from overlapping points)
   geom_text_repel(aes(label = label_flag), size = 3.5, fontface = "bold") +
-  
+
   # 5. Formatting
   scale_x_continuous(limits = c(0, 100)) +
   scale_y_continuous(limits = c(0, 100)) +
@@ -199,7 +204,6 @@ ggplot(comparison_final, aes(x = IMPT_model, y = IMPT_survey)) +
     size = "Magnitude do Erro"
   ) +
   theme(legend.position = "bottom")
-
 
 
 ################## COMPARE DIMENSIONS ##################
@@ -267,7 +271,6 @@ ggplot(comparison_final, aes(x = Affordability_Index_model, y = Affordability_In
   theme(legend.position = "bottom")
 
 
-
 ##### Safety
 
 ggplot(comparison_final, aes(x = Safety_Index_model, y = Safety_Index_survey)) +
@@ -289,20 +292,19 @@ ggplot(comparison_final, aes(x = Safety_Index_model, y = Safety_Index_survey)) +
   theme(legend.position = "bottom")
 
 
-
 # mapview side by side -----------------------------------------------------
 
-map_impt = mapview(Resultados_IMPT, zcol = "IMPT", layer.name = "IMPT") +
+map_impt <- mapview(Resultados_IMPT, zcol = "IMPT", layer.name = "IMPT") +
   mapview(Resultados_IMPT, zcol = "Accessibility_Index", layer.name = "PCA Accessibility", hide = TRUE) +
   mapview(Resultados_IMPT, zcol = "Affordability_Index", layer.name = "PCA Affordability (single fare)", hide = TRUE) +
   mapview(Resultados_IMPT, zcol = "Safety_Index", layer.name = "PCA Safety", hide = TRUE) +
   mapview(Resultados_IMPT, zcol = "Mobility_Index", layer.name = "PCA Mobility", hide = TRUE)
 
-map_survey = mapview(dados_mapa, zcol = "IMPT", na.color = "transparent") + 
-  mapview(dados_mapa, zcol = "Accessibility_Index", hide = TRUE , na.color = "transparent") +
-  mapview(dados_mapa, zcol = "Affordability_Index", hide = TRUE , na.color = "transparent") +
-  mapview(dados_mapa, zcol = "Safety_Index", hide = TRUE , na.color = "transparent") +
-  mapview(dados_mapa, zcol = "Mobility_Index", hide = TRUE , na.color = "transparent")
+map_survey <- mapview(dados_mapa, zcol = "IMPT", na.color = "transparent") +
+  mapview(dados_mapa, zcol = "Accessibility_Index", hide = TRUE, na.color = "transparent") +
+  mapview(dados_mapa, zcol = "Affordability_Index", hide = TRUE, na.color = "transparent") +
+  mapview(dados_mapa, zcol = "Safety_Index", hide = TRUE, na.color = "transparent") +
+  mapview(dados_mapa, zcol = "Mobility_Index", hide = TRUE, na.color = "transparent")
 
 map_together <- leafsync::sync(map_impt, map_survey)
 map_together

@@ -22,27 +22,29 @@ openrouteservice::ors_api_key("AMwi5LU1NCe1ERyQuUHTe2pulOFKcdq0=")
 
 
 # Start by getting all PT stops in AML
-gtfs_paths <- list.files(IMPT_URL("/gtfs/processed"), pattern="\\.zip$" , full.names = TRUE)
+gtfs_paths <- list.files(IMPT_URL("/gtfs/processed"), pattern = "\\.zip$", full.names = TRUE)
 all_stops <- list()
 for (i in gtfs_paths) {
   gtfs_original <- tidytransit::read_gtfs(i)
   message("Running for ", gtfs_original$agency$agency_name[1])
-  gtfs = tidytransit::filter_feed_by_date(gtfs_original, "2026-02-04")
+  gtfs <- tidytransit::filter_feed_by_date(gtfs_original, "2026-02-04")
   summary(gtfs)
-  stops_sf <- tidytransit::stops_as_sf(gtfs$stops) 
+  stops_sf <- tidytransit::stops_as_sf(gtfs$stops)
   all_stops[[i]] <- stops_sf
 }
 # mapview(all_stops, legend=FALSE)
 
 # Create euclidean buffers for all PT stops
-all_stops_combined = bind_rows(all_stops) |> st_as_sf() |> st_filter(limit_bbox)
+all_stops_combined <- bind_rows(all_stops) |>
+  st_as_sf() |>
+  st_filter(limit_bbox)
 # mapview(all_stops_combined, legend=FALSE)
 all_stops_combined <- all_stops_combined |> select(stop_id, stop_code, stop_name, geometry)
 stops_buffers <- st_buffer(
   # Convert to 3857 crs
-  all_stops_combined |> st_transform(3857), 
+  all_stops_combined |> st_transform(3857),
   dist = 500
-) #500m euclidean buffer around stops
+) # 500m euclidean buffer around stops
 
 # # Create service area buffers for all PT stops
 # all_stops_combined_2 <- all_stops_combined |> st_transform(4326)
@@ -55,43 +57,46 @@ stops_buffers <- st_buffer(
 # )
 # stops_service_buffers_500m <- st_buffer(
 #   # Convert to 3857 crs
-#   all_stops_combined |> st_transform(3857), 
+#   all_stops_combined |> st_transform(3857),
 #   dist = 500
 # ) #500m service area buffer around stops
 
 # Evaluate population coverage by PT stop
 # mapview(census, zcol="N_INDIVIDUOS")
-census_stops <- census |> select(id, N_INDIVIDUOS, SHAPE_Length, SHAPE_Area, dicofre24, freguesia, municipio, geom) |> st_transform(3857) |> filter(!is.na(freguesia))
+census_stops <- census |>
+  select(id, N_INDIVIDUOS, SHAPE_Length, SHAPE_Area, dicofre24, freguesia, municipio, geom) |>
+  st_transform(3857) |>
+  filter(!is.na(freguesia))
 census_stops$reachable_stops <- lengths(st_intersects(census_stops, stops_buffers))
-census_stops$has_stops <- census_stops$reachable_stops>0
+census_stops$has_stops <- census_stops$reachable_stops > 0
 census_stops$pop_near_stops <- census_stops$N_INDIVIDUOS * census_stops$has_stops
 freguesias_by_stops <- census_stops |>
-  st_drop_geometry() |>  # Drop geometry for aggregation
+  st_drop_geometry() |> # Drop geometry for aggregation
   group_by(freguesia) |>
   summarise(
     total_points = n(),
     served_population = sum(pop_near_stops),
     freguesia_population = sum(N_INDIVIDUOS),
-    ratio_served_population = round(served_population / freguesia_population, digits=2)
+    ratio_served_population = round(served_population / freguesia_population, digits = 2)
   )
-municipios_by_stops = census_stops |>
-  st_drop_geometry() |>  # Drop geometry for aggregation
+municipios_by_stops <- census_stops |>
+  st_drop_geometry() |> # Drop geometry for aggregation
   group_by(municipio) |>
   summarise(
     total_points = n(),
     served_population = sum(pop_near_stops),
     municipio_population = sum(N_INDIVIDUOS),
-    ratio_served_population = round(served_population / municipio_population, digits=2)
+    ratio_served_population = round(served_population / municipio_population, digits = 2)
   )
-census_stops_grid = census_stops |> st_join(grid |> select(id) |> rename(grid_id=id) |> st_transform(3857), join = st_within)
-grid_by_stops = census_stops_grid |>
-  st_drop_geometry() |>  # Drop geometry for aggregation
+census_stops_grid <- census_stops |> st_join(grid |> select(id) |> rename(grid_id = id) |> st_transform(3857), join = st_within)
+grid_by_stops <- census_stops_grid |>
+  st_drop_geometry() |> # Drop geometry for aggregation
   group_by(grid_id) |>
   summarise(
     total_points = n(),
     served_population = sum(pop_near_stops),
     grid_population = sum(N_INDIVIDUOS),
-    ratio_served_population = round(served_population / grid_population, digits=2)
+    ratio_served_population = round(served_population / grid_population, digits = 2)
   )
 # mapview(grid |> left_join(grid_by_stops, by = c("id" = "grid_id")), zcol = "ratio_served_population")
 
@@ -103,14 +108,13 @@ write.csv(municipios_by_stops, IMPT_URL("/mobility/municipios_stops_coverage.csv
 write.csv(grid_by_stops, IMPT_URL("/mobility/grid_stops_coverage.csv"))
 
 
-
 # Shared Mobility Availability --------------------------------------------
 
 # Grid from 00_data_load.R
-grid_shared_mob = grid
-freguesias_shared_mob = freguesias
-municipios_shared_mob = municipios 
-aml_shared_mobility = st_read(IMPT_URL("/BaseDados_PMMUS/11-ModosPartilhados/11 - ModosPartilhados.gpkg"), layer = "Pontos-partilha_amL") |>
+grid_shared_mob <- grid
+freguesias_shared_mob <- freguesias
+municipios_shared_mob <- municipios
+aml_shared_mobility <- st_read(IMPT_URL("/BaseDados_PMMUS/11-ModosPartilhados/11 - ModosPartilhados.gpkg"), layer = "Pontos-partilha_amL") |>
   st_transform(st_crs(grid_shared_mob))
 # mapview(aml_shared_mobility)
 # Get number of shared mobility locations for different scales
@@ -133,17 +137,17 @@ write.csv(grid_shared_mob |> select(id, shared_mobility_points) |> st_drop_geome
 # mapview(municipios |> left_join(municipios_shared_mob |> st_drop_geometry() |> select(municipio, shared_mobility_points), by = c("municipio" = "municipio")), zcol = "shared_mobility_points")
 
 
-
 # Existence of infrastructure ---------------------------------------------
 
 ### Roads ----
 # Get all road infrastructure OSM data for AML
 osm_roads <- opq(bbox = municipios |> sf::st_bbox()) |>
   # Highways with tags "service", "track" and "road" are excluded
-  add_osm_feature(key = "highway", value = c("motorway", "trunk", "primary", "secondary", 
-                  "tertiary", "unclassified", "residential", "motorway_link", "trunk_link",
-                  "primary_link", "secondary_link", "tertiary_link", "living_street")
-  ) |>
+  add_osm_feature(key = "highway", value = c(
+    "motorway", "trunk", "primary", "secondary",
+    "tertiary", "unclassified", "residential", "motorway_link", "trunk_link",
+    "primary_link", "secondary_link", "tertiary_link", "living_street"
+  )) |>
   osmdata_sf()
 aml_roads <- osm_roads$osm_lines |> st_as_sf()
 # Remove unnecessary columns
@@ -167,12 +171,12 @@ road_length_by_municipio <- roads_by_municipio |>
 road_length_by_municipio <- road_length_by_municipio |>
   st_drop_geometry()
 
-roads_by_grid <- st_join(aml_roads, grid |> select(id) |> rename(grid_id=id), join = st_within)
+roads_by_grid <- st_join(aml_roads, grid |> select(id) |> rename(grid_id = id), join = st_within)
 roads_by_grid$length_segment <- st_length(roads_by_grid |> st_transform(3857))
 road_length_by_grid <- roads_by_grid |>
   group_by(grid_id) |>
   summarise(road_length = sum(length_segment))
-road_length_by_grid <- road_length_by_grid |>  st_drop_geometry()
+road_length_by_grid <- road_length_by_grid |> st_drop_geometry()
 # mapview(grid |> left_join(road_length_by_grid, by = c("id" = "grid_id")), zcol = "road_length")
 # mapview(freguesias |> left_join(road_length_by_freguesia, by = "freguesia"), zcol = "road_length")
 # mapview(municipios |> left_join(road_length_by_municipio, by = "municipio"), zcol = "road_length")
@@ -181,14 +185,14 @@ road_length_by_grid <- road_length_by_grid |>  st_drop_geometry()
 # Get OSM pedestrian infrastructure data for AML
 osm_pedpaths <- opq(bbox = municipios |> sf::st_bbox()) |>
   add_osm_features(list(
-    # Residential streets are included due to them not having 
+    # Residential streets are included due to them not having
     # path or sidewalk tags in OSM, but being mostly walkable.
     # Separate footpaths
     "highway" = c("footway", "residential", "pedestrian", "steps"),
     "footway" = c("sidewalk", "crossing", "path", "platform", "corridor", "alley", "track"),
     # Roads with sidewalk tags
     "sidewalk" = c("both", "left", "right")
-    )) |>
+  )) |>
   osmdata_sf()
 aml_pedpaths <- osm_pedpaths$osm_lines |> st_as_sf()
 # Remove unnecessary columns
@@ -209,14 +213,14 @@ pedpaths_by_municipio$length_segment <- st_length(pedpaths_by_municipio |> st_tr
 pedpath_length_by_municipio <- pedpaths_by_municipio |>
   group_by(municipio) |>
   summarise(pedpath_length = sum(length_segment))
-pedpath_length_by_municipio <- pedpath_length_by_municipio |>  st_drop_geometry()
+pedpath_length_by_municipio <- pedpath_length_by_municipio |> st_drop_geometry()
 
-pedpaths_by_grid <- st_join(aml_pedpaths, grid |> select(id) |> rename(grid_id=id), join = st_within)
+pedpaths_by_grid <- st_join(aml_pedpaths, grid |> select(id) |> rename(grid_id = id), join = st_within)
 pedpaths_by_grid$length_segment <- st_length(pedpaths_by_grid |> st_transform(3857))
 pedpath_length_by_grid <- pedpaths_by_grid |>
   group_by(grid_id) |>
   summarise(pedpath_length = sum(length_segment))
-pedpath_length_by_grid <- pedpath_length_by_grid |>  st_drop_geometry()
+pedpath_length_by_grid <- pedpath_length_by_grid |> st_drop_geometry()
 
 mapview(grid |> left_join(pedpath_length_by_grid, by = c("id" = "grid_id")), zcol = "pedpath_length")
 mapview(freguesias |> left_join(pedpath_length_by_freguesia, by = "freguesia"), zcol = "pedpath_length")
@@ -235,13 +239,13 @@ mapview(municipios |> left_join(pedpath_length_by_municipio, by = "municipio"), 
 #     "cycleway:both" = c("lane", "track", "shared_lane", "share_busway")
 #   )) |>
 #   osmdata_sf()
-#aml_cycleways <- osm_cycleways$osm_lines |> st_as_sf()
-    # Remove unnecessary columns
-#aml_cycleways <- aml_cycleways |> select(osm_id, name, highway, geometry)
-#mapview(aml_cycleways)
+# aml_cycleways <- osm_cycleways$osm_lines |> st_as_sf()
+# Remove unnecessary columns
+# aml_cycleways <- aml_cycleways |> select(osm_id, name, highway, geometry)
+# mapview(aml_cycleways)
 
 
-all_cycleways = st_read(IMPT_URL("mobility/AML_cycle_class.gpkg"))
+all_cycleways <- impt_read("mobility/AML_cycle_class.gpkg")
 # mapview(all_cycleways)
 all_cycleways <- all_cycleways |> select(osm_id, name, highway, cycle_cat, infra5, geom)
 segregated_cycleways <- all_cycleways |> filter(cycle_cat == "strong_ci")
@@ -265,30 +269,30 @@ segregated_length_by_freguesia <- segregated_length_by_freguesia |>
 cycleways_by_municipio <- st_join(all_cycleways, municipios, left = FALSE)
 cycleways_by_municipio$length_segment <- st_length(cycleways_by_municipio |> st_transform(3857))
 cycleway_length_by_municipio <- cycleways_by_municipio |>
-group_by(municipio) |>
+  group_by(municipio) |>
   summarise(cycleway_length = sum(length_segment))
-cycleway_length_by_municipio <- cycleway_length_by_municipio |>  st_drop_geometry()
+cycleway_length_by_municipio <- cycleway_length_by_municipio |> st_drop_geometry()
 
 segregated_by_municipio <- st_join(segregated_cycleways, municipios, left = FALSE)
 segregated_by_municipio$length_segment <- st_length(segregated_by_municipio |> st_transform(3857))
 segregated_length_by_municipio <- segregated_by_municipio |>
   group_by(municipio) |>
   summarise(segregated_cycleway_length = sum(length_segment))
-segregated_length_by_municipio <- segregated_length_by_municipio |>  st_drop_geometry()
+segregated_length_by_municipio <- segregated_length_by_municipio |> st_drop_geometry()
 
-cycleways_by_grid <- st_join(all_cycleways, grid |> select(id) |> rename(grid_id=id), join = st_within)
+cycleways_by_grid <- st_join(all_cycleways, grid |> select(id) |> rename(grid_id = id), join = st_within)
 cycleways_by_grid$length_segment <- st_length(cycleways_by_grid |> st_transform(3857))
 cycleway_length_by_grid <- cycleways_by_grid |>
   group_by(grid_id) |>
   summarise(cycleway_length = sum(length_segment))
-cycleway_length_by_grid <- cycleway_length_by_grid |>  st_drop_geometry()
+cycleway_length_by_grid <- cycleway_length_by_grid |> st_drop_geometry()
 
-segregated_by_grid <- st_join(segregated_cycleways, grid |> select(id) |> rename(grid_id=id), join = st_within)
+segregated_by_grid <- st_join(segregated_cycleways, grid |> select(id) |> rename(grid_id = id), join = st_within)
 segregated_by_grid$length_segment <- st_length(segregated_by_grid |> st_transform(3857))
 segregated_length_by_grid <- segregated_by_grid |>
   group_by(grid_id) |>
   summarise(segregated_cycleway_length = sum(length_segment))
-segregated_length_by_grid <- segregated_length_by_grid |>  st_drop_geometry()
+segregated_length_by_grid <- segregated_length_by_grid |> st_drop_geometry()
 
 # mapview(grid |> left_join(cycleway_length_by_grid, by = c("id" = "grid_id")), zcol = "cycleway_length")
 # mapview(grid |> left_join(segregated_length_by_grid, by = c("id" = "grid_id")), zcol = "segregated_cycleway_length")
@@ -331,7 +335,8 @@ municipios_by_infrastructure <- municipios |>
     pedpath_to_road_ratio = ifelse(road_length > 0, pedpath_length / road_length, 0),
     cycleway_to_road_ratio = ifelse(road_length > 0, cycleway_length / road_length, 0),
     cycling_quality_ratio = ifelse(cycleway_length > 0, segregated_cycleway_length / cycleway_length, 0)
-  ) |> mutate(across(where(is.numeric), ~ round(., 2))) # Round all numeric values to 2 decimal places
+  ) |>
+  mutate(across(where(is.numeric), ~ round(., 2))) # Round all numeric values to 2 decimal places
 # mapview(municipios_by_infrastructure, zcol = "pedpath_to_road_ratio")
 # mapview(municipios_by_infrastructure, zcol = "cycleway_to_road_ratio")
 # mapview(municipios_by_infrastructure, zcol = "cycling_quality_ratio")
@@ -349,7 +354,8 @@ grid_by_infrastructure <- grid |>
     pedpath_to_road_ratio = ifelse(road_length > 0, pedpath_length / road_length, 0),
     cycleway_to_road_ratio = ifelse(road_length > 0, cycleway_length / road_length, 0),
     cycling_quality_ratio = ifelse(cycleway_length > 0, segregated_cycleway_length / cycleway_length, 0)
-  ) |> mutate(across(where(is.numeric), ~ round(., 2))) # Round all numeric values to 2 decimal places
+  ) |>
+  mutate(across(where(is.numeric), ~ round(., 2))) # Round all numeric values to 2 decimal places
 # mapview(grid_by_infrastructure, zcol = "pedpath_to_road_ratio")
 # mapview(grid_by_infrastructure, zcol = "cycleway_to_road_ratio")
 # mapview(grid_by_infrastructure, zcol = "cycling_quality_ratio")

@@ -9,9 +9,9 @@ session <- ssh_connect("ist155593@sigma.ist.utl.pt")
 print(session)
 
 # 2. Associate base layers to nuts  -------------------------------------------------
-# grid = st_read(IMPT_URL("/geo/grelha_h3_r8.gpkg"))
-# freguesias = st_read(IMPT_URL("/geo/freguesias_2024_unique.gpkg"))
-# municipios = st_read(IMPT_URL("/geo/municipios_2024.gpkg"))
+# grid = impt_read("/geo/grelha_h3_r8.gpkg")
+# freguesias = impt_read("/geo/freguesias_2024_unique.gpkg")
+# municipios = impt_read("/geo/municipios_2024.gpkg")
 #
 # freguesias = freguesias |>
 #   mutate(
@@ -80,9 +80,9 @@ print(session)
 
 # DATA_LOCATION <- "https://impt.server.ushift.pt" # To get data from server
 
-grid <- st_read(IMPT_URL("/dashboard_data/grid.gpkg"))
-freguesias <- st_read(IMPT_URL("/dashboard_data/freguesias.gpkg"))
-municipios <- st_read(IMPT_URL("/dashboard_data/municipios.gpkg"))
+grid <- impt_read("/dashboard_data/grid.gpkg")
+freguesias <- impt_read("/dashboard_data/freguesias.gpkg")
+municipios <- impt_read("/dashboard_data/municipios.gpkg")
 mun_nuts <- read.csv("useful_data/mun_nuts.csv") |> rename(nuts = nuts_id, id = mun_id, municipio = name)
 freg_nuts <- read.csv("useful_data/freguesias_nuts.csv") |> rename(id = freg_id, group_id = mun_id, freguesia = name, region_id = nuts_id)
 
@@ -95,7 +95,7 @@ municipios_aggregated <- municipios
 for (m in modes) {
   message("Mode ", m, "...")
 
-  impt <- read.csv(IMPT_URL(sprintf("/impt/results/IMPT_PCA_and_Entropy_Scores%s_municipio.csv", m))) |>
+  impt <- impt_read(sprintf("/impt/results/IMPT_PCA_and_Entropy_Scores%s_municipio.csv", m)) |>
     rename(id = mun_id) |>
     mutate(
       # All columns that start with "IMPT_", mutate to 100-.x
@@ -111,7 +111,7 @@ freguesias_aggregated <- freguesias
 for (m in modes) {
   message("Mode ", m, "...")
 
-  impt <- read.csv(IMPT_URL(sprintf("/impt/results/IMPT_PCA_and_Entropy_Scores%s_freguesia.csv", m))) |>
+  impt <- impt_read(sprintf("/impt/results/IMPT_PCA_and_Entropy_Scores%s_freguesia.csv", m)) |>
     rename(id = dtmnfr) |>
     mutate(
       # All columns that start with "IMPT_", mutate to 100-.x
@@ -129,7 +129,7 @@ grid_aggregated <- grid
 for (m in modes) {
   message("Mode ", m, "...")
 
-  impt <- read.csv(IMPT_URL(sprintf("/impt/results/IMPT_PCA_and_Entropy_Scores%s_grid.csv", m))) |>
+  impt <- impt_read(sprintf("/impt/results/IMPT_PCA_and_Entropy_Scores%s_grid.csv", m)) |>
     rename(id = grid_id) |>
     mutate(
       # All columns that start with "IMPT_", mutate to 100-.x
@@ -678,7 +678,7 @@ for (mode in modes) {
 dimensions <- c("Accessibility", "Mobility", "Safety")
 champions <- data.frame()
 for (d in dimensions) {
-  content <- read.csv(IMPT_URL(paste("/impt/pca_scores/Champions_", d, ".csv", sep = ""))) |>
+  content <- impt_read(paste("/impt/pca_scores/Champions_", d, ".csv", sep = "")) |>
     mutate(position = row_number()) |>
     select(-Contribution) |>
     rename(metric = Indicator)
@@ -717,9 +717,9 @@ length(names(grid_aggregated)) # 831
 length(names(freguesias_aggregated)) # 1057
 length(names(municipios_aggregated)) # 1048
 
-freguesias_aggregated <- read.csv(IMPT_URL(paste(output_dir, "freguesias_aggregated.csv", sep = "/")))
-grid_aggregated <- read.csv(IMPT_URL(paste(output_dir, "grid_aggregated.csv", sep = "/")))
-munipios_aggregated <- read.csv(IMPT_URL(paste(output_dir, "municipios_aggregated.csv", sep = "/")))
+freguesias_aggregated <- impt_read(paste(output_dir, "freguesias_aggregated.csv", sep = "/"))
+grid_aggregated <- impt_read(paste(output_dir, "grid_aggregated.csv", sep = "/"))
+munipios_aggregated <- impt_read(paste(output_dir, "municipios_aggregated.csv", sep = "/"))
 
 municipio_names <- names(municipios_aggregated) |> data.frame()
 freguesia_names <- names(freguesias_aggregated) |> data.frame()

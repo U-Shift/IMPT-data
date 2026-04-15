@@ -56,7 +56,7 @@ pop_movel_freg <- readr::read_delim(
 
 
 #### household size
-households_size_freg <- read_csv(IMPT_URL("/landuse/landuse_freguesias.csv")) |>
+households_size_freg <- impt_read("/landuse/landuse_freguesias.csv") |>
   select(freg_id, population, households) |>
   mutate(pp_hh_avg = population / households)
 
@@ -68,7 +68,7 @@ freguesia_affordability_mob <- freguesia_affordability_car |>
   left_join(freguesia_affordability_pt_pass |> rename(dtmnfr = Origin_dicofre24) |> select(dtmnfr, total_money_2ways) |> rename(affordability_transit_pass_total_money = total_money_2ways), by = "dtmnfr") |>
   left_join(freguesia_affordability_pt_single_fare |> rename(dtmnfr = Origin_dicofre24) |> select(dtmnfr, total_money_2ways) |> rename(affordability_transit_single_fare_total_money = total_money_2ways), by = "dtmnfr")
 
-freguesia_income <- read_csv(IMPT_URL("/landuse/freguesias_income_housing_gini.csv")) |>
+freguesia_income <- impt_read("/landuse/freguesias_income_housing_gini.csv") |>
   select(-gini_coef) |>
   rename(dtmnfr = freg_id) |>
   mutate(housing_costs_year = housing_costs * 12) # yearly costs
@@ -85,7 +85,7 @@ freguesia_affordability <- freguesia_affordability_mob |>
   )
 
 # Census modal share (used to compute modal-share-weighted affordability)
-census_modal_share <- read_csv(IMPT_URL("/census2021/census_modal_share_parish.csv")) |>
+census_modal_share <- impt_read("/census2021/census_modal_share_parish.csv") |>
   select(dtmnfr, total, pt, private_vehicle, active, pt_share, private_vehicle_share, active_share)
 
 
@@ -268,7 +268,7 @@ pop_movel_grid <- readr::read_delim(
 
 
 #### household size
-households_size_grid <- read_csv(IMPT_URL("/landuse/grid_with_cos.csv")) |>
+households_size_grid <- impt_read("/landuse/grid_with_cos.csv") |>
   select(grid_id = id, population, households, pp_hh_avg)
 
 
@@ -280,7 +280,7 @@ grid_affordability_mob <- grid_affordability_car |>
   left_join(grid_affordability_pt_pass |> rename(grid_id = id_grid_origin) |> select(grid_id, total_money_2ways) |> rename(affordability_transit_pass_total_money = total_money_2ways), by = "grid_id") |>
   left_join(grid_affordability_pt_single_fare |> rename(grid_id = id_grid_origin) |> select(grid_id, total_money_2ways) |> rename(affordability_transit_single_fare_total_money = total_money_2ways), by = "grid_id")
 
-grid_income <- read_csv(IMPT_URL("/landuse/grid_income_housing_gini.csv")) |>
+grid_income <- impt_read("/landuse/grid_income_housing_gini.csv") |>
   select(-gini_coef) |>
   mutate(housing_costs_year = housing_costs * 12) # yearly costs
 
@@ -297,7 +297,7 @@ grid_affordability <- grid_affordability_mob |>
   )
 
 # Census modal share (used to compute modal-share-weighted affordability)
-census_modal_share_grid <- read_csv(IMPT_URL("/census2021/census_modal_share_grid.csv")) |>
+census_modal_share_grid <- impt_read("/census2021/census_modal_share_grid.csv") |>
   select(grid_id = id, total, pt, private_vehicle, active, pt_share, private_vehicle_share, active_share)
 
 # NAVEGANTE monthly pass scenario

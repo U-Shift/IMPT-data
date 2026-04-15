@@ -1146,7 +1146,7 @@ freguesias # Read from 00_data_load.R
 
 
 # IMPT PCA and Entropy scores
-# impt_pca = read.csv(IMPT_URL("results_aggregated/20260330/IMPT_PCA_and_Entropy_Scores.csv"))
+# impt_pca = impt_read("results_aggregated/20260330/IMPT_PCA_and_Entropy_Scores.csv")
 impt_pca <- read.csv("/data/IMPT/impt/results/IMPT_PCA_and_Entropy_Scores_freguesia.csv")
 impt_pca_sf <- freguesias |>
   select(-nuts2, -area_ha) |>

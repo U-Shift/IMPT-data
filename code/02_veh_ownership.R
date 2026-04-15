@@ -8,28 +8,27 @@
 library(tidyverse)
 
 # load imob data
-IMOB = readRDS_remote(IMPT_URL("trips/IMOB_trips.Rds"))
+IMOB <- impt_read("trips/IMOB_trips.Rds")
 names(IMOB)
 
 # we don't have the freguesia of where people live, only the city.
 # we will rely on trip purpose "Return Home" and city.
 
-IMOB = IMOB |>
+IMOB <- IMOB |>
   mutate(trip_purpose = case_when(
-    
     # --- Work ---
     D0500_Dsg == "Ir para o trabalho" ~ "Commute to Work",
     D0500_Dsg == "Tratar de assuntos profissionais" ~ "Work (Other)",
-    
+
     # --- Education ---
     D0500_Dsg == "Ir para a escola ou atividades escolares" ~ "Education",
-    
+
     # --- Return home ---
     D0500_Dsg == "Regressar a casa" ~ "Return Home",
-    
+
     # --- Escort trips ---
     D0500_Dsg == "Levar/buscar/acompanhar familiares ou amigos (crianças à escola, etc)" ~ "Escort",
-    
+
     # --- Leisure ---
     D0500_Dsg %in% c(
       "Assistir a eventos desportivos ou culturais (cinema, teatro, concerto, futebol, etc.)",
@@ -40,17 +39,16 @@ IMOB = IMOB |>
       "Realizar atividade em grupo ou em contexto coletivo (em associações, comícios, igrejas, voluntariado, ...)",
       "Visitar familiares ou amigos"
     ) ~ "Leisure",
-    
+
     # --- Utilitarian / personal maintenance ---
     D0500_Dsg %in% c(
       "Fazer compras (supermercado, mercearia, utilidades, etc)",
       "Ir a consulta, tratamentos, exames médicos e similares",
       "Tratar de assuntos pessoais (ir ao banco, lavandaria, cabeleireiro, levar ou buscar coisas pessoais, etc)"
     ) ~ "Utilitarian",
-    
+
     # --- Other ---
     D0500_Dsg == "Outra atividade" ~ "Other",
-    
     TRUE ~ "Other"
   ))
 
@@ -80,8 +78,8 @@ IMOB = IMOB |>
 #     bicycles = N_Bicicletas,
 #     no_veh = NaoDispoeVeiculos
 #   )
-# 
-# 
+#
+#
 # n_distinct(IMOB$Id_aloj_1) #22098
 # n_distinct(home_location$Id_aloj_1) #21005
 
@@ -104,7 +102,7 @@ hh_without_home <- IMOB |>
 
 home_from_first_trip <- IMOB |>
   semi_join(hh_without_home, by = "Id_aloj_1") |>
-  arrange(Id_aloj_1, N_Desloc) |>   # use trip order
+  arrange(Id_aloj_1, N_Desloc) |> # use trip order
   group_by(Id_aloj_1) |>
   slice(1) |> # use only the fisrst trip
   ungroup() |>
@@ -117,15 +115,17 @@ home_dicofre <- bind_rows(home_from_return, home_from_first_trip)
 
 
 n_distinct(IMOB$Id_aloj_1) # 22098
-n_distinct(home_dicofre$Id_aloj_1) #22098 !!!
+n_distinct(home_dicofre$Id_aloj_1) # 22098 !!!
 
 # not do the same but all sample
 home_location <- home_dicofre |>
   left_join(
     IMOB |>
-      select(Id_aloj_1, PESOFIN, DTCC_aloj, Zona_aloj,
-             N_Automoveis, N_VMercadorias, N_VOutros,
-             N_Motociclos, N_Bicicletas, NaoDispoeVeiculos) |>
+      select(
+        Id_aloj_1, PESOFIN, DTCC_aloj, Zona_aloj,
+        N_Automoveis, N_VMercadorias, N_VOutros,
+        N_Motociclos, N_Bicicletas, NaoDispoeVeiculos
+      ) |>
       distinct(),
     by = "Id_aloj_1"
   ) |>
@@ -140,18 +140,19 @@ home_location <- home_dicofre |>
   )
 
 # Check with DTCC that we know
-home_location_check = home_location |> select(Id_aloj_1, dicofre_home, DTCC_aloj) |> 
-  mutate(dicofre_home_4 = substr(dicofre_home, 1, 4)) |> 
+home_location_check <- home_location |>
+  select(Id_aloj_1, dicofre_home, DTCC_aloj) |>
+  mutate(dicofre_home_4 = substr(dicofre_home, 1, 4)) |>
   mutate(verification = dicofre_home_4 == DTCC_aloj)
 
 table(home_location_check$verification)
-# FALSE  TRUE 
-# 184   21914 
+# FALSE  TRUE
+# 184   21914
 
 # I also tried with the most frequent first trip from the household, but the results are the same.
 # the error is lower than 1% (0.8%). we will proceed.
 
-vehicles_hh = home_location |> select(-DTCC_aloj, -Zona_aloj)
+vehicles_hh <- home_location |> select(-DTCC_aloj, -Zona_aloj)
 
 # # problem with "more than...". We will use the higher number +1
 # table(vehicles_hh$cars)
@@ -161,31 +162,32 @@ vehicles_hh = home_location |> select(-DTCC_aloj, -Zona_aloj)
 # table(vehicles_hh$bicycles) #>=7
 # table(vehicles_hh$no_veh)
 
-vehicles_hh <- vehicles_hh |> 
+vehicles_hh <- vehicles_hh |>
   mutate(
     motorcycles = ifelse(motorcycles == ">=4", 4, as.numeric(motorcycles)),
     bicycles    = ifelse(bicycles == ">=7", 7, as.numeric(bicycles))
-  ) |> 
-  mutate(across(c(cars, cars_merc, cars_other, motorcycles, bicycles), ~replace_na(., 0)))
+  ) |>
+  mutate(across(c(cars, cars_merc, cars_other, motorcycles, bicycles), ~ replace_na(., 0)))
 
 # table(is.na(vehicles_hh$cars))
 # table(is.na(vehicles_hh$cars_merc))
 # table(is.na(vehicles_hh$cars_other))
-# table(is.na(vehicles_hh$motorcycles)) 
+# table(is.na(vehicles_hh$motorcycles))
 # table(is.na(vehicles_hh$bicycles))
 # table(is.na(vehicles_hh$no_veh))
 
 # solve the total vehicles and no_veh
-vehicles_hh <- vehicles_hh  |> 
+vehicles_hh <- vehicles_hh |>
   mutate(
     # If no vehicles at all, set no_veh = 1
     total_vehicles = cars + cars_merc + cars_other + motorcycles + bicycles,
-    total_motor_vehicles = cars + cars_merc + cars_other + motorcycles ) |> 
+    total_motor_vehicles = cars + cars_merc + cars_other + motorcycles
+  ) |>
   select(-no_veh)
 
-# 
-# vehicles_by_dicofre <- vehicles_hh |> 
-#   group_by(dicofre_home) |> 
+#
+# vehicles_by_dicofre <- vehicles_hh |>
+#   group_by(dicofre_home) |>
 #   summarise(
 #     hh_sample = n(), # number of households
 #     total_weight = sum(hh_weight, na.rm = TRUE),
@@ -211,55 +213,55 @@ vehicles_by_dicofre_new <- vehicles_hh |>
   rename(dicofre_home_new = dtmnfr24)
 
 
-vehicles_by_parish = vehicles_by_dicofre_new  |>
+vehicles_by_parish <- vehicles_by_dicofre_new |>
   # group by new dicofre
   group_by(dicofre_home_new) |>
   summarise(
-    n_households = n(),                      # number of original households contributing
-    hh_weight    = sum(hh_weight_new),       # sum of weighted households
-    avg_cars         = weighted.mean(cars, hh_weight_new, na.rm = TRUE),
-    avg_cars_merc    = weighted.mean(cars_merc, hh_weight_new, na.rm = TRUE),
-    avg_cars_other   = weighted.mean(cars_other, hh_weight_new, na.rm = TRUE),
-    avg_motorcycles  = weighted.mean(motorcycles, hh_weight_new, na.rm = TRUE),
-    avg_bicycles     = weighted.mean(bicycles, hh_weight_new, na.rm = TRUE),
-    total_vehicles_per_hh       = weighted.mean(total_vehicles, hh_weight_new, na.rm = TRUE),
+    n_households = n(), # number of original households contributing
+    hh_weight = sum(hh_weight_new), # sum of weighted households
+    avg_cars = weighted.mean(cars, hh_weight_new, na.rm = TRUE),
+    avg_cars_merc = weighted.mean(cars_merc, hh_weight_new, na.rm = TRUE),
+    avg_cars_other = weighted.mean(cars_other, hh_weight_new, na.rm = TRUE),
+    avg_motorcycles = weighted.mean(motorcycles, hh_weight_new, na.rm = TRUE),
+    avg_bicycles = weighted.mean(bicycles, hh_weight_new, na.rm = TRUE),
+    total_vehicles_per_hh = weighted.mean(total_vehicles, hh_weight_new, na.rm = TRUE),
     total_motor_vehicles_per_hh = weighted.mean(total_motor_vehicles, hh_weight_new, na.rm = TRUE),
     pct_hh_no_vehicle = sum(hh_weight_new[total_vehicles == 0], na.rm = TRUE) / sum(hh_weight_new, na.rm = TRUE) * 100,
     .groups = "drop"
-  ) |> 
+  ) |>
   rename(dicofre = dicofre_home_new) |>
   mutate(across(where(is.numeric), ~ round(., 2)))
 # mapview::mapview(vehicles_by_dicofre_new_geo, zcol="avg_cars")
 # mapview::mapview(vehicles_by_dicofre_new_geo, zcol="avg_bicycles")
 
-mun_parish = read.csv("useful_data/freguesias_nuts.csv")
-vehicles_by_municipality = vehicles_by_dicofre_new |>
-  left_join(mun_parish |> mutate(freg_id = as.character(freg_id)), by = c("dicofre_home_new" = "freg_id")) |> 
+mun_parish <- read.csv("useful_data/freguesias_nuts.csv")
+vehicles_by_municipality <- vehicles_by_dicofre_new |>
+  left_join(mun_parish |> mutate(freg_id = as.character(freg_id)), by = c("dicofre_home_new" = "freg_id")) |>
   group_by(mun_id) |>
   summarise(
-    n_households = n(),                      # number of original households contributing
-    hh_weight    = sum(hh_weight_new),       # sum of weighted households
-    avg_cars         = weighted.mean(cars, hh_weight_new, na.rm = TRUE),
-    avg_cars_merc    = weighted.mean(cars_merc, hh_weight_new, na.rm = TRUE),
-    avg_cars_other   = weighted.mean(cars_other, hh_weight_new, na.rm = TRUE),
-    avg_motorcycles  = weighted.mean(motorcycles, hh_weight_new, na.rm = TRUE),
-    avg_bicycles     = weighted.mean(bicycles, hh_weight_new, na.rm = TRUE),
-    total_vehicles_per_hh       = weighted.mean(total_vehicles, hh_weight_new, na.rm = TRUE),
+    n_households = n(), # number of original households contributing
+    hh_weight = sum(hh_weight_new), # sum of weighted households
+    avg_cars = weighted.mean(cars, hh_weight_new, na.rm = TRUE),
+    avg_cars_merc = weighted.mean(cars_merc, hh_weight_new, na.rm = TRUE),
+    avg_cars_other = weighted.mean(cars_other, hh_weight_new, na.rm = TRUE),
+    avg_motorcycles = weighted.mean(motorcycles, hh_weight_new, na.rm = TRUE),
+    avg_bicycles = weighted.mean(bicycles, hh_weight_new, na.rm = TRUE),
+    total_vehicles_per_hh = weighted.mean(total_vehicles, hh_weight_new, na.rm = TRUE),
     total_motor_vehicles_per_hh = weighted.mean(total_motor_vehicles, hh_weight_new, na.rm = TRUE),
     pct_hh_no_vehicle = sum(hh_weight_new[total_vehicles == 0], na.rm = TRUE) / sum(hh_weight_new, na.rm = TRUE) * 100,
     .groups = "drop"
   ) |>
-  rename(id=mun_id) |>
+  rename(id = mun_id) |>
   mutate(across(where(is.numeric), ~ round(., 2)))
 
 # mun_id = read.csv("useful_data/mun_nuts.csv")
 # mapview::mapview(municipios |> left_join(mun_id, by=c("municipio"="name")) |> left_join(vehicles_by_municipality, by = c("mun_id" = "id")), zcol="avg_cars")
 # mapview::mapview(municipios |> left_join(mun_id, by=c("municipio"="name")) |> left_join(vehicles_by_municipality, by = c("mun_id" = "id")), zcol="avg_bicycles")
 
-vehicles_by_grid = read.csv("useful_data/grid_nuts.csv") |>
-  select(grid_id, freg_id) |> 
-  rename(id=grid_id, dicofre=freg_id) |> 
-  mutate(dicofre=as.character(dicofre)) |>
+vehicles_by_grid <- read.csv("useful_data/grid_nuts.csv") |>
+  select(grid_id, freg_id) |>
+  rename(id = grid_id, dicofre = freg_id) |>
+  mutate(dicofre = as.character(dicofre)) |>
   filter(!is.na(dicofre)) |>
   left_join(vehicles_by_parish, by = "dicofre")
 # mapview::mapview(grid |> left_join(vehicles_by_grid), zcol="avg_cars")
