@@ -12,7 +12,7 @@ Final results are stored in three geographic formats for each spatial level:
 
 : Output file formats {#tbl-output}
 
-Results are uploaded to the project data server at `https://server.ushift.pt/impt` using `piggyback` for publishing to the GitHub release.
+Results are uploaded to the project data server at `https://impt.server.ushift.pt`, to the ushift server at `https://ushift.tecnico.ulisboa.pt/content/impt/`, and to the GitHub release using `piggyback`.
 
 ## Dashboard Export {#sec-dashboard}
 
