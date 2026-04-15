@@ -27,8 +27,38 @@ library(mapview)
 
 # ── 1.1 Accessibility ─────────────────────────────────────────────────────────
 
-Accessibility <- impt_read("/results_data/freguesia_accessibility.csv") |>
-  select(-nuts)
+Accessibility <- impt_read("/accessibility/r8/accessibility_freguesia.csv") |>
+  left_join(impt_read("/mobility_costs/r8/mobility_freguesia.csv"), by = "dtmnfr") |>
+  select(
+    dtmnfr,
+    # Number of opportunities reachable within threshold (travel time)
+    # - Healthcare (15 Walk-Cycle; 30 min PT-CAR)
+    access_health_walk_15min_residents, access_health_bike_15min_residents, access_health_transit_2t_30min_residents, access_health_car_30min_residents,
+    # - Basic Education (15 Walk-Cycle; 30 min PT-CAR)
+    access_schools_primary_bike_15min_kids, access_schools_primary_walk_15min_kids, access_schools_primary_transit_2t_30min_kids, access_schools_primary_car_30min_kids,
+    # - Green Spaces (15-30 min Walk-Cycle; 5-10 min PT-CAR)
+    access_greenspaces_walk_15min_residents, access_greenspaces_bike_15min_residents, access_greenspaces_transit_2t_5min_residents, access_greenspaces_car_5min_residents,
+    # - Recreation (15-30 min Walk-Cycle; 5-10 min PT-CAR)
+    access_recreation_walk_15min_residents, access_recreation_bike_15min_residents, access_recreation_transit_2t_5min_residents, access_recreation_car_5min_residents,
+    # - Groceries and basic shopping (15 min all modes)
+    access_groceries_walk_15min_residents, access_groceries_bike_15min_residents, access_groceries_transit_2t_15min_residents, access_groceries_car_15min_residents,
+    # - Jobs (30-45 min all modes)
+    access_jobs_walk_30min_active, access_jobs_bike_30min_active, access_jobs_transit_2t_45min_active, access_jobs_car_45min_active,
+
+    # Travel time to first n opportunities
+    # - Healthcare (1st opportunity)
+    mobility_cost_health_walk_n1_residents, mobility_cost_health_bike_n1_residents, mobility_cost_health_transit_2t_n1_residents, mobility_cost_health_car_n1_residents,
+    # - Basic Education (1st opportunity)
+    mobility_cost_schools_primary_walk_n1_kids, mobility_cost_schools_primary_bike_n1_kids, mobility_cost_schools_primary_transit_2t_n1_kids, mobility_cost_schools_primary_car_n1_kids,
+    # - Green Spaces (1st opportunity)
+    mobility_cost_greenspaces_walk_n1_residents, mobility_cost_greenspaces_bike_n1_residents, mobility_cost_greenspaces_transit_2t_n1_residents, mobility_cost_greenspaces_car_n1_residents,
+    # - Recreation (3 opportinities)
+    mobility_cost_recreation_walk_n3_residents, mobility_cost_recreation_bike_n3_residents, mobility_cost_recreation_transit_2t_n3_residents, mobility_cost_recreation_car_n3_residents,
+    # - Groceries and basic shopping (3 opportunities)
+    mobility_cost_groceries_walk_n3_residents, mobility_cost_groceries_bike_n3_residents, mobility_cost_groceries_transit_2t_n3_residents, mobility_cost_groceries_car_n3_residents,
+    # - Jobs (3 opportunities)
+    mobility_cost_jobs_walk_n3_active, mobility_cost_jobs_bike_n3_active, mobility_cost_jobs_transit_2t_n3_active, mobility_cost_jobs_car_n3_active
+  )
 
 
 # ── 1.2 Mobility ──────────────────────────────────────────────────────────────
@@ -59,8 +89,34 @@ freguesias_shared_mobility <- impt_read("/mobility/freguesias_shared_mobility.cs
   rename(Shared_mobility = shared_mobility_points)
 
 # Pre-aggregated mobility results
-freguesias_mobility <- impt_read("/results_data/freguesia_mobility.csv") |>
-  select(-nuts)
+freguesias_mobility <- impt_read("/mobility_commuting/freguesia_commuting.csv") |>
+  rename(id = Origin_dicofre24) |>
+  mutate(id = as.character(id)) |>
+  rename_with(~ paste0("mobility_commuting_", .), -id) |>
+  left_join(
+    impt_read("/mobility_transit/freguesias_headways.csv") |>
+      rename(id = dtmnfr) |>
+      mutate(id = as.character(id)) |>
+      rename_with(~ paste0("mobility_transit_", .), -id)
+  ) |>
+  left_join(
+    impt_read("/mobility_commuting/freguesia_transfers.csv") |>
+      rename(id = Origin_dicofre24) |>
+      mutate(id = as.character(id)) |>
+      select(id, weighted_mean_transfers) |>
+      rename(mobility_transit_commuting_mean_transfers = weighted_mean_transfers)
+  ) |>
+  select(
+    id,
+    # Travel time (peak)
+    mobility_commuting_avg_tt_bike, mobility_commuting_avg_tt_walk, mobility_commuting_avg_tt_transit_2t_120m_15w, mobility_commuting_avg_tt_car,
+    # Number of transfers for key destinations (transit)
+    mobility_transit_commuting_mean_transfers,
+    # PT Waiting Times
+    mobility_transit_weighted_waiting_time_peak,
+    # Night/weekend service availability
+    mobility_transit_weighted_frequency_reduction_night, mobility_transit_weighted_frequency_reduction_weekend
+  )
 
 # Transit headways
 freguesias_headways <- impt_read("/mobility_transit/freguesias_headways.csv") |>
