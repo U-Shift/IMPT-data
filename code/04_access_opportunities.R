@@ -64,35 +64,19 @@ pois_list <- list(
 
 
 # Grid population ---------------------------------------------------------------
-grid_census <- census |> st_join(grid, join = st_within)
-
-grid_population <- grid_census |>
-  st_drop_geometry() |> # drop geometry for counting
-  group_by(id.y) |>
-  summarise(
-    buildings = sum(N_EDIFICIOS_CLASSICOS),
-    families = sum(N_NUCLEOS_FAMILIARES),
-    residents = sum(N_INDIVIDUOS),
-    kids = sum(N_INDIVIDUOS_0_14), # 0-14
-    young = sum(N_INDIVIDUOS_15_24), # 15-24
-    active = sum(N_INDIVIDUOS_25_64), # 25-64
-    elder = sum(N_INDIVIDUOS_65_OU_MAIS), # 65+
-    male = sum(N_INDIVIDUOS_H),
-    female = sum(N_INDIVIDUOS_M)
+grid_population <- grid_with_cos |>
+  select(id, population, youth, elderly, adults) |>
+  rename(
+    residents = population,
+    kids = youth,
+    elder = elderly,
+    active = adults
   ) |>
-  rename(id = id.y) |>
-  filter(!is.na(id)) |>
-  ungroup()
-
-grid_population <- grid |>
-  left_join(grid_population, by = "id") |>
   mutate(across(where(is.numeric), ~ tidyr::replace_na(.x, 0)))
 
 # mapview(grid_population, zcol = "residents")
 # mapview(grid_population, zcol = "elder")
 # mapview(grid_population, zcol = "buildings")
-
-grid_points_population <- st_centroid(grid_population)
 
 # Calculations: Number of opportunities -------------------------------------------------
 
@@ -165,7 +149,6 @@ accessibility_measures <- list(
   list("health_primary", "elder", accessibility_modes),
   list("health_hospital", "elder", accessibility_modes),
   list("schools_primary", "kids", accessibility_modes),
-  list("schools_high", "young", accessibility_modes),
   list("greenspaces", "residents", accessibility_modes),
   list("recreation", "residents", accessibility_modes),
   list("groceries", "residents", accessibility_modes),
@@ -185,11 +168,10 @@ freguesia_accessibility <- freguesias |>
   group_by(dtmnfr) |>
   summarise(
     # Demographics
-    buildings = sum(buildings),
-    families = sum(families),
     kids = sum(kids),
     elder = sum(elder),
-    residents = sum(residents)
+    residents = sum(residents),
+    active = sum(active)
   ) |>
   # Get geometry back
   left_join(freguesias |> select(dtmnfr, geom), by = "dtmnfr") |>
@@ -202,11 +184,10 @@ municipio_accessibility <- municipios |>
   group_by(municipio) |>
   summarise(
     # Demographics
-    buildings = sum(buildings),
-    families = sum(families),
     kids = sum(kids),
     elder = sum(elder),
-    residents = sum(residents)
+    residents = sum(residents),
+    active = sum(active)
   ) |>
   # Get geometry back
   left_join(municipios |> select(municipio, geom), by = "municipio") |>

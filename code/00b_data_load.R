@@ -21,6 +21,7 @@ road_network_base <- impt_read("/geo/road_network_base.gpkg") # 1 to 3 level
 
 # Census points
 census <- impt_read("/geo/census24_points.gpkg")
+grid_with_cos <- impt_read("/landuse/grid_with_cos.gpkg")
 
 # POIs
 pois <- impt_read("/geo/pois_osm2024.gpkg")

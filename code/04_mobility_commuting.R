@@ -205,7 +205,7 @@ impt_write(municipio_commuting_sf, sprintf("%s/municipio_commuting.gpkg", output
 impt_write(municipio_commuting, sprintf("%s/municipio_commuting.csv", output_dir))
 
 # Debug
-grid_population # From 04_accessibility.R
+grid_population # From 04_access_opportunities.R
 grid_debug <- grid_commuting_sf |>
   filter(!is.na(trips)) |>
   left_join(grid_population |> st_drop_geometry()) |> # Get census data

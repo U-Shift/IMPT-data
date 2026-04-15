@@ -8,15 +8,15 @@ library(mapview)
 output_dir <- "/mobility_costs/r8"
 
 # Travel time matrix ---------------------------------------------------------------
-# Defined in 04_accessibility.R
+# Defined in 04_access_opportunities.R
 
 
 # POIs ---------------------------------------------------------------
-# Defined in 04_accessibility.R
+# Defined in 04_access_opportunities.R
 
 
 # Grid population ---------------------------------------------------------------
-# Defined in 04_accessibility.R
+# Defined in 04_access_opportunities.R
 
 # Number of opportunities -------------------------------------------------
 
@@ -72,7 +72,7 @@ for (i in 1:length(pois_list)) {
 }
 
 # 2. Aggregate by parish, population weighted
-# accessibility_modes and accessibility_masures Defined in 04_accessibility.R
+# accessibility_modes and accessibility_masures Defined in 04_access_opportunities.R
 
 grid_mobility <- grid_population
 freguesia_mobility <- freguesias |>
@@ -82,11 +82,10 @@ freguesia_mobility <- freguesias |>
   group_by(dtmnfr) |>
   summarise(
     # Demographics
-    buildings = sum(buildings),
-    families = sum(families),
     kids = sum(kids),
     elder = sum(elder),
-    residents = sum(residents)
+    residents = sum(residents),
+    active = sum(active)
   ) |>
   # Get geometry back
   left_join(freguesias |> select(dtmnfr, geom), by = "dtmnfr") |>
@@ -99,11 +98,10 @@ municipio_mobility <- municipios |>
   group_by(municipio) |>
   summarise(
     # Demographics
-    buildings = sum(buildings),
-    families = sum(families),
     kids = sum(kids),
     elder = sum(elder),
-    residents = sum(residents)
+    residents = sum(residents),
+    active = sum(active)
   ) |>
   # Get geometry back
   left_join(municipios |> select(municipio, geom), by = "municipio") |>
