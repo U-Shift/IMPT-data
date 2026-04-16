@@ -68,7 +68,7 @@ classify_cycle_infrastructure_portugal <- function(osm) {
     dplyr::mutate(detailed_segregation = dplyr::case_when(
       highway == "cycleway" ~ CYCLE_TRACK,
       highway == "path" & bicycle == "designated" ~ CYCLE_TRACK,
-      highway == "footway" & bicycle == "yes" ~ PROTECTED_ACTIVE,
+      # highway == "footway" & bicycle == "yes" ~ PROTECTED_ACTIVE,
       highway == "pedestrian" & bicycle == "designated" ~ PROTECTED_ACTIVE,
       segregated == "yes" ~ CYCLE_TRACK,
       segregated == "no" ~ CYCLE_TRACK,
@@ -106,14 +106,15 @@ classify_cycle_infrastructure_portugal <- function(osm) {
 # 3. Execution ------------------------------------------------------------
 
 # Download and clip OSM data
-# Note: "Portugal" here refers to the osmextract provider, which will be clipped to our boundary
-message("Extracting OSM data for cycling infrastructure...")
+# Note: "Portugal" here refers to the osmextract provider.
+
 aml_cycleways <- get_travel_network(
   place = "Portugal",
-  boundary = limit,
-  boundary_type = "clipsrc",
+  # boundary = limit,
+  # boundary_type = "clipsrc",
   force_vectortranslate = TRUE
-)
+) |> 
+  st_filter(limit) # Perform the spatial clip/filter
 
 # Replace : by _ in column names for easier logic
 aml_cycleways <- aml_cycleways |>
@@ -131,7 +132,8 @@ cycle_net_pt_clean <- cycle_net_pt |>
   select(osm_id, name, highway, geometry, cycle_segregation) |> 
   filter(cycle_segregation != "Mixed traffic")
 
+mapview(cycle_net_pt_clean, zcol="cycle_segregation")
+
 # Write output to the mobility folder
 impt_write(cycle_net_pt_clean, "/mobility/cycle_network_class.gpkg")
 
-message("Success: Bike infrastructure classification saved to /mobility/cycle_network_class.gpkg")
