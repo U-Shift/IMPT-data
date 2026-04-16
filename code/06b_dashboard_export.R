@@ -633,7 +633,7 @@ replace_anywhere <- list(
   # From, to
   c("navegante", "pass"),
   c("singlefare", "no_pass"),
-  c("sf", "no_pass"),
+  c("_sf", "_no_pass"),
   c("nav", "pass"),
   c("carro", "car"),
   c("private_vehicle", "car"),
@@ -671,7 +671,6 @@ for (mode in modes) {
   names(freguesias_aggregated) <- gsub(paste0("^(.*)_", mode[1], "_(.*)$"), paste0("\\1_\\2_", mode[2]), names(freguesias_aggregated))
   names(municipios_aggregated) <- gsub(paste0("^(.*)_", mode[1], "_(.*)$"), paste0("\\1_\\2_", mode[2]), names(municipios_aggregated))
 }
-
 
 # Extra: Champions --------------------------------------------------------
 
