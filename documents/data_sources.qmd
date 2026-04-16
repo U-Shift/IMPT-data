@@ -78,14 +78,16 @@ Travel time matrices for public transit and stop-level frequency statistics were
 gtfs <- data.frame(
     Operator = c(
         "Carris Metropolitana", "Carris Municipal (Lisboa)", "MobiCascais",
+        "Transportes Coletivos do Barreiro (TCB)",
         "Metropolitano de Lisboa (Metro)", "Comboios de Portugal (CP)",
         "Fertagus", "Metro Transportes do Sul (MTS)", "Transtejo/Soflusa (TTSL)"
     ),
-    Mode = c("Bus", "Bus", "Bus", "Metro", "Rail", "Rail", "Light Rail", "Ferry"),
+    Mode = c("Bus", "Bus", "Bus", "Bus", "Metro", "Rail", "Rail", "Light Rail", "Ferry"),
     URL = c(
         "https://api.carrismetropolitana.pt/gtfs",
         "https://gateway.carris.pt/gateway/gtfs/api/v2.8/GTFS",
         "https://drive.google.com/u/0/uc?id=13ucYiAJRtu-gXsLa02qKJrGOgDjbnUWX&export=download",
+        "https://backend.tcbarreiro.pt/download-gtfs",
         "https://metrolisboa.pt/google_transit/googleTransit.zip",
         "https://publico.cp.pt/gtfs/gtfs.zip",
         "https://mts.pt/imt/MTS-20240129.zip",
