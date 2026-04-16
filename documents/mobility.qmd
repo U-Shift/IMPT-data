@@ -50,15 +50,30 @@ Pedestrian infrastructure uses tags: `highway = footway | pedestrian | steps | r
 
 ### Cycling infrastructure ratio and type
 
-The cycling infrastructure ratio is computed analogously to the pedestrian ratio. Cycling infrastructure data comes from the classified cycle network layer `AML_cycle_class.gpkg` (TML PMUS 2024), which categorises cycleways into:
+**Script:** `04_mobility_bike_infrastructure.R`
 
-- Segregated cycleway (*ciclovia segregada*)
-- Painted cycle lane (*ciclofaixa pintada na via*)
-- Shared pedestrian infrastructure (*infraestrutura pedonal partilhada*)
-- Shared road with vehicles, signed (*via partilhada com veículos motorizados, sinalizada*)
+The cycling infrastructure ratio is computed analogously to the pedestrian ratio by comparing cycleway length to total road length. Infrastructure data is extracted from OpenStreetMap and classified according to its quality and level of segregation:
 
-The cycling quality ratio is:
+- **Cycle track or lane**: Segregated or light-separated tracks exclusive for cycling (*Ciclovia segregada*).
+    - `highway = cycleway`
+    - `highway = path` & `bicycle = designated`
+    - `segregated = yes | no`
+    - `cycleway` tags containing: `separate`, `buffered_lane`, `segregated`, `lane`, or `track`.
+- **Advisory lane**: Marked cycle lanes shared with motor vehicles, such as sharrows or advisory lanes (*Via partilhada com veículos motorizados / zonas 30*).
+    - `cycleway` tags containing: `shared_lane`.
+- **Protected Active**: Infrastructure shared with pedestrians but protected from motor vehicles (*Via partilhada com peões*).
+    - `highway = pedestrian` & `bicycle = designated`.
+    - Refinement of `highway = path | footway | pedestrian` when `foot` access is explicitly allowed on cycling paths without physical segregation.
+
+The primary indicators are:
+
+**Cycling infrastructure ratio**:
+$$R_{cyc} = \frac{\text{total cycleway length}}{\text{road length}}$$
+
+**Cycling quality ratio**:
 $$R_{cyc,q} = \frac{\text{segregated cycleway length}}{\text{total cycleway length}}$$
+
+Where "segregated cycleway length" corresponds to the **Cycle track or lane** category.
 
 ## PT stop coverage
 
