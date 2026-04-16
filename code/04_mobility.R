@@ -142,17 +142,18 @@ impt_write(grid_shared_mob |> select(id, shared_mobility_points) |> st_drop_geom
 
 ### Roads ----
 # Get all road infrastructure OSM data for AML
-osm_roads <- opq(bbox = municipios |> sf::st_bbox()) |>
-  # Highways with tags "service", "track" and "road" are excluded
-  add_osm_feature(key = "highway", value = c(
-    "motorway", "trunk", "primary", "secondary",
-    "tertiary", "unclassified", "residential", "motorway_link", "trunk_link",
-    "primary_link", "secondary_link", "tertiary_link", "living_street"
-  )) |>
-  osmdata_sf()
-aml_roads <- osm_roads$osm_lines |> st_as_sf()
+# osm_roads <- opq(bbox = municipios |> sf::st_bbox()) |>
+#   # Highways with tags "service", "track" and "road" are excluded
+#   add_osm_feature(key = "highway", value = c(
+#     "motorway", "trunk", "primary", "secondary",
+#     "tertiary", "unclassified", "residential", "motorway_link", "trunk_link",
+#     "primary_link", "secondary_link", "tertiary_link", "living_street"
+#   )) |>
+#   osmdata_sf()
+# aml_roads <- osm_roads$osm_lines |> st_as_sf()
+osm_roads = st_read("/data/IMPT/geo/r5r/IMPT_Road_network.osm.pbf", layer="lines") # from hot export tool (osm pacakage has timeouts)
 # Remove unnecessary columns
-aml_roads <- aml_roads |> select(osm_id, name, highway, geometry)
+aml_roads <- osm_roads |> select(osm_id, name, highway, geometry)
 # mapview(aml_roads)
 
 # Disaggregate and measure road length for different scales
@@ -184,20 +185,22 @@ road_length_by_grid <- road_length_by_grid |> st_drop_geometry()
 
 ### Pedestrians ----
 # Get OSM pedestrian infrastructure data for AML
-osm_pedpaths <- opq(bbox = municipios |> sf::st_bbox()) |>
-  add_osm_features(list(
-    # Residential streets are included due to them not having
-    # path or sidewalk tags in OSM, but being mostly walkable.
-    # Separate footpaths
-    "highway" = c("footway", "residential", "pedestrian", "steps"),
-    "footway" = c("sidewalk", "crossing", "path", "platform", "corridor", "alley", "track"),
-    # Roads with sidewalk tags
-    "sidewalk" = c("both", "left", "right")
-  )) |>
-  osmdata_sf()
-aml_pedpaths <- osm_pedpaths$osm_lines |> st_as_sf()
+# osm_pedpaths <- opq(bbox = municipios |> sf::st_bbox()) |>
+#   add_osm_features(list(
+#     # Residential streets are included due to them not having
+#     # path or sidewalk tags in OSM, but being mostly walkable.
+#     # Separate footpaths
+#     "highway" = c("footway", "residential", "pedestrian", "steps"),
+#     "footway" = c("sidewalk", "crossing", "path", "platform", "corridor", "alley", "track"),
+#     # Roads with sidewalk tags
+#     "sidewalk" = c("both", "left", "right")
+#   )) |>
+#   osmdata_sf()
+# osm_pedpaths = osm_pedpaths$osm_lines |> st_as_sf()
+# impt_write(osm_pedpaths, "/mobility/osm_pedpaths.Rds")
+osm_pedpaths = impt_read("/mobility/osm_pedpaths.Rds")
 # Remove unnecessary columns
-aml_pedpaths <- aml_pedpaths |> select(osm_id, name, highway, sidewalk, geometry)
+aml_pedpaths <- osm_pedpaths |> select(osm_id, name, highway, sidewalk, geometry)
 # mapview(aml_pedpaths)
 
 # Disaggregate and measure pedpath length by Freguesia
@@ -223,33 +226,17 @@ pedpath_length_by_grid <- pedpaths_by_grid |>
   summarise(pedpath_length = sum(length_segment))
 pedpath_length_by_grid <- pedpath_length_by_grid |> st_drop_geometry()
 
-mapview(grid |> left_join(pedpath_length_by_grid, by = c("id" = "grid_id")), zcol = "pedpath_length")
-mapview(freguesias |> left_join(pedpath_length_by_freguesia, by = "freguesia"), zcol = "pedpath_length")
-mapview(municipios |> left_join(pedpath_length_by_municipio, by = "municipio"), zcol = "pedpath_length")
+# mapview(grid |> left_join(pedpath_length_by_grid, by = c("id" = "grid_id")), zcol = "pedpath_length")
+# mapview(freguesias |> left_join(pedpath_length_by_freguesia, by = "freguesia"), zcol = "pedpath_length")
+# mapview(municipios |> left_join(pedpath_length_by_municipio, by = "municipio"), zcol = "pedpath_length")
 
 ### Bicycles ----
 # Get OSM cycleway data for AML
-# osm_cycleways <- opq(bbox = municipios |> sf::st_bbox()) |>
-#   add_osm_features(features = list(
-#     # Dedicated cycle paths
-#     "highway" = "cycleway",
-#     # Cycle lanes on roads
-#     "cycleway" = c("lane", "track", "opposite_lane", "opposite_track", "shared_lane", "share_busway"),
-#     "cycleway:left" = c("lane", "track", "shared_lane", "share_busway"),
-#     "cycleway:right" = c("lane", "track", "shared_lane", "share_busway"),
-#     "cycleway:both" = c("lane", "track", "shared_lane", "share_busway")
-#   )) |>
-#   osmdata_sf()
-# aml_cycleways <- osm_cycleways$osm_lines |> st_as_sf()
-# Remove unnecessary columns
-# aml_cycleways <- aml_cycleways |> select(osm_id, name, highway, geometry)
-# mapview(aml_cycleways)
+# see test-code/bike_infrastructuture_quality.R
 
-
-all_cycleways <- impt_read("mobility/AML_cycle_class.gpkg")
+all_cycleways <- impt_read("mobility/cycle_network_class.gpkg")
 # mapview(all_cycleways)
-all_cycleways <- all_cycleways |> select(osm_id, name, highway, cycle_cat, infra5, geom)
-segregated_cycleways <- all_cycleways |> filter(cycle_cat == "strong_ci")
+segregated_cycleways <- all_cycleways |> filter(cycle_segregation == "Cycle track or lane")
 
 cycleways_by_freguesia <- st_join(all_cycleways, freguesias, left = FALSE)
 cycleways_by_freguesia$length_segment <- st_length(cycleways_by_freguesia |> st_transform(3857))

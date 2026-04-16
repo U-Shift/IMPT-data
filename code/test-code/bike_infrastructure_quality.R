@@ -156,9 +156,10 @@ m
 
 # Remove unnecessary columns
 cycle_net_pt <- cycle_net_pt |>
-  select(osm_id, name, highway, geometry, cycle_segregation)
+  select(osm_id, name, highway, geometry, cycle_segregation) |> 
+  filter(cycle_segregation != "Mixed traffic")
 
-mapview::mapview(cycle_net_pt |> filter(cycle_segregation != "Mixed traffic"), zcol = "cycle_segregation")
+mapview::mapview(cycle_net_pt, zcol = "cycle_segregation")
 
 
 impt_write(cycle_net_pt, "/mobility/cycle_network_class.gpkg")
