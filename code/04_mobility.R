@@ -232,7 +232,7 @@ pedpath_length_by_grid <- pedpath_length_by_grid |> st_drop_geometry()
 
 ### Bicycles ----
 # Get OSM cycleway data for AML
-# see test-code/bike_infrastructuture_quality.R
+# see 04_mobility_bike_infrastructure.R
 
 all_cycleways <- impt_read("mobility/cycle_network_class.gpkg")
 # mapview(all_cycleways)
