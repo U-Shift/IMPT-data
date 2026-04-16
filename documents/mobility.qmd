@@ -1,0 +1,99 @@
+# Mobility {#sec-mobility}
+
+Mobility indicators cover infrastructure availability and quality, public transport coverage and service levels, commuting patterns, and shared mobility provision.
+
+
+## Commuting travel times
+
+**Script:** `04_mobility_commuting.R`
+
+Using the jittered IMOB OD pairs and the travel time matrices, average commuting travel times are computed for each geographical unit and mode, weighted by number of trips. Trips with no feasible route within the constraints are assigned the maximum travel time (120 min) and counted separately as "not accomplishable" trips (PNA — *Percentagem Não Alcançáveis*).
+
+```{mermaid}
+%%| label: fig-commuting-flow
+%%| fig-cap: "Commuting travel time computation"
+flowchart TB
+    TTM["Travel Time Matrix<br/>(all modes)"] --> Match
+    ODs["Jittered OD pairs<br/>(IMOB 2017 commuting)"] --> Match
+    Grid["H3 Grid"] --> Match
+    
+    subgraph Match["Spatial Assignment & Matching"]
+        direction TB
+        JoinGrid["Assign each OD<br/>to origin grid cell"] --> Lookup["Look up travel time<br/>for each OD pair<br/>in TTM"]
+        Lookup --> Fill["Fill missing:<br/>max_duration = 120 min<br/>(NAs = not accomplishable)"]
+    end
+    
+    Match --> AggMode["Aggregate by<br/>geographic unit × mode"]
+    AggMode --> Output["avg_tt_{mode}<br/>trips, trips_na_{mode}<br/>PNA_{mode}"]
+```
+
+## Number of PT transfers
+
+**Script:** `04_mobility_commuting.R` (line ~181)
+
+For each commuting OD pair, the minimum number of transfers required is determined by checking whether a route exists in the matrices computed for 0, 1, 2, and 3 transfers. The minimum number of transfers for which a route exists is assigned to each OD pair, and population-weighted mean transfers are computed per geographical unit.
+
+
+## Walking and Cycling infrastructure ratio
+
+**Script:** `04_mobility.R`
+
+### Walking infrastructure ratio
+
+The pedestrian infrastructure ratio is the proportion of road length that includes pedestrian infrastructure, computed using OSM data:
+
+$$R_{ped} = \frac{\text{pedestrian path length}}{\text{road length}}$$
+
+Road classification uses highway tags: `motorway`, `trunk`, `primary`, `secondary`, `tertiary`, `unclassified`, `residential`, `living_street`, plus link variants.
+
+Pedestrian infrastructure uses tags: `highway = footway | pedestrian | steps | residential` and `footway = sidewalk | crossing | path | platform | corridor | alley | track`, and `sidewalk = both | left | right`.
+
+### Cycling infrastructure ratio and type
+
+The cycling infrastructure ratio is computed analogously to the pedestrian ratio. Cycling infrastructure data comes from the classified cycle network layer `AML_cycle_class.gpkg` (TML PMUS 2024), which categorises cycleways into:
+
+- Segregated cycleway (*ciclovia segregada*)
+- Painted cycle lane (*ciclofaixa pintada na via*)
+- Shared pedestrian infrastructure (*infraestrutura pedonal partilhada*)
+- Shared road with vehicles, signed (*via partilhada com veículos motorizados, sinalizada*)
+
+The cycling quality ratio is:
+$$R_{cyc,q} = \frac{\text{segregated cycleway length}}{\text{total cycleway length}}$$
+
+## PT stop coverage
+
+**Script:** `04_mobility.R` / `04_mobility_transit.R`
+
+The proportion of population within 500 m of a public transport stop is computed by:
+
+1. Creating a 500 m buffer around every PT stop in the AML (all operators, from GTFS).
+2. Counting BGRI centroids whose population falls within these buffers.
+3. Dividing by total parish population.
+
+**Limitation:** This is a binary coverage measure (served/not served); it does not account for service frequency or the number of modes available at each stop.
+
+## PT headways and waiting times
+
+**Script:** `04_mobility_transit.R`  
+**Package:** `tidytransit`
+
+Stop-level service frequencies are computed with `tidytransit::get_stop_frequency()` for four time windows:
+
+| Period | Date | Time window |
+|--------|------|-------------|
+| Weekday peak | Wed 04/02/2026 | 08:00–09:00 |
+| Weekday full day | Wed 04/02/2026 | 00:00–48:00 |
+| Weekday night | Wed 04/02/2026 | 22:00–23:00 |
+| Weekend | Sun 08/02/2026 | 10:00–11:00 |
+
+: PT service frequency periods {#tbl-periods}
+
+A 500 m buffer per stop is used to allocate stops to census population centroids. Results are aggregated to parishes and municipalities as **population-weighted mean headway and waiting time**.
+
+Additionally, frequency reduction factors are computed to characterise night and weekend service reduction.
+
+## Shared mobility
+
+**Source:** TML PMUS (Shared mobility dock locations). `https://pmmus.tmlmobilidade.pt/`
+
+The number of shared mobility points (physical and virtual docks) is counted per parish and per H3 cell.

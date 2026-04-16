@@ -1,0 +1,60 @@
+# Safety {#sec-safety}
+
+**Script:** `04_safety.R`  
+**Source:** ANSR — Autoridade Nacional de Segurança Rodoviária, road accident georeferenced point data (2019–2023).
+
+```{mermaid}
+%%| label: fig-safety-flow
+%%| fig-cap: "Safety indicators computation"
+flowchart TB
+    Acc["ANSR Road Accidents<br/>2019–2023<br/>(georeferenced points)"] --> Filter
+    Pop["Census Population<br/>(parish and grid)"] --> JoinPop
+    Geo["Geographic units<br/>(parishes, municipalities, H3 grid)"] --> SJoin
+    
+    Filter["Filter: last 5 years<br/>(2019–2023)"] --> SJoin
+    SJoin["st_join: assign accidents<br/>to geographic units"] --> ExcludeOuter["Exclude accidents<br/>outside built-up areas<br/>(ponts/bridges)"]
+    ExcludeOuter --> Aggregate
+    
+    subgraph Aggregate["Aggregate per geographic unit"]
+        direction TB
+        TotalAcc["Total accidents (5 years)"] 
+        Victims["Victim counts:<br/>fatal, serious, slight (30-day)"]
+        Vehicles["Vehicles involved:<br/>motorised, cycle, pedestrian"]
+        Context["Context flags:<br/>at night, within localities"]
+    end
+    
+    Aggregate --> JoinPop["Join census population"] --> CalcIdx
+    
+    subgraph CalcIdx["Compute indexes"]
+        direction TB
+        SevIdx["Severity index:<br/>fatalities / total victims"]
+        ModeIdx["Mode-specific severity:<br/>fatalities / vehicles involved (per mode)"]
+        Rate1000["Accident rate per 1,000 residents"]
+        FatalRate["Fatality rate per 1,000 residents"]
+    end
+    
+    CalcIdx --> BothSets["All accidents<br/>+<br/>Within-localities only"]
+```
+
+## Accident data filtering
+
+Accidents located outside administrative parish boundaries are excluded. This includes accidents on major bridges (Ponte 25 de Abril, Ponte Vasco da Gama) which cannot be assigned to a parish. Only accidents reported as occurring **within localities** (*dentro das localidades*) are used for the IMPT normalisation.
+
+## Safety indicators computed
+
+For each geographical unit and transport mode:
+
+| Indicator | Formula |
+|-----------|---------|
+| Total accidents (5 years) | Count |
+| Fatalities (30-day) | Sum `VM_30d` |
+| Serious injuries (30-day) | Sum `FG_30d` |
+| Slight injuries (30-day) | Sum `FL_30d` |
+| Accident rate | `total_acidentes / population × 1000` |
+| Fatality rate | `vitimas_mortais30 / population × 1000` |
+| Severity index (total) | `fatalities / total_victims` |
+| Severity index (motorised) | `fatalities / motorised_vehicles_involved` |
+| Severity index (cycling) | `fatalities / cycling_involved` |
+| Severity index (pedestrian) | `fatalities / pedestrians_involved` |
+
+: Safety indicators {#tbl-safety-indicators}

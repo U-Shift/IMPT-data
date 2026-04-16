@@ -18,18 +18,30 @@ A travel time matrix (TTM) is computed between all H3 grid centroids for the AML
 
 params <- data.frame(
     Parameter = c(
-        "Spatial unit", "Percentile", "Max trip duration", "Modes",
-        "PT egress mode", "PT max walking time", "PT departure datetime",
-        "PT max transfers (scenario 1)", "PT max transfers (scenario 2)",
-        "Cycling max LTS", "Elevation model"
+        "Spatial unit",
+        "Percentile",
+        "Max trip duration",
+        "Modes",
+        "PT egress mode",
+        "PT max walking time",
+        "PT departure datetime",
+        "PT max transfers (scenario 1)",
+        "PT max transfers (scenario 2)",
+        "Cycling max Level of Traffic Stress",
+        "Elevation model"
     ),
     Value = c(
-        "H3 Resolution 8 centroids (~3,686 origins)", "50th percentile (median)",
-        "120 minutes", "Walk, Cycling, Car, Transit (×2 transfer scenarios)",
-        "WALK", "15 minutes",
+        "H3 Resolution 8 centroids (~3,686 origins)",
+        "50th percentile (median)",
+        "120 minutes",
+        "Walk, Bike, Car, Public Transit (×2 transfer scenarios)",
+        "WALK",
+        "15 minutes, 20 minutes (2 scenarios of egress)",
         "Wednesday 04/02/2026 at 08:00 AM",
-        "max_rides = 2 (1 transfer)", "max_rides = 3 (2 transfers)",
-        "LTS ≤ 3 (comfortable streets)", "MINETTI metabolic-equivalent"
+        "max_rides = 2 (1 transfer)",
+        "max_rides = 3 (2 transfers)",
+        "LTS ≤ 3 (comfortable streets)",
+        "MINETTI metabolic-equivalent"
     )
 )
 kable(params, booktabs = TRUE) |>
@@ -40,3 +52,7 @@ kable(params, booktabs = TRUE) |>
 ::: {.callout-note}
 The 50th percentile travel time is used so that results represent typical (median) travel conditions rather than best- or worst-case scenarios. All parameters not listed here use `r5r` defaults.
 :::
+
+This process is long and computationally expensive. It is recommended to run it in a powerful machine. The `travel_time_matrix()` function does not compute the **geometry** of the routes, only the **travel times**. The geometry of the routes is computed in the accessibility section.
+
+The results are stored so we have a OD matrix of travel time between all H3 cells for each transport mode and scenario.

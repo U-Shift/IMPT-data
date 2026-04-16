@@ -1,0 +1,70 @@
+# Affordability {#sec-affordability}
+
+**Script:** `04_affordability.R`, `04_mobility_costs_money_car.R`, `04_mobility_costs_money_pt.R`, `04_mobility_costs_money_pt_cost_structure.R`
+
+Affordability is assessed by comparing transport and housing costs against household income. Commuting costs are computed for both car and public transport using `r5r::detailed_itineraries()` on the full set of jittered IMOB OD pairs, regardless of the reported travel mode.
+
+## Car costs
+
+**Script:** `04_mobility_costs_money_car.R`
+
+Car commuting cost per trip = distance cost + tolls:
+
+$$C_{car} = d \times 0.40\text{ €/km} + C_{toll}$$
+
+The fixed cost of **0.40 €/km** is based on [Portaria n.º 1553-D/2008 de 31 de dezembro](https://diariodarepublica.pt/dr/detalhe/portaria/1553-d-2008-243733), which sets mileage allowance covering fuel and maintenance.
+
+Tolls are computed via the [Infraestruturas de Portugal toll API](https://portagens.infraestruturasdeportugal.pt/) using the route geometry returned by `r5r::detailed_itineraries()`.
+
+## Public transport costs — Two scenarios
+
+**Scripts:** `04_mobility_costs_money_pt.R`, `04_mobility_costs_money_pt_cost_structure.R`
+
+To account for uncertainty in PT fare payment practices, two cost scenarios are defined:
+
+**Scenario A — Single fare (pre-Navegante baseline):**  
+Based on Carris Lisboa revenue data:
+
+- Total single ticket validations: 17,424,000
+- Total single ticket revenue: 33,278,000 €
+- Average cost per single ticket: **~1.91 €**
+
+Free transfers within the same mode for 60 minutes are assumed. Different-mode transfers incur an additional charge.
+
+**Scenario B — Monthly pass (Navegante):**  
+Based on operator revenue data for monthly passes:
+
+| Pass type | Volume (months) | Price |
+|-----------|----------------|-------|
+| Navegante Metropolitano | 5,063,510 | 40 € |
+| Navegante Municipal | 887,190 | 30 € |
+| Sub-23 | 1,103,782 | 20 € |
+| Senior (65+) | 243,784 | 80 € |
+| Free (youth) | 3,425,013 | 0 € |
+
+Average monthly cost paid per pass holder: **~25.25 €**  
+Assuming 44 journeys/month (2 trips × 22 working days): **~0.57 €/trip**
+
+## Composite affordability indicators
+
+Transport expenditure is expressed as a share of household income, with two variants (with and without housing costs):
+
+$$\text{transp\_inc}_{car} = \frac{C_{car,year}}{I_{hh}}$$
+
+$$\text{h\_transp\_inc}_{car} = \frac{C_{car,year} + C_{housing,year}}{I_{hh}}$$
+
+A **modal-share-weighted composite** indicator combines car and PT costs proportionally to Census 2021 modal shares:
+
+$$\text{transp\_inc\_comp} = \frac{C_{car} \cdot s_{car} + C_{PT} \cdot s_{PT}}{s_{car} + s_{PT} + s_{active}}$$
+
+where $s_m$ is the modal share of mode $m$ from Census 2021.
+
+Car costs are additionally adjusted for **vehicle occupancy rate** (from IMOB 2017, Table IV.7) and **household size** and **mobile population fraction** (from IMOB 2017, Table II.1), to convert per-trip costs to a household-level annual burden.
+
+**Income data:** household income per parish from INE (*Rendimento agregado 2023*). `https://www.ine.pt/xurl/pub/66303599`  
+**Housing costs:** median monthly housing cost per parish from INE (*Habitação custos 2021*). `https://www.ine.pt/xurl/pub/65586079`
+
+::: {.callout-note}
+## Canha parish
+The parish of Canha (dtmnfr = 150701) is not served by any GTFS operator, resulting in NA PT costs. These values are imputed using the mean of neighbouring parishes within the same municipality (Montijo).
+:::

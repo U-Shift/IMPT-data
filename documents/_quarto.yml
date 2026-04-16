@@ -10,14 +10,23 @@ book:
   date-format: "MMMM YYYY"
   chapters:
     - index.qmd
-    - data_sources.qmd
-    - data_preparation.qmd
-    - transport_routing.qmd
-    - dimensions.qmd
-    - calculator.qmd
-    - output_dashboard.qmd
-    - reproducibility.qmd
-    - pca_results.qmd
+    - part: "**Data**"
+      chapters:
+        - data_sources.qmd
+        - data_preparation.qmd
+        - transport_routing.qmd
+    - part: "**Dimensions and PCA**"
+      chapters:
+        - mobility.qmd
+        - accessibility.qmd
+        - affordability.qmd
+        - safety.qmd
+        - calculator.qmd
+        - pca_results.qmd
+    - part: "**Dashboard and Reproducibility**"
+      chapters:
+        - output_dashboard.qmd
+        - reproducibility.qmd
     - references.qmd
 
 bibliography: references.bib
@@ -27,15 +36,7 @@ format:
     theme: cosmo
     toc: true
     number-sections: true
-    code-fold: true
     echo: false
-    # embed-resources: true
-    # include-in-header:
-    #   text: |
-    #     <style>
-    #     body { font-family: 'Inter', sans-serif; }
-    #     .callout { border-radius: 8px; }
-    #     h1.title { font-size: 2.2em; color: #2c3e50; }
-    #     h2 { color: #34495e; border-bottom: 2px solid #eee; padding-bottom: 4px; }
-    #     h3 { color: #7f8c8d; }
-    #     </style>
+    code-fold: true
+    lightbox: true # abrir imagens popup
+

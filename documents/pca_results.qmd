@@ -1,10 +1,10 @@
 
-# Appendix: PCA Diagnostics {#sec-appendix-pca}
+# PCA Diagnostics {#sec-pca-diagnostics}
 
 The following table summarises the variance explained by PC1 in each PCA run:
 
 ```{r}
-#| label: setup-appendix
+#| label: setup-pca-diagnostics
 #| include: false
 library(knitr)
 library(kableExtra)
