@@ -639,7 +639,10 @@ replace_anywhere <- list(
   c("private_vehicle", "car"),
   c("peoes", "walk"),
   c("bicicleta", "bike"),
-  c("transit", "pt")
+  c("transit", "pt"),
+  c("pedpath", "walk"),
+  c("cycleway", "bike"),
+  c("road", "car")
 )
 for (replacement in replace_anywhere) {
   names(grid_aggregated) <- gsub(paste0("^(.*)", replacement[1], "(.*)$"), paste0("\\1", replacement[2], "\\2"), names(grid_aggregated))
