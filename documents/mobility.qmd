@@ -7,7 +7,7 @@ Mobility indicators cover infrastructure availability and quality, public transp
 
 **Script:** `04_mobility_commuting.R`
 
-Using the jittered IMOB OD pairs and the travel time matrices, average commuting travel times are computed for each geographical unit and mode, weighted by number of trips. Trips with no feasible route within the constraints are assigned the maximum travel time (120 min) and counted separately as "not accomplishable" trips (PNA — *Percentagem Não Alcançáveis*).
+Using the jittered IMOB OD pairs (**for commuting**) and the travel time matrices, average commuting travel times are computed for each geographical unit and mode, weighted by number of trips. Trips with no feasible route within the constraints are assigned the maximum travel time (120 min) and counted separately as "not accomplishable" trips (PNA — *Percentagem Não Alcançáveis*).
 
 ```{mermaid}
 %%| label: fig-commuting-flow
@@ -29,9 +29,10 @@ flowchart TB
 
 ## Number of PT transfers
 
-**Script:** `04_mobility_commuting.R` (line ~181)
+**Script:** `04_mobility_commuting.R`
 
-For each commuting OD pair, the minimum number of transfers required is determined by checking whether a route exists in the matrices computed for 0, 1, 2, and 3 transfers. The minimum number of transfers for which a route exists is assigned to each OD pair, and population-weighted mean transfers are computed per geographical unit.
+For each commuting OD pair, the **minimum** number of transfers required for each PTransit route (for 0, 1, 2, and 3 transfers) is assigned to each OD pair, and population-weighted mean transfers are computed per geographical unit.
+The result is the average minimum number of transfers to commute to work, using PTransit.
 
 
 ## Walking and Cycling infrastructure ratio
@@ -52,7 +53,7 @@ Pedestrian infrastructure uses tags: `highway = footway | pedestrian | steps | r
 
 **Script:** `04_mobility_bike_infrastructure.R`
 
-The cycling infrastructure ratio is computed analogously to the pedestrian ratio by comparing cycleway length to total road length. Infrastructure data is extracted from OpenStreetMap and classified according to its quality and level of segregation:
+The cycling infrastructure ratio is computed analogously to the pedestrian ratio by comparing cycleway length to total road length. Infrastructure data is extracted from OpenStreetMap and classified according to its type and level of segregation:
 
 - **Cycle track or lane**: Segregated or light-separated tracks exclusive for cycling (*Ciclovia segregada*).
     - `highway = cycleway`
@@ -111,4 +112,4 @@ Additionally, frequency reduction factors are computed to characterise night and
 
 **Source:** TML PMUS (Shared mobility dock locations). `https://pmmus.tmlmobilidade.pt/`
 
-The number of shared mobility points (physical and virtual docks) is counted per parish and per H3 cell.
+The number of shared mobility points (physical and virtual docks) is counted per parish and per grid cell.

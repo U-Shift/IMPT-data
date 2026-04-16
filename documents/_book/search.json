@@ -198,7 +198,7 @@
     "href": "transport_routing.html",
     "title": "4  Transport Routing — Travel Time Matrix",
     "section": "",
-    "text": "Script: 03_ttm_gridh3.R\nPackage: r5r (Pereira et al. 2021)\nA travel time matrix (TTM) is computed between all H3 grid centroids for the AML, for each transport mode, using r5r::travel_time_matrix(). The parameters used are:\n\n\n\n\nTable 4.1: Travel time matrix parameters\n\n\n\n\n\n\nParameter\nValue\n\n\n\n\nSpatial unit\nH3 Resolution 8 centroids (~3,686 origins)\n\n\nPercentile\n50th percentile (median)\n\n\nMax trip duration\n120 minutes\n\n\nModes\nWalk, Bike, Car, Public Transit (×2 transfer scenarios)\n\n\nPT egress mode\nWALK\n\n\nPT max walking time\n15 minutes\n\n\nPT departure datetime\nWednesday 04/02/2026 at 08:00 AM\n\n\nPT max transfers (scenario 1)\nmax_rides = 2 (1 transfer)\n\n\nPT max transfers (scenario 2)\nmax_rides = 3 (2 transfers)\n\n\nCycling max Level of Traffic Stress\nLTS ≤ 3 (comfortable streets)\n\n\nElevation model\nMINETTI metabolic-equivalent\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nNote\n\n\n\nThe 50th percentile travel time is used so that results represent typical (median) travel conditions rather than best- or worst-case scenarios. All parameters not listed here use r5r defaults.\n\n\nThis process is long and computationally expensive. It is recommended to run it in a powerful machine.\nThe results are stored so we have a OD matrix of travel time between all H3 cells for each transport mode and scenario.\n\n\n\n\nPereira, Rafael H. M., Marcus Saraiva, Daniel Herszenhut, Carlos K. V. Braga, and Matthew Wigginton Conway. 2021. “R5r: Rapid Realistic Routing on Multimodal Transport Networks with R5 in R.” Findings. https://doi.org/10.32866/001c.21262.",
+    "text": "Script: 03_ttm_gridh3.R\nPackage: r5r (Pereira et al. 2021)\nA travel time matrix (TTM) is computed between all H3 grid centroids for the AML, for each transport mode, using r5r::travel_time_matrix(). The parameters used are:\n\n\n\n\nTable 4.1: Travel time matrix parameters\n\n\n\n\n\n\nParameter\nValue\n\n\n\n\nSpatial unit\nH3 Resolution 8 centroids (~3,686 origins)\n\n\nPercentile\n50th percentile (median)\n\n\nMax trip duration\n120 minutes\n\n\nModes\nWalk, Bike, Car, Public Transit (×2 transfer scenarios)\n\n\nPT egress mode\nWALK\n\n\nPT max walking time\n15 minutes, 20 minutes (2 scenarios of egress)\n\n\nPT departure datetime\nWednesday 04/02/2026 at 08:00 AM\n\n\nPT max transfers (scenario 1)\nmax_rides = 2 (1 transfer)\n\n\nPT max transfers (scenario 2)\nmax_rides = 3 (2 transfers)\n\n\nCycling max Level of Traffic Stress\nLTS ≤ 3 (comfortable streets)\n\n\nElevation model\nMINETTI metabolic-equivalent\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nNote\n\n\n\nThe 50th percentile travel time is used so that results represent typical (median) travel conditions rather than best- or worst-case scenarios. All parameters not listed here use r5r defaults.\n\n\nThis process is long and computationally expensive. It is recommended to run it in a powerful machine. The travel_time_matrix() function does not compute the geometry of the routes, only the travel times. The geometry of the routes is computed in the accessibility section.\nThe results are stored so we have a OD matrix of travel time between all H3 cells for each transport mode and scenario.\n\n\n\n\nPereira, Rafael H. M., Marcus Saraiva, Daniel Herszenhut, Carlos K. V. Braga, and Matthew Wigginton Conway. 2021. “R5r: Rapid Realistic Routing on Multimodal Transport Networks with R5 in R.” Findings. https://doi.org/10.32866/001c.21262.",
     "crumbs": [
       "**Data**",
       "<span class='chapter-number'>4</span>  <span class='chapter-title'>Transport Routing — Travel Time Matrix</span>"
@@ -209,51 +209,7 @@
     "href": "mobility.html",
     "title": "5  Mobility",
     "section": "",
-    "text": "5.1 Walking infrastructure ratio\nMobility indicators cover infrastructure availability and quality, public transport coverage and service levels, commuting patterns, and shared mobility provision.\nScript: 04_mobility.R\nThe pedestrian infrastructure ratio is the proportion of road length that includes pedestrian infrastructure, computed using OSM data:\n\\[R_{ped} = \\frac{\\text{pedestrian path length}}{\\text{road length}}\\]\nRoad classification uses highway tags: motorway, trunk, primary, secondary, tertiary, unclassified, residential, living_street, plus link variants.\nPedestrian infrastructure uses tags: highway = footway | pedestrian | steps | residential and footway = sidewalk | crossing | path | platform | corridor | alley | track, and sidewalk = both | left | right.",
-    "crumbs": [
-      "**Dimensions and PCA**",
-      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Mobility</span>"
-    ]
-  },
-  {
-    "objectID": "mobility.html#cycling-infrastructure-ratio-and-quality",
-    "href": "mobility.html#cycling-infrastructure-ratio-and-quality",
-    "title": "5  Mobility",
-    "section": "5.2 Cycling infrastructure ratio and quality",
-    "text": "5.2 Cycling infrastructure ratio and quality\nScript: 04_mobility.R\nThe cycling infrastructure ratio is computed analogously to the pedestrian ratio. Cycling infrastructure data comes from the classified cycle network layer AML_cycle_class.gpkg (TML PMUS 2024), which categorises cycleways into:\n\nSegregated cycleway (ciclovia segregada)\nPainted cycle lane (ciclofaixa pintada na via)\nShared pedestrian infrastructure (infraestrutura pedonal partilhada)\nShared road with vehicles, signed (via partilhada com veículos motorizados, sinalizada)\n\nThe cycling quality ratio is: \\[R_{cyc,q} = \\frac{\\text{segregated cycleway length}}{\\text{total cycleway length}}\\]",
-    "crumbs": [
-      "**Dimensions and PCA**",
-      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Mobility</span>"
-    ]
-  },
-  {
-    "objectID": "mobility.html#pt-stop-coverage",
-    "href": "mobility.html#pt-stop-coverage",
-    "title": "5  Mobility",
-    "section": "5.3 PT stop coverage",
-    "text": "5.3 PT stop coverage\nScript: 04_mobility.R / 04_mobility_transit.R\nThe proportion of population within 500 m of a public transport stop is computed by:\n\nCreating a 500 m buffer around every PT stop in the AML (all operators, from GTFS).\nCounting BGRI centroids whose population falls within these buffers.\nDividing by total parish population.\n\nLimitation: This is a binary coverage measure (served/not served); it does not account for service frequency or the number of modes available at each stop.",
-    "crumbs": [
-      "**Dimensions and PCA**",
-      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Mobility</span>"
-    ]
-  },
-  {
-    "objectID": "mobility.html#pt-headways-and-waiting-times",
-    "href": "mobility.html#pt-headways-and-waiting-times",
-    "title": "5  Mobility",
-    "section": "5.4 PT headways and waiting times",
-    "text": "5.4 PT headways and waiting times\nScript: 04_mobility_transit.R\nPackage: tidytransit\nStop-level service frequencies are computed with tidytransit::get_stop_frequency() for four time windows:\n\n\n\nTable 5.1: PT service frequency periods\n\n\n\n\n\nPeriod\nDate\nTime window\n\n\n\n\nWeekday peak\nWed 04/02/2026\n08:00–09:00\n\n\nWeekday full day\nWed 04/02/2026\n00:00–48:00\n\n\nWeekday night\nWed 04/02/2026\n22:00–23:00\n\n\nWeekend\nSun 08/02/2026\n10:00–11:00\n\n\n\n\n\n\nA 500 m buffer per stop is used to allocate stops to census population centroids. Results are aggregated to parishes and municipalities as population-weighted mean headway and waiting time.\nAdditionally, frequency reduction factors are computed to characterise night and weekend service reduction.",
-    "crumbs": [
-      "**Dimensions and PCA**",
-      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Mobility</span>"
-    ]
-  },
-  {
-    "objectID": "mobility.html#commuting-travel-times",
-    "href": "mobility.html#commuting-travel-times",
-    "title": "5  Mobility",
-    "section": "5.5 Commuting travel times",
-    "text": "5.5 Commuting travel times\nScript: 04_mobility_commuting.R\nUsing the jittered IMOB OD pairs and the travel time matrices, average commuting travel times are computed for each geographical unit and mode, weighted by number of trips. Trips with no feasible route within the constraints are assigned the maximum travel time (120 min) and counted separately as “not accomplishable” trips (PNA — Percentagem Não Alcançáveis).\n\n\n\n\n\n\nflowchart TB\n    TTM[\"Travel Time Matrix&lt;br/&gt;(all modes)\"] --&gt; Match\n    ODs[\"Jittered OD pairs&lt;br/&gt;(IMOB 2017 commuting)\"] --&gt; Match\n    Grid[\"H3 Grid\"] --&gt; Match\n    \n    subgraph Match[\"Spatial Assignment & Matching\"]\n        direction TB\n        JoinGrid[\"Assign each OD&lt;br/&gt;to origin grid cell\"] --&gt; Lookup[\"Look up travel time&lt;br/&gt;for each OD pair&lt;br/&gt;in TTM\"]\n        Lookup --&gt; Fill[\"Fill missing:&lt;br/&gt;max_duration = 120 min&lt;br/&gt;(NAs = not accomplishable)\"]\n    end\n    \n    Match --&gt; AggMode[\"Aggregate by&lt;br/&gt;geographic unit × mode\"]\n    AggMode --&gt; Output[\"avg_tt_{mode}&lt;br/&gt;trips, trips_na_{mode}&lt;br/&gt;PNA_{mode}\"]\n\n\n\n\nFigure 5.1: Commuting travel time computation",
+    "text": "5.1 Commuting travel times\nMobility indicators cover infrastructure availability and quality, public transport coverage and service levels, commuting patterns, and shared mobility provision.\nScript: 04_mobility_commuting.R\nUsing the jittered IMOB OD pairs (for commuting) and the travel time matrices, average commuting travel times are computed for each geographical unit and mode, weighted by number of trips. Trips with no feasible route within the constraints are assigned the maximum travel time (120 min) and counted separately as “not accomplishable” trips (PNA — Percentagem Não Alcançáveis).\nflowchart TB\n    TTM[\"Travel Time Matrix&lt;br/&gt;(all modes)\"] --&gt; Match\n    ODs[\"Jittered OD pairs&lt;br/&gt;(IMOB 2017 commuting)\"] --&gt; Match\n    Grid[\"H3 Grid\"] --&gt; Match\n    \n    subgraph Match[\"Spatial Assignment & Matching\"]\n        direction TB\n        JoinGrid[\"Assign each OD&lt;br/&gt;to origin grid cell\"] --&gt; Lookup[\"Look up travel time&lt;br/&gt;for each OD pair&lt;br/&gt;in TTM\"]\n        Lookup --&gt; Fill[\"Fill missing:&lt;br/&gt;max_duration = 120 min&lt;br/&gt;(NAs = not accomplishable)\"]\n    end\n    \n    Match --&gt; AggMode[\"Aggregate by&lt;br/&gt;geographic unit × mode\"]\n    AggMode --&gt; Output[\"avg_tt_{mode}&lt;br/&gt;trips, trips_na_{mode}&lt;br/&gt;PNA_{mode}\"]\n\n\n\n\nFigure 5.1: Commuting travel time computation",
     "crumbs": [
       "**Dimensions and PCA**",
       "<span class='chapter-number'>5</span>  <span class='chapter-title'>Mobility</span>"
@@ -263,8 +219,41 @@
     "objectID": "mobility.html#number-of-pt-transfers",
     "href": "mobility.html#number-of-pt-transfers",
     "title": "5  Mobility",
-    "section": "5.6 Number of PT transfers",
-    "text": "5.6 Number of PT transfers\nScript: 04_mobility_commuting.R (line ~181)\nFor each commuting OD pair, the minimum number of transfers required is determined by checking whether a route exists in the matrices computed for 0, 1, 2, and 3 transfers. The minimum number of transfers for which a route exists is assigned to each OD pair, and population-weighted mean transfers are computed per geographical unit.",
+    "section": "5.2 Number of PT transfers",
+    "text": "5.2 Number of PT transfers\nScript: 04_mobility_commuting.R\nFor each commuting OD pair, the minimum number of transfers required for each PTransit route (for 0, 1, 2, and 3 transfers) is assigned to each OD pair, and population-weighted mean transfers are computed per geographical unit. The result is the average minimum number of transfers to commute to work, using PTransit.",
+    "crumbs": [
+      "**Dimensions and PCA**",
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Mobility</span>"
+    ]
+  },
+  {
+    "objectID": "mobility.html#walking-and-cycling-infrastructure-ratio",
+    "href": "mobility.html#walking-and-cycling-infrastructure-ratio",
+    "title": "5  Mobility",
+    "section": "5.3 Walking and Cycling infrastructure ratio",
+    "text": "5.3 Walking and Cycling infrastructure ratio\nScript: 04_mobility.R\n\n5.3.1 Walking infrastructure ratio\nThe pedestrian infrastructure ratio is the proportion of road length that includes pedestrian infrastructure, computed using OSM data:\n\\[R_{ped} = \\frac{\\text{pedestrian path length}}{\\text{road length}}\\]\nRoad classification uses highway tags: motorway, trunk, primary, secondary, tertiary, unclassified, residential, living_street, plus link variants.\nPedestrian infrastructure uses tags: highway = footway | pedestrian | steps | residential and footway = sidewalk | crossing | path | platform | corridor | alley | track, and sidewalk = both | left | right.\n\n\n5.3.2 Cycling infrastructure ratio and type\nScript: 04_mobility_bike_infrastructure.R\nThe cycling infrastructure ratio is computed analogously to the pedestrian ratio by comparing cycleway length to total road length. Infrastructure data is extracted from OpenStreetMap and classified according to its type and level of segregation:\n\nCycle track or lane: Segregated or light-separated tracks exclusive for cycling (Ciclovia segregada).\n\nhighway = cycleway\nhighway = path & bicycle = designated\nsegregated = yes | no\ncycleway tags containing: separate, buffered_lane, segregated, lane, or track.\n\nAdvisory lane: Marked cycle lanes shared with motor vehicles, such as sharrows or advisory lanes (Via partilhada com veículos motorizados / zonas 30).\n\ncycleway tags containing: shared_lane.\n\nProtected Active: Infrastructure shared with pedestrians but protected from motor vehicles (Via partilhada com peões).\n\nhighway = pedestrian & bicycle = designated.\nRefinement of highway = path | footway | pedestrian when foot access is explicitly allowed on cycling paths without physical segregation.\n\n\nThe primary indicators are:\nCycling infrastructure ratio: \\[R_{cyc} = \\frac{\\text{total cycleway length}}{\\text{road length}}\\]\nCycling quality ratio: \\[R_{cyc,q} = \\frac{\\text{segregated cycleway length}}{\\text{total cycleway length}}\\]\nWhere “segregated cycleway length” corresponds to the Cycle track or lane category.",
+    "crumbs": [
+      "**Dimensions and PCA**",
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Mobility</span>"
+    ]
+  },
+  {
+    "objectID": "mobility.html#pt-stop-coverage",
+    "href": "mobility.html#pt-stop-coverage",
+    "title": "5  Mobility",
+    "section": "5.4 PT stop coverage",
+    "text": "5.4 PT stop coverage\nScript: 04_mobility.R / 04_mobility_transit.R\nThe proportion of population within 500 m of a public transport stop is computed by:\n\nCreating a 500 m buffer around every PT stop in the AML (all operators, from GTFS).\nCounting BGRI centroids whose population falls within these buffers.\nDividing by total parish population.\n\nLimitation: This is a binary coverage measure (served/not served); it does not account for service frequency or the number of modes available at each stop.",
+    "crumbs": [
+      "**Dimensions and PCA**",
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Mobility</span>"
+    ]
+  },
+  {
+    "objectID": "mobility.html#pt-headways-and-waiting-times",
+    "href": "mobility.html#pt-headways-and-waiting-times",
+    "title": "5  Mobility",
+    "section": "5.5 PT headways and waiting times",
+    "text": "5.5 PT headways and waiting times\nScript: 04_mobility_transit.R\nPackage: tidytransit\nStop-level service frequencies are computed with tidytransit::get_stop_frequency() for four time windows:\n\n\n\nTable 5.1: PT service frequency periods\n\n\n\n\n\nPeriod\nDate\nTime window\n\n\n\n\nWeekday peak\nWed 04/02/2026\n08:00–09:00\n\n\nWeekday full day\nWed 04/02/2026\n00:00–48:00\n\n\nWeekday night\nWed 04/02/2026\n22:00–23:00\n\n\nWeekend\nSun 08/02/2026\n10:00–11:00\n\n\n\n\n\n\nA 500 m buffer per stop is used to allocate stops to census population centroids. Results are aggregated to parishes and municipalities as population-weighted mean headway and waiting time.\nAdditionally, frequency reduction factors are computed to characterise night and weekend service reduction.",
     "crumbs": [
       "**Dimensions and PCA**",
       "<span class='chapter-number'>5</span>  <span class='chapter-title'>Mobility</span>"
@@ -274,8 +263,8 @@
     "objectID": "mobility.html#shared-mobility",
     "href": "mobility.html#shared-mobility",
     "title": "5  Mobility",
-    "section": "5.7 Shared mobility",
-    "text": "5.7 Shared mobility\nSource: TML PMUS (Shared mobility dock locations). https://pmmus.tmlmobilidade.pt/\nThe number of shared mobility points (physical and virtual docks) is counted per parish and per H3 cell.",
+    "section": "5.6 Shared mobility",
+    "text": "5.6 Shared mobility\nSource: TML PMUS (Shared mobility dock locations). https://pmmus.tmlmobilidade.pt/\nThe number of shared mobility points (physical and virtual docks) is counted per parish and per grid cell.",
     "crumbs": [
       "**Dimensions and PCA**",
       "<span class='chapter-number'>5</span>  <span class='chapter-title'>Mobility</span>"
