@@ -24,7 +24,7 @@ impt_read <- function(path, root = NULL, write_to = NULL, ...) { # Use ... for a
     if (is.null(path_root)) {
         # If running at ushift@alfa, read from /data folder
         if (machine_id == "a8709380ae1e4b72904a93456ccfb874") {
-            path_root <- "/data"
+            path_root <- "/data/IMPT"
         } else {
             path_root <- "https://impt.server.ushift.pt"
             if (Sys.getenv("IMPT_DATA_KEY") == "") {
@@ -100,7 +100,7 @@ impt_write <- function(content, path, root = NULL) { # Use ... for arguments spe
     if (is.null(path_root)) {
         # If running at ushift@alfa, read from /data folder
         if (machine_id == "a8709380ae1e4b72904a93456ccfb874") {
-            path_root <- "/data"
+            path_root <- "/data/IMPT"
         } else {
             path_root <- "data"
             current_location <- getwd()
