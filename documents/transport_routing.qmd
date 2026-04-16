@@ -36,7 +36,7 @@ params <- data.frame(
         "120 minutes",
         "Walk, Bike, Car, Public Transit (×2 transfer scenarios)",
         "WALK",
-        "15 minutes",
+        "15 minutes, 20 minutes (2 scenarios of egress)",
         "Wednesday 04/02/2026 at 08:00 AM",
         "max_rides = 2 (1 transfer)",
         "max_rides = 3 (2 transfers)",
@@ -53,6 +53,6 @@ kable(params, booktabs = TRUE) |>
 The 50th percentile travel time is used so that results represent typical (median) travel conditions rather than best- or worst-case scenarios. All parameters not listed here use `r5r` defaults.
 :::
 
-This process is long and computationally expensive. It is recommended to run it in a powerful machine.
+This process is long and computationally expensive. It is recommended to run it in a powerful machine. The `travel_time_matrix()` function does not compute the **geometry** of the routes, only the **travel times**. The geometry of the routes is computed in the accessibility section.
 
 The results are stored so we have a OD matrix of travel time between all H3 cells for each transport mode and scenario.
