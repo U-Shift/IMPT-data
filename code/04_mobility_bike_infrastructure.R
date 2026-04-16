@@ -13,7 +13,8 @@ library(stringr)
 
 # 1. Load context data ----------------------------------------------------
 # Use the project's standard boundary
-limit <- impt_read("/geo/municipios_union_2024.geojson")
+limit <- impt_read("/geo/municipios_union_2024.geojson") |> 
+  sf::st_make_valid()
 
 # 2. Define Helper Functions ----------------------------------------------
 
