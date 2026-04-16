@@ -106,14 +106,16 @@ classify_cycle_infrastructure_portugal <- function(osm) {
 # 3. Execution ------------------------------------------------------------
 
 # Download and clip OSM data
-# Note: "Portugal" here refers to the osmextract provider, which will be clipped to our boundary
+# Note: "Portugal" here refers to the osmextract provider.
+# We use boundary_type = "bbox" because "clipsrc" is often sensitive to geometry errors in GDAL.
 message("Extracting OSM data for cycling infrastructure...")
 aml_cycleways <- get_travel_network(
   place = "Portugal",
   boundary = limit,
-  boundary_type = "clipsrc",
+  boundary_type = "bbox",
   force_vectortranslate = TRUE
-)
+) |> 
+  st_filter(limit) # Perform the spatial clip/filter in R for better stability
 
 # Replace : by _ in column names for easier logic
 aml_cycleways <- aml_cycleways |>
