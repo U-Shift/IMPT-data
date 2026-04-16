@@ -658,7 +658,9 @@ modes <- list(
   c("pt", "pt"),
   # pass and no_pass should come after pt, to append it in the end of variable name!
   c("no_pass", "no_pass"), # no_pass before pass, to avoid duplicated change!
-  c("pass", "pass")
+  c("pass", "pass"),
+  # segregated filter for cicleways
+  c("segregated", "segregated")
 )
 
 for (mode in modes) {
@@ -712,14 +714,11 @@ length(names(grid_aggregated)) # 831
 length(names(freguesias_aggregated)) # 1057
 length(names(municipios_aggregated)) # 1048
 
-freguesias_aggregated <- impt_read(paste(output_dir, "freguesias_aggregated.csv", sep = "/"))
-grid_aggregated <- impt_read(paste(output_dir, "grid_aggregated.csv", sep = "/"))
-munipios_aggregated <- impt_read(paste(output_dir, "municipios_aggregated.csv", sep = "/"))
-
 municipio_names <- names(municipios_aggregated) |> data.frame()
 freguesia_names <- names(freguesias_aggregated) |> data.frame()
 grid_names <- names(grid_aggregated) |> data.frame()
 
+View(freguesia_names)
 # names(freguesias_aggregated)
 # freguesias_aggregated |>
 #   # select(starts_with("IMPT_score_pca_geom")) |> # Filter those that start with "IMPT_score_pca_geom"
