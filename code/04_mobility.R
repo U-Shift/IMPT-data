@@ -17,8 +17,15 @@ library(openrouteservice)
 
 
 # Availability/coverage of public transportation -----------------------------------------------------------------------
-options(openrouteservice.url = "https://server.ushift.pt/ors/v2/")
-openrouteservice::ors_api_key("AMwi5LU1NCe1ERyQuUHTe2pulOFKcdq0=")
+options(openrouteservice.url = "https://server.ushift.pt/ors/")
+# Set credentials
+Sys.setenv(ORS_API_KEY = "AMwi5LU1NCe1ERyQuUHTe2pulOFKcdq0")
+# Sys.unsetenv("ORS_API_KEY")
+# Validate
+getOption("openrouteservice.url")
+#> [1] "https://server.ushift.pt/ors/"
+Sys.getenv("ORS_API_KEY")
+#> [1] "AMwi5LU1NCe1ERyQuUHTe2pulOFKcdq0"
 
 
 # Start by getting all PT stops in AML
@@ -47,20 +54,58 @@ stops_buffers <- st_buffer(
   dist = 500
 ) # 500m euclidean buffer around stops
 
-# # Create service area buffers for all PT stops
-# all_stops_combined_2 <- all_stops_combined |> st_transform(4326)
-# stop_coordinates <- st_coordinates(all_stops_combined_2) |> as.data.frame() |> select(X, Y) |> rename(lon=X, lat=Y)
+# Create service area buffers for each type of PT stops
+train_ferry_stations = bind_rows(all_stops$`/data/IMPT/gtfs/processed/gtfs_comboios_de_portugal.zip`,all_stops$`/data/IMPT/gtfs/processed/gtfs_fertagus.zip`,all_stops$`/data/IMPT/gtfs/processed/gtfs_transtejo_soflusa.zip`) |> st_as_sf() |> st_filter(limit_bbox)
+train_ferry_stations <- train_ferry_stations |> select(stop_id, stop_code, stop_name, geometry) |> st_transform(4326)
+train_ferry_coordinates <- st_coordinates(train_ferry_stations) |> as.data.frame() |> select(X, Y) |> rename(lon=X, lat=Y) |> mutate(id=train_ferry_stations$stop_id) |> select(id, lon, lat)
 # stop_service_areas <- ors_isochrones(
-#   locations = stop_coordinates,
+#   locations = train_ferry_coordinates,
 #   profile = "foot-walking",
-#   range = 500,
-#   range_type = "distance"
+#   range = 15,
+#   range_type = "time"
 # )
-# stops_service_buffers_500m <- st_buffer(
-#   # Convert to 3857 crs
-#   all_stops_combined |> st_transform(3857),
-#   dist = 500
-# ) #500m service area buffer around stops
+metro_stations = bind_rows(all_stops$`/data/IMPT/gtfs/processed/gtfs_metropolitano_de_lisboa.zip`,all_stops$`/data/IMPT/gtfs/processed/gtfs_metro_transportes_do_sul.zip`) |> st_as_sf() |> st_filter(limit_bbox)
+metro_stations <- metro_stations |> select(stop_id, stop_code, stop_name, geometry) |> st_transform(4326)
+metro_coordinates <- st_coordinates(metro_stations) |> as.data.frame() |> select(X, Y) |> rename(lon=X, lat=Y)
+# stop_service_areas <- ors_isochrones(
+#   locations = metro_coordinates,
+#   profile = "foot-walking",
+#   range = 5,
+#   range_type = "time"
+# )
+bus_stations = bind_rows(all_stops$`/data/IMPT/gtfs/processed/gtfs_carris_metropolitana.zip`,all_stops$`/data/IMPT/gtfs/processed/gtfs_carris_municipal.zip`,all_stops$`/data/IMPT/gtfs/processed/gtfs_mobicascais.zip`,all_stops$`/data/IMPT/gtfs/processed/gtfs_transportes_colectivos_do_barreiro.zip`) |> st_as_sf() |> st_filter(limit_bbox)
+bus_stations <- bus_stations |> select(stop_id, stop_code, stop_name, geometry) |> st_transform(4326)
+bus_coordinates <- st_coordinates(bus_stations) |> as.data.frame() |> select(X, Y) |> rename(lon=X, lat=Y)
+# stop_service_areas <- ors_isochrones(
+#   locations = bus_coordinates,
+#   profile = "foot-walking",
+#   range = 5,
+#   range_type = "time"
+# )
+
+### Get isochrones for train/ferry stations using r5r (PRELIMINARY - NOT COMPLETE)
+# system.file returns the directory with example data inside the r5r package
+# set data path to directory containing your own data if not running this example
+r5r_network <- r5r::build_network("/data/IMPT/geo/r5r/")
+# data_path <- "/data/IMPT/geo/r5r"
+# r5r_network <- build_network(data_path)
+# isochrone intervals
+time_interval <- 15
+# routing inputs
+mode <- "WALK"
+departure_datetime <- as.POSIXct("13-05-2019 14:00:00", format = "%d-%m-%Y %H:%M:%S")
+# calculate travel time matrix
+iso_train_ferry <- r5r::isochrone(
+  r5r_network,
+  origins = train_ferry_coordinates,
+  mode = mode,
+  polygon_output = TRUE, 
+  cutoffs = time_interval,
+  departure_datetime = departure_datetime,
+  progress = TRUE,
+  zoom = 10
+)
+
 
 # Evaluate population coverage by PT stop
 # mapview(census, zcol="N_INDIVIDUOS")
