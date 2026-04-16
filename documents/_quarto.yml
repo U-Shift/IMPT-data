@@ -17,8 +17,8 @@ book:
     - calculator.qmd
     - output_dashboard.qmd
     - reproducibility.qmd
-    - pca_results.qmd
     - references.qmd
+    - pca_results.qmd
 
 bibliography: references.bib
 

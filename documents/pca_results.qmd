@@ -1,5 +1,5 @@
 
-# Appendix: PCA Diagnostics {#sec-appendix-pca}
+# Appendix: PCA Diagnostics {#sec-appendix-pca .unnumbered}
 
 The following table summarises the variance explained by PC1 in each PCA run:
 

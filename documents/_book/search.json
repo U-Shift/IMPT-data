@@ -284,7 +284,7 @@
     "href": "output_dashboard.html",
     "title": "7  Output and Dashboard",
     "section": "",
-    "text": "7.1 Output Files\nFinal results are stored in three geographic formats for each spatial level:\nResults are uploaded to the project data server at https://server.ushift.pt/impt using piggyback for publishing to the GitHub release.",
+    "text": "7.1 Output Files\nFinal results are stored in three geographic formats for each spatial level:\nResults are uploaded to the project data server at https://impt.server.ushift.pt, to the ushift server at https://ushift.tecnico.ulisboa.pt/content/impt/, and to the GitHub release using piggyback.",
     "crumbs": [
       "<span class='chapter-number'>7</span>  <span class='chapter-title'>Output and Dashboard</span>"
     ]
@@ -350,16 +350,6 @@
     ]
   },
   {
-    "objectID": "pca_results.html",
-    "href": "pca_results.html",
-    "title": "9  Appendix: PCA Diagnostics",
-    "section": "",
-    "text": "The following table summarises the variance explained by PC1 in each PCA run:\n\n\n\n\nTable 9.1: PCA diagnostics — variance explained by PC1 (indicative values; run 05_IMPTcalculator.R for up-to-date results)\n\n\n\n\n\n\nDimension / Mode\nPC1 Variance (%)\nTop contributing variable\n\n\n\n\nAccessibility (global)\n[run script]\n[run script]\n\n\nMobility (global)\n[run script]\n[run script]\n\n\nSafety (global)\n[run script]\n[run script]\n\n\nAccessibility – Car\n[run script]\n[run script]\n\n\nAccessibility – PT\n[run script]\n[run script]\n\n\nAccessibility – Bike\n[run script]\n[run script]\n\n\nAccessibility – Walk\n[run script]\n[run script]\n\n\nMobility – Car\n[run script]\n[run script]\n\n\nMobility – PT\n[run script]\n[run script]\n\n\nMobility – Bike\n[run script]\n[run script]\n\n\nMobility – Walk\n[run script]\n[run script]\n\n\nSafety – Car\n[run script]\n[run script]\n\n\nSafety – Bike\n[run script]\n[run script]\n\n\nSafety – Walk\n[run script]\n[run script]\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nTip\n\n\n\nTo populate this table automatically, source 05_IMPTcalculator.R and read PCA_Variance_Table.csv and PCA_Variance_and_Correlations.csv from the results folder.",
-    "crumbs": [
-      "<span class='chapter-number'>9</span>  <span class='chapter-title'>Appendix: PCA Diagnostics</span>"
-    ]
-  },
-  {
     "objectID": "references.html",
     "href": "references.html",
     "title": "References",
@@ -367,6 +357,16 @@
     "text": "Lovelace, Robin, and Rosa Félix. 2022. “Odjitter: Jitter\nOrigin-Destination Data.” https://github.com/itsleeds/odjitter.\n\n\nLovelace, Robin, Rosa Félix, and Dustin Carlino. 2022. “Jittering:\nA Computationally Efficient Method for Generating Realistic Route\nNetworks from Origin-Destination Data.” Findings. https://doi.org/10.32866/001c.33873.\n\n\nPereira, Rafael H. M., and Daniel Herszenhut. 2022. Accessibility:\nTransport Accessibility Measures. https://ipeagit.github.io/accessibility/.\n\n\nPereira, Rafael H. M., Marcus Saraiva, Daniel Herszenhut, Carlos K. V.\nBraga, and Matthew Wigginton Conway. 2021. “R5r: Rapid Realistic\nRouting on Multimodal Transport Networks with R5 in\nR.” Findings. https://doi.org/10.32866/001c.21262.\n\n\nUber Technologies. 2018. “H3: A Hexagonal Hierarchical Spatial\nIndex.” https://h3geo.org.\n\n\n\nAppendix: PCA Diagnostics\nThe following table summarises the variance explained by PC1 in each PCA run:\n\n\n\n\nTable 1.1: PCA diagnostics — variance explained by PC1 (indicative values; run 05_IMPTcalculator.R for up-to-date results)\n\n\n\n\n\n\nDimension / Mode\nPC1 Variance (%)\nTop contributing variable\n\n\n\n\nAccessibility (global)\n[run script]\n[run script]\n\n\nMobility (global)\n[run script]\n[run script]\n\n\nSafety (global)\n[run script]\n[run script]\n\n\nAccessibility – Car\n[run script]\n[run script]\n\n\nAccessibility – PT\n[run script]\n[run script]\n\n\nAccessibility – Bike\n[run script]\n[run script]\n\n\nAccessibility – Walk\n[run script]\n[run script]\n\n\nMobility – Car\n[run script]\n[run script]\n\n\nMobility – PT\n[run script]\n[run script]\n\n\nMobility – Bike\n[run script]\n[run script]\n\n\nMobility – Walk\n[run script]\n[run script]\n\n\nSafety – Car\n[run script]\n[run script]\n\n\nSafety – Bike\n[run script]\n[run script]\n\n\nSafety – Walk\n[run script]\n[run script]\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nTip\n\n\n\nTo populate this table automatically, source 05_IMPTcalculator.R and read PCA_Variance_Table.csv and PCA_Variance_and_Correlations.csv from the results folder.",
     "crumbs": [
       "References"
+    ]
+  },
+  {
+    "objectID": "pca_results.html",
+    "href": "pca_results.html",
+    "title": "Appendix: PCA Diagnostics",
+    "section": "",
+    "text": "The following table summarises the variance explained by PC1 in each PCA run:\n\n\n\n\nTable 1: PCA diagnostics — variance explained by PC1 (indicative values; run 05_IMPTcalculator.R for up-to-date results)\n\n\n\n\n\n\nDimension / Mode\nPC1 Variance (%)\nTop contributing variable\n\n\n\n\nAccessibility (global)\n[run script]\n[run script]\n\n\nMobility (global)\n[run script]\n[run script]\n\n\nSafety (global)\n[run script]\n[run script]\n\n\nAccessibility – Car\n[run script]\n[run script]\n\n\nAccessibility – PT\n[run script]\n[run script]\n\n\nAccessibility – Bike\n[run script]\n[run script]\n\n\nAccessibility – Walk\n[run script]\n[run script]\n\n\nMobility – Car\n[run script]\n[run script]\n\n\nMobility – PT\n[run script]\n[run script]\n\n\nMobility – Bike\n[run script]\n[run script]\n\n\nMobility – Walk\n[run script]\n[run script]\n\n\nSafety – Car\n[run script]\n[run script]\n\n\nSafety – Bike\n[run script]\n[run script]\n\n\nSafety – Walk\n[run script]\n[run script]\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nTip\n\n\n\nTo populate this table automatically, source 05_IMPTcalculator.R and read PCA_Variance_Table.csv and PCA_Variance_and_Correlations.csv from the results folder.",
+    "crumbs": [
+      "Appendix: PCA Diagnostics"
     ]
   }
 ]
