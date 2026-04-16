@@ -114,7 +114,7 @@ accidents_redux <- accidents |>
 #### Populations and municipio
 ### Join with municipio - use ours!
 ### Join with population and municipio
-census24_fregmun <- read.csv("useful_data/census24_fregmun.csv") |>
+census24_fregmun <- impt_read("census24_fregmun.csv", root = "useful_data") |>
   mutate(
     freg_id = as.character(freg_id),
     mun_id = as.character(mun_id)

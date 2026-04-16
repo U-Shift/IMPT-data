@@ -8,7 +8,7 @@
 tt_grid <- impt_read("/mobility_commuting/grid_commuting.csv") |>
   mutate(id_grid_origin = as.character(id_grid_origin))
 
-grid_freg_mun <- read_csv("useful_data/grid_nuts.csv") |>
+grid_freg_mun <- impt_read("grid_nuts.csv", root = "useful_data") |>
   mutate(grid_id = as.character(grid_id))
 
 # Grid-level time gap -----------------------------------------------
@@ -95,7 +95,7 @@ mapview(freg_stats_gap_sf, zcol = "relative_gap_bike_time")
 # mapview(freg_stats_gap_sf, zcol = "time_pt_peak")
 
 # at municipio level: re-weight grid means by trips --------------------------------
-municipios_id <- read.csv("useful_data/municipios_id.csv") |> mutate(mun_id = as.character(mun_id))
+municipios_id <- impt_read("municipios_id.csv", root = "useful_data") |> mutate(mun_id = as.character(mun_id))
 
 mun_stats_gap <- hex_stats_gap |>
   filter(!is.na(mun_id)) |>

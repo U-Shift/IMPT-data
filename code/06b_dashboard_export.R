@@ -46,7 +46,7 @@ print(session)
 #   rename(id=group_id)
 # write.csv(mun_nuts |> rename(mun_id=id, nuts_id=nuts, name=municipio), "useful_data/mun_nuts.csv", row.names = FALSE)
 
-# mun_nuts = read.csv("useful_data/mun_nuts.csv") |> rename(nuts=nuts_id, id=mun_id,municipio=name)
+# mun_nuts = impt_read("mun_nuts.csv", root = "useful_data") |> rename(nuts=nuts_id, id=mun_id,municipio=name)
 # mun_nuts
 # municipios <- municipios |>
 #   left_join(mun_nuts, by = "municipio") |>
@@ -81,8 +81,8 @@ print(session)
 grid <- impt_read("/dashboard_data/grid.gpkg")
 freguesias <- impt_read("/dashboard_data/freguesias.gpkg")
 municipios <- impt_read("/dashboard_data/municipios.gpkg")
-mun_nuts <- read.csv("useful_data/mun_nuts.csv") |> rename(nuts = nuts_id, id = mun_id, municipio = name)
-freg_nuts <- read.csv("useful_data/freguesias_nuts.csv") |> rename(id = freg_id, group_id = mun_id, freguesia = name, region_id = nuts_id)
+mun_nuts <- impt_read("mun_nuts.csv", root = "useful_data") |> rename(nuts = nuts_id, id = mun_id, municipio = name)
+freg_nuts <- impt_read("freguesias_nuts.csv", root = "useful_data") |> rename(id = freg_id, group_id = mun_id, freguesia = name, region_id = nuts_id)
 
 # 3.1 Merge with global results  -------------------------------------------------
 # Attention! Run 06_results.R before running this section, to have the global results dataframes available in the environment

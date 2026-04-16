@@ -48,7 +48,7 @@ database <- database |>
 nrow(database)
 
 # Modal share computation, with dicofre convertion
-all_dicofre_conversion_weight <- readRDS("useful_data/dicofre_16_24_conversion_full_with_weights.Rds")
+all_dicofre_conversion_weight <- impt_read("dicofre_16_24_conversion_full_with_weights.Rds", root = "useful_data")
 all_dicofre_conversion_weight
 
 database_converted <- all_dicofre_conversion_weight |>
@@ -90,10 +90,10 @@ database_final <- database_converted |>
   )
 View(database_final)
 
-write.csv(database_final, "useful_data/census_modal_share.csv", row.names = FALSE)
+impt_write(database_final, "census_modal_share.csv", root = "useful_data")
 
 # Compute for municipality
-mun_parish <- read.csv("useful_data/freguesias_nuts.csv")
+mun_parish <- impt_read("freguesias_nuts.csv", root = "useful_data")
 
 database_municipality <- database_converted |>
   select(dtmnfr24, total_converted, pt_converted, private_vehicle_converted, active_converted, walk_converted, bike_converted) |>
@@ -123,12 +123,12 @@ database_municipality <- database_converted |>
     bike_share = round(bike / total, digits = 2)
   )
 
-# mun_id = read.csv("useful_data/mun_nuts.csv")
+# mun_id = impt_read("mun_nuts.csv", root = "useful_data")
 # mapview::mapview(municipios |> left_join(mun_id, by=c("municipio"="name")) |> left_join(database_municipality, by = c("mun_id" = "id")), zcol="pt_share")
 # mapview::mapview(municipios |> left_join(mun_id, by=c("municipio"="name")) |> left_join(database_municipality, by = c("mun_id" = "id")), zcol="private_vehicle_share")
 # mapview::mapview(municipios |> left_join(mun_id, by=c("municipio"="name")) |> left_join(database_municipality, by = c("mun_id" = "id")), zcol="active_share")
 
-database_grid <- read.csv("useful_data/grid_nuts.csv") |>
+database_grid <- impt_read("grid_nuts.csv", root = "useful_data") |>
   select(grid_id, freg_id) |>
   rename(id = grid_id, dicofre = freg_id) |>
   mutate(dtmnfr = as.character(dicofre)) |>

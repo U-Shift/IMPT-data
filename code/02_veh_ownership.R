@@ -234,7 +234,7 @@ vehicles_by_parish <- vehicles_by_dicofre_new |>
 # mapview::mapview(vehicles_by_dicofre_new_geo, zcol="avg_cars")
 # mapview::mapview(vehicles_by_dicofre_new_geo, zcol="avg_bicycles")
 
-mun_parish <- read.csv("useful_data/freguesias_nuts.csv")
+mun_parish <- impt_read("freguesias_nuts.csv", root = "useful_data")
 vehicles_by_municipality <- vehicles_by_dicofre_new |>
   left_join(mun_parish |> mutate(freg_id = as.character(freg_id)), by = c("dicofre_home_new" = "freg_id")) |>
   group_by(mun_id) |>
@@ -254,11 +254,11 @@ vehicles_by_municipality <- vehicles_by_dicofre_new |>
   rename(id = mun_id) |>
   mutate(across(where(is.numeric), ~ round(., 2)))
 
-# mun_id = read.csv("useful_data/mun_nuts.csv")
+# mun_id = impt_read("mun_nuts.csv", root = "useful_data")
 # mapview::mapview(municipios |> left_join(mun_id, by=c("municipio"="name")) |> left_join(vehicles_by_municipality, by = c("mun_id" = "id")), zcol="avg_cars")
 # mapview::mapview(municipios |> left_join(mun_id, by=c("municipio"="name")) |> left_join(vehicles_by_municipality, by = c("mun_id" = "id")), zcol="avg_bicycles")
 
-vehicles_by_grid <- read.csv("useful_data/grid_nuts.csv") |>
+vehicles_by_grid <- impt_read("grid_nuts.csv", root = "useful_data") |>
   select(grid_id, freg_id) |>
   rename(id = grid_id, dicofre = freg_id) |>
   mutate(dicofre = as.character(dicofre)) |>

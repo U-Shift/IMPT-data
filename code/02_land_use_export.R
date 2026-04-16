@@ -8,11 +8,11 @@ library(readxl)
 
 # Load Reference Data --------------------------------------------------
 # population and census from original census 21
-census24_fregmun <- read.csv("useful_data/census24_fregmun.csv")
+census24_fregmun <- impt_read("census24_fregmun.csv", root = "useful_data")
 census24_fregmun <- census24_fregmun |> mutate(freg_id = as.character(freg_id), mun_id = as.character(mun_id))
 grid <- impt_read("/geo/grelha_h3_r8.gpkg") |> mutate(id = as.character(id))
-grid_freg_mun <- read.csv("useful_data/grid_nuts.csv") |> mutate(grid_id = as.character(grid_id), freg_id = as.character(freg_id), mun_id = as.character(mun_id))
-freguesias_geo <- st_read("useful_data/freguesias.gpkg")
+grid_freg_mun <- impt_read("grid_nuts.csv", root = "useful_data") |> mutate(grid_id = as.character(grid_id), freg_id = as.character(freg_id), mun_id = as.character(mun_id))
+freguesias_geo <- impt_read("freguesias.gpkg", root = "useful_data")
 freguesias_area <- freguesias_geo |>
   st_drop_geometry() |>
   mutate(

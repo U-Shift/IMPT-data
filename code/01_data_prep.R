@@ -128,8 +128,8 @@ conversion_dicofre <- conversion_dicofre |> bind_rows(data.frame(old = "111123",
 conversion_dicofre <- conversion_dicofre |> bind_rows(data.frame(old = "111126", new = "111130"))
 conversion_dicofre <- conversion_dicofre |> bind_rows(data.frame(old = "111126", new = "111133"))
 
-write.csv(conversion_dicofre, "useful_data/dicofre_16_24_conversion.csv", row.names = FALSE)
-conversion_dicofre <- read.csv("useful_data/dicofre_16_24_conversion.csv")
+impt_write(conversion_dicofre, "dicofre_16_24_conversion.csv", root = "useful_data")
+conversion_dicofre <- impt_read("dicofre_16_24_conversion.csv", root = "useful_data")
 
 ## create a useful conversion dicofre with all, even the ones that did not change
 freguesias16 <- trips_freguesias_2016 |>
@@ -182,13 +182,13 @@ all_dicofre_conversion_weight <- all_dicofre_conversion_weight |>
 rm(all_dicofre_conversion_weight_subset)
 
 # save
-write.csv(all_dicofre_conversion, "useful_data/dicofre_16_24_conversion_full.csv", row.names = FALSE)
-saveRDS(all_dicofre_conversion, "useful_data/dicofre_16_24_conversion_full.Rds")
-write.csv(all_dicofre_conversion_weight, "useful_data/dicofre_16_24_conversion_full_with_weights.csv", row.names = FALSE)
-saveRDS(all_dicofre_conversion_weight, "useful_data/dicofre_16_24_conversion_full_with_weights.Rds")
+impt_write(all_dicofre_conversion, "dicofre_16_24_conversion_full.csv", root = "useful_data")
+impt_write(all_dicofre_conversion, "dicofre_16_24_conversion_full.Rds", root = "useful_data")
+impt_write(all_dicofre_conversion_weight, "dicofre_16_24_conversion_full_with_weights.csv", root = "useful_data")
+impt_write(all_dicofre_conversion_weight, "dicofre_16_24_conversion_full_with_weights.Rds", root = "useful_data")
 # load
-all_dicofre_conversion <- readRDS("useful_data/dicofre_16_24_conversion_full.Rds")
-all_dicofre_conversion_weight <- readRDS("useful_data/dicofre_16_24_conversion_full_with_weights.Rds")
+all_dicofre_conversion <- impt_read("dicofre_16_24_conversion_full.Rds", root = "useful_data")
+all_dicofre_conversion_weight <- impt_read("dicofre_16_24_conversion_full_with_weights.Rds", root = "useful_data")
 
 # Adjust trips to new dicofre ids
 trips_freguesias_to_convert <- trips_freguesias_2016 |> filter(
@@ -471,7 +471,7 @@ impt_write(census_points24, "/geo/census24_points.gpkg")
 census_points24 <- impt_read("/geo/census24_points.gpkg")
 
 # auxiliary table for freguesias and municipios with no data lost (no geom)
-conversion_dicofre_weight <- readRDS("useful_data/dicofre_16_24_conversion_full_with_weights.Rds")
+conversion_dicofre_weight <- impt_read("dicofre_16_24_conversion_full_with_weights.Rds", root = "useful_data")
 census24_fregmun <- census21_fregmun |>
   left_join(conversion_dicofre_weight, by = c("DTMNFR21" = "dtmnfr16")) |>
   mutate(
@@ -490,7 +490,7 @@ census24_fregmun <- census21_fregmun |>
   )
 
 sum(census24_fregmun$population) # 2870206 - less 2 persons due rounding, which is acceptable for our purposes
-write.csv(census24_fregmun, "useful_data/census24_fregmun.csv", row.names = FALSE)
+impt_write(census24_fregmun, "census24_fregmun.csv", root = "useful_data")
 
 
 # POIs --------------------------------------------------------------------
@@ -628,7 +628,7 @@ gtfs_db <- gtfs_db |> bind_rows(data.frame(
   shapes = TRUE, outside_area = FALSE, calendar_add_years = 1
 ))
 
-write.csv(gtfs_db, "useful_data/gtfs_db.csv", row.names = FALSE)
+impt_write(gtfs_db, "gtfs_db.csv", root = "useful_data")
 
 
 gtfs_to_aggregate <- list()

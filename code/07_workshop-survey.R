@@ -63,7 +63,7 @@ IMPTWorkshop <- IMPTWorkshop %>%
 freguesias <- impt_read("/geo/freguesias_2024_unique.gpkg")
 Freguesias <- freguesias |>
   select("dtmnfr", "freguesia", "municipio", "geom")
-# Freguesias <- st_read("useful_data/freguesias.gpkg
+# Freguesias <- impt_read("useful_data/freguesias.gpkg
 #                       freguesias_2024_unique.gpkg") |>
 #   select("dtmnfr", "freguesia", "municipio", "geom")
 

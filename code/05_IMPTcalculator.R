@@ -756,12 +756,12 @@ impt_write(Final_Results_Master_walk, "/impt/results/IMPT_PCA_and_Entropy_Scores
 # =============================================================================
 
 # Population lookup: used to compute population-weighted means at higher levels
-census24_fregmun_pop <- read_csv("useful_data/census24_fregmun.csv") |>
+census24_fregmun_pop <- impt_read("census24_fregmun.csv", root = "useful_data") |>
   select(freg_id, mun_id, population) |>
   mutate(dtmnfr = as.integer(freg_id))
 
 # Grid lookup: assigns each grid cell to a freguesia (generalised assumption)
-grid_freg_mun <- read.csv("useful_data/grid_nuts.csv") |>
+grid_freg_mun <- impt_read("grid_nuts.csv", root = "useful_data") |>
   select(grid_id, freg_id) |>
   mutate(freg_id = as.integer(freg_id))
 

@@ -1044,7 +1044,7 @@ write_csv(Final_Results_Master_walk, "/data/IMPT/impt/results/IMPT_PCA_and_Entro
 ```{r}
 ## Municipality
 # export at municipality level, weighted mean with population
-census24_fregmun_pop <- read_csv("useful_data/census24_fregmun.csv") |>
+census24_fregmun_pop <- impt_read("census24_fregmun.csv", root = "useful_data") |>
   select(freg_id, mun_id, population) |>
   mutate(dtmnfr = as.integer(freg_id))
 
@@ -1083,7 +1083,7 @@ write_csv(Final_Results_Master_bike_municipio, "/data/IMPT/impt/results/IMPT_PCA
 
 ## Grid level
 # via grid_freg_mun lookup (generalised assumption).
-grid_freg_mun <- read.csv("useful_data/grid_nuts.csv") |>
+grid_freg_mun <- impt_read("grid_nuts.csv", root = "useful_data") |>
   select(grid_id, freg_id) |>
   mutate(freg_id = as.integer(freg_id))
 

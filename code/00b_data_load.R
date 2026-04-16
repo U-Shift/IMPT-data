@@ -10,9 +10,9 @@ limit <- impt_read("/geo/municipios_union_2024.geojson")
 limit_bbox <- impt_read("/geo/municipios_union_bbox_2024.geojson")
 
 # Conversion freguesias
-conversion_dicofre <- read.csv("useful_data/dicofre_16_24_conversion.csv")
-conversion_dicofre_all <- readRDS("useful_data/dicofre_16_24_conversion_full.Rds")
-conversion_dicofre_weight <- readRDS("useful_data/dicofre_16_24_conversion_full_with_weights.Rds")
+conversion_dicofre <- impt_read("dicofre_16_24_conversion.csv", root = "useful_data")
+conversion_dicofre_all <- impt_read("dicofre_16_24_conversion_full.Rds", root = "useful_data")
+conversion_dicofre_weight <- impt_read("dicofre_16_24_conversion_full_with_weights.Rds", root = "useful_data")
 
 # Road network
 # road_network = impt_read("/geo/IMPT_Road_network.gpkg") # all

@@ -11,8 +11,8 @@ library(readr)
 library(stringr)
 
 # 0. Load external data ---------------------------------------------------
-municipios_id <- read.csv("useful_data/municipios_id.csv")
-grid_freg_mun <- read.csv("useful_data/grid_nuts.csv")
+municipios_id <- impt_read("municipios_id.csv", root = "useful_data")
+grid_freg_mun <- impt_read("grid_nuts.csv", root = "useful_data")
 
 # ── 1. Data Definitions & Imports ─────────────────────────────────────────────
 
@@ -197,12 +197,12 @@ impt_write(affordability_freguesia_composite, "/affordability/affordability_freg
 # Municipio level ---------------------------------------------------------
 
 # Population lookup: used to compute population-weighted means at higher levels
-census24_fregmun_pop <- read_csv("useful_data/census24_fregmun.csv") |>
+census24_fregmun_pop <- impt_read("census24_fregmun.csv", root = "useful_data") |>
   select(freg_id, mun_id, population) |>
   mutate(dtmnfr = as.integer(freg_id))
 
 # Grid lookup: assigns each grid cell to a freguesia (generalised assumption)
-grid_freg_mun <- read.csv("useful_data/grid_nuts.csv") |>
+grid_freg_mun <- impt_read("grid_nuts.csv", root = "useful_data") |>
   select(grid_id, freg_id) |>
   mutate(freg_id = as.integer(freg_id))
 
@@ -220,7 +220,7 @@ impt_write(affordability_municipio_composite, "/affordability/affordability_muni
 
 
 # Grid level --------------------------------------------------------------
-grid_freg_mun <- read.csv("useful_data/grid_nuts.csv")
+grid_freg_mun <- impt_read("grid_nuts.csv", root = "useful_data")
 
 # car occupancy rate by grid
 # occupancy rate for car by municipality (IMOB_2017_AML.xlsx, sheet "Quadro IV.7 >> Taxa de ocupação dos automóveis por município de residência")
