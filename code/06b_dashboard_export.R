@@ -190,7 +190,6 @@ grid_aggregated <- grid_aggregated |>
   ) |>
   left_join(
     grid_mobility_infrastructure |>
-      select(-X) |>
       rename_with(~ paste0("mobility_infrastructure_", .), -id),
     by = "id"
   ) |>
@@ -271,7 +270,7 @@ grid_aggregated <- grid_aggregated |>
   ) |>
   left_join(
     grid_access_gap_time |>
-      rename(id = grid_id) |>
+      rename(id = grid_id, relative_gap_time_pt = relative_gap_time, accessibility_gap_pt = accessibility_gap) |>
       rename_with(~ paste0("access_gap_time_", .), -id),
     by = "id"
   ) |>
@@ -343,7 +342,6 @@ freguesias_aggregated <- freguesias_aggregated |>
   ) |>
   left_join(
     freguesia_mobility_infrastructure |>
-      select(-X) |>
       rename(id = dtmnfr) |>
       mutate(id = as.character(id)) |>
       rename_with(~ paste0("mobility_infrastructure_", .), -id),
@@ -440,7 +438,7 @@ freguesias_aggregated <- freguesias_aggregated |>
   ) |>
   left_join(
     freguesia_access_gap_time |>
-      rename(id = freg_id) |>
+      rename(id = freg_id, relative_gap_time_pt = relative_gap_time, accessibility_gap_pt = accessibility_gap) |>
       mutate(id = as.character(id)) |>
       rename_with(~ paste0("access_gap_time_", .), -id),
     by = "id"
@@ -514,7 +512,6 @@ municipios_aggregated <- municipios_aggregated |>
   ) |>
   left_join(
     municipio_mobility_infrastructure |>
-      select(-X) |>
       left_join(mun_nuts |> select(id, municipio), by = "municipio") |>
       select(-municipio) |>
       rename_with(~ paste0("mobility_infrastructure_", .), -id),
@@ -602,7 +599,7 @@ municipios_aggregated <- municipios_aggregated |>
   ) |>
   left_join(
     municipio_access_gap_time |>
-      rename(id = mun_id) |>
+      rename(id = mun_id, relative_gap_time_pt = relative_gap_time, accessibility_gap_pt = accessibility_gap) |>
       rename_with(~ paste0("access_gap_time_", .), -id),
     by = "id"
   ) |>
