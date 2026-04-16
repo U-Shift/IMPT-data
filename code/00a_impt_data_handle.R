@@ -40,7 +40,7 @@ impt_read <- function(path, root = NULL, write_to = NULL, ...) { # Use ... for a
     }
     message(sprintf("Downloading file from %s...", file_path))
     if (grepl(".csv", file_path, ignore.case = TRUE)) {
-        content <- readr::read_delim(file_path, show_col_types = FALSE, ...)
+        content <- readr::read_delim(file_path, show_col_types = FALSE, name_repair = make.names, ...)
         if (!is.null(write_to)) {
             impt_write(content, write_to)
         }

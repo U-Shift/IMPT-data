@@ -25,25 +25,27 @@ for (i in 1:length(pois_list)) {
   pois_freguesia <- st_join(freguesias, pois_data |> st_transform(st_crs(freguesias)), left = FALSE) |>
     st_drop_geometry() |>
     group_by(dtmnfr) |>
-    summarise(!!col_name := n())
+    summarise(!!col_name := round(sum(n)))
 
   pois_municipio <- st_join(municipios, pois_data |> st_transform(st_crs(municipios)), left = FALSE) |>
     st_drop_geometry() |>
     group_by(municipio) |>
-    summarise(!!col_name := n())
+    summarise(!!col_name := round(sum(n)))
 
   pois_grid <- st_join(grid, pois_data |> st_transform(st_crs(grid)), left = FALSE) |>
     st_drop_geometry() |>
     group_by(id) |>
-    summarise(!!col_name := n())
+    summarise(!!col_name := round(sum(n)))
 
   freguesias_pois <- freguesias_pois |> left_join(pois_freguesia, by = "dtmnfr")
   municipios_pois <- municipios_pois |> left_join(pois_municipio, by = "municipio")
   grid_pois <- grid_pois |> left_join(pois_grid, by = "id")
 }
 
-# mapview::mapview(freguesias |> left_join(freguesias_pois, by="dtmnfr"), zcol = "n_health", legend = TRUE)
-# mapview::mapview(municipios |> left_join(municipios_pois, by="municipio"), zcol = "n_health", legend = TRUE)
+mapview::mapview(freguesias |> left_join(freguesias_pois, by = "dtmnfr"), zcol = "n_health", legend = TRUE)
+mapview::mapview(freguesias |> left_join(freguesias_pois, by = "dtmnfr"), zcol = "n_jobs", legend = TRUE)
+mapview::mapview(municipios |> left_join(municipios_pois, by = "municipio"), zcol = "n_health", legend = TRUE)
+mapview::mapview(municipios |> left_join(municipios_pois, by = "municipio"), zcol = "n_jobs", legend = TRUE)
 # mapview::mapview(grid |> left_join(grid_pois, by="id"), zcol = "n_health", legend = TRUE)
 # mapview::mapview(grid |> left_join(grid_pois, by="id"), zcol = "n_jobs", legend = TRUE)
 

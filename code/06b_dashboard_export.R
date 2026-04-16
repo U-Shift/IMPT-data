@@ -5,7 +5,7 @@
 # When updated, data should be uploaded to the IST serve through SSH, to serve the web dashboard
 # install.packages("ssh")
 library(ssh)
-session <- ssh_connect("ist155593@sigma.ist.utl.pt")
+session <- ssh_connect("ist1108284@sigma.ist.utl.pt")
 print(session)
 
 # 2. Associate base layers to nuts  -------------------------------------------------
