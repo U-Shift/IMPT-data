@@ -215,12 +215,12 @@ sum(census_pts$population) / sum(census_pts$households) # 3.147 people per house
 # Income, Gini, housing costs -----------------------------------
 
 ## income
-income_freguesias <- read_excel("/data/IMPT/BaseDados_INE/Rendimento_agregado_2023.xls",
+income_freguesias <- impt_read("BaseDados_INE/Rendimento_agregado_2023.xls",
   sheet = "freg", col_types = c("skip", "numeric", "text")
 )
 income_freguesias <- income_freguesias |> filter(freg_id %in% grid_freg_mun$freg_id) # filter only freguesias that are in the grid, to avoid join problems later
 
-income_municipios <- read_excel("/data/IMPT/BaseDados_INE/Rendimento_agregado_2023.xls",
+income_municipios <- impt_read("BaseDados_INE/Rendimento_agregado_2023.xls",
   sheet = "mun", col_types = c("skip", "numeric", "text", "skip", "skip")
 )
 
@@ -230,12 +230,12 @@ income_grid <- income_freguesias |>
 
 
 ## housing costs
-housing_freguesias <- read_excel("/data/IMPT/BaseDados_INE/Habitacao_custos_2021.xls",
+housing_freguesias <- impt_read("BaseDados_INE/Habitacao_custos_2021.xls",
   sheet = "freg", col_types = c("skip", "text", "numeric")
 )
 housing_freguesias <- housing_freguesias |> filter(freg_id %in% grid_freg_mun$freg_id) # filter only freguesias that are in the grid, to avoid join problems later
 
-housing_municipios <- read_excel("/data/IMPT/BaseDados_INE/Habitacao_custos_2021.xls",
+housing_municipios <- impt_read("BaseDados_INE/Habitacao_custos_2021.xls",
   sheet = "mun", col_types = c("skip", "text", "numeric")
 ) |>
   mutate(housing_costs = round(housing_costs, 2))
@@ -245,7 +245,7 @@ housing_grid <- housing_freguesias |>
   select(-freg_id)
 
 ## Gini coefficient
-gini_municipios <- read_excel("/data/IMPT/BaseDados_INE/Rendimento_agregado_2023.xls", # source ERendimentoNLocal2023.xlsx INE 2023
+gini_municipios <- impt_read("BaseDados_INE/Rendimento_agregado_2023.xls", # source ERendimentoNLocal2023.xlsx INE 2023
   sheet = "mun", col_types = c("skip", "skip", "text", "numeric", "numeric")
 ) |>
   mutate(

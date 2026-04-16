@@ -9,7 +9,7 @@ library(openxlsx)
 # ----------------------------
 freguesias <- impt_read("/geo/freguesias_2024_unique.gpkg")
 
-acidentes_path <- impt_read(URLencode("/safety/13-SegurançaRodoviária.gpkg"))
+acidentes_path <- impt_read("/safety/13-SegurançaRodoviária.gpkg")
 # stopifnot(file.exists(path.expand(acidentes_path)))
 
 ig <- st_read(

@@ -33,7 +33,7 @@ occ_rate_car_freg <- impt_read("trips/imob_taxa_occ_auto.csv") |>
   )
 
 # mobile population by municipality (IMOB_2017_AML.xlsx, sheet "Quadro II.1 >> População móvel por município de residência")
-pop_movel_freg <- impt_read("trips/imob_populacao_movel.csv", csv_sep = "\t") |>
+pop_movel_freg <- impt_read("trips/imob_populacao_movel.csv", delim = "\t") |>
   left_join(municipios_id, by = c("Municipio" = "municipio")) |>
   # mutate(mun_id = as.character(mun_id)) |>
   select(-Municipio) |>
@@ -235,7 +235,7 @@ occ_rate_car_grid <- impt_read("trips/imob_taxa_occ_auto.csv") |>
     grid_id = as.integer(grid_id)
   )
 # mobile population by municipality (IMOB_2017_AML.xlsx, sheet "Quadro II.1 >> População móvel por município de residência")
-pop_movel_grid <- impt_read("trips/imob_populacao_movel.csv", csv_sep = "\t") |>
+pop_movel_grid <- impt_read("trips/imob_populacao_movel.csv", delim = "\t") |>
   left_join(municipios_id, by = c("Municipio" = "municipio")) |>
   # mutate(mun_id = as.character(mun_id)) |>
   select(-Municipio) |>

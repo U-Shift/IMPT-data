@@ -115,7 +115,7 @@ impt_write(grid_by_stops, "/mobility/grid_stops_coverage.csv")
 grid_shared_mob <- grid
 freguesias_shared_mob <- freguesias
 municipios_shared_mob <- municipios
-aml_shared_mobility <- impt_read(URLencode("/BaseDados_PMMUS/11-ModosPartilhados/11 - ModosPartilhados.gpkg"), st_layer = "Pontos-partilha_amL") |>
+aml_shared_mobility <- impt_read("/BaseDados_PMMUS/11-ModosPartilhados/11 - ModosPartilhados.gpkg", layer = "Pontos-partilha_amL") |>
   st_transform(st_crs(grid_shared_mob))
 # mapview(aml_shared_mobility)
 # Get number of shared mobility locations for different scales

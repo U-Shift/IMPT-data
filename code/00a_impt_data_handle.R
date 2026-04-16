@@ -11,7 +11,7 @@ library(tidyr)
 # When working at ushift@alfa, reads and writes at /data/IMPT folder
 # When working at other machine, reads from ushift@alfa through https and writes to <local_repo>/data folder
 
-impt_read <- function(path, root = NULL, csv_sep = ",", st_layer = NULL, write_to = NULL) {
+impt_read <- function(path, root = NULL, write_to = NULL, ...) { # Use ... for arguments specific for file format reading (e.g. layer for gpkg or delim for csv)
     # If does not start with "/", add it
     if (!startsWith(path, "/")) {
         path <- paste0("/", path)
@@ -35,20 +35,19 @@ impt_read <- function(path, root = NULL, csv_sep = ",", st_layer = NULL, write_t
     }
     # Read file and return
     file_path <- paste(path_root, path, path_append, sep = "")
+    if (grepl("^http", file_path, ignore.case = TRUE)) { # If http, encode
+        file_path <- URLencode(file_path)
+    }
     message(sprintf("Downloading file from %s...", file_path))
     if (grepl(".csv", file_path, ignore.case = TRUE)) {
-        content <- readr::read_delim(file_path, delim = csv_sep, show_col_types = FALSE)
+        content <- readr::read_delim(file_path, show_col_types = FALSE, ...)
         if (!is.null(write_to)) {
             impt_write(content, write_to)
         }
         return(content)
     }
     if (grepl(".geojson", file_path, ignore.case = TRUE) | grepl(".gpkg", file_path, ignore.case = TRUE)) {
-        if (!is.null(st_layer)) {
-            content <- sf::st_read(file_path, layer = st_layer)
-        } else {
-            content <- sf::st_read(file_path)
-        }
+        content <- sf::st_read(file_path, ...)
         if (!is.null(write_to)) {
             impt_write(content, write_to)
         }
@@ -60,7 +59,19 @@ impt_read <- function(path, root = NULL, csv_sep = ",", st_layer = NULL, write_t
             download.file(file_path, file_local, quiet = TRUE, mode = "wb")
             file_path <- file_local
         }
-        content <- readRDS(file_path)
+        content <- readRDS(file_path, ...)
+        if (!is.null(write_to)) {
+            impt_write(content, write_to)
+        }
+        return(content)
+    }
+    if (grepl(".xls", file_path, ignore.case = TRUE) | grepl(".xlsx", file_path, ignore.case = TRUE)) {
+        if (grepl("^http", file_path, ignore.case = TRUE)) {
+            file_local <- file.path(tempdir(), basename(path))
+            download.file(file_path, file_local, quiet = TRUE, mode = "wb")
+            file_path <- file_local
+        }
+        content <- readxl::read_excel(file_path, ...)
         if (!is.null(write_to)) {
             impt_write(content, write_to)
         }
@@ -76,7 +87,7 @@ impt_read <- function(path, root = NULL, csv_sep = ",", st_layer = NULL, write_t
     # If got here, throw error, as file format is not supported
     stop("Invalid file extension! Consult the IMPT team to improve this method!")
 }
-impt_write <- function(content, path, root = NULL) {
+impt_write <- function(content, path, root = NULL) { # Use ... for arguments specific for file format reading (e.g. layer for gpkg or delim for csv)
     # If does not start with "/", add it
     if (!startsWith(path, "/")) {
         path <- paste0("/", path)

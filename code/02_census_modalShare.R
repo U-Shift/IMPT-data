@@ -4,7 +4,7 @@
 # Issue       -
 
 # Read CSV
-database <- impt_read("/census2021/ine_indicador_0011704.csv", csv_sep = ";")
+database <- impt_read("/census2021/ine_indicador_0011704.csv", delim = ";")
 # names(database)
 # [1] "Local.de.residência.à.data.dos.Censos..2021...NUTS...2013."
 # [2] "S7A2021.2021.T.HM.T.Total.T.Total.T.Total"
