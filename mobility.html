@@ -1,0 +1,979 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.42">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>5&nbsp; Mobility – IMPT — Índice Multidimensional e Multimodal de Pobreza nos Transportes</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./accessibility.html" rel="next">
+<link href="./transport_routing.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-2f5df379a58b258e96c21c0638c20c03.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-77cb982c3ae5178da5248b9c8921380f.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="site_libs/quarto-diagram/mermaid.min.js"></script>
+<script src="site_libs/quarto-diagram/mermaid-init.js"></script>
+<link href="site_libs/quarto-diagram/mermaid.css" rel="stylesheet">
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-sidebar floating">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./mobility.html"><strong>Dimensions and PCA</strong></a></li><li class="breadcrumb-item"><a href="./mobility.html"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Mobility</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">IMPT — Índice Multidimensional e Multimodal de Pobreza nos Transportes</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text"><strong>Data</strong></span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./data_sources.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Data Sources</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./data_preparation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Data Preparation</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./transport_routing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Transport Routing — Travel Time Matrix</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text"><strong>Dimensions and PCA</strong></span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./mobility.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Mobility</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./accessibility.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Accessibility</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./affordability.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Affordability</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./safety.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Safety</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./calculator.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Index Computation — IMPT Calculator</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./pca_results.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">PCA Diagnostics</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text"><strong>Dashboard and Reproducibility</strong></span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./output_dashboard.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Output and Dashboard</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./reproducibility.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Reproducibility</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">References</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#commuting-travel-times" id="toc-commuting-travel-times" class="nav-link active" data-scroll-target="#commuting-travel-times"><span class="header-section-number">5.1</span> Commuting travel times</a></li>
+  <li><a href="#number-of-pt-transfers" id="toc-number-of-pt-transfers" class="nav-link" data-scroll-target="#number-of-pt-transfers"><span class="header-section-number">5.2</span> Number of PT transfers</a></li>
+  <li><a href="#walking-and-cycling-infrastructure-ratio" id="toc-walking-and-cycling-infrastructure-ratio" class="nav-link" data-scroll-target="#walking-and-cycling-infrastructure-ratio"><span class="header-section-number">5.3</span> Walking and Cycling infrastructure ratio</a>
+  <ul class="collapse">
+  <li><a href="#walking-infrastructure-ratio" id="toc-walking-infrastructure-ratio" class="nav-link" data-scroll-target="#walking-infrastructure-ratio"><span class="header-section-number">5.3.1</span> Walking infrastructure ratio</a></li>
+  <li><a href="#cycling-infrastructure-ratio-and-type" id="toc-cycling-infrastructure-ratio-and-type" class="nav-link" data-scroll-target="#cycling-infrastructure-ratio-and-type"><span class="header-section-number">5.3.2</span> Cycling infrastructure ratio and type</a></li>
+  </ul></li>
+  <li><a href="#pt-stop-coverage" id="toc-pt-stop-coverage" class="nav-link" data-scroll-target="#pt-stop-coverage"><span class="header-section-number">5.4</span> PT stop coverage</a>
+  <ul class="collapse">
+  <li><a href="#isochrone-estimation-by-pt-mode" id="toc-isochrone-estimation-by-pt-mode" class="nav-link" data-scroll-target="#isochrone-estimation-by-pt-mode"><span class="header-section-number">5.4.1</span> Isochrone estimation by PT mode</a></li>
+  <li><a href="#population-estimation-dasymetric-method" id="toc-population-estimation-dasymetric-method" class="nav-link" data-scroll-target="#population-estimation-dasymetric-method"><span class="header-section-number">5.4.2</span> Population estimation (dasymetric method)</a></li>
+  </ul></li>
+  <li><a href="#pt-headways-and-waiting-times" id="toc-pt-headways-and-waiting-times" class="nav-link" data-scroll-target="#pt-headways-and-waiting-times"><span class="header-section-number">5.5</span> PT headways and waiting times</a></li>
+  <li><a href="#shared-mobility" id="toc-shared-mobility" class="nav-link" data-scroll-target="#shared-mobility"><span class="header-section-number">5.6</span> Shared mobility</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./mobility.html"><strong>Dimensions and PCA</strong></a></li><li class="breadcrumb-item"><a href="./mobility.html"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Mobility</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span id="sec-mobility" class="quarto-section-identifier"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Mobility</span></span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>Mobility indicators cover infrastructure availability and quality, public transport coverage and service levels, commuting patterns, and shared mobility provision.</p>
+<section id="commuting-travel-times" class="level2" data-number="5.1">
+<h2 data-number="5.1" class="anchored" data-anchor-id="commuting-travel-times"><span class="header-section-number">5.1</span> Commuting travel times</h2>
+<p><strong>Script:</strong> <code>04_mobility_commuting.R</code></p>
+<p>Using the jittered IMOB OD pairs (<strong>for commuting</strong>) and the travel time matrices, average commuting travel times are computed for each geographical unit and mode, weighted by number of trips. Trips with no feasible route within the constraints are assigned the maximum travel time (120 min) and counted separately as “not accomplishable” trips (PNA — <em>Percentagem Não Alcançáveis</em>).</p>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div id="fig-commuting-flow" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-commuting-flow-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div>
+<pre class="mermaid mermaid-js" data-label="fig-commuting-flow">flowchart TB
+    TTM["Travel Time Matrix&lt;br/&gt;(all modes)"] --&gt; Match
+    ODs["Jittered OD pairs&lt;br/&gt;(IMOB 2017 commuting)"] --&gt; Match
+    Grid["H3 Grid"] --&gt; Match
+    
+    subgraph Match["Spatial Assignment &amp; Matching"]
+        direction TB
+        JoinGrid["Assign each OD&lt;br/&gt;to origin grid cell"] --&gt; Lookup["Look up travel time&lt;br/&gt;for each OD pair&lt;br/&gt;in TTM"]
+        Lookup --&gt; Fill["Fill missing:&lt;br/&gt;max_duration = 120 min&lt;br/&gt;(NAs = not accomplishable)"]
+    end
+    
+    Match --&gt; AggMode["Aggregate by&lt;br/&gt;geographic unit × mode"]
+    AggMode --&gt; Output["avg_tt_{mode}&lt;br/&gt;trips, trips_na_{mode}&lt;br/&gt;PNA_{mode}"]
+</pre>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-commuting-flow-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;5.1: Commuting travel time computation
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="number-of-pt-transfers" class="level2" data-number="5.2">
+<h2 data-number="5.2" class="anchored" data-anchor-id="number-of-pt-transfers"><span class="header-section-number">5.2</span> Number of PT transfers</h2>
+<p><strong>Script:</strong> <code>04_mobility_commuting.R</code></p>
+<p>For each commuting OD pair, the <strong>minimum</strong> number of transfers required for each PTransit route (for 0, 1, 2, and 3 transfers) is assigned to each OD pair, and population-weighted mean transfers are computed per geographical unit. The result is the average minimum number of transfers to commute to work, using PTransit.</p>
+</section>
+<section id="walking-and-cycling-infrastructure-ratio" class="level2" data-number="5.3">
+<h2 data-number="5.3" class="anchored" data-anchor-id="walking-and-cycling-infrastructure-ratio"><span class="header-section-number">5.3</span> Walking and Cycling infrastructure ratio</h2>
+<p><strong>Script:</strong> <code>04_mobility.R</code></p>
+<section id="walking-infrastructure-ratio" class="level3" data-number="5.3.1">
+<h3 data-number="5.3.1" class="anchored" data-anchor-id="walking-infrastructure-ratio"><span class="header-section-number">5.3.1</span> Walking infrastructure ratio</h3>
+<p>The pedestrian infrastructure ratio is the proportion of road length that includes pedestrian infrastructure, computed using OSM data:</p>
+<p><span class="math display">\[R_{ped} = \frac{\text{pedestrian path length}}{\text{road length}}\]</span></p>
+<p>Road classification uses highway tags: <code>motorway</code>, <code>trunk</code>, <code>primary</code>, <code>secondary</code>, <code>tertiary</code>, <code>unclassified</code>, <code>residential</code>, <code>living_street</code>, plus link variants.</p>
+<p>Pedestrian infrastructure uses tags: <code>highway = footway | pedestrian | steps | residential</code> and <code>footway = sidewalk | crossing | path | platform | corridor | alley | track</code>, and <code>sidewalk = both | left | right</code>.</p>
+</section>
+<section id="cycling-infrastructure-ratio-and-type" class="level3" data-number="5.3.2">
+<h3 data-number="5.3.2" class="anchored" data-anchor-id="cycling-infrastructure-ratio-and-type"><span class="header-section-number">5.3.2</span> Cycling infrastructure ratio and type</h3>
+<p><strong>Script:</strong> <code>04_mobility_bike_infrastructure.R</code></p>
+<p>The cycling infrastructure ratio is computed analogously to the pedestrian ratio by comparing cycleway length to total road length. Infrastructure data is extracted from OpenStreetMap and classified according to its type and level of segregation:</p>
+<ul>
+<li><strong>Cycle track or lane</strong>: Segregated or light-separated tracks exclusive for cycling (<em>Ciclovia segregada</em>).
+<ul>
+<li><code>highway = cycleway</code></li>
+<li><code>highway = path</code> &amp; <code>bicycle = designated</code></li>
+<li><code>segregated = yes | no</code></li>
+<li><code>cycleway</code> tags containing: <code>separate</code>, <code>buffered_lane</code>, <code>segregated</code>, <code>lane</code>, or <code>track</code>.</li>
+</ul></li>
+<li><strong>Advisory lane</strong>: Marked cycle lanes shared with motor vehicles, such as sharrows or advisory lanes (<em>Via partilhada com veículos motorizados / zonas 30</em>).
+<ul>
+<li><code>cycleway</code> tags containing: <code>shared_lane</code>.</li>
+</ul></li>
+<li><strong>Protected Active</strong>: Infrastructure shared with pedestrians but protected from motor vehicles (<em>Via partilhada com peões</em>).
+<ul>
+<li><code>highway = pedestrian</code> &amp; <code>bicycle = designated</code>.</li>
+<li>Refinement of <code>highway = path | footway | pedestrian</code> when <code>foot</code> access is explicitly allowed on cycling paths without physical segregation.</li>
+</ul></li>
+</ul>
+<p>The primary indicators are:</p>
+<p><strong>Cycling infrastructure ratio</strong>: <span class="math display">\[R_{cyc} = \frac{\text{total cycleway length}}{\text{road length}}\]</span></p>
+<p><strong>Cycling quality ratio</strong>: <span class="math display">\[R_{cyc,q} = \frac{\text{segregated cycleway length}}{\text{total cycleway length}}\]</span></p>
+<p>Where “segregated cycleway length” corresponds to the <strong>Cycle track or lane</strong> category.</p>
+</section>
+</section>
+<section id="pt-stop-coverage" class="level2" data-number="5.4">
+<h2 data-number="5.4" class="anchored" data-anchor-id="pt-stop-coverage"><span class="header-section-number">5.4</span> PT stop coverage</h2>
+<p><strong>Scripts:</strong> <code>04_isochrones_PTstops.R</code>, <code>04_mobility_transit_population.R</code><br>
+<strong>Package:</strong> <code>r5r</code></p>
+<p>Population coverage by public transport is estimated using <strong>walking isochrones</strong> around PT stops, differentiated by transport mode and their typical service area. Isochrones are computed with <code>r5r::isochrone()</code> using the <code>WALK</code> mode and the AML street network.</p>
+<section id="isochrone-estimation-by-pt-mode" class="level3" data-number="5.4.1">
+<h3 data-number="5.4.1" class="anchored" data-anchor-id="isochrone-estimation-by-pt-mode"><span class="header-section-number">5.4.1</span> Isochrone estimation by PT mode</h3>
+<p>Three mode groups are defined based on stop type (identified from GTFS <code>stop_id</code> prefixes) and their standard catchment areas:</p>
+<div id="tbl-isochrone-modes" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-isochrone-modes-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;5.1: PT mode groups and walking catchment thresholds
+</figcaption>
+<div aria-describedby="tbl-isochrone-modes-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Mode group</th>
+<th>Operators</th>
+<th>Walking threshold</th>
+<th>Rationale</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Bus</td>
+<td>Carris, MobiCascais, Transportes Colectivos</td>
+<td>5 minutes</td>
+<td>High-density stop network; short acceptable walk</td>
+</tr>
+<tr class="even">
+<td>Subway &amp; light rail</td>
+<td>Metro de Lisboa, MTS</td>
+<td>10 minutes</td>
+<td>Fewer stops, higher service quality</td>
+</tr>
+<tr class="odd">
+<td>Train &amp; ferry</td>
+<td>CP, Fertagus, Transtejo, Soflusa</td>
+<td>15 minutes</td>
+<td>Sparse network; users accept longer walks</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<p>Bus stops are first consolidated by merging stops within 30 m of each other into a single representative centroid (using a 15 m buffer union), reducing the dataset from ~16 000 to ~10 700 origins before routing. Isochrones are computed in batches and dissolved into a single polygon per mode group. Stops that could not be routed are replaced with 300 m Euclidean buffers.</p>
+<p>A <strong>union isochrone</strong> is computed from all three layers to estimate coverage by <em>any</em> PT mode, avoiding double-counting of population in overlapping catchment areas.</p>
+</section>
+<section id="population-estimation-dasymetric-method" class="level3" data-number="5.4.2">
+<h3 data-number="5.4.2" class="anchored" data-anchor-id="population-estimation-dasymetric-method"><span class="header-section-number">5.4.2</span> Population estimation (dasymetric method)</h3>
+<p>All methods share the same COS residential building polygons as the spatial proxy for where population lives, weighted by residential density class:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>COS class</th>
+<th>Weight</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Contínuas predominantemente verticais</td>
+<td>3.0</td>
+</tr>
+<tr class="even">
+<td>Contínuas predominantemente horizontais</td>
+<td>1.0</td>
+</tr>
+<tr class="odd">
+<td>Descontínuas</td>
+<td>0.6</td>
+</tr>
+<tr class="even">
+<td>Descontínuas esparsas</td>
+<td>0.3</td>
+</tr>
+</tbody>
+</table>
+<p>Different aggregation strategies are used at each scale, due to the geometric relationship between spatial units:</p>
+<section id="grid-level-h3-r8" class="level4" data-number="5.4.2.1">
+<h4 data-number="5.4.2.1" class="anchored" data-anchor-id="grid-level-h3-r8"><span class="header-section-number">5.4.2.1</span> Grid level (H3 r8)</h4>
+<p>Because H3 hex boundaries do not align with COS or BGRI polygon boundaries, a fragment-centroid approach would assign a building fragment’s entire population to one hex even when the fragment straddles two. To avoid this mismatch, the grid-level method computes the <strong>fraction of each hex’s weighted COS building area that falls inside the isochrone</strong>:</p>
+<p><span class="math display">\[f_i = \frac{\sum_{k} A_{k \cap \text{iso} \cap \text{hex}_i} \times w_k}{\sum_{k} A_{k \cap \text{hex}_i} \times w_k}\]</span></p>
+<p>where <span class="math inline">\(k\)</span> indexes COS polygons and <span class="math inline">\(w_k\)</span> is the density weight. Population served is then:</p>
+<p><span class="math display">\[P_i = \text{pop}_i \times f_i\]</span></p>
+<p>where <span class="math inline">\(\text{pop}_i\)</span> is the hex population from the dasymetric grid (<code>grid_with_cos</code>). Because the numerator is a spatial subset of the denominator, <span class="math inline">\(f_i \in [0, 1]\)</span> is guaranteed, so <span class="math inline">\(P_i \leq \text{pop}_i\)</span> by construction.</p>
+</section>
+<section id="freguesia-and-município-levels" class="level4" data-number="5.4.2.2">
+<h4 data-number="5.4.2.2" class="anchored" data-anchor-id="freguesia-and-município-levels"><span class="header-section-number">5.4.2.2</span> Freguesia and município levels</h4>
+<p>BGRI census blocks nest perfectly within administrative boundaries. The method therefore uses <strong>building fragments</strong> — intersections of COS polygons with BGRI blocks — and apportions each BGRI’s population by the fraction of its weighted building area that falls inside the isochrone:</p>
+<p><span class="math display">\[P_{iso} = \sum_{\text{fragments}} N_{\text{BGRI}} \times \frac{A_{frag,iso} \times w_{frag}}{\sum_{\text{BGRI}} A_{frag} \times w_{frag}}\]</span></p>
+<p>The centroid of each fragment is used to assign it to the administrative unit, and fragments go directly to administrative boundaries — not via the grid — to avoid misalignment from hexes that only partially overlap them. Total population for percentage calculations is derived from the same building fragment method, not from raw BGRI totals, ensuring a consistent denominator.</p>
+<p><strong>Metrics produced per mode group and scale:</strong></p>
+<ul>
+<li><code>pop_pt_{mode}</code> — estimated resident population within walking distance</li>
+<li><code>pop_pt_all</code> — population within walking distance of any PT mode (union isochrone)</li>
+<li><code>pct_pt_{mode}</code> — share of local population with PT access (bounded 0–1 at all scales)</li>
+</ul>
+</section>
+</section>
+</section>
+<section id="pt-headways-and-waiting-times" class="level2" data-number="5.5">
+<h2 data-number="5.5" class="anchored" data-anchor-id="pt-headways-and-waiting-times"><span class="header-section-number">5.5</span> PT headways and waiting times</h2>
+<p><strong>Script:</strong> <code>04_mobility_transit.R</code><br>
+<strong>Package:</strong> <code>tidytransit</code></p>
+<p>Stop-level service frequencies are computed with <code>tidytransit::get_stop_frequency()</code> for four time windows:</p>
+<div id="tbl-periods" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-periods-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;5.2: PT service frequency periods
+</figcaption>
+<div aria-describedby="tbl-periods-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Period</th>
+<th>Date</th>
+<th>Time window</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Weekday peak</td>
+<td>Wed 04/02/2026</td>
+<td>08:00–09:00</td>
+</tr>
+<tr class="even">
+<td>Weekday full day</td>
+<td>Wed 04/02/2026</td>
+<td>00:00–48:00</td>
+</tr>
+<tr class="odd">
+<td>Weekday night</td>
+<td>Wed 04/02/2026</td>
+<td>22:00–23:00</td>
+</tr>
+<tr class="even">
+<td>Weekend</td>
+<td>Sun 08/02/2026</td>
+<td>10:00–11:00</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<p>A 500 m buffer per stop is used to allocate stops to census population centroids. Results are aggregated to parishes and municipalities as <strong>population-weighted mean headway and waiting time</strong>.</p>
+<p>Additionally, frequency reduction factors are computed to characterise night and weekend service reduction.</p>
+</section>
+<section id="shared-mobility" class="level2" data-number="5.6">
+<h2 data-number="5.6" class="anchored" data-anchor-id="shared-mobility"><span class="header-section-number">5.6</span> Shared mobility</h2>
+<p><strong>Script:</strong> <code>04_mobility.R</code><br>
+<strong>Source:</strong> TML PMUS (Shared mobility dock locations). <code>https://pmmus.tmlmobilidade.pt/</code></p>
+<p>The number of shared mobility points (physical and virtual docks) is counted per parish and per grid cell.</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./transport_routing.html" class="pagination-link" aria-label="Transport Routing — Travel Time Matrix">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Transport Routing — Travel Time Matrix</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./accessibility.html" class="pagination-link" aria-label="Accessibility">
+        <span class="nav-page-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Accessibility</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
