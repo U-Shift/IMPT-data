@@ -216,7 +216,11 @@ grid_pt_pop <- grid_with_cos |>
     pt_served_bus        = pop_pt_bus > 0,
     pt_served_metrolr    = pop_pt_metrolr > 0,
     pt_served_trainferry = pop_pt_trainferry > 0,
-    pt_served_all        = pop_pt_all > 0
+    pt_served_all        = pop_pt_all > 0,
+    pct_pt_bus           = ifelse(population > 0, round(pop_pt_bus / population, 4), 0),
+    pct_pt_metrolr       = ifelse(population > 0, round(pop_pt_metrolr / population, 4), 0),
+    pct_pt_trainferry    = ifelse(population > 0, round(pop_pt_trainferry / population, 4), 0),
+    pct_pt_all           = ifelse(population > 0, round(pop_pt_all / population, 4), 0)
   )
 
 # mapview(grid_pt_pop |> filter(pt_served_all), zcol = "pop_pt_all")
@@ -294,13 +298,13 @@ municipios_pt_pop <- mun_total |>
 # Grid: spatial + tabular
 impt_write(
   grid_pt_pop |>
-    select(id, population, starts_with("pt_served_"), starts_with("pop_pt_")),
+    select(id, population, starts_with("pt_served_"), starts_with("pop_pt_"), starts_with("pct_pt_")),
   "/mobility/grid_pop_pt_served.gpkg"
 )
 impt_write(
   grid_pt_pop |>
     st_drop_geometry() |>
-    select(id, population, starts_with("pt_served_"), starts_with("pop_pt_")),
+    select(id, population, starts_with("pt_served_"), starts_with("pop_pt_"), starts_with("pct_pt_")),
   "/mobility/grid_pop_pt_served.csv"
 )
 
