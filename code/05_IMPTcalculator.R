@@ -71,17 +71,10 @@ freguesias_infrastructure_ratio <- impt_read("/mobility/freguesias_infrastructur
     cycleway_to_road_ratio, cycling_quality_ratio
   )
 
-# Stops coverage — requires a name-to-code lookup from the GeoPackage
-freguesias_names <- impt_read("/geo/freguesias_2024_unique.gpkg") |>
-  st_drop_geometry() |>
-  select(dtmnfr, freguesia)
-
-freguesias_stops_coverage <- impt_read("/mobility/freguesias_stops_coverage.csv") |>
-  select(freguesia, ratio_served_population) |>
-  left_join(freguesias_names, by = "freguesia") |>
-  select(-freguesia) |>
-  mutate(dtmnfr = as.numeric(dtmnfr)) |>
-  rename(Stops_coverage = ratio_served_population)
+# Stops coverage
+freguesias_stops_coverage <- impt_read("/mobility/freguesias_pop_pt_served.csv") |>
+  select(dtmnfr, pct_pt_all) |>
+  mutate(dtmnfr = as.numeric(dtmnfr))
 
 # Shared mobility
 freguesias_shared_mobility <- impt_read("/mobility/freguesias_shared_mobility.csv") |>
@@ -190,7 +183,7 @@ Accessibility_walk <- Accessibility |> select(dtmnfr, contains("_walk_"))
 
 # Mobility
 Mobility_car <- Mobility |> select(dtmnfr, contains("_car"), road_length)
-Mobility_pt <- Mobility |> select(dtmnfr, contains("PT"), Stops_coverage, contains("transit"), Shared_mobility)
+Mobility_pt <- Mobility |> select(dtmnfr, contains("PT"), pct_pt_all, contains("transit"), Shared_mobility)
 Mobility_bike <- Mobility |> select(dtmnfr, contains("cycl"), contains("bike"))
 Mobility_walk <- Mobility |> select(dtmnfr, contains("_walk"), contains("ped"))
 
