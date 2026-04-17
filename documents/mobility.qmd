@@ -89,7 +89,7 @@ Three mode groups are defined based on stop type (identified from GTFS `stop_id`
 
 | Mode group | Operators | Walking threshold | Rationale |
 |---|---|---|---|
-| Bus | Carris, MobiCascais, Transportes Colectivos | 5 minutes | High-density stop network; short acceptable walk |
+| Bus | Carris, MobiCascais, Transportes Colectivos Barreiro | 5 minutes | High-density stop network; short acceptable walk |
 | Subway & light rail | Metro de Lisboa, MTS | 10 minutes | Fewer stops, higher service quality |
 | Train & ferry | CP, Fertagus, Transtejo, Soflusa | 15 minutes | Sparse network; users accept longer walks |
 
@@ -109,6 +109,8 @@ All methods share the same COS residential building polygons as the spatial prox
 | Contínuas predominantemente horizontais | 1.0 |
 | Descontínuas | 0.6 |
 | Descontínuas esparsas | 0.3 |
+
+: Population and building density weights for COS land use classes {#tbl-cos-weights}
 
 Different aggregation strategies are used at each scale, due to the geometric relationship between spatial units:
 
