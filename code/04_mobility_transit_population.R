@@ -95,10 +95,10 @@ bgri_cos_fragments <- bgri_cos_fragments |>
 
 message(sprintf(
   "Census total:       %s\nReconstructed pop:  %s (diff: %s, %.2f%%)",
-  format(sum(census_bgri$N_INDIVIDUOS, na.rm = TRUE), big.mark = ","),
-  format(round(sum(bgri_cos_fragments$fragment_population, na.rm = TRUE)), big.mark = ","),
-  format(round(sum(census_bgri$N_INDIVIDUOS, na.rm = TRUE) -
-    sum(bgri_cos_fragments$fragment_population, na.rm = TRUE)), big.mark = ","),
+  sum(census_bgri$N_INDIVIDUOS, na.rm = TRUE),
+  round(sum(bgri_cos_fragments$fragment_population, na.rm = TRUE)),
+  round(sum(census_bgri$N_INDIVIDUOS, na.rm = TRUE) -
+    sum(bgri_cos_fragments$fragment_population, na.rm = TRUE)),
   abs(sum(census_bgri$N_INDIVIDUOS, na.rm = TRUE) -
     sum(bgri_cos_fragments$fragment_population, na.rm = TRUE)) /
     sum(census_bgri$N_INDIVIDUOS, na.rm = TRUE) * 100
@@ -145,7 +145,7 @@ compute_pop_in_isochrone <- function(building_frags, isochrone) {
 
 # Union isochrone: any PT mode (used to avoid double-counting)
 message("Building union isochrone (any PT)...")
-isochrones_any <- bind_rows(
+isochrones_all <- bind_rows(
   isochrones_bus |> st_transform(target_crs) |> st_make_valid(),
   isochrones_metrolr |> st_transform(target_crs) |> st_make_valid(),
   isochrones_trainferry |> st_transform(target_crs) |> st_make_valid()
@@ -162,11 +162,11 @@ frags_metrolr <- compute_pop_in_isochrone(bgri_cos_fragments, isochrones_metrolr
 message("Clipping building fragments to Train/Ferry isochrone (15 min)...")
 frags_trainferry <- compute_pop_in_isochrone(bgri_cos_fragments, isochrones_trainferry)
 
-message("Clipping building fragments to any-PT isochrone (union)...")
-frags_any <- compute_pop_in_isochrone(bgri_cos_fragments, isochrones_any)
+message("Clipping building fragments to all-PT isochrone (union)...")
+frags_all <- compute_pop_in_isochrone(bgri_cos_fragments, isochrones_all)
 
 # Total population served (AML level) — quick summary
-for (nm in c("bus", "metrolr", "trainferry", "any")) {
+for (nm in c("bus", "metrolr", "trainferry", "all")) {
   frags <- get(paste0("frags_", nm))
   message(sprintf(
     "  [%s] Population served: %s",
@@ -199,7 +199,7 @@ message("Aggregating to H3 grid...")
 grid_bus <- aggregate_to_layer(frags_bus, grid, "id")
 grid_metrolr <- aggregate_to_layer(frags_metrolr, grid, "id")
 grid_trainferry <- aggregate_to_layer(frags_trainferry, grid, "id")
-grid_any <- aggregate_to_layer(frags_any, grid, "id")
+grid_all <- aggregate_to_layer(frags_all, grid, "id")
 
 # Also get total population per hex from grid_with_cos (for % calculation)
 grid_with_cos <- impt_read("/landuse/grid_with_cos.gpkg")
@@ -209,17 +209,17 @@ grid_pt_pop <- grid_with_cos |>
   left_join(grid_bus |> rename(pop_pt_bus = pop_served), by = "id") |>
   left_join(grid_metrolr |> rename(pop_pt_metrolr = pop_served), by = "id") |>
   left_join(grid_trainferry |> rename(pop_pt_trainferry = pop_served), by = "id") |>
-  left_join(grid_any |> rename(pop_pt_any = pop_served), by = "id") |>
+  left_join(grid_all |> rename(pop_pt_all = pop_served), by = "id") |>
   mutate(
     across(starts_with("pop_pt_"), ~ replace_na(.x, 0)),
     across(starts_with("pop_pt_"), round),
     pt_served_bus        = pop_pt_bus > 0,
     pt_served_metrolr    = pop_pt_metrolr > 0,
     pt_served_trainferry = pop_pt_trainferry > 0,
-    pt_served_any        = pop_pt_any > 0
+    pt_served_all        = pop_pt_all > 0
   )
 
-# mapview(grid_pt_pop |> filter(pt_served_any), zcol = "pop_pt_any")
+# mapview(grid_pt_pop |> filter(pt_served_all), zcol = "pop_pt_all")
 # mapview(grid_pt_pop |> filter(pt_served_bus), zcol = "pop_pt_bus")
 # mapview(grid_pt_pop |> filter(pt_served_metrolr), zcol = "pop_pt_metrolr")
 
@@ -231,7 +231,7 @@ message("Aggregating to Freguesia...")
 freg_bus <- aggregate_to_layer(frags_bus, freguesias, "dtmnfr")
 freg_metrolr <- aggregate_to_layer(frags_metrolr, freguesias, "dtmnfr")
 freg_trainferry <- aggregate_to_layer(frags_trainferry, freguesias, "dtmnfr")
-freg_any <- aggregate_to_layer(frags_any, freguesias, "dtmnfr")
+freg_all <- aggregate_to_layer(frags_all, freguesias, "dtmnfr")
 
 # Total population per freguesia from the same building-based method
 freg_total <- aggregate_to_layer(
@@ -244,17 +244,17 @@ freguesias_pt_pop <- freg_total |>
   left_join(freg_bus |> rename(pop_pt_bus = pop_served), by = "dtmnfr") |>
   left_join(freg_metrolr |> rename(pop_pt_metrolr = pop_served), by = "dtmnfr") |>
   left_join(freg_trainferry |> rename(pop_pt_trainferry = pop_served), by = "dtmnfr") |>
-  left_join(freg_any |> rename(pop_pt_any = pop_served), by = "dtmnfr") |>
+  left_join(freg_all |> rename(pop_pt_all = pop_served), by = "dtmnfr") |>
   mutate(
     across(starts_with("pop_pt_"), ~ replace_na(.x, 0)),
     across(starts_with("pop_pt_"), round),
     pct_pt_bus        = round(pop_pt_bus / pop_total, 4),
     pct_pt_metrolr    = round(pop_pt_metrolr / pop_total, 4),
     pct_pt_trainferry = round(pop_pt_trainferry / pop_total, 4),
-    pct_pt_any        = round(pop_pt_any / pop_total, 4)
+    pct_pt_all        = round(pop_pt_all / pop_total, 4)
   )
 
-# mapview(freguesias |> left_join(freguesias_pt_pop, by = "dtmnfr"), zcol = "pct_pt_any")
+# mapview(freguesias |> left_join(freguesias_pt_pop, by = "dtmnfr"), zcol = "pct_pt_all")
 
 
 # 9. Município-level output --------------------------------------------------
@@ -264,7 +264,7 @@ message("Aggregating to Município...")
 mun_bus <- aggregate_to_layer(frags_bus, municipios, "municipio")
 mun_metrolr <- aggregate_to_layer(frags_metrolr, municipios, "municipio")
 mun_trainferry <- aggregate_to_layer(frags_trainferry, municipios, "municipio")
-mun_any <- aggregate_to_layer(frags_any, municipios, "municipio")
+mun_all <- aggregate_to_layer(frags_all, municipios, "municipio")
 
 mun_total <- aggregate_to_layer(
   bgri_cos_fragments |> mutate(pop_in_iso = fragment_population),
@@ -276,17 +276,17 @@ municipios_pt_pop <- mun_total |>
   left_join(mun_bus |> rename(pop_pt_bus = pop_served), by = "municipio") |>
   left_join(mun_metrolr |> rename(pop_pt_metrolr = pop_served), by = "municipio") |>
   left_join(mun_trainferry |> rename(pop_pt_trainferry = pop_served), by = "municipio") |>
-  left_join(mun_any |> rename(pop_pt_any = pop_served), by = "municipio") |>
+  left_join(mun_all |> rename(pop_pt_all = pop_served), by = "municipio") |>
   mutate(
     across(starts_with("pop_pt_"), ~ replace_na(.x, 0)),
     across(starts_with("pop_pt_"), round),
     pct_pt_bus        = round(pop_pt_bus / pop_total, 4),
     pct_pt_metrolr    = round(pop_pt_metrolr / pop_total, 4),
     pct_pt_trainferry = round(pop_pt_trainferry / pop_total, 4),
-    pct_pt_any        = round(pop_pt_any / pop_total, 4)
+    pct_pt_all        = round(pop_pt_all / pop_total, 4)
   )
 
-# mapview(municipios |> left_join(municipios_pt_pop, by = "municipio"), zcol = "pct_pt_any")
+# mapview(municipios |> left_join(municipios_pt_pop, by = "municipio"), zcol = "pct_pt_all")
 
 
 # 10. Export -----------------------------------------------------------------
