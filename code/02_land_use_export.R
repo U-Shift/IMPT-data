@@ -99,7 +99,7 @@ master_stats <- grid_freg_mun |>
 
 # Export Levels
 
-# ## GRID LEVEL
+# ## GRID LEVEL -- SEE 02_census_grid_with_cos.R
 # landuse_grid <- grid |>
 #   mutate(id = as.character(id)) |>
 #   left_join(master_stats, by = c("id" = "grid_id")) |>
