@@ -1,7 +1,6 @@
 # Compute mobility parameters for every mode
-# Purpose     Determine availability/coverage of PT, shared mobility, existence of infrastructure (pedestrian and cycling)
+# Purpose     Determine availability shared mobility, existence of infrastructure (pedestrian and cycling)
 # Scale       hex, parish, municipality
-# Issues      Service area buffers not working yet (ORS issue)
 
 
 library(dplyr)
@@ -9,59 +8,6 @@ library(sf)
 library(mapview)
 library(tidytransit)
 library(osmdata)
-
-
-# Availability/coverage of public transportation -----------------------------------------------------------------------
-
-# see code isocrhones_PTstops.R, where isocrhones were computed using r5r, for 5 minutes walk to a bus stop,
-# 10min for subway or light rail, and 15min for a train or ferry station
-isochrones_bus = impt_read("/mobility/isochrones_buffers_bus_5min.gpkg")
-isochrones_metrolr = impt_read("/mobility/isochrones_subwaylightrail_10min.gpkg")
-isochrones_trainferry = impt_read("/mobility/isochrones_trainferry_15min.gpkg")
-
-
-# Evaluate population coverage by PT stop
-# mapview(census, zcol="N_INDIVIDUOS")
-census_stops <- census |>
-  select(id, N_INDIVIDUOS, SHAPE_Length, SHAPE_Area, dicofre24, freguesia, municipio, geom) |>
-  st_transform(3857) |>
-  filter(!is.na(freguesia))
-census_stops$reachable_stops <- lengths(st_intersects(census_stops, stops_buffers))
-census_stops$has_stops <- census_stops$reachable_stops > 0
-census_stops$pop_near_stops <- census_stops$N_INDIVIDUOS * census_stops$has_stops
-freguesias_by_stops <- census_stops |>
-  st_drop_geometry() |> # Drop geometry for aggregation
-  group_by(freguesia) |>
-  summarise(
-    total_points = n(),
-    served_population = sum(pop_near_stops),
-    freguesia_population = sum(N_INDIVIDUOS),
-    ratio_served_population = round(served_population / freguesia_population, digits = 2)
-  )
-municipios_by_stops <- census_stops |>
-  st_drop_geometry() |> # Drop geometry for aggregation
-  group_by(municipio) |>
-  summarise(
-    total_points = n(),
-    served_population = sum(pop_near_stops),
-    municipio_population = sum(N_INDIVIDUOS),
-    ratio_served_population = round(served_population / municipio_population, digits = 2)
-  )
-census_stops_grid <- census_stops |> st_join(grid |> select(id) |> rename(grid_id = id) |> st_transform(3857), join = st_within)
-grid_by_stops <- census_stops_grid |>
-  st_drop_geometry() |> # Drop geometry for aggregation
-  group_by(grid_id) |>
-  summarise(
-    total_points = n(),
-    served_population = sum(pop_near_stops),
-    grid_population = sum(N_INDIVIDUOS),
-    ratio_served_population = round(served_population / grid_population, digits = 2)
-  )
-# mapview(grid |> left_join(grid_by_stops, by = c("id" = "grid_id")), zcol = "ratio_served_population")
-
-impt_write(freguesias_by_stops, "/mobility/freguesias_stops_coverage.csv")
-impt_write(municipios_by_stops, "/mobility/municipios_stops_coverage.csv")
-impt_write(grid_by_stops, "/mobility/grid_stops_coverage.csv")
 
 
 # Shared Mobility Availability --------------------------------------------
