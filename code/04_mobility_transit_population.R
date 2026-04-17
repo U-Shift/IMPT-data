@@ -79,7 +79,6 @@ census_simple <- census_bgri |>
 # so that the geometry reflects building polygons directly.
 
 message("Computing COS × BGRI fragments (this may take a few minutes)...")
-
 bgri_cos_fragments <- st_intersection(cos_clean, census_simple) %>%
   mutate(frag_area = as.numeric(st_area(.))) %>% # aparently the (.) only works with the old pipe %>%
   filter(frag_area > 0) %>% # drop degenerate slivers
@@ -93,13 +92,13 @@ bgri_cos_fragments <- st_intersection(cos_clean, census_simple) %>%
 bgri_cos_fragments <- bgri_cos_fragments |>
   mutate(fragment_population = N_INDIVIDUOS * (frag_weight_score / total_bgri_weight_score))
 
-  sum(census_bgri$N_INDIVIDUOS, na.rm = TRUE) # 2870208
-  round(sum(bgri_cos_fragments$fragment_population, na.rm = TRUE)) #2862157
-  round(sum(census_bgri$N_INDIVIDUOS, na.rm = TRUE) -
-    sum(bgri_cos_fragments$fragment_population, na.rm = TRUE)) #8051
-  abs(sum(census_bgri$N_INDIVIDUOS, na.rm = TRUE) -
+sum(census_bgri$N_INDIVIDUOS, na.rm = TRUE) # 2870208
+round(sum(bgri_cos_fragments$fragment_population, na.rm = TRUE)) # 2862157
+round(sum(census_bgri$N_INDIVIDUOS, na.rm = TRUE) -
+    sum(bgri_cos_fragments$fragment_population, na.rm = TRUE)) # 8051
+abs(sum(census_bgri$N_INDIVIDUOS, na.rm = TRUE) -
     sum(bgri_cos_fragments$fragment_population, na.rm = TRUE)) /
-    sum(census_bgri$N_INDIVIDUOS, na.rm = TRUE) * 100 #0.28%
+    sum(census_bgri$N_INDIVIDUOS, na.rm = TRUE) * 100 # 0.28%
 
 
 
@@ -250,9 +249,9 @@ compute_hex_cos_fraction <- function(cos_polygons, isochrone, grid_sf) {
 }
 
 message("Computing hex-level COS-area fractions per mode (this may take a few minutes)...")
-hex_frac_bus        <- compute_hex_cos_fraction(cos_clean, isochrones_bus,        grid)
-hex_frac_metrolr    <- compute_hex_cos_fraction(cos_clean, isochrones_metrolr,    grid)
 hex_frac_trainferry <- compute_hex_cos_fraction(cos_clean, isochrones_trainferry, grid)
+hex_frac_metrolr    <- compute_hex_cos_fraction(cos_clean, isochrones_metrolr,    grid)
+hex_frac_bus        <- compute_hex_cos_fraction(cos_clean, isochrones_bus,        grid)
 hex_frac_all        <- compute_hex_cos_fraction(cos_clean, isochrones_all,        grid)
 
 # Also get total population per hex from grid_with_cos
@@ -282,15 +281,15 @@ grid_pt_pop <- grid_with_cos |>
     pct_pt_all        = round(frac_all, 4)
   )
 
-# mapview(grid_pt_pop |> filter(pt_served_all), zcol = "pct_pt_all")
+summary(grid_pt_pop$pct_pt_all)
+# mapview(grid_pt_pop |> filter(pt_served_all), zcol = "pop_pt_all")
 # mapview(grid_pt_pop |> filter(pt_served_bus), zcol = "pop_pt_bus")
 # mapview(grid_pt_pop |> filter(pt_served_metrolr), zcol = "pop_pt_metrolr")
-
+mapview(grid_pt_pop |> filter(pt_served_all), zcol = "pct_pt_all")
 
 # 8. Freguesia-level output --------------------------------------------------
 
 message("Aggregating to Freguesia...")
-
 freg_bus <- aggregate_to_layer(frags_bus, freguesias, "dtmnfr")
 freg_metrolr <- aggregate_to_layer(frags_metrolr, freguesias, "dtmnfr")
 freg_trainferry <- aggregate_to_layer(frags_trainferry, freguesias, "dtmnfr")
@@ -317,13 +316,12 @@ freguesias_pt_pop <- freg_total |>
     pct_pt_all        = round(pop_pt_all / pop_total, 4)
   )
 
-# mapview(freguesias |> left_join(freguesias_pt_pop, by = "dtmnfr"), zcol = "pct_pt_all")
+mapview(freguesias |> left_join(freguesias_pt_pop, by = "dtmnfr"), zcol = "pct_pt_all")
 
 
 # 9. Município-level output --------------------------------------------------
 
 message("Aggregating to Município...")
-
 mun_bus <- aggregate_to_layer(frags_bus, municipios, "municipio")
 mun_metrolr <- aggregate_to_layer(frags_metrolr, municipios, "municipio")
 mun_trainferry <- aggregate_to_layer(frags_trainferry, municipios, "municipio")
@@ -349,7 +347,7 @@ municipios_pt_pop <- mun_total |>
     pct_pt_all        = round(pop_pt_all / pop_total, 4)
   )
 
-# mapview(municipios |> left_join(municipios_pt_pop, by = "municipio"), zcol = "pct_pt_all")
+mapview(municipios |> left_join(municipios_pt_pop, by = "municipio"), zcol = "pct_pt_all")
 
 
 # 10. Export -----------------------------------------------------------------
@@ -358,19 +356,19 @@ municipios_pt_pop <- mun_total |>
 impt_write(
   grid_pt_pop |>
     select(id, population, starts_with("pt_served_"), starts_with("pop_pt_"), starts_with("pct_pt_")),
-  "/mobility/grid_pop_pt_served.gpkg"
+  "/mobility/grid_pop_stops_coverage.gpkg"
 )
 impt_write(
   grid_pt_pop |>
     st_drop_geometry() |>
     select(id, population, starts_with("pt_served_"), starts_with("pop_pt_"), starts_with("pct_pt_")),
-  "/mobility/grid_pop_pt_served.csv"
+  "/mobility/grid_pop_stops_coverage.csv"
 )
 
 # Freguesia
-impt_write(freguesias_pt_pop, "/mobility/freguesias_pop_pt_served.csv")
+impt_write(freguesias_pt_pop, "/mobility/freguesias_pop_stops_coverage.csv")
 
 # Município
-impt_write(municipios_pt_pop, "/mobility/municipios_pop_pt_served.csv")
+impt_write(municipios_pt_pop, "/mobility/municipios_pop_stops_coverage.csv")
 
 message("Done! Outputs written to /mobility/")
