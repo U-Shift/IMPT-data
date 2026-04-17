@@ -33,16 +33,19 @@ These scripts rely on base geometries to extract and calculate land use and cens
 These scripts parse outputs from Phase 2 and 3 to compute the exact indicators for the 4 core IMPT dimensions (Accessibility, Mobility, Affordability, Safety).
 
 - **`04_access_opportunities.R`**: Calculates general physical accessibility metrics by analyzing the ease of reaching POIs and opportunities.
-- **`04_mobility.R`**: Calculates infrastructural mobility statistics like infrastructure ratios and the integration of generic shared mobility networks.
+- **`04_accessibility_gap.R`**: Evaluates accessibility gaps between distinct spatial zones along commuting constraints.
+- **`04_mobility.R`**: Calculates infrastructural mobility statistics like pedestrian infrastructure ratios and the integration of generic shared mobility networks.
+- **`04_mobility_bike_infrastructure.R`**: Classifies cycling infrastructure (e.g., segregated paths vs shared lanes) and computes cycling quality ratios.
 - **`04_mobility_commuting.R`**: Focuses processing travel time arrays, trip generations, and modal availability primarily targeting peak commuting logic.
-- **`04_mobility_transit.R`**: Aggregates complex public transit statistics (route frequencies, headways, and stop coverages).
+- **`04_isochrones_PTstops.R`**: Generates walking isochrones (catchment areas) around public transit stops using the r5r engine, differentiated by transport mode.
+- **`04_mobility_transit_population.R`**: Estimates the population served by public transit using a dasymetric intersection of COS residential buildings and the computed isochrones.
+- **`04_mobility_transit.R`**: Aggregates complex public transit statistics (e.g., route frequencies and headways).
 - **`04_mobility_costs_time.R`**: Values and calculates generalized time costs dedicated across variable modes.
 - **`04_mobility_costs_money_car.R`**: Computes out-of-pocket financial expenditures (fuel, maintenance, etc.) expected for private commuting networks.
 - **`04_mobility_costs_money_pt_cost_structure.r`**: Specific helpers mapping local fare policies for the entire transit grid.
 - **`04_mobility_costs_money_pt.R`**: Evaluates monetary affordability strictly relating to PT use (e.g. single-fare vs overall transit passes).
-- **`04_accessibility_gap.R`**: Evaluates accessibility gaps between distinct spatial zones along commuting constraints.
-- **`04_safety.R`**: Computes road safety vulnerabilities by intersecting traffic crashes spatially, and grouping them against area-based population scales.
 - **`04_affordability.R`**: Pre-calculates raw and weighted affordability metrics by freguesia.
+- **`04_safety.R`**: Computes road safety vulnerabilities by intersecting traffic crashes spatially, and grouping them against area-based population scales.
 
 ### Phase 5: Result Aggregation and Normalization
 
