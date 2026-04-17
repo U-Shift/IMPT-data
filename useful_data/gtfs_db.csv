@@ -1,0 +1,10 @@
+"operator","url","shapes","outside_area","calendar_add_years"
+"Carris Metropolitana","https://api.carrismetropolitana.pt/gtfs",TRUE,FALSE,NA
+"Carris Municipal","https://gateway.carris.pt/gateway/gtfs/api/v2.8/GTFS",TRUE,FALSE,NA
+"Comboios de Portugal","https://publico.cp.pt/gtfs/gtfs.zip",FALSE,TRUE,NA
+"MobiCascais","https://drive.google.com/u/0/uc?id=13ucYiAJRtu-gXsLa02qKJrGOgDjbnUWX&export=download",TRUE,FALSE,NA
+"Metropolitano de Lisboa","https://www.metrolisboa.pt/google_transit/googleTransit.zip",TRUE,FALSE,NA
+"Transtejo Soflusa","https://api.transtejo.pt/files/GTFS.zip",TRUE,FALSE,NA
+"Fertagus","https://www.fertagus.pt/GTFSTMLzip/Fertagus_GTFS.zip",TRUE,FALSE,NA
+"Transportes Colectivos do Barreiro","https://www.tcbarreiro.pt/front/files/sample_gtfs/GTFS-TCB_24.zip?68960872ed168",TRUE,FALSE,NA
+"Metro Transportes do Sul","https://mts.pt/imt/MTS-20240129.zip",TRUE,FALSE,1
