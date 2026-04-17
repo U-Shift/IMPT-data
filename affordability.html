@@ -165,7 +165,7 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./transport_routing.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Transport Routing — Travel Time Matrix</span></span></a>
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Travel Time Matrix</span></span></a>
   </div>
 </li>
       </ul>
@@ -259,6 +259,8 @@ window.Quarto = {
   <li><a href="#car-costs" id="toc-car-costs" class="nav-link active" data-scroll-target="#car-costs"><span class="header-section-number">7.1</span> Car costs</a></li>
   <li><a href="#public-transport-costs-two-scenarios" id="toc-public-transport-costs-two-scenarios" class="nav-link" data-scroll-target="#public-transport-costs-two-scenarios"><span class="header-section-number">7.2</span> Public transport costs — Two scenarios</a></li>
   <li><a href="#composite-affordability-indicators" id="toc-composite-affordability-indicators" class="nav-link" data-scroll-target="#composite-affordability-indicators"><span class="header-section-number">7.3</span> Composite affordability indicators</a></li>
+  <li><a href="#sec-income" id="toc-sec-income" class="nav-link" data-scroll-target="#sec-income"><span class="header-section-number">7.4</span> Income, Gini Coefficient and Palma Ratio</a></li>
+  <li><a href="#sec-housing" id="toc-sec-housing" class="nav-link" data-scroll-target="#sec-housing"><span class="header-section-number">7.5</span> Housing costs</a></li>
   </ul>
 </nav>
     </div>
@@ -285,34 +287,35 @@ window.Quarto = {
 
 
 <p><strong>Script:</strong> <a href="https://github.com/U-Shift/IMPT-data/blob/main/code/04_affordability.R"><code>04_affordability.R</code></a>, <a href="https://github.com/U-Shift/IMPT-data/blob/main/code/04_mobility_costs_money_car.R"><code>04_mobility_costs_money_car.R</code></a>, <a href="https://github.com/U-Shift/IMPT-data/blob/main/code/04_mobility_costs_money_pt.R"><code>04_mobility_costs_money_pt.R</code></a>, <a href="https://github.com/U-Shift/IMPT-data/blob/main/code/04_mobility_costs_money_pt_cost_structure.R"><code>04_mobility_costs_money_pt_cost_structure.R</code></a></p>
-<p>Affordability is assessed by comparing transport and housing costs against household income. Commuting costs are computed for both car and public transport using <code>r5r::detailed_itineraries()</code> on the full set of jittered IMOB OD pairs, regardless of the reported travel mode.</p>
+<p>Affordability is assessed by comparing annual transport and housing costs against household income. Commuting costs are computed for both car and public transport using <code>r5r::detailed_itineraries()</code> on the full set of IMOB OD commuting pairs. The costs are estimated for one-way trips (home - workplace) during the morning peak.</p>
 <section id="car-costs" class="level2" data-number="7.1">
 <h2 data-number="7.1" class="anchored" data-anchor-id="car-costs"><span class="header-section-number">7.1</span> Car costs</h2>
 <p><strong>Script:</strong> <a href="https://github.com/U-Shift/IMPT-data/blob/main/code/04_mobility_costs_money_car.R"><code>04_mobility_costs_money_car.R</code></a></p>
 <p>Car commuting cost per trip = distance cost + tolls:</p>
 <p><span class="math display">\[C_{car} = d \times 0.40\text{ €/km} + C_{toll}\]</span></p>
-<p>The fixed cost of <strong>0.40 €/km</strong> is based on <a href="https://diariodarepublica.pt/dr/detalhe/portaria/1553-d-2008-243733">Portaria n.º 1553-D/2008 de 31 de dezembro</a>, which sets mileage allowance covering fuel and maintenance.</p>
-<p>Tolls are computed via the <a href="https://portagens.infraestruturasdeportugal.pt/">Infraestruturas de Portugal toll API</a> using the route geometry returned by <code>r5r::detailed_itineraries()</code>.</p>
+<p>The fixed cost of <strong>0.40 €/km</strong> is based on <a href="https://diariodarepublica.pt/dr/detalhe/portaria/1553-d-2008-243733">Portaria n.º 1553-D/2008 de 31 de dezembro</a>, which sets mileage allowance covering fuel and car maintenance.</p>
+<p>Tolls are computed via the <a href="https://portagens.infraestruturasdeportugal.pt/">Infraestruturas de Portugal toll calculator</a> using the route geometry returned by <code>r5r::detailed_itineraries()</code>.</p>
 </section>
 <section id="public-transport-costs-two-scenarios" class="level2" data-number="7.2">
 <h2 data-number="7.2" class="anchored" data-anchor-id="public-transport-costs-two-scenarios"><span class="header-section-number">7.2</span> Public transport costs — Two scenarios</h2>
 <p><strong>Scripts:</strong> <a href="https://github.com/U-Shift/IMPT-data/blob/main/code/04_mobility_costs_money_pt.R"><code>04_mobility_costs_money_pt.R</code></a>, <a href="https://github.com/U-Shift/IMPT-data/blob/main/code/04_mobility_costs_money_pt_cost_structure.R"><code>04_mobility_costs_money_pt_cost_structure.R</code></a></p>
 <p>To account for uncertainty in PT fare payment practices, two cost scenarios are defined:</p>
 <p><strong>Scenario A — Single fare (pre-Navegante baseline):</strong><br>
-Based on Carris Lisboa revenue data:</p>
+Based on <a href="https://www.carris.pt/media/ikvdezmc/relat%C3%B3rio-e-contas-carris-2024.pdf">Carris Lisboa revenue data</a>:</p>
 <ul>
 <li>Total single ticket validations: 17,424,000</li>
 <li>Total single ticket revenue: 33,278,000 €</li>
 <li>Average cost per single ticket: <strong>~1.91 €</strong></li>
 </ul>
-<p>Free transfers within the same mode for 60 minutes are assumed. Different-mode transfers incur an additional charge.</p>
+<p>For Metropolitano de Lisboa, the <a href="https://www.metrolisboa.pt/wp-content/uploads/2025/12/Tarifas_site_2026_PT.pdf">cost per single ticket</a> is <strong>1.72 to 1.90 €</strong> depending on the line and whether it crosses the river.</p>
+<p>We assumed a single ticket cost of <strong>1.91 €</strong> for all modes in Scenario A. Free transfers within the same mode for 60 minutes are assumed. Different-mode transfers incur an additional charge.</p>
 <p><strong>Scenario B — Monthly pass (Navegante):</strong><br>
 Based on operator revenue data for monthly passes:</p>
 <table class="caption-top table">
 <thead>
 <tr class="header">
 <th>Pass type</th>
-<th>Volume (months)</th>
+<th>Pass recharges</th>
 <th>Price</th>
 </tr>
 </thead>
@@ -349,15 +352,31 @@ Assuming 44 journeys/month (2 trips × 22 working days): <strong>~0.57 €/trip<
 </section>
 <section id="composite-affordability-indicators" class="level2" data-number="7.3">
 <h2 data-number="7.3" class="anchored" data-anchor-id="composite-affordability-indicators"><span class="header-section-number">7.3</span> Composite affordability indicators</h2>
-<p>Transport expenditure is expressed as a share of household income, with two variants (with and without housing costs):</p>
-<p><span class="math display">\[\text{transp\_inc}_{car} = \frac{C_{car,year}}{I_{hh}}\]</span></p>
-<p><span class="math display">\[\text{h\_transp\_inc}_{car} = \frac{C_{car,year} + C_{housing,year}}{I_{hh}}\]</span></p>
+<p>Transport expenditure is expressed as a share of household income, with two variants (with and without housing costs): We considered 250 working days per year to calculate the annual transport costs (two trips per day). Toll costs are considered for both ways differently, since the bridges’ tolls are paid only one-way.</p>
+<p><span class="math display">\[\text{transp\_inc}_{car} = \frac{C_{car}}{I_{household}}\]</span></p>
+<p><span class="math display">\[\text{h\_transp\_inc}_{car} = \frac{C_{car} + C_{housing}}{I_{household}}\]</span></p>
+<p>All costs are annualised and computed for a single household[€/year/household].</p>
 <p>A <strong>modal-share-weighted composite</strong> indicator combines car and PT costs proportionally to Census 2021 modal shares:</p>
-<p><span class="math display">\[\text{transp\_inc\_comp} = \frac{C_{car} \cdot s_{car} + C_{PT} \cdot s_{PT}}{s_{car} + s_{PT} + s_{active}}\]</span></p>
+<p><span class="math display">\[\text{transp\_inc}_{weighted} = \frac{C_{car} \cdot s_{car} + C_{PT} \cdot s_{PT}}{s_{car} + s_{PT} + s_{active}}\]</span></p>
 <p>where <span class="math inline">\(s_m\)</span> is the modal share of mode <span class="math inline">\(m\)</span> from Census 2021.</p>
 <p>Car costs are additionally adjusted for <strong>vehicle occupancy rate</strong> (from IMOB 2017, Table IV.7) and <strong>household size</strong> and <strong>mobile population fraction</strong> (from IMOB 2017, Table II.1), to convert per-trip costs to a household-level annual burden.</p>
-<p><strong>Income data:</strong> household income per parish from INE (<em>Rendimento agregado 2023</em>). <code>https://www.ine.pt/xurl/pub/66303599</code><br>
-<strong>Housing costs:</strong> median monthly housing cost per parish from INE (<em>Habitação custos 2021</em>). <code>https://www.ine.pt/xurl/pub/65586079</code></p>
+<p>To convert per-trip costs to a household-level annual burden, the final annual household transport expenditure as a share of income, accounting for all adjustments and modal shares, is computed as:</p>
+<p><span class="math display">\[
+\text{transp\_inc\_comp} = \frac{HH_{\text{size}} \cdot P_{\text{mobile}}}{I_{\text{household}}} \cdot \left[ \left( \frac{C_{\text{car,day}}}{O} \cdot \frac{s_{\text{car}}}{s_{\text{car}} + s_{\text{PT}} + s_{\text{active}}} \right) + (C_{\text{PT,day}} \cdot \frac{s_{\text{PT}}}{s_{\text{car}} + s_{\text{PT}} + s_{\text{active}}}) \right] \cdot N_{\text{days}}
+\]</span></p>
+<p>Where:</p>
+<ul>
+<li><span class="math inline">\(N_{\text{days}} = 250\)</span> working days per year.</li>
+<li><span class="math inline">\(HH_{\text{size}}\)</span> is the average household size.</li>
+<li><span class="math inline">\(P_{\text{mobile}}\)</span> is the fraction of mobile population.</li>
+<li><span class="math inline">\(I_{\text{household}}\)</span> is the average annual household income.</li>
+<li><span class="math inline">\(C_{\text{car,day}}\)</span> and <span class="math inline">\(C_{\text{PT,day}}\)</span> are the round-trip costs for car and public transport.</li>
+<li><span class="math inline">\(O\)</span> is the vehicle occupancy rate.</li>
+<li><span class="math inline">\(s_{\text{car}}\)</span>, <span class="math inline">\(s_{\text{PT}}\)</span>, and <span class="math inline">\(s_{\text{active}}\)</span> are the modal shares from Census 2021.</li>
+</ul>
+<p>For the variant including housing costs (<span class="math inline">\(\text{h\_transp\_inc\_comp}\)</span>), the annualised housing cost <span class="math inline">\(C_{\text{housing,year}}\)</span> is added to the numerator.</p>
+<p><strong>Income data:</strong> household income per parish from INE (<em>Rendimento agregado 2023</em>). <code>https://www.ine.pt/xurl/pub/66303599</code> (See <a href="#sec-income" class="quarto-xref"><span>Section 7.4</span></a>))</p>
+<p><strong>Housing costs:</strong> median monthly housing cost per parish from INE (<em>Habitação custos 2021</em>). <code>https://www.ine.pt/xurl/pub/65586079</code> (See <a href="#sec-housing" class="quarto-xref"><span>Section 7.5</span></a>))</p>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -371,6 +390,23 @@ Canha parish
 <p>The parish of Canha (dtmnfr = 150701) is not served by any GTFS operator, resulting in NA PT costs. These values are imputed using the mean of neighbouring parishes within the same municipality (Montijo).</p>
 </div>
 </div>
+</section>
+<section id="sec-income" class="level2" data-number="7.4">
+<h2 data-number="7.4" class="anchored" data-anchor-id="sec-income"><span class="header-section-number">7.4</span> Income, Gini Coefficient and Palma Ratio</h2>
+<p><strong>Script:</strong> <a href="https://github.com/U-Shift/IMPT-data/blob/main/code/02_land_use_export.R"><code>02_land_use_export.R</code></a><br>
+<strong>Source:</strong> INE — <em>Rendimento Agregado Local 2023</em> (<code>ERendimentoNLocal2023.xlsx</code>). <code>https://www.ine.pt/xurl/pub/66303599</code></p>
+<p><strong>Income</strong> — total median annual income, by household, liquid, is sourced from Statistics Portugal (INE), at municipality and parish levels.</p>
+<p>Income inequality is characterised by two indicators computed at municipality level and assigned to parishes and grid cells:</p>
+<p><strong>Gini coefficient</strong> — measures overall income inequality on a scale from 0 (perfect equality) to 1 (maximum inequality). Data is computed directly from the INE publication for each municipality. Income is considered by mean household income, liquid.</p>
+<p><strong>Palma ratio</strong> — measures the ratio of the income share of the top 10% to the bottom 40% of the population, a measure more sensitive to inequality at the extremes:</p>
+<p><span class="math display">\[\text{Palma} = \frac{\text{income share of top 10\%}}{\text{income share of bottom 40\%}}\]</span></p>
+<p>Both indicators are sourced directly from the INE publication for each municipality and parish. Grid cells are assigned the values of their corresponding parish via the <code>grid_nuts.csv</code> cross-reference table.</p>
+</section>
+<section id="sec-housing" class="level2" data-number="7.5">
+<h2 data-number="7.5" class="anchored" data-anchor-id="sec-housing"><span class="header-section-number">7.5</span> Housing costs</h2>
+<p><strong>Script:</strong> <a href="https://github.com/U-Shift/IMPT-data/blob/main/code/02_land_use_export.R"><code>02_land_use_export.R</code></a><br>
+<strong>Source:</strong> INE — <em>Habitação custos 2021</em> (<code>Habitaccao_Custos_2021.xlsx</code>). <code>https://www.ine.pt/xurl/pub/65586079</code></p>
+<p>Median monthly housing cost and rent, by parish, is sourced from Statistics Portugal (INE), Census 2021, at municipality and parish levels. Grid cells are assigned the values of their corresponding parish via the <code>grid_nuts.csv</code> cross-reference table.</p>
 
 
 </section>

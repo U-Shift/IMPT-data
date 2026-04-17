@@ -168,7 +168,7 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./transport_routing.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Transport Routing — Travel Time Matrix</span></span></a>
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Travel Time Matrix</span></span></a>
   </div>
 </li>
       </ul>
@@ -477,7 +477,7 @@ Table&nbsp;5.2: Population and building density weights for COS land use classes
 <p><span class="math display">\[f_i = \frac{\sum_{k} A_{k \cap \text{iso} \cap \text{hex}_i} \times w_k}{\sum_{k} A_{k \cap \text{hex}_i} \times w_k}\]</span></p>
 <p>where <span class="math inline">\(k\)</span> indexes COS polygons and <span class="math inline">\(w_k\)</span> is the density weight. Population served is then:</p>
 <p><span class="math display">\[P_i = \text{pop}_i \times f_i\]</span></p>
-<p>where <span class="math inline">\(\text{pop}_i\)</span> is the hex population from the dasymetric grid (<code>grid_with_cos</code>). Because the numerator is a spatial subset of the denominator, <span class="math inline">\(f_i \in [0, 1]\)</span> is guaranteed, so <span class="math inline">\(P_i \leq \text{pop}_i\)</span> by construction.</p>
+<p>where <span class="math inline">\(\text{pop}_i\)</span> is the hex population from the dasymetric grid (<code>grid_with_cos</code>). <!-- Because the numerator is a spatial subset of the denominator, $f_i \in [0, 1]$ is guaranteed, so $P_i \leq \text{pop}_i$ by construction. --></p>
 </section>
 <section id="freguesia-and-município-levels" class="level4" data-number="5.4.2.2">
 <h4 data-number="5.4.2.2" class="anchored" data-anchor-id="freguesia-and-município-levels"><span class="header-section-number">5.4.2.2</span> Freguesia and município levels</h4>
@@ -486,9 +486,8 @@ Table&nbsp;5.2: Population and building density weights for COS land use classes
 <p>The centroid of each fragment is used to assign it to the administrative unit, and fragments go directly to administrative boundaries — not via the grid — to avoid misalignment from hexes that only partially overlap them. Total population for percentage calculations is derived from the same building fragment method, not from raw BGRI totals, ensuring a consistent denominator.</p>
 <p><strong>Metrics produced per mode group and scale:</strong></p>
 <ul>
-<li><code>pop_pt_{mode}</code> — estimated resident population within walking distance</li>
-<li><code>pop_pt_all</code> — population within walking distance of any PT mode (union isochrone)</li>
-<li><code>pct_pt_{mode}</code> — share of local population with PT access (bounded 0–1 at all scales)</li>
+<li><code>pop_pt_{mode}</code> — population within walking distance of each mode (or all modes)</li>
+<li><code>pct_pt_{mode}</code> — percentage of population within walking distance of each mode (or all modes)</li>
 </ul>
 </section>
 </section>
@@ -970,8 +969,8 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="./transport_routing.html" class="pagination-link" aria-label="Transport Routing — Travel Time Matrix">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Transport Routing — Travel Time Matrix</span></span>
+      <a href="./transport_routing.html" class="pagination-link" aria-label="Travel Time Matrix">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Travel Time Matrix</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
