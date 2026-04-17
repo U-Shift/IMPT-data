@@ -2,6 +2,10 @@
 
 This repository aims to document the data treatment and processing steps for the IMPT (Insert Meaningful Project Title) calculation.
 
+## Methods
+
+A detailed methodological report is available at [u-shift.github.io/IMPT-data](https://u-shift.github.io/IMPT-data/)
+
 ## Data
 
 Due to GitHub data storage restrictions, data is ignored by git control version and is stored instead at ushift@alfa server in `/data/IMPT`.
