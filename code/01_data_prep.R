@@ -422,13 +422,16 @@ census21_fregmun <- Census21_BGRI |>
   st_drop_geometry() |>
   select(
     DTMNFR21, DTMN21, N_INDIVIDUOS, N_NUCLEOS_FAMILIARES,
-    N_INDIVIDUOS_0_14, N_INDIVIDUOS_65_OU_MAIS, N_INDIVIDUOS_M,
+    N_INDIVIDUOS_0_14, N_INDIVIDUOS_15_24, N_INDIVIDUOS_25_64,
+    N_INDIVIDUOS_65_OU_MAIS, N_INDIVIDUOS_M,
     N_EDIFICIOS_CLASSICOS, N_EDIFICIOS_CONSTR_ANTES_1945
   ) |>
   rename(
     population = N_INDIVIDUOS,
     households = N_NUCLEOS_FAMILIARES,
     youth = N_INDIVIDUOS_0_14,
+    adults1 = N_INDIVIDUOS_15_24,
+    adults2 = N_INDIVIDUOS_25_64,
     elderly = N_INDIVIDUOS_65_OU_MAIS,
     women = N_INDIVIDUOS_M,
     buildings = N_EDIFICIOS_CLASSICOS,
@@ -439,12 +442,16 @@ census21_fregmun <- Census21_BGRI |>
     population = sum(population),
     households = sum(households),
     youth = sum(youth),
+    adults1 = sum(adults1),
+    adults2 = sum(adults2),
     elderly = sum(elderly),
     women = sum(women),
     buildings = sum(buildings),
     buildings_pre1945 = sum(buildings_pre1945)
   ) |>
-  ungroup()
+  ungroup() |> 
+  mutate(adults = adults1 + adults2) |> 
+  select(-adults1, adults2)
 
 
 ## make sure there is no polygon missing or exclude extra ones
@@ -478,6 +485,7 @@ census24_fregmun <- census21_fregmun |>
     population = round(population * weight),
     households = round(households * weight),
     youth = round(youth * weight),
+    adults = round(adults * weight),
     elderly = round(elderly * weight),
     women = round(women * weight),
     buildings = round(buildings * weight),
@@ -486,7 +494,7 @@ census24_fregmun <- census21_fregmun |>
   select(
     freg_id = dtmnfr24,
     mun_id = DTMN21,
-    population, households, youth, elderly, women, buildings, buildings_pre1945
+    population, households, youth, adults, elderly, women, buildings, buildings_pre1945
   )
 
 sum(census24_fregmun$population) # 2870206 - less 2 persons due rounding, which is acceptable for our purposes

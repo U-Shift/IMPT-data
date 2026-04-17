@@ -45,9 +45,14 @@ census_pts <- impt_read("/geo/census24_points.gpkg") |>
     households = N_NUCLEOS_FAMILIARES, # households
     pop_area_m2 = SHAPE_Area, # census section area for density
     youth = N_INDIVIDUOS_0_14,
+    adults1 = N_INDIVIDUOS_15_24,
+    adults2 = N_INDIVIDUOS_25_64,
     elderly = N_INDIVIDUOS_65_OU_MAIS,
     women = N_INDIVIDUOS_M
-  )
+  ) |> 
+  mutate(adults = adults1 + adults2) |> 
+  select(-adults1, adults2)
+
 volume_pts <- impt_read("/landuse/lisbon_metro_buildings_height.geojson") |>
   select(volume_m3)
 
@@ -68,6 +73,7 @@ grid_stats <- census_with_grid |>
     population_density = sum(pop_area_m2, na.rm = TRUE),
     households = sum(households, na.rm = TRUE),
     youth = sum(youth, na.rm = TRUE),
+    adults = sum(adults, na.rm = TRUE),
     elderly = sum(elderly, na.rm = TRUE),
     women = sum(women, na.rm = TRUE)
   ) |>
@@ -93,33 +99,33 @@ master_stats <- grid_freg_mun |>
 
 # Export Levels
 
-## GRID LEVEL
-landuse_grid <- grid |>
-  mutate(id = as.character(id)) |>
-  left_join(master_stats, by = c("id" = "grid_id")) |>
-  mutate(
-    area_m2 = as.numeric(st_area(geom)),
-    volume_density = round(buildings_volume_m3 / area_m2, 2),
-    population_density = round(population / (area_m2 / 1e6), 1), # pop/km²
-    youth_ratio = round(youth / population * 100, 2),
-    elderly_ratio = round(elderly / population * 100, 2),
-    women_percentage = round(women / population * 100, 2)
-  ) |>
-  mutate(
-    area_km2 = round(area_m2 / 1e6, 2),
-    buildings_pre1945_percentage = round(buildings_pre1945 / buildings * 100, 2)
-  )
-# mapview(landuse_grid, zcol="volume_density")
-landuse_grid <- landuse_grid |>
-  st_drop_geometry() |>
-  select(
-    id, area_km2,
-    buildings, buildings_pre1945, buildings_pre1945_percentage,
-    buildings_volume_m3, volume_density,
-    population, population_density, households,
-    youth_ratio, elderly_ratio, women_percentage
-  )
-impt_write(landuse_grid, "/landuse/landuse_grid.csv")
+# ## GRID LEVEL
+# landuse_grid <- grid |>
+#   mutate(id = as.character(id)) |>
+#   left_join(master_stats, by = c("id" = "grid_id")) |>
+#   mutate(
+#     area_m2 = as.numeric(st_area(geom)),
+#     volume_density = round(buildings_volume_m3 / area_m2, 2),
+#     population_density = round(population / (area_m2 / 1e6), 1), # pop/km²
+#     youth_ratio = round(youth / population * 100, 2),
+#     elderly_ratio = round(elderly / population * 100, 2),
+#     women_percentage = round(women / population * 100, 2)
+#   ) |>
+#   mutate(
+#     area_km2 = round(area_m2 / 1e6, 2),
+#     buildings_pre1945_percentage = round(buildings_pre1945 / buildings * 100, 2)
+#   )
+# # mapview(landuse_grid, zcol="volume_density")
+# landuse_grid <- landuse_grid |>
+#   st_drop_geometry() |>
+#   select(
+#     id, area_km2,
+#     buildings, buildings_pre1945, buildings_pre1945_percentage,
+#     buildings_volume_m3, volume_density,
+#     population, population_density, households,
+#     youth_ratio, elderly_ratio, women_percentage
+#   )
+# impt_write(landuse_grid, "/landuse/landuse_grid.csv")
 
 
 ## FREGUESIA LEVEL
@@ -142,6 +148,8 @@ landuse_freguesias <- census24_fregmun |>
     population_density = round(population / area_km2, 1), # pop/km²
     youth_ratio        = round(youth / population * 100, 2),
     elderly_ratio      = round(elderly / population * 100, 2),
+    youth_dependency   = round(youth / adults * 100, 2),
+    elderly_dependency = round(elderly / adults * 100, 2),
     women_percentage   = round(women / population * 100, 2)
   )
 
@@ -150,7 +158,8 @@ landuse_freguesias <- landuse_freguesias |> select(
   buildings, buildings_pre1945, buildings_pre1945_percentage,
   buildings_volume_m3, volume_density,
   population, population_density, households,
-  youth_ratio, elderly_ratio, women_percentage
+  youth_ratio, elderly_ratio, youth_dependency, elderly_dependency,
+  women_percentage
 )
 impt_write(landuse_freguesias, "/landuse/landuse_freguesias.csv")
 
@@ -170,6 +179,7 @@ landuse_municipios <- census24_fregmun |>
     population = sum(population, na.rm = TRUE),
     households = sum(households, na.rm = TRUE),
     youth = sum(youth, na.rm = TRUE),
+    adults = sum(adults, na.rm = TRUE),
     elderly = sum(elderly, na.rm = TRUE),
     women = sum(women, na.rm = TRUE),
     buildings = sum(buildings, na.rm = TRUE),
@@ -186,6 +196,8 @@ landuse_municipios <- census24_fregmun |>
     population_density = round(population / area_km2, 1), # pop/km²
     youth_ratio        = round(youth / population * 100, 2),
     elderly_ratio      = round(elderly / population * 100, 2),
+    youth_dependency   = round(youth / adults * 100, 2),
+    elderly_dependency = round(elderly / adults * 100, 2),
     women_percentage   = round(women / population * 100, 2)
   )
 
@@ -194,7 +206,8 @@ landuse_municipios <- landuse_municipios |> select(
   buildings, buildings_pre1945, buildings_pre1945_percentage,
   buildings_volume_m3, volume_density,
   population, population_density, households,
-  youth_ratio, elderly_ratio, women_percentage
+  youth_ratio, elderly_ratio, youth_dependency, elderly_dependency,
+  women_percentage
 )
 impt_write(landuse_municipios, "/landuse/landuse_municipios.csv")
 

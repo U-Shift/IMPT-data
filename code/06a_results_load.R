@@ -88,7 +88,8 @@ grid_census_income <- impt_read("/landuse/grid_income_housing_gini.csv")
 
 freguesia_census_landuse <- impt_read("/landuse/landuse_freguesias.csv")
 municipio_census_landuse <- impt_read("/landuse/landuse_municipios.csv")
-grid_census_landuse <- impt_read("/landuse/landuse_grid.csv")
+# grid_census_landuse <- impt_read("/landuse/landuse_grid.csv")
+grid_census_landuse <- impt_read("/landuse/grid_with_cos.csv") # more accurate
 
 freguesia_access_gap_time <- impt_read("/mobility_commuting/freg_accessibility_gap_time.csv")
 municipio_access_gap_time <- impt_read("/mobility_commuting/mun_accessibility_gap_time.csv")
