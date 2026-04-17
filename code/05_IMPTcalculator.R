@@ -72,7 +72,7 @@ freguesias_infrastructure_ratio <- impt_read("/mobility/freguesias_infrastructur
   )
 
 # Stops coverage
-freguesias_stops_coverage <- impt_read("/mobility/freguesias_pop_pt_served.csv") |>
+freguesias_stops_coverage <- impt_read("/mobility/freguesias_pop_stops_coverage.csv") |>
   select(dtmnfr, pct_pt_all) |>
   mutate(dtmnfr = as.numeric(dtmnfr))
 
