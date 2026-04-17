@@ -268,11 +268,6 @@ Table&nbsp;12.1: Pipeline script organisation
 </figcaption>
 <div aria-describedby="tbl-scripts-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <table class="caption-top table">
-<colgroup>
-<col style="width: 30%">
-<col style="width: 26%">
-<col style="width: 42%">
-</colgroup>
 <thead>
 <tr class="header">
 <th>Prefix</th>
@@ -284,37 +279,37 @@ Table&nbsp;12.1: Pipeline script organisation
 <tr class="odd">
 <td>00</td>
 <td>Setup</td>
-<td><code>00a_impt_data_handle.R</code>, <code>00b_data_load.R</code></td>
+<td><a href="https://github.com/U-Shift/IMPT-data/blob/main/code/00a_impt_data_handle.R"><code>00a_impt_data_handle.R</code></a>, <a href="https://github.com/U-Shift/IMPT-data/blob/main/code/00b_data_load.R"><code>00b_data_load.R</code></a></td>
 </tr>
 <tr class="even">
 <td>01</td>
 <td>Geometry &amp; base data preparation</td>
-<td><code>01_data_prep.R</code></td>
+<td><a href="https://github.com/U-Shift/IMPT-data/blob/main/code/01_data_prep.R"><code>01_data_prep.R</code></a></td>
 </tr>
 <tr class="odd">
 <td>02</td>
 <td>Socio-demographics &amp; land use</td>
-<td><code>02_*.R</code> (5 scripts)</td>
+<td><a href="https://github.com/U-Shift/IMPT-data/tree/main/code/"><code>02_*.R</code></a> (5 scripts)</td>
 </tr>
 <tr class="even">
 <td>03</td>
 <td>Routing &amp; travel time matrices</td>
-<td><code>03_ttm_gridh3.R</code></td>
+<td><a href="https://github.com/U-Shift/IMPT-data/blob/main/code/03_ttm_gridh3.R"><code>03_ttm_gridh3.R</code></a></td>
 </tr>
 <tr class="odd">
 <td>04</td>
 <td>Dimension calculations</td>
-<td><code>04_*.R</code> (10 scripts)</td>
+<td><a href="https://github.com/U-Shift/IMPT-data/tree/main/code/"><code>04_*.R</code></a> (10 scripts)</td>
 </tr>
 <tr class="even">
 <td>05</td>
 <td>Index computation</td>
-<td><code>05_IMPTcalculator.R</code>, <code>05a_results_export_pca.R</code></td>
+<td><a href="https://github.com/U-Shift/IMPT-data/blob/main/code/05_IMPTcalculator.R"><code>05_IMPTcalculator.R</code></a>, <a href="https://github.com/U-Shift/IMPT-data/blob/main/code/05a_results_export_pca.R"><code>05a_results_export_pca.R</code></a></td>
 </tr>
 <tr class="odd">
 <td>06</td>
 <td>Output &amp; dashboard</td>
-<td><code>06a_results_load.R</code>, <code>06b_dashboard_export.R</code></td>
+<td><a href="https://github.com/U-Shift/IMPT-data/blob/main/code/06a_results_load.R"><code>06a_results_load.R</code></a>, <a href="https://github.com/U-Shift/IMPT-data/blob/main/code/06b_dashboard_export.R"><code>06b_dashboard_export.R</code></a></td>
 </tr>
 </tbody>
 </table>
@@ -327,7 +322,7 @@ Table&nbsp;12.1: Pipeline script organisation
 <p>To replicate the IMPT for another Portuguese metropolitan area:</p>
 <ol type="1">
 <li>Replace the CAOP 2024 filter (NUTS-II codes <code>"Grande Lisboa"</code> and <code>"Península de Setúbal"</code>) with the target region.</li>
-<li>Update the GTFS operator list in <code>01_data_prep.R</code>.</li>
+<li>Update the GTFS operator list in <a href="https://github.com/U-Shift/IMPT-data/blob/main/code/01_data_prep.R"><code>01_data_prep.R</code></a>.</li>
 <li>Obtain the IMOB travel survey OD matrix for the target area, and apply the dicofre conversion if needed.</li>
 <li>Set up a HOT Export Tool bounding box for the new area.</li>
 <li>Download the relevant Copernicus DEM tile.</li>

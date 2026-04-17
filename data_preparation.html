@@ -309,13 +309,13 @@ Note
 </div>
 <section id="sec-helper" class="level2" data-number="3.1">
 <h2 data-number="3.1" class="anchored" data-anchor-id="sec-helper"><span class="header-section-number">3.1</span> Infrastructure and Helper Functions</h2>
-<p><strong><code>00a_impt_data_handle.R</code></strong> defines two core helper functions:</p>
+<p><strong><a href="https://github.com/U-Shift/IMPT-data/blob/main/code/00a_impt_data_handle.R"><code>00a_impt_data_handle.R</code></a></strong> defines two core helper functions:</p>
 <ul>
 <li><code>impt_read(path)</code>: reads CSV, GeoPackage, GeoJSON, or RDS files. When running on the <code>ushift-alfa</code> server, it reads from the local <code>/data/IMPT/</code> directory; on any other machine, it fetches via HTTPS from <code>https://impt.server.ushift.pt</code> using an API key.</li>
 <li><code>impt_write(content, path)</code>: writes to the same location logic (server vs.&nbsp;local <code>data/</code> folder).</li>
 </ul>
 <p>These functions abstract away the data storage location, making the pipeline portable.</p>
-<p><strong><code>00b_data_load.R</code></strong> sets up globally-used variables (study area boundaries, grid, ids correspondence between levels, etc.) that are reused across scripts.</p>
+<p><strong><a href="https://github.com/U-Shift/IMPT-data/blob/main/code/00b_data_load.R"><code>00b_data_load.R</code></a></strong> sets up globally-used variables (study area boundaries, grid, ids correspondence between levels, etc.) that are reused across scripts.</p>
 </section>
 <section id="sec-data-prep-boundaries" class="level2" data-number="3.2">
 <h2 data-number="3.2" class="anchored" data-anchor-id="sec-data-prep-boundaries"><span class="header-section-number">3.2</span> Administrative Boundaries</h2>
@@ -500,7 +500,7 @@ Table&nbsp;3.3: COS 2023 residential classes and dasymetric weights
 </div>
 </figure>
 </div>
-<p>The procedure (<code>02_census_grid_with_cos.R</code>):</p>
+<p>The procedure (<a href="https://github.com/U-Shift/IMPT-data/blob/main/code/02_census_grid_with_cos.R"><code>02_census_grid_with_cos.R</code></a>):</p>
 <ol type="1">
 <li>Census BGRI polygons are intersected with COS residential patches and H3 grid cells.</li>
 <li>For each BGRI fragment, a weighted score is computed as <code>fragment_area × weight</code>.</li>
@@ -656,11 +656,11 @@ Table&nbsp;3.4: POI categories, sources, and filters
 <section id="sec-modal-share" class="level2" data-number="3.9">
 <h2 data-number="3.9" class="anchored" data-anchor-id="sec-modal-share"><span class="header-section-number">3.9</span> Modal Share from Census</h2>
 <p><strong>Source:</strong> Census 2021 — question on mode used for the daily commute.</p>
-<p>Script <code>02_census_modalShare.R</code> extracts and computes modal shares (private vehicle, public transit, active modes) at parish and municipality level. These are used to compute <strong>modal-share-weighted affordability</strong> metrics (see <a href="affordability.html" class="quarto-xref"><span>Chapter 7</span></a>).</p>
+<p>Script <a href="https://github.com/U-Shift/IMPT-data/blob/main/code/02_census_modalShare.R"><code>02_census_modalShare.R</code></a> extracts and computes modal shares (private vehicle, public transit, active modes) at parish and municipality level. These are used to compute <strong>modal-share-weighted affordability</strong> metrics (see <a href="affordability.html" class="quarto-xref"><span>Chapter 7</span></a>).</p>
 </section>
 <section id="sec-veh-ownership" class="level2" data-number="3.10">
 <h2 data-number="3.10" class="anchored" data-anchor-id="sec-veh-ownership"><span class="header-section-number">3.10</span> Vehicle Ownership</h2>
-<p><strong>Source:</strong> IMOB 2017 data (<code>02_veh_ownership.R</code>).</p>
+<p><strong>Source:</strong> IMOB 2017 data (<a href="https://github.com/U-Shift/IMPT-data/blob/main/code/02_veh_ownership.R"><code>02_veh_ownership.R</code></a>).</p>
 <p>Vehicle ownership variables include average motorised vehicles per household and percentage of households without a vehicle, aggregated at parish and municipality level.</p>
 
 
