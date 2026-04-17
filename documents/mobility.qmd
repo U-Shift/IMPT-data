@@ -160,6 +160,7 @@ Additionally, frequency reduction factors are computed to characterise night and
 
 ## Shared mobility
 
+**Script:** `04_mobility.R`  
 **Source:** TML PMUS (Shared mobility dock locations). `https://pmmus.tmlmobilidade.pt/`
 
 The number of shared mobility points (physical and virtual docks) is counted per parish and per grid cell.
