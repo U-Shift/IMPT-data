@@ -80,9 +80,9 @@ census_simple <- census_bgri |>
 
 message("Computing COS × BGRI fragments (this may take a few minutes)...")
 
-bgri_cos_fragments <- st_intersection(cos_clean, census_simple) |>
-  mutate(frag_area = as.numeric(st_area(.))) |>
-  filter(frag_area > 0) |> # drop degenerate slivers
+bgri_cos_fragments <- st_intersection(cos_clean, census_simple) %>%
+  mutate(frag_area = as.numeric(st_area(.))) %>%
+  filter(frag_area > 0) %>% # drop degenerate slivers
   mutate(frag_weight_score = frag_area * weight) |>
   group_by(BGRI2021) |>
   mutate(total_bgri_weight_score = sum(frag_weight_score)) |>
@@ -128,7 +128,7 @@ compute_pop_in_isochrone <- function(building_frags, isochrone) {
   }
 
   # Clip fragments to isochrone geometry (handles partial overlaps at boundary)
-  frags_in_iso <- st_intersection(frags_hit, iso_m) |>
+  frags_in_iso <- st_intersection(frags_hit, iso_m) %>%
     mutate(
       frag_area_in_iso = as.numeric(st_area(.)),
       frag_weight_score_in_iso = frag_area_in_iso * weight,
