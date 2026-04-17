@@ -181,11 +181,21 @@ for (nm in c("bus", "metrolr", "trainferry", "all")) {
 # an administrative/grid layer and sums pop_in_iso per unit.
 
 aggregate_to_layer <- function(frags_in_iso, layer_sf, group_col) {
-  layer_m <- st_transform(layer_sf, target_crs)
-  frags_m <- frags_in_iso # already in target_crs
+  if (is.null(frags_in_iso) || nrow(frags_in_iso) == 0) {
+    return(tibble(!!group_col := character(0), pop_served = numeric(0)))
+  }
+
+  layer_m <- st_transform(layer_sf, target_crs) |> st_make_valid()
+  
+  # To avoid double-counting population when building fragments cross unit boundaries
+  # (especially hex boundaries), we represent each fragment by its centroid.
+  # This ensures each fragment's population is assigned to exactly one spatial unit.
+  frags_pts <- frags_in_iso |>
+    st_centroid() |>
+    st_make_valid()
 
   layer_m |>
-    st_join(frags_m |> select(pop_in_iso), join = st_intersects) |>
+    st_join(frags_pts |> select(pop_in_iso), join = st_intersects) |>
     st_drop_geometry() |>
     group_by(across(all_of(group_col))) |>
     summarise(pop_served = sum(pop_in_iso, na.rm = TRUE), .groups = "drop")
