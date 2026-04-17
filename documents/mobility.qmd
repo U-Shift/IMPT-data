@@ -78,7 +78,7 @@ Where "segregated cycleway length" corresponds to the **Cycle track or lane** ca
 
 ## PT stop coverage
 
-**Scripts:** `isochrones_PTstops.R`, `04_mobility_transit_population.R`  
+**Scripts:** `04_isochrones_PTstops.R`, `04_mobility_transit_population.R`  
 **Package:** `r5r`
 
 Population coverage by public transport is estimated using **walking isochrones** around PT stops, differentiated by transport mode and their typical service area. Isochrones are computed with `r5r::isochrone()` using the `WALK` mode and the AML street network.
@@ -101,34 +101,42 @@ A **union isochrone** is computed from all three layers to estimate coverage by 
 
 ### Population estimation (dasymetric method)
 
-Population served is estimated using a **dasymetric intersection** of three layers:
+All methods share the same COS residential building polygons as the spatial proxy for where population lives, weighted by residential density class:
 
-1. **COS 2023 residential building polygons** — the spatial proxy for where population lives, classified and weighted by residential density:
+| COS class | Weight |
+|---|---|
+| Contínuas predominantemente verticais | 3.0 |
+| Contínuas predominantemente horizontais | 1.0 |
+| Descontínuas | 0.6 |
+| Descontínuas esparsas | 0.3 |
 
-    | COS class | Weight |
-    |---|---|
-    | Contínuas predominantemente verticais | 3.0 |
-    | Contínuas predominantemente horizontais | 1.0 |
-    | Descontínuas | 0.6 |
-    | Descontínuas esparsas | 0.3 |
+Different aggregation strategies are used at each scale, due to the geometric relationship between spatial units:
 
-2. **BGRI 2021 census blocks** — the source of population counts (`N_INDIVIDUOS`).
+#### Grid level (H3 r8)
 
-3. **Isochrone polygon** — the walking catchment area per mode group.
+Because H3 hex boundaries do not align with COS or BGRI polygon boundaries, a fragment-centroid approach would assign a building fragment's entire population to one hex even when the fragment straddles two. To avoid this mismatch, the grid-level method computes the **fraction of each hex's weighted COS building area that falls inside the isochrone**:
 
-Population is apportioned at the level of **building fragments** — intersections of COS polygons with BGRI blocks — using the formula:
+$$f_i = \frac{\sum_{k} A_{k \cap \text{iso} \cap \text{hex}_i} \times w_k}{\sum_{k} A_{k \cap \text{hex}_i} \times w_k}$$
+
+where $k$ indexes COS polygons and $w_k$ is the density weight. Population served is then:
+
+$$P_i = \text{pop}_i \times f_i$$
+
+where $\text{pop}_i$ is the hex population from the dasymetric grid (`grid_with_cos`). Because the numerator is a spatial subset of the denominator, $f_i \in [0, 1]$ is guaranteed, so $P_i \leq \text{pop}_i$ by construction.
+
+#### Freguesia and município levels
+
+BGRI census blocks nest perfectly within administrative boundaries. The method therefore uses **building fragments** — intersections of COS polygons with BGRI blocks — and apportions each BGRI's population by the fraction of its weighted building area that falls inside the isochrone:
 
 $$P_{iso} = \sum_{\text{fragments}} N_{\text{BGRI}} \times \frac{A_{frag,iso} \times w_{frag}}{\sum_{\text{BGRI}} A_{frag} \times w_{frag}}$$
 
-where $A_{frag,iso}$ is the fragment area inside the isochrone, $w_{frag}$ is the COS density weight, and the denominator is the total weighted building area of the BGRI block. This approach is **more accurate than using BGRI centroids or a pre-aggregated grid**, because it accounts for the spatial distribution of buildings *within* each census block: if an isochrone boundary cuts through a block, only the fraction of built area that is actually inside the catchment contributes to the population count.
-
-Results are aggregated independently at three scales. At the **grid (H3 r8)** level, building fragments inside each isochrone are joined to the hex they fall in. At the **freguesia** and **município** levels, building fragments are joined directly to administrative boundaries — not via the grid — to avoid misalignment from hexes that only partially overlap administrative boundaries.
+The centroid of each fragment is used to assign it to the administrative unit, and fragments go directly to administrative boundaries — not via the grid — to avoid misalignment from hexes that only partially overlap them. Total population for percentage calculations is derived from the same building fragment method, not from raw BGRI totals, ensuring a consistent denominator.
 
 **Metrics produced per mode group and scale:**
 
 - `pop_pt_{mode}` — estimated resident population within walking distance
-- `pop_pt_any` — population within walking distance of any PT mode (union isochrone)
-- `pct_pt_{mode}` — share of local population with PT access
+- `pop_pt_all` — population within walking distance of any PT mode (union isochrone)
+- `pct_pt_{mode}` — share of local population with PT access (bounded 0–1 at all scales)
 
 ## PT headways and waiting times
 
