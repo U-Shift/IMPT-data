@@ -1,4 +1,4 @@
-# Transport Routing — Travel Time Matrix {#sec-ttm}
+# Travel Time Matrix {#sec-ttm}
 
 **Script:** [`03_ttm_gridh3.R`](https://github.com/U-Shift/IMPT-data/blob/main/code/03_ttm_gridh3.R)  
 **Package:** `r5r` [@Pereira_r5r_2021]
@@ -15,7 +15,6 @@ A travel time matrix (TTM) is computed between all H3 grid centroids for the AML
 ```{r}
 #| label: tbl-ttm-params
 #| tbl-cap: "Travel time matrix parameters"
-
 params <- data.frame(
     Parameter = c(
         "Spatial unit",

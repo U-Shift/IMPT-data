@@ -124,7 +124,8 @@ where $k$ indexes COS polygons and $w_k$ is the density weight. Population serve
 
 $$P_i = \text{pop}_i \times f_i$$
 
-where $\text{pop}_i$ is the hex population from the dasymetric grid (`grid_with_cos`). Because the numerator is a spatial subset of the denominator, $f_i \in [0, 1]$ is guaranteed, so $P_i \leq \text{pop}_i$ by construction.
+where $\text{pop}_i$ is the hex population from the dasymetric grid (`grid_with_cos`).
+<!-- Because the numerator is a spatial subset of the denominator, $f_i \in [0, 1]$ is guaranteed, so $P_i \leq \text{pop}_i$ by construction. -->
 
 #### Freguesia and município levels
 
@@ -136,9 +137,8 @@ The centroid of each fragment is used to assign it to the administrative unit, a
 
 **Metrics produced per mode group and scale:**
 
-- `pop_pt_{mode}` — estimated resident population within walking distance
-- `pop_pt_all` — population within walking distance of any PT mode (union isochrone)
-- `pct_pt_{mode}` — share of local population with PT access (bounded 0–1 at all scales)
+- `pop_pt_{mode}` — population within walking distance of each mode (or all modes)
+- `pct_pt_{mode}` — percentage of population within walking distance of each mode (or all modes)
 
 ## PT headways and waiting times
 
