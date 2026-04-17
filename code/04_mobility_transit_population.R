@@ -203,37 +203,86 @@ aggregate_to_layer <- function(frags_in_iso, layer_sf, group_col) {
 
 
 # 7. Grid-level (H3 r8) output -----------------------------------------------
+#
+# WHY A DIFFERENT APPROACH FROM FREGUESIA/MUNICÍPIO:
+# The fragment-centroid approach works for admin levels because BGRI blocks nest
+# perfectly within freguesia/municipio boundaries. But COS×BGRI fragments often
+# cross H3 hex boundaries — using their centroids would assign a fragment's entire
+# population to one hex, even though grid_with_cos split it between two.
+# This mismatch makes pop_pt > population possible.
+#
+# Instead, for each hex we compute:
+#   fraction_served = (weighted COS area inside isochrone ∩ hex) / (total weighted COS area in hex)
+#   pop_pt = population × fraction_served
+#
+# This is bounded [0, population] by construction because the numerator is a
+# spatial subset of the denominator.
 
-message("Aggregating to H3 grid...")
+# Helper: weighted COS fraction per hex inside an isochrone
+compute_hex_cos_fraction <- function(cos_polygons, isochrone, grid_sf) {
+  iso_m  <- st_transform(isochrone, target_crs) |> st_make_valid()
+  grid_m <- st_transform(grid_sf, target_crs) |> st_make_valid()
 
-grid_bus <- aggregate_to_layer(frags_bus, grid, "id")
-grid_metrolr <- aggregate_to_layer(frags_metrolr, grid, "id")
-grid_trainferry <- aggregate_to_layer(frags_trainferry, grid, "id")
-grid_all <- aggregate_to_layer(frags_all, grid, "id")
+  # 1. Total weighted COS area per hex (denominator)
+  cos_in_hex <- st_intersection(cos_polygons, grid_m) %>%
+    mutate(w_area = as.numeric(st_area(.)) * weight) %>%
+    st_drop_geometry() |>
+    group_by(id) |>
+    summarise(w_area_total = sum(w_area), .groups = "drop")
 
-# Also get total population per hex from grid_with_cos (for % calculation)
+  # 2. Weighted COS area inside isochrone, per hex (numerator)
+  cos_in_iso_hex <- st_intersection(cos_polygons, iso_m) |>
+    st_make_valid() |>
+    st_intersection(grid_m) %>%
+    mutate(w_area = as.numeric(st_area(.)) * weight) %>%
+    st_drop_geometry() |>
+    group_by(id) |>
+    summarise(w_area_in_iso = sum(w_area), .groups = "drop")
+
+  # 3. Fraction = numerator / denominator, capped at 1 for floating-point safety
+  cos_in_hex |>
+    left_join(cos_in_iso_hex, by = "id") |>
+    mutate(
+      w_area_in_iso = replace_na(w_area_in_iso, 0),
+      fraction = ifelse(w_area_total > 0, pmin(w_area_in_iso / w_area_total, 1), 0)
+    ) |>
+    select(id, fraction)
+}
+
+message("Computing hex-level COS-area fractions per mode (this may take a few minutes)...")
+hex_frac_bus        <- compute_hex_cos_fraction(cos_clean, isochrones_bus,        grid)
+hex_frac_metrolr    <- compute_hex_cos_fraction(cos_clean, isochrones_metrolr,    grid)
+hex_frac_trainferry <- compute_hex_cos_fraction(cos_clean, isochrones_trainferry, grid)
+hex_frac_all        <- compute_hex_cos_fraction(cos_clean, isochrones_all,        grid)
+
+# Also get total population per hex from grid_with_cos
 grid_with_cos <- impt_read("/landuse/grid_with_cos.gpkg")
 
 grid_pt_pop <- grid_with_cos |>
   select(id, population) |>
-  left_join(grid_bus |> rename(pop_pt_bus = pop_served), by = "id") |>
-  left_join(grid_metrolr |> rename(pop_pt_metrolr = pop_served), by = "id") |>
-  left_join(grid_trainferry |> rename(pop_pt_trainferry = pop_served), by = "id") |>
-  left_join(grid_all |> rename(pop_pt_all = pop_served), by = "id") |>
+  left_join(hex_frac_bus        |> rename(frac_bus        = fraction), by = "id") |>
+  left_join(hex_frac_metrolr    |> rename(frac_metrolr    = fraction), by = "id") |>
+  left_join(hex_frac_trainferry |> rename(frac_trainferry = fraction), by = "id") |>
+  left_join(hex_frac_all        |> rename(frac_all        = fraction), by = "id") |>
   mutate(
-    across(starts_with("pop_pt_"), ~ replace_na(.x, 0)),
-    across(starts_with("pop_pt_"), round),
-    pt_served_bus        = pop_pt_bus > 0,
-    pt_served_metrolr    = pop_pt_metrolr > 0,
-    pt_served_trainferry = pop_pt_trainferry > 0,
-    pt_served_all        = pop_pt_all > 0,
-    pct_pt_bus           = ifelse(population > 0, round(pop_pt_bus / population, 4), 0),
-    pct_pt_metrolr       = ifelse(population > 0, round(pop_pt_metrolr / population, 4), 0),
-    pct_pt_trainferry    = ifelse(population > 0, round(pop_pt_trainferry / population, 4), 0),
-    pct_pt_all           = ifelse(population > 0, round(pop_pt_all / population, 4), 0)
+    across(starts_with("frac_"), ~ replace_na(.x, 0)),
+    # pop_pt = population × fraction: bounded [0, population] by construction
+    pop_pt_bus        = round(population * frac_bus),
+    pop_pt_metrolr    = round(population * frac_metrolr),
+    pop_pt_trainferry = round(population * frac_trainferry),
+    pop_pt_all        = round(population * frac_all),
+    pt_served_bus        = frac_bus        > 0,
+    pt_served_metrolr    = frac_metrolr    > 0,
+    pt_served_trainferry = frac_trainferry > 0,
+    pt_served_all        = frac_all        > 0,
+    # pct_pt = fraction itself (already the share of habitable area served)
+    pct_pt_bus        = round(frac_bus, 4),
+    pct_pt_metrolr    = round(frac_metrolr, 4),
+    pct_pt_trainferry = round(frac_trainferry, 4),
+    pct_pt_all        = round(frac_all, 4)
   )
 
-# mapview(grid_pt_pop |> filter(pt_served_all), zcol = "pop_pt_all")
+# mapview(grid_pt_pop |> filter(pt_served_all), zcol = "pct_pt_all")
 # mapview(grid_pt_pop |> filter(pt_served_bus), zcol = "pop_pt_bus")
 # mapview(grid_pt_pop |> filter(pt_served_metrolr), zcol = "pop_pt_metrolr")
 
