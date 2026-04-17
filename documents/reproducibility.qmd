@@ -10,13 +10,13 @@ Scripts are organised with a numeric prefix indicating execution order:
 
 | Prefix | Phase | Script(s) |
 |--------|-------|-----------|
-| 00 | Setup | `00a_impt_data_handle.R`, `00b_data_load.R` |
-| 01 | Geometry & base data preparation | `01_data_prep.R` |
-| 02 | Socio-demographics & land use | `02_*.R` (5 scripts) |
-| 03 | Routing & travel time matrices | `03_ttm_gridh3.R` |
-| 04 | Dimension calculations | `04_*.R` (10 scripts) |
-| 05 | Index computation | `05_IMPTcalculator.R`, `05a_results_export_pca.R` |
-| 06 | Output & dashboard | `06a_results_load.R`, `06b_dashboard_export.R` |
+| 00 | Setup | [`00a_impt_data_handle.R`](https://github.com/U-Shift/IMPT-data/blob/main/code/00a_impt_data_handle.R), [`00b_data_load.R`](https://github.com/U-Shift/IMPT-data/blob/main/code/00b_data_load.R) |
+| 01 | Geometry & base data preparation | [`01_data_prep.R`](https://github.com/U-Shift/IMPT-data/blob/main/code/01_data_prep.R) |
+| 02 | Socio-demographics & land use | [`02_*.R`](https://github.com/U-Shift/IMPT-data/tree/main/code/) (5 scripts) |
+| 03 | Routing & travel time matrices | [`03_ttm_gridh3.R`](https://github.com/U-Shift/IMPT-data/blob/main/code/03_ttm_gridh3.R) |
+| 04 | Dimension calculations | [`04_*.R`](https://github.com/U-Shift/IMPT-data/tree/main/code/) (10 scripts) |
+| 05 | Index computation | [`05_IMPTcalculator.R`](https://github.com/U-Shift/IMPT-data/blob/main/code/05_IMPTcalculator.R), [`05a_results_export_pca.R`](https://github.com/U-Shift/IMPT-data/blob/main/code/05a_results_export_pca.R) |
+| 06 | Output & dashboard | [`06a_results_load.R`](https://github.com/U-Shift/IMPT-data/blob/main/code/06a_results_load.R), [`06b_dashboard_export.R`](https://github.com/U-Shift/IMPT-data/blob/main/code/06b_dashboard_export.R) |
 
 : Pipeline script organisation {#tbl-scripts}
 
