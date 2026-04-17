@@ -1,6 +1,6 @@
 # Transport Routing — Travel Time Matrix {#sec-ttm}
 
-**Script:** `03_ttm_gridh3.R`  
+**Script:** [`03_ttm_gridh3.R`](https://github.com/U-Shift/IMPT-data/blob/main/code/03_ttm_gridh3.R)  
 **Package:** `r5r` [@Pereira_r5r_2021]
 
 ```{r}

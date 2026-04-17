@@ -16,7 +16,7 @@ Results are uploaded to the project data server at `https://impt.server.ushift.p
 
 ## Dashboard Export {#sec-dashboard}
 
-**Script:** `06b_dashboard_export.R`
+**Script:** [`06b_dashboard_export.R`](https://github.com/U-Shift/IMPT-data/blob/main/code/06b_dashboard_export.R)
 
 The dashboard export script joins all indicator tables (accessibility, mobility, affordability, safety, census/land use, IMPT scores) with the spatial geometry files and exports them as three aggregated **GeoJSON** files for direct use in the web dashboard:
 

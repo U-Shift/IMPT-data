@@ -6,14 +6,14 @@ This phase corresponds to scripts **`00a`**, **`00b`**, **`01`**, **`02_*`** in 
 
 ## Infrastructure and Helper Functions {#sec-helper}
 
-**`00a_impt_data_handle.R`** defines two core helper functions:
+**[`00a_impt_data_handle.R`](https://github.com/U-Shift/IMPT-data/blob/main/code/00a_impt_data_handle.R)** defines two core helper functions:
 
 - `impt_read(path)`: reads CSV, GeoPackage, GeoJSON, or RDS files. When running on the `ushift-alfa` server, it reads from the local `/data/IMPT/` directory; on any other machine, it fetches via HTTPS from `https://impt.server.ushift.pt` using an API key.
 - `impt_write(content, path)`: writes to the same location logic (server vs. local `data/` folder).
 
 These functions abstract away the data storage location, making the pipeline portable.
 
-**`00b_data_load.R`** sets up globally-used variables (study area boundaries, grid, ids correspondence between levels, etc.) that are reused across scripts.
+**[`00b_data_load.R`](https://github.com/U-Shift/IMPT-data/blob/main/code/00b_data_load.R)** sets up globally-used variables (study area boundaries, grid, ids correspondence between levels, etc.) that are reused across scripts.
 
 ## Administrative Boundaries {#sec-data-prep-boundaries}
 
@@ -94,7 +94,7 @@ Residential areas are extracted with the following classes and assigned weightin
 
 : COS 2023 residential classes and dasymetric weights {#tbl-cos-weights}
 
-The procedure (`02_census_grid_with_cos.R`):
+The procedure ([`02_census_grid_with_cos.R`](https://github.com/U-Shift/IMPT-data/blob/main/code/02_census_grid_with_cos.R)):
 
 1. Census BGRI polygons are intersected with COS residential patches and H3 grid cells.
 2. For each BGRI fragment, a weighted score is computed as `fragment_area × weight`.
@@ -200,10 +200,10 @@ The `r5r` network is built using `r5r::build_network()` with the `elevation = "M
 
 **Source:** Census 2021 — question on mode used for the daily commute.
 
-Script `02_census_modalShare.R` extracts and computes modal shares (private vehicle, public transit, active modes) at parish and municipality level. These are used to compute **modal-share-weighted affordability** metrics (see @sec-affordability).
+Script [`02_census_modalShare.R`](https://github.com/U-Shift/IMPT-data/blob/main/code/02_census_modalShare.R) extracts and computes modal shares (private vehicle, public transit, active modes) at parish and municipality level. These are used to compute **modal-share-weighted affordability** metrics (see @sec-affordability).
 
 ## Vehicle Ownership {#sec-veh-ownership}
 
-**Source:** IMOB 2017 data (`02_veh_ownership.R`).
+**Source:** IMOB 2017 data ([`02_veh_ownership.R`](https://github.com/U-Shift/IMPT-data/blob/main/code/02_veh_ownership.R)).
 
 Vehicle ownership variables include average motorised vehicles per household and percentage of households without a vehicle, aggregated at parish and municipality level.

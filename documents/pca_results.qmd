@@ -12,7 +12,7 @@ library(kableExtra)
 
 ```{r}
 #| label: tbl-pca-summary
-#| tbl-cap: "PCA diagnostics — variance explained by PC1 (indicative values; run 05_IMPTcalculator.R for up-to-date results)"
+#| tbl-cap: "PCA diagnostics — variance explained by PC1 (indicative values; run [`05_IMPTcalculator.R`](https://github.com/U-Shift/IMPT-data/blob/main/code/05_IMPTcalculator.R) for up-to-date results)"
 
 # This table would be populated from the PCA variance report CSV once available
 # Placeholder structure:
@@ -40,5 +40,5 @@ kable(pca_summary,
 ```
 
 ::: {.callout-tip}
-To populate this table automatically, source `05_IMPTcalculator.R` and read `PCA_Variance_Table.csv` and `PCA_Variance_and_Correlations.csv` from the results folder.
+To populate this table automatically, source [`05_IMPTcalculator.R`](https://github.com/U-Shift/IMPT-data/blob/main/code/05_IMPTcalculator.R) and read `PCA_Variance_Table.csv` and `PCA_Variance_and_Correlations.csv` from the results folder.
 :::

@@ -25,7 +25,7 @@ Scripts are organised with a numeric prefix indicating execution order:
 To replicate the IMPT for another Portuguese metropolitan area:
 
 1. Replace the CAOP 2024 filter (NUTS-II codes `"Grande Lisboa"` and `"Península de Setúbal"`) with the target region.
-2. Update the GTFS operator list in `01_data_prep.R`.
+2. Update the GTFS operator list in [`01_data_prep.R`](https://github.com/U-Shift/IMPT-data/blob/main/code/01_data_prep.R).
 3. Obtain the IMOB travel survey OD matrix for the target area, and apply the dicofre conversion if needed.
 4. Set up a HOT Export Tool bounding box for the new area.
 5. Download the relevant Copernicus DEM tile.

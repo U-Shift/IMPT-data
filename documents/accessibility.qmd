@@ -1,6 +1,6 @@
 # Accessibility {#sec-accessibility}
 
-**Script:** `04_access_opportunities.R`  
+**Script:** [`04_access_opportunities.R`](https://github.com/U-Shift/IMPT-data/blob/main/code/04_access_opportunities.R)  
 **Package:** `accessibility` [@Pereira_accessibility_2022]
 
 ```{mermaid}
@@ -35,7 +35,7 @@ Grid-level accessibility values are aggregated to parishes and municipalities us
 
 ## Time to closest opportunity (mobility costs)
 
-**Script:** `04_mobility_costs_time.R`  
+**Script:** [`04_mobility_costs_time.R`](https://github.com/U-Shift/IMPT-data/blob/main/code/04_mobility_costs_time.R)  
 **Function:** `accessibility::cost_to_closest()`
 
 The travel time to the 1st, 2nd, and 3rd closest opportunity of each POI category is also computed, allowing measurement of baseline access time for the nearest facilities.

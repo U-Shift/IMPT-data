@@ -5,7 +5,7 @@ Mobility indicators cover infrastructure availability and quality, public transp
 
 ## Commuting travel times
 
-**Script:** `04_mobility_commuting.R`
+**Script:** [`04_mobility_commuting.R`](https://github.com/U-Shift/IMPT-data/blob/main/code/04_mobility_commuting.R)
 
 Using the jittered IMOB OD pairs (**for commuting**) and the travel time matrices, average commuting travel times are computed for each geographical unit and mode, weighted by number of trips. Trips with no feasible route within the constraints are assigned the maximum travel time (120 min) and counted separately as "not accomplishable" trips (PNA — *Percentagem Não Alcançáveis*).
 
@@ -29,7 +29,7 @@ flowchart TB
 
 ## Number of PT transfers
 
-**Script:** `04_mobility_commuting.R`
+**Script:** [`04_mobility_commuting.R`](https://github.com/U-Shift/IMPT-data/blob/main/code/04_mobility_commuting.R)
 
 For each commuting OD pair, the **minimum** number of transfers required for each PTransit route (for 0, 1, 2, and 3 transfers) is assigned to each OD pair, and population-weighted mean transfers are computed per geographical unit.
 The result is the average minimum number of transfers to commute to work, using PTransit.
@@ -37,7 +37,7 @@ The result is the average minimum number of transfers to commute to work, using 
 
 ## Walking and Cycling infrastructure ratio
 
-**Script:** `04_mobility.R`
+**Script:** [`04_mobility.R`](https://github.com/U-Shift/IMPT-data/blob/main/code/04_mobility.R)
 
 ### Walking infrastructure ratio
 
@@ -51,7 +51,7 @@ Pedestrian infrastructure uses tags: `highway = footway | pedestrian | steps | r
 
 ### Cycling infrastructure ratio and type
 
-**Script:** `04_mobility_bike_infrastructure.R`
+**Script:** [`04_mobility_bike_infrastructure.R`](https://github.com/U-Shift/IMPT-data/blob/main/code/04_mobility_bike_infrastructure.R)
 
 The cycling infrastructure ratio is computed analogously to the pedestrian ratio by comparing cycleway length to total road length. Infrastructure data is extracted from OpenStreetMap and classified according to its type and level of segregation:
 
@@ -78,7 +78,7 @@ Where "segregated cycleway length" corresponds to the **Cycle track or lane** ca
 
 ## PT stop coverage
 
-**Scripts:** `04_isochrones_PTstops.R`, `04_mobility_transit_population.R`  
+**Scripts:** [`04_isochrones_PTstops.R`](https://github.com/U-Shift/IMPT-data/blob/main/code/04_isochrones_PTstops.R), [`04_mobility_transit_population.R`](https://github.com/U-Shift/IMPT-data/blob/main/code/04_mobility_transit_population.R)  
 **Package:** `r5r`
 
 Population coverage by public transport is estimated using **walking isochrones** around PT stops, differentiated by transport mode and their typical service area. Isochrones are computed with `r5r::isochrone()` using the `WALK` mode and the AML street network.
@@ -140,7 +140,7 @@ The centroid of each fragment is used to assign it to the administrative unit, a
 
 ## PT headways and waiting times
 
-**Script:** `04_mobility_transit.R`  
+**Script:** [`04_mobility_transit.R`](https://github.com/U-Shift/IMPT-data/blob/main/code/04_mobility_transit.R)  
 **Package:** `tidytransit`
 
 Stop-level service frequencies are computed with `tidytransit::get_stop_frequency()` for four time windows:
@@ -160,7 +160,7 @@ Additionally, frequency reduction factors are computed to characterise night and
 
 ## Shared mobility
 
-**Script:** `04_mobility.R`  
+**Script:** [`04_mobility.R`](https://github.com/U-Shift/IMPT-data/blob/main/code/04_mobility.R)  
 **Source:** TML PMUS (Shared mobility dock locations). `https://pmmus.tmlmobilidade.pt/`
 
 The number of shared mobility points (physical and virtual docks) is counted per parish and per grid cell.

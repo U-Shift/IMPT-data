@@ -1,12 +1,12 @@
 # Affordability {#sec-affordability}
 
-**Script:** `04_affordability.R`, `04_mobility_costs_money_car.R`, `04_mobility_costs_money_pt.R`, `04_mobility_costs_money_pt_cost_structure.R`
+**Script:** [`04_affordability.R`](https://github.com/U-Shift/IMPT-data/blob/main/code/04_affordability.R), [`04_mobility_costs_money_car.R`](https://github.com/U-Shift/IMPT-data/blob/main/code/04_mobility_costs_money_car.R), [`04_mobility_costs_money_pt.R`](https://github.com/U-Shift/IMPT-data/blob/main/code/04_mobility_costs_money_pt.R), [`04_mobility_costs_money_pt_cost_structure.R`](https://github.com/U-Shift/IMPT-data/blob/main/code/04_mobility_costs_money_pt_cost_structure.R)
 
 Affordability is assessed by comparing transport and housing costs against household income. Commuting costs are computed for both car and public transport using `r5r::detailed_itineraries()` on the full set of jittered IMOB OD pairs, regardless of the reported travel mode.
 
 ## Car costs
 
-**Script:** `04_mobility_costs_money_car.R`
+**Script:** [`04_mobility_costs_money_car.R`](https://github.com/U-Shift/IMPT-data/blob/main/code/04_mobility_costs_money_car.R)
 
 Car commuting cost per trip = distance cost + tolls:
 
@@ -18,7 +18,7 @@ Tolls are computed via the [Infraestruturas de Portugal toll API](https://portag
 
 ## Public transport costs — Two scenarios
 
-**Scripts:** `04_mobility_costs_money_pt.R`, `04_mobility_costs_money_pt_cost_structure.R`
+**Scripts:** [`04_mobility_costs_money_pt.R`](https://github.com/U-Shift/IMPT-data/blob/main/code/04_mobility_costs_money_pt.R), [`04_mobility_costs_money_pt_cost_structure.R`](https://github.com/U-Shift/IMPT-data/blob/main/code/04_mobility_costs_money_pt_cost_structure.R)
 
 To account for uncertainty in PT fare payment practices, two cost scenarios are defined:
 
