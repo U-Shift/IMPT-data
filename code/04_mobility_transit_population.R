@@ -81,7 +81,7 @@ census_simple <- census_bgri |>
 message("Computing COS × BGRI fragments (this may take a few minutes)...")
 
 bgri_cos_fragments <- st_intersection(cos_clean, census_simple) %>%
-  mutate(frag_area = as.numeric(st_area(.))) %>%
+  mutate(frag_area = as.numeric(st_area(.))) %>% # aparently the (.) only works with the old pipe %>%
   filter(frag_area > 0) %>% # drop degenerate slivers
   mutate(frag_weight_score = frag_area * weight) |>
   group_by(BGRI2021) |>
@@ -93,16 +93,14 @@ bgri_cos_fragments <- st_intersection(cos_clean, census_simple) %>%
 bgri_cos_fragments <- bgri_cos_fragments |>
   mutate(fragment_population = N_INDIVIDUOS * (frag_weight_score / total_bgri_weight_score))
 
-message(sprintf(
-  "Census total:       %s\nReconstructed pop:  %s (diff: %s, %.2f%%)",
-  sum(census_bgri$N_INDIVIDUOS, na.rm = TRUE),
-  round(sum(bgri_cos_fragments$fragment_population, na.rm = TRUE)),
+  sum(census_bgri$N_INDIVIDUOS, na.rm = TRUE) # 2870208
+  round(sum(bgri_cos_fragments$fragment_population, na.rm = TRUE)) #2862157
   round(sum(census_bgri$N_INDIVIDUOS, na.rm = TRUE) -
-    sum(bgri_cos_fragments$fragment_population, na.rm = TRUE)),
+    sum(bgri_cos_fragments$fragment_population, na.rm = TRUE)) #8051
   abs(sum(census_bgri$N_INDIVIDUOS, na.rm = TRUE) -
     sum(bgri_cos_fragments$fragment_population, na.rm = TRUE)) /
-    sum(census_bgri$N_INDIVIDUOS, na.rm = TRUE) * 100
-))
+    sum(census_bgri$N_INDIVIDUOS, na.rm = TRUE) * 100 #0.28%
+
 
 
 # 4. Helper: population inside an isochrone ----------------------------------
@@ -150,20 +148,17 @@ isochrones_all <- bind_rows(
   isochrones_metrolr |> st_transform(target_crs) |> st_make_valid(),
   isochrones_trainferry |> st_transform(target_crs) |> st_make_valid()
 ) |>
-  summarise(geometry = st_union(geometry)) |>
+  summarise(geometry = st_union(geom)) |>
   st_make_valid()
-
-message("Clipping building fragments to Bus isochrone (5 min)...")
-frags_bus <- compute_pop_in_isochrone(bgri_cos_fragments, isochrones_bus)
-
-message("Clipping building fragments to Subway/LightRail isochrone (10 min)...")
-frags_metrolr <- compute_pop_in_isochrone(bgri_cos_fragments, isochrones_metrolr)
 
 message("Clipping building fragments to Train/Ferry isochrone (15 min)...")
 frags_trainferry <- compute_pop_in_isochrone(bgri_cos_fragments, isochrones_trainferry)
-
+message("Clipping building fragments to Subway/LightRail isochrone (10 min)...")
+frags_metrolr <- compute_pop_in_isochrone(bgri_cos_fragments, isochrones_metrolr)
+message("Clipping building fragments to Bus isochrone (5 min)...")
+frags_bus <- compute_pop_in_isochrone(bgri_cos_fragments, isochrones_bus) # takes some time
 message("Clipping building fragments to all-PT isochrone (union)...")
-frags_all <- compute_pop_in_isochrone(bgri_cos_fragments, isochrones_all)
+frags_all <- compute_pop_in_isochrone(bgri_cos_fragments, isochrones_all) # takes some time
 
 # Total population served (AML level) — quick summary
 for (nm in c("bus", "metrolr", "trainferry", "all")) {
@@ -173,6 +168,11 @@ for (nm in c("bus", "metrolr", "trainferry", "all")) {
     nm, format(round(sum(frags$pop_in_iso, na.rm = TRUE)), big.mark = ",")
   ))
 }
+# [bus] Population served: 2,233,115
+# [metrolr] Population served: 252,554
+# [trainferry] Population served: 460,860
+# [all] Population served: 2,319,048
+# [all_perc] Population served: 80.79 %
 
 
 # 6. Helper: aggregate clipped fragments to a spatial unit -------------------
