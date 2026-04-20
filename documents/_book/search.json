@@ -506,7 +506,7 @@
     "href": "reproducibility.html#code-repository",
     "title": "12  Reproducibility",
     "section": "",
-    "text": "https://github.com/U-Shift/IMPT-data\n\n\n\n\n\nTable 12.1: Pipeline script organisation\n\n\n\n\n\nPrefix\nPhase\nScript(s)\n\n\n\n\n00\nSetup\n00a_impt_data_handle.R, 00b_data_load.R\n\n\n01\nGeometry & base data preparation\n01_data_prep.R\n\n\n02\nSocio-demographics & land use\n02_*.R (5 scripts)\n\n\n03\nRouting & travel time matrices\n03_ttm_gridh3.R\n\n\n04\nDimension calculations\n04_*.R (10 scripts)\n\n\n05\nIndex computation\n05_IMPTcalculator.R, 05a_results_export_pca.R\n\n\n06\nOutput & dashboard\n06a_results_load.R, 06b_dashboard_export.R",
+    "text": "github.com/U-Shift/IMPT-data\n\n\n\n\n\nTable 12.1: Pipeline script organisation\n\n\n\n\n\nPrefix\nPhase\nScript(s)\n\n\n\n\n00\nSetup\n00a_impt_data_handle.R, 00b_data_load.R\n\n\n01\nGeometry & base data preparation\n01_data_prep.R\n\n\n02\nSocio-demographics & land use\n02_*.R (5 scripts)\n\n\n03\nRouting & travel time matrices\n03_ttm_gridh3.R\n\n\n04\nDimension calculations\n04_*.R (10 scripts)\n\n\n05\nIndex computation\n05_IMPTcalculator.R\n\n\n06\nOutput & dashboard\n06a_results_load.R, 06b_dashboard_export.R",
     "crumbs": [
       "**Dashboard and Reproducibility**",
       "<span class='chapter-number'>12</span>  <span class='chapter-title'>Reproducibility</span>"
@@ -518,6 +518,17 @@
     "title": "12  Reproducibility",
     "section": "12.2 Replication for Other Areas",
     "text": "12.2 Replication for Other Areas\nTo replicate the IMPT for another Portuguese metropolitan area:\n\nReplace the CAOP 2024 filter (NUTS-II codes \"Grande Lisboa\" and \"Península de Setúbal\") with the target region.\nUpdate the GTFS operator list in 01_data_prep.R.\nObtain the IMOB travel survey OD matrix for the target area, and apply the dicofre conversion if needed.\nSet up a HOT Export Tool bounding box for the new area.\nDownload the relevant Copernicus DEM tile.\nRun scripts in order (00 → 06).\n\nThe H3 grid generation, routing engine, and scoring methodology are entirely generic and require no structural changes.",
+    "crumbs": [
+      "**Dashboard and Reproducibility**",
+      "<span class='chapter-number'>12</span>  <span class='chapter-title'>Reproducibility</span>"
+    ]
+  },
+  {
+    "objectID": "reproducibility.html#dashboard",
+    "href": "reproducibility.html#dashboard",
+    "title": "12  Reproducibility",
+    "section": "12.3 Dashboard",
+    "text": "12.3 Dashboard\nThe code to build the IMPT dashboard is not included in this repository. You can find it in the IMPT-web repository.",
     "crumbs": [
       "**Dashboard and Reproducibility**",
       "<span class='chapter-number'>12</span>  <span class='chapter-title'>Reproducibility</span>"
