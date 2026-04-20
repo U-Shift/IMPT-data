@@ -181,8 +181,6 @@ grid_aggregated <- grid_aggregated |>
   ) |>
   left_join(
     grid_stop_coverage |>
-      select(-X) |>
-      rename(id = grid_id) |>
       rename_with(~ paste0("mobility_stop_coverage_", .), -id),
     by = "id"
   ) |>
@@ -518,7 +516,6 @@ municipios_aggregated <- municipios_aggregated |>
   ) |>
   left_join(
     municipio_stop_coverage |>
-      select(-X) |>
       left_join(mun_nuts |> select(id, municipio), by = "municipio") |>
       select(-municipio) |>
       rename_with(~ paste0("mobility_stop_coverage_", .), -id),
