@@ -488,9 +488,9 @@ saf_walk_scores <- Safety_walk_Norm |>
 # ── 4.3 PCA diagnostics ───────────────────────────────────────────────────────
 
 pca_list <- list(
-  Accessibility_GB   = pca_access,
-  Mobility_GB        = pca_mobility,
-  Safety_GB          = pca_safety,
+  Accessibility_all   = pca_access,
+  Mobility_all        = pca_mobility,
+  Safety_all          = pca_safety,
   Accessibility_car  = pca_car_access,
   Accessibility_pt   = pca_pt_access,
   Accessibility_bike = pca_bike_access,
