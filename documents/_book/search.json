@@ -363,7 +363,7 @@
     "href": "safety.html",
     "title": "8  Safety",
     "section": "",
-    "text": "8.1 Accident data filtering\nScript: 04_safety.R\nSource: ANSR — Autoridade Nacional de Segurança Rodoviária, road accident georeferenced point data (2019–2023).\nAccidents located outside administrative parish boundaries are excluded. This includes accidents on major bridges (Ponte 25 de Abril, Ponte Vasco da Gama) which cannot be assigned to a parish. Only accidents reported as occurring within localities (dentro das localidades) are used for the IMPT normalisation.",
+    "text": "8.1 Accident data filtering\nScript: 04_safety.R\nSource: ANSR — Autoridade Nacional de Segurança Rodoviária, road accident georeferenced point data (2019–2023) - via PMUS TML 2025.\nAccidents located outside administrative parish boundaries are excluded. This includes accidents on major bridges (Ponte 25 de Abril, Ponte Vasco da Gama) which cannot be assigned to a parish. Only accidents reported as occurring within localities (dentro das localidades) are used for the IMPT normalisation.",
     "crumbs": [
       "**Dimensions and PCA**",
       "<span class='chapter-number'>8</span>  <span class='chapter-title'>Safety</span>"
