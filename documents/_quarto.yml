@@ -28,6 +28,7 @@ book:
         - output_dashboard.qmd
         - reproducibility.qmd
     - references.qmd
+    - about.qmd
 
 bibliography: references.bib
 
@@ -40,3 +41,4 @@ format:
     code-fold: true
     lightbox: true # abrir imagens popup
 
+google-scholar: true

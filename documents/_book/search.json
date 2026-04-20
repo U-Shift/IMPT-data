@@ -543,5 +543,45 @@
     "crumbs": [
       "References"
     ]
+  },
+  {
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": "About",
+    "section": "",
+    "text": "Authors\nThis research was conducted by the U-Shift Lab at Instituto Superior Técnico - University of Lisbon, in collaboration with the Transportes Metropolitanos de Lisboa (TML).",
+    "crumbs": [
+      "About"
+    ]
+  },
+  {
+    "objectID": "about.html#authors",
+    "href": "about.html#authors",
+    "title": "About",
+    "section": "",
+    "text": "U-Shift Lab, Instituto Superior Técnico\n\nFilipe Moura – Principal Investigator\nfmoura@tecnico.pt | Website | ORCID: 0000-0001-7749-8490\nRosa Félix – Co-Principal Investigator\nrosamfelix@tecnico.pt | Website | ORCID: 0000-0002-5642-6006\nMauricio Orozco-Fontalvo\nmauricio.orozco@tecnico.pt | Website | ORCID: 0000-0003-0514-4647\nGonçalo Matos\ngoncaloafmatos@tecnico.pt | Website | ORCID: 0009-0001-3489-1732\nMiguel Alvelos – Project Collaborator\nMargarida Pimentel – Project Collaborator\n\n\n\nTransportes Metropolitanos de Lisboa (TML)\n\nCamila Garcia – Departamento de Estudos e Planeamento Email: camila.garcia@tmlmobilidade.pt | ORCID: 0000-0002-1114-0979\nCatarina Marcelino – Departamento de Estudos e Planeamento\nEmail: catarina.marcelino@tmlmobilidade.pt",
+    "crumbs": [
+      "About"
+    ]
+  },
+  {
+    "objectID": "about.html#cite-as",
+    "href": "about.html#cite-as",
+    "title": "About",
+    "section": "Cite as",
+    "text": "Cite as\n@book{impt_report_2026,\n  author    = {Orozco-Fontalvo, Mauricio and Félix, Rosa and Matos, Gonçalo and Moura, Filipe and Garcia, Camila},\n  title     = {IMPT — Índice Multidimensional e Multimodal de Pobreza nos Transportes: methodological report},\n  year      = {2026},\n  month     = {April},\n  publisher = {U-Shift Lab, Instituto Superior Técnico - University of Lisbon, Lisbon},\n  url       = {https://u-shift.github.io/IMPT-data},\n  doi       = {10.5281/zenodo.XXXXX}\n}",
+    "crumbs": [
+      "About"
+    ]
+  },
+  {
+    "objectID": "about.html#funding",
+    "href": "about.html#funding",
+    "title": "About",
+    "section": "Funding",
+    "text": "Funding\nThis research was funded by Science4Policy [continue…]",
+    "crumbs": [
+      "About"
+    ]
   }
 ]
