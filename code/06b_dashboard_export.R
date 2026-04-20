@@ -233,6 +233,12 @@ grid_aggregated <- grid_aggregated |>
   left_join(
     grid_safety_inner |>
       rename(id = grid_id) |>
+      mutate(
+        veh_car_per = veh_motorizado / total_veiculos,
+        veh_bike_per = veh_bicicleta / total_veiculos,
+        veh_walk_per = veh_peoes / total_veiculos
+      ) |>
+      rename(veh_per = total_veiculos) |>
       rename(total_veiculos_car = veh_motorizado, total_veiculos_bike = veh_bicicleta, total_veiculos_walk = veh_peoes) |>
       rename_with(~ paste0("safety_inner_", .), -id),
     by = "id"
@@ -395,6 +401,12 @@ freguesias_aggregated <- freguesias_aggregated |>
     freguesia_safety_inner |>
       rename(id = freg_id) |>
       mutate(id = as.character(id)) |>
+      mutate(
+        veh_car_per = veh_motorizado / total_veiculos,
+        veh_bike_per = veh_bicicleta / total_veiculos,
+        veh_walk_per = veh_peoes / total_veiculos
+      ) |>
+      rename(veh_per = total_veiculos) |>
       rename(total_veiculos_car = veh_motorizado, total_veiculos_bike = veh_bicicleta, total_veiculos_walk = veh_peoes) |>
       rename_with(~ paste0("safety_inner_", .), -id),
     by = "id"
@@ -566,6 +578,12 @@ municipios_aggregated <- municipios_aggregated |>
   left_join(
     municipio_safety_inner |>
       rename(id = mun_id) |>
+      mutate(
+        veh_car_per = veh_motorizado / total_veiculos,
+        veh_bike_per = veh_bicicleta / total_veiculos,
+        veh_walk_per = veh_peoes / total_veiculos
+      ) |>
+      rename(veh_per = total_veiculos) |>
       rename(total_veiculos_car = veh_motorizado, total_veiculos_bike = veh_bicicleta, total_veiculos_walk = veh_peoes) |>
       rename_with(~ paste0("safety_inner_", .), -id),
     by = "id"
