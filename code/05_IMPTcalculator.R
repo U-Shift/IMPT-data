@@ -109,7 +109,9 @@ freguesias_mobility <- impt_read("/mobility_commuting/freguesia_commuting.csv") 
     mobility_transit_weighted_waiting_time_peak,
     # Night/weekend service availability
     mobility_transit_weighted_frequency_reduction_night, mobility_transit_weighted_frequency_reduction_weekend
-  )
+  ) |>
+  mutate(dtmnfr = as.integer(id)) |>
+  select(-id)
 
 # Transit headways
 freguesias_headways <- impt_read("/mobility_transit/freguesias_headways.csv") |>
@@ -243,7 +245,7 @@ Affordability_Norm_singlefare <- Affordability_singlefare |>
 
 Safety_Norm <- Safety |>
   mutate(across(!dtmnfr, ~ normalize_cost(.x)))
-  # mutate(across(!dtmnfr, ~ normalize_benefit(.x))) # inverted - temporary fix
+# mutate(across(!dtmnfr, ~ normalize_benefit(.x))) # inverted - temporary fix
 
 
 # ── 3.2 Per-mode normalised datasets ──────────────────────────────────────────
@@ -407,9 +409,9 @@ pca_pt_mobility <- PCA(Mobility_pt_Norm, quali.sup = 1, graph = FALSE)
 pca_bike_mobility <- PCA(Mobility_bike_Norm, quali.sup = 1, graph = FALSE)
 pca_walk_mobility <- PCA(Mobility_walk_Norm, quali.sup = 1, graph = FALSE)
 
-pca_car_safety <- PCA(Safety_car_Norm |> select(-veh_motorizado), quali.sup = 1, graph = FALSE)
-pca_bike_safety <- PCA(Safety_bike_Norm |> select(-veh_bicicleta), quali.sup = 1, graph = FALSE)
-pca_walk_safety <- PCA(Safety_walk_Norm |> select(-veh_peoes), quali.sup = 1, graph = FALSE)
+# pca_car_safety <- PCA(Safety_car_Norm |> select(-veh_motorizado), quali.sup = 1, graph = FALSE)
+# pca_bike_safety <- PCA(Safety_bike_Norm |> select(-veh_bicicleta), quali.sup = 1, graph = FALSE)
+# pca_walk_safety <- PCA(Safety_walk_Norm |> select(-veh_peoes), quali.sup = 1, graph = FALSE)
 
 # Per-mode accessibility scores
 acc_car_scores <- data.frame(
@@ -463,21 +465,21 @@ mob_walk_scores <- data.frame(
 saf_car_scores <- Safety_car_Norm |>
   mutate(
     # indice_gravidade_carro = 100 - indice_gravidade_carro, # inverted temporary fix
-    Safety_Index = indice_gravidade_carro * 0.5 + veh_motorizado * 0.5
+    Safety_Index = indice_gravidade_carro * 0.5 + veh_motorizado_per * 0.5
   ) |>
   select(dtmnfr, Safety_Index)
 
 saf_bike_scores <- Safety_bike_Norm |>
   mutate(
     # indice_gravidade_bicicleta = 100 - indice_gravidade_bicicleta, # inverted temporary fix
-    Safety_Index = indice_gravidade_bicicleta * 0.5 + veh_bicicleta * 0.5
+    Safety_Index = indice_gravidade_bicicleta * 0.5 + veh_bicicleta_per * 0.5
   ) |>
   select(dtmnfr, Safety_Index)
 
 saf_walk_scores <- Safety_walk_Norm |>
   mutate(
     # indice_gravidade_peoes = 100 - indice_gravidade_peoes, # inverted temporary fix
-    Safety_Index = indice_gravidade_peoes * 0.5 + veh_peoes * 0.5
+    Safety_Index = indice_gravidade_peoes * 0.5 + veh_peoes_per * 0.5
   ) |>
   select(dtmnfr, Safety_Index)
 
@@ -495,10 +497,10 @@ pca_list <- list(
   Mobility_car       = pca_car_mobility,
   Mobility_pt        = pca_pt_mobility,
   Mobility_bike      = pca_bike_mobility,
-  Mobility_walk      = pca_walk_mobility,
-  Safety_car         = pca_car_safety,
-  Safety_bike        = pca_bike_safety,
-  Safety_walk        = pca_walk_safety
+  Mobility_walk      = pca_walk_mobility
+  # Safety_car         = pca_car_safety,
+  # Safety_bike        = pca_bike_safety,
+  # Safety_walk        = pca_walk_safety
 )
 
 get_pca_diagnostics <- function(pca_obj, name) {
