@@ -4,38 +4,47 @@
 
 Final results are stored in three geographic formats for each spatial level:
 
-| Level | Format | Variables |
+| Level | Formats | Variables |
 |-------|--------|-----------|
 | Parish (*freguesia*) | CSV + GeoPackage | All dimension scores + IMPT scores |
-| Municipality (*município*) | CSV + GeoPackage | Population-weighted means |
-| H3 Grid | CSV + GeoPackage | Assigned from host parish |
+| Municipality (*município*) | CSV + GeoPackage | Population-weighted means + IMPT scores |
+| H3 Grid | CSV + GeoPackage | Assigned from host parish + Computed at grid level when makes sense |
 
 : Output file formats {#tbl-output}
 
-Results are uploaded to the project data server at `https://impt.server.ushift.pt`, to the ushift server at `https://ushift.tecnico.ulisboa.pt/content/impt/`, and to the GitHub release using `piggyback`.
+Results are uploaded to the project data server at `https://impt.server.ushift.pt`, to the ushift server at `https://ushift.tecnico.ulisboa.pt/content/impt/`, and to the GitHub release using `piggyback` (TBC when drafting release).
 
 ## Dashboard Export {#sec-dashboard}
 
-**Script:** [`06b_dashboard_export.R`](https://github.com/U-Shift/IMPT-data/blob/main/code/06b_dashboard_export.R)
+The dashboard export process consists of two main steps:
 
-The dashboard export script joins all indicator tables (accessibility, mobility, affordability, safety, census/land use, IMPT scores) with the spatial geometry files and exports them as three aggregated **GeoJSON** files for direct use in the web dashboard:
+1.  **Data Loading:** [`06a_results_load.R`](https://github.com/U-Shift/IMPT-data/blob/main/code/06a_results_load.R)
+    This script loads and prepares all indicator results (accessibility, mobility, safety, etc.) across the three spatial levels.
+
+2.  **Joining and Export:** [`06b_dashboard_export.R`](https://github.com/U-Shift/IMPT-data/blob/main/code/06b_dashboard_export.R)
+    This script joins the prepared indicator tables and all the relevant metrics with the spatial geometry files and exports them as three aggregated **GeoJSON** files for direct use in the web dashboard:
 
 - `grid_aggregated.geojson`
 - `freguesias_aggregated.geojson`
 - `municipios_aggregated.geojson`
 
-A champions lookup file (`champions.json`) is also exported, identifying the **top contributing indicators** to each dimension's PC1, for display in the dashboard sidebar.
+A champions lookup file (`champions.json`) is also exported, identifying the **top contributing indicators** to each dimension's PC1 score, for display in the dashboard sidebar.
 
 ## Web Dashboard
 
 The IMPT results are visualised in an interactive web dashboard built with **React + TypeScript + Vite**, using **Leaflet/MapLibre** for map rendering. The dashboard is available at:
 
-> [ushift.pt/apps/impt](https://ushift.pt/apps/impt)
+<div style="font-size: 1.5em; text-align: center; margin: 1em 0;">
+[ushift.pt/apps/impt](https://ushift.pt/apps/impt)
+</div>
 
-The dashboard supports:
+The dashboard provides a comprehensive suite of features for exploring the data:
 
-- Map visualisation by metric, mode, and geographic level
-- Metric cards with legend, description, and top contributor indicators
-- Dynamic IMPT score computation with user-defined dimension weights
-- PT fare scenario switching (single fare vs. Navegante pass)
-- Download results and indicators as CSV and GeoJSON
+- **Multi-scale Map Visualisation:** Explore indicators by geographic level (Grid, Parish, Municipality), transport mode (Car, PT, Bike, Walk), and specific land-use and socio-demographic variables.
+- **Composite Index Aggregation:** Switch between different IMPT calculation methods, including equal weights, critical (geometric mean), contrasting (entropy), or dynamic user-defined weights.
+- **AHP Weighting Methodology:** Built-in Analytic Hierarchy Process (AHP) survey to help users mathematically derive optimal, consistent dimension weights for the dynamic IMPT score.
+- **PT Fare Scenarios:** Toggle between single-fare and Navegante pass scenarios to immediately see their impact on affordability.
+- **Area Profiling:** Detailed side-panels showing regional contrasts, subarea dynamics, and modal share profiles for the selected geographic unit.
+- **Contextual and Land Use Layers:** View built area classifications, population density, and demographic ratios alongside mobility metrics.
+- **Accessibility & UI:** Colorblind mode, light/dark theme toggles, and switchable base maps (Simplified, Satellite, OpenStreetMap).
+- **Open Data:** Direct download of all the results and indicators as CSV and GeoJSON.

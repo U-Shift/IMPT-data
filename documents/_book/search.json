@@ -451,7 +451,7 @@
     "href": "output_dashboard.html",
     "title": "11  Output and Dashboard",
     "section": "",
-    "text": "11.1 Output Files\nFinal results are stored in three geographic formats for each spatial level:\nResults are uploaded to the project data server at https://impt.server.ushift.pt, to the ushift server at https://ushift.tecnico.ulisboa.pt/content/impt/, and to the GitHub release using piggyback.",
+    "text": "11.1 Output Files\nFinal results are stored in three geographic formats for each spatial level:\nResults are uploaded to the project data server at https://impt.server.ushift.pt, to the ushift server at https://ushift.tecnico.ulisboa.pt/content/impt/, and to the GitHub release using piggyback (TBC when drafting release).",
     "crumbs": [
       "**Dashboard and Reproducibility**",
       "<span class='chapter-number'>11</span>  <span class='chapter-title'>Output and Dashboard</span>"
@@ -462,7 +462,7 @@
     "href": "output_dashboard.html#output-files",
     "title": "11  Output and Dashboard",
     "section": "",
-    "text": "Table 11.1: Output file formats\n\n\n\n\n\n\n\n\n\n\nLevel\nFormat\nVariables\n\n\n\n\nParish (freguesia)\nCSV + GeoPackage\nAll dimension scores + IMPT scores\n\n\nMunicipality (município)\nCSV + GeoPackage\nPopulation-weighted means\n\n\nH3 Grid\nCSV + GeoPackage\nAssigned from host parish",
+    "text": "Table 11.1: Output file formats\n\n\n\n\n\n\n\n\n\n\nLevel\nFormats\nVariables\n\n\n\n\nParish (freguesia)\nCSV + GeoPackage\nAll dimension scores + IMPT scores\n\n\nMunicipality (município)\nCSV + GeoPackage\nPopulation-weighted means + IMPT scores\n\n\nH3 Grid\nCSV + GeoPackage\nAssigned from host parish + Computed at grid level when makes sense",
     "crumbs": [
       "**Dashboard and Reproducibility**",
       "<span class='chapter-number'>11</span>  <span class='chapter-title'>Output and Dashboard</span>"
@@ -473,7 +473,7 @@
     "href": "output_dashboard.html#sec-dashboard",
     "title": "11  Output and Dashboard",
     "section": "11.2 Dashboard Export",
-    "text": "11.2 Dashboard Export\nScript: 06b_dashboard_export.R\nThe dashboard export script joins all indicator tables (accessibility, mobility, affordability, safety, census/land use, IMPT scores) with the spatial geometry files and exports them as three aggregated GeoJSON files for direct use in the web dashboard:\n\ngrid_aggregated.geojson\nfreguesias_aggregated.geojson\nmunicipios_aggregated.geojson\n\nA champions lookup file (champions.json) is also exported, identifying the top contributing indicators to each dimension’s PC1, for display in the dashboard sidebar.",
+    "text": "11.2 Dashboard Export\nThe dashboard export process consists of two main steps:\n\nData Loading: 06a_results_load.R This script loads and prepares all indicator results (accessibility, mobility, safety, etc.) across the three spatial levels.\nJoining and Export: 06b_dashboard_export.R This script joins the prepared indicator tables and all the relevant metrics with the spatial geometry files and exports them as three aggregated GeoJSON files for direct use in the web dashboard:\n\n\ngrid_aggregated.geojson\nfreguesias_aggregated.geojson\nmunicipios_aggregated.geojson\n\nA champions lookup file (champions.json) is also exported, identifying the top contributing indicators to each dimension’s PC1 score, for display in the dashboard sidebar.",
     "crumbs": [
       "**Dashboard and Reproducibility**",
       "<span class='chapter-number'>11</span>  <span class='chapter-title'>Output and Dashboard</span>"
@@ -484,7 +484,7 @@
     "href": "output_dashboard.html#web-dashboard",
     "title": "11  Output and Dashboard",
     "section": "11.3 Web Dashboard",
-    "text": "11.3 Web Dashboard\nThe IMPT results are visualised in an interactive web dashboard built with React + TypeScript + Vite, using Leaflet/MapLibre for map rendering. The dashboard is available at:\n\nushift.pt/apps/impt\n\nThe dashboard supports:\n\nMap visualisation by metric, mode, and geographic level\nMetric cards with legend, description, and top contributor indicators\nDynamic IMPT score computation with user-defined dimension weights\nPT fare scenario switching (single fare vs. Navegante pass)\nDownload results and indicators as CSV and GeoJSON",
+    "text": "11.3 Web Dashboard\nThe IMPT results are visualised in an interactive web dashboard built with React + TypeScript + Vite, using Leaflet/MapLibre for map rendering. The dashboard is available at:\n\nushift.pt/apps/impt\n\nThe dashboard provides a comprehensive suite of features for exploring the data:\n\nMulti-scale Map Visualisation: Explore indicators by geographic level (Grid, Parish, Municipality), transport mode (Car, PT, Bike, Walk), and specific land-use and socio-demographic variables.\nComposite Index Aggregation: Switch between different IMPT calculation methods, including equal weights, critical (geometric mean), contrasting (entropy), or dynamic user-defined weights.\nAHP Weighting Methodology: Built-in Analytic Hierarchy Process (AHP) survey to help users mathematically derive optimal, consistent dimension weights for the dynamic IMPT score.\nPT Fare Scenarios: Toggle between single-fare and Navegante pass scenarios to immediately see their impact on affordability.\nArea Profiling: Detailed side-panels showing regional contrasts, subarea dynamics, and modal share profiles for the selected geographic unit.\nContextual and Land Use Layers: View built area classifications, population density, and demographic ratios alongside mobility metrics.\nAccessibility & UI: Colorblind mode, light/dark theme toggles, and switchable base maps (Simplified, Satellite, OpenStreetMap).\nOpen Data: Direct download of all the results and indicators as CSV and GeoJSON.",
     "crumbs": [
       "**Dashboard and Reproducibility**",
       "<span class='chapter-number'>11</span>  <span class='chapter-title'>Output and Dashboard</span>"
