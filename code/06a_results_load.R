@@ -22,9 +22,9 @@ freguesia_transfers <- impt_read("/mobility_commuting/freguesia_transfers.csv")
 municipio_transfers <- impt_read("/mobility_commuting/municipio_transfers.csv")
 grid_transfers <- impt_read("/mobility_commuting/grid_transfers.csv")
 
-freguesia_stop_coverage <- impt_read("/mobility/freguesias_stops_coverage.csv")
-municipio_stop_coverage <- impt_read("/mobility/municipios_stops_coverage.csv")
-grid_stop_coverage <- impt_read("/mobility/grid_stops_coverage.csv")
+freguesia_stop_coverage <- impt_read("/mobility/freguesias_pop_stops_coverage.csv")
+municipio_stop_coverage <- impt_read("/mobility/municipios_pop_stops_coverage.csv")
+grid_stop_coverage <- impt_read("/mobility/grid_pop_stops_coverage.csv")
 
 freguesia_shared_mobility <- impt_read("/mobility/freguesias_shared_mobility.csv")
 municipio_shared_mobility <- impt_read("/mobility/municipios_shared_mobility.csv")

@@ -333,9 +333,7 @@ freguesias_aggregated <- freguesias_aggregated |>
   ) |>
   left_join(
     freguesia_stop_coverage |>
-      select(-X) |>
-      left_join(freg_nuts |> select(id, freguesia), by = "freguesia") |>
-      select(-freguesia) |>
+      rename(id = dtmnfr) |>
       mutate(id = as.character(id)) |>
       rename_with(~ paste0("mobility_stop_coverage_", .), -id),
     by = "id"
@@ -727,6 +725,8 @@ impt_write(json_str, paste(output_dir, "champions.json", sep = "/"))
 length(names(grid_aggregated)) # 831
 length(names(freguesias_aggregated)) # 1057
 length(names(municipios_aggregated)) # 1048
+
+# freguesias_aggregated <- impt_read("/dashboard_data/freguesias_aggregated.csv")
 
 municipio_names <- names(municipios_aggregated) |> data.frame()
 freguesia_names <- names(freguesias_aggregated) |> data.frame()
