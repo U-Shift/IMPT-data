@@ -166,8 +166,8 @@ grid_aggregated <- grid_aggregated |>
   left_join(
     grid_transit |>
       mutate(
-        frequency_ratio_peak_night = total_frequency_night/total_frequency_peak,
-        frequency_ratio_peak_weekend = total_frequency_weekend/total_frequency_peak
+        frequency_ratio_peak_night = total_frequency_night / total_frequency_peak,
+        frequency_ratio_peak_weekend = total_frequency_weekend / total_frequency_peak
       ) |>
       rename_with(~ paste0("mobility_transit_", .), -id),
     by = "id"
@@ -321,8 +321,8 @@ freguesias_aggregated <- freguesias_aggregated |>
       rename(id = dtmnfr) |>
       mutate(id = as.character(id)) |>
       mutate(
-        frequency_ratio_peak_night = total_frequency_night/total_frequency_peak,
-        frequency_ratio_peak_weekend = total_frequency_weekend/total_frequency_peak
+        frequency_ratio_peak_night = total_frequency_night / total_frequency_peak,
+        frequency_ratio_peak_weekend = total_frequency_weekend / total_frequency_peak
       ) |>
       rename_with(~ paste0("mobility_transit_", .), -id),
     by = "id"
@@ -500,8 +500,8 @@ municipios_aggregated <- municipios_aggregated |>
       left_join(mun_nuts |> select(id, municipio), by = "municipio") |>
       select(-municipio) |>
       mutate(
-        frequency_ratio_peak_night = total_frequency_night/total_frequency_peak,
-        frequency_ratio_peak_weekend = total_frequency_weekend/total_frequency_peak
+        frequency_ratio_peak_night = total_frequency_night / total_frequency_peak,
+        frequency_ratio_peak_weekend = total_frequency_weekend / total_frequency_peak
       ) |>
       rename_with(~ paste0("mobility_transit_", .), -id),
     by = "id"
@@ -702,7 +702,7 @@ for (mode in modes) {
 dimensions <- c("Accessibility", "Mobility", "Safety")
 champions <- data.frame()
 for (d in dimensions) {
-  content <- impt_read(paste("/impt/pca_scores/Champions_", d, ".csv", sep = "")) |>
+  content <- impt_read(paste("/impt/pca_scores/Champions_", d, ".csv", sep = ""), delim = ",") |>
     mutate(position = row_number()) |>
     select(-Contribution) |>
     rename(metric = Indicator)
