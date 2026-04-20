@@ -466,21 +466,21 @@ mob_walk_scores <- data.frame(
 saf_car_scores <- Safety_car_Norm |>
   mutate(
     # indice_gravidade_carro = 100 - indice_gravidade_carro, # inverted temporary fix
-    Safety_Index = indice_gravidade_carro * 0.5 + veh_motorizado_per * 0.5
+    Safety_Index = indice_gravidade_carro * 0.5 + veh_motorizado * 0.5 # use total instead of percentage
   ) |>
   select(dtmnfr, Safety_Index)
 
 saf_bike_scores <- Safety_bike_Norm |>
   mutate(
     # indice_gravidade_bicicleta = 100 - indice_gravidade_bicicleta, # inverted temporary fix
-    Safety_Index = indice_gravidade_bicicleta * 0.5 + veh_bicicleta_per * 0.5
+    Safety_Index = indice_gravidade_bicicleta * 0.5 + veh_bicicleta * 0.5
   ) |>
   select(dtmnfr, Safety_Index)
 
 saf_walk_scores <- Safety_walk_Norm |>
   mutate(
     # indice_gravidade_peoes = 100 - indice_gravidade_peoes, # inverted temporary fix
-    Safety_Index = indice_gravidade_peoes * 0.5 + veh_peoes_per * 0.5
+    Safety_Index = indice_gravidade_peoes * 0.5 + veh_peoes * 0.5
   ) |>
   select(dtmnfr, Safety_Index)
 
