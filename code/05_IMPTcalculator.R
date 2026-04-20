@@ -244,6 +244,9 @@ Affordability_Norm_singlefare <- Affordability_singlefare |>
   mutate(across(!dtmnfr, ~ normalize_cost(.x)))
 
 Safety_Norm <- Safety |>
+  select(-c("indice_gravidade_carro", "indice_gravidade_bicicleta", "indice_gravidade_peoes")) |>
+  select(-c("veh_motorizado_per", "veh_bicicleta_per", "veh_peoes_per")) |>
+  select(-c("veh_motorizado", "veh_bicicleta", "veh_peoes")) |>
   mutate(across(!dtmnfr, ~ normalize_cost(.x)))
 # mutate(across(!dtmnfr, ~ normalize_benefit(.x))) # inverted - temporary fix
 
@@ -362,9 +365,7 @@ champions <- function(pca_obj, dim = 1, n = 10) {
 
 pca_access <- PCA(Accessibility_Norm, quali.sup = 1, graph = FALSE)
 pca_mobility <- PCA(Mobility_Norm, quali.sup = 1, graph = FALSE)
-pca_safety <- PCA(Safety_Norm |> select(-total_veiculos, -veh_motorizado, -veh_bicicleta, -veh_peoes),
-  quali.sup = 1, graph = FALSE
-)
+pca_safety <- PCA(Safety_Norm, quali.sup = 1, graph = FALSE) #|> select(-total_veiculos, -veh_motorizado, -veh_bicicleta, -veh_peoes)
 
 # Extract global dimension scores (PC1, rescaled to [1, 100])
 acc_scores <- data.frame(
