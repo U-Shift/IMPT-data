@@ -7,41 +7,61 @@
 %%| label: fig-calculator-flow
 %%| fig-cap: "IMPT index computation pipeline"
 flowchart TB
+    %% Nodes
+    AccIn["Accessibility indicators"]
+    MobIn["Mobility indicators"]
+    AffIn["Affordability indicators<br>(two fare scenarios)"]
+    SafIn["Safety indicators"]
+    
+    Ben["Benefit indicators<br>min→1, max→100<br>normalize_benefit()"]
+    Cost["Cost indicators<br>min→100, max→1<br>normalize_cost()"]
+    
+    Run["FactoMineR::PCA()<br>extract PC1 scores"]
+    Scale["Rescale PC1 to [1,100]<br>scale_0_100()"]
+    Direction["Validate direction:<br>check correlation with<br>top indicator"]
+    
+    Geom["Geometric mean<br>(Acc * Mob * Aff * Safety)^0.25"]
+    EntrW["Entropy-weighted mean<br>compute_entropy_weights()"]
+    Simple["Simple arithmetic mean<br>(Acc + Mob + Aff + Safety) / 4"]
+    
+    SpatialAgg["Population weighted<br>aggregation"]
+    Out["Final IMPT scores:<br>freiguesia, municipality, grid<br>× global and per mode"]
+
+    %% Connections
     subgraph Inputs["Input Dimension Tables (by parish)"]
-        AccIn["Accessibility indicators"]
-        MobIn["Mobility indicators"]
-        AffIn["Affordability indicators<br/>(two fare scenarios)"]
-        SafIn["Safety indicators"]
+        direction TB
+        AccIn ~~~ MobIn ~~~ AffIn ~~~ SafIn
     end
     
     Inputs --> Normalise
     
     subgraph Normalise["Normalisation to [1,100]"]
-        direction TB
-        Ben["Benefit indicators<br/>min→1, max→100<br/>normalize_benefit()"]
-        Cost["Cost indicators<br/>min→100, max→1<br/>normalize_cost()"]
+        direction LR
+        Ben ~~~ Cost
     end
     
     Normalise --> PCA
     
     subgraph PCA["PCA per dimension (global & per mode)"]
-        direction TB
-        Run["FactoMineR::PCA()<br/>extract PC1 scores"]
-        Scale["Rescale PC1 to [1,100]<br/>scale_0_100()"]
-        Direction["Validate direction:<br/>check correlation with<br/>top indicator"]
+        direction LR
+        Run ~~~ Scale ~~~ Direction
     end
     
     PCA --> Composite
     
     subgraph Composite["Composite IMPT Score"]
-        direction TB
-        Geom["Geometric mean<br/>(Acc × Mob × Aff × Safety)^(1/4)"]
-        EntrW["Entropy-weighted geometric mean<br/>compute_entropy_weights()"]
-        Simple["Simple arithmetic mean<br/>(Acc + Mob + Aff + Safety) / 4"]
+        direction LR
+        Geom ~~~ EntrW ~~~ Simple
     end
     
-    Composite --> Agg["Population-weighted aggregation<br/>to municipality and grid levels"]
-    Agg --> Out["Final IMPT scores:<br/>freiguesia, municipality, grid<br/>× global and per mode"]
+    Composite --> SpatialAgg
+    SpatialAgg --> Out
+
+    %% Subgraph styling
+    style Inputs fill:#f8f9fa,stroke:#adb5bd,stroke-width:1px,color:#212529
+    style Normalise fill:#f8f9fa,stroke:#adb5bd,stroke-width:1px,color:#212529
+    style PCA fill:#f8f9fa,stroke:#adb5bd,stroke-width:1px,color:#212529
+    style Composite fill:#f8f9fa,stroke:#adb5bd,stroke-width:1px,color:#212529
 ```
 
 ## Normalisation {#sec-normalisation}
@@ -54,7 +74,7 @@ $$X_{norm} = 1 + \frac{X - X_{min}}{X_{max} - X_{min}} \times 99$$
 **Cost indicators** (lower raw value → better):
 $$X_{norm} = 1 + \frac{X_{max} - X}{X_{max} - X_{min}} \times 99$$
 
-Accessibility metrics (`access_*`) are benefit indicators; mobility cost metrics (`mobility_cost_*`), PT waiting times, and all affordability indicators are cost indicators.
+Accessibility metrics (`access_*`) are benefit indicators; mobility cost metrics (`mobility_cost_*`), PT waiting times, all affordability indicators, and all safety indicators are cost indicators.
 
 Missing values in accessibility indicators (arising from infeasible PT routes) are imputed with the mean of the respective variable prior to PCA.
 
@@ -66,7 +86,7 @@ The **first principal component (PC1)** score is used as the dimension index, af
 
 For **Affordability**, PCA is not applied (too few indicators); instead, the normalised composite `h_transp_inc_comp` (housing + transport cost as share of income, modal-share weighted) is used directly as the Affordability Index.
 
-For **Safety per mode**, an equal-weight average of the severity index (inverted) and frequency (vehicle involvement count) is used instead of PCA.
+For **Safety per mode**, an equal-weight average of the severity index and frequency (vehicle involvement count) is used instead of PCA.
 
 ## Composite IMPT Scores {#sec-composite}
 

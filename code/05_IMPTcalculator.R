@@ -242,8 +242,8 @@ Affordability_Norm_singlefare <- Affordability_singlefare |>
   mutate(across(!dtmnfr, ~ normalize_cost(.x)))
 
 Safety_Norm <- Safety |>
-  # mutate(across(!dtmnfr, ~ normalize_cost(.x)))
-  mutate(across(!dtmnfr, ~ normalize_benefit(.x)))
+  mutate(across(!dtmnfr, ~ normalize_cost(.x)))
+  # mutate(across(!dtmnfr, ~ normalize_benefit(.x))) # inverted - temporary fix
 
 
 # ── 3.2 Per-mode normalised datasets ──────────────────────────────────────────
@@ -303,12 +303,12 @@ Affordability_car_Norm <- Affordability_car |> mutate(across(!dtmnfr, ~ normaliz
 Affordability_pt_Norm_navegante <- Affordability_pt_navegante |> mutate(across(!dtmnfr, ~ normalize_cost(.x)))
 Affordability_pt_Norm_singlefare <- Affordability_pt_singlefare |> mutate(across(!dtmnfr, ~ normalize_cost(.x)))
 
-# Safety_car_Norm <- Safety_car |> mutate(across(!dtmnfr, ~ normalize_cost(.x)))
-# Safety_bike_Norm <- Safety_bike |> mutate(across(!dtmnfr, ~ normalize_cost(.x)))
-# Safety_walk_Norm <- Safety_walk |> mutate(across(!dtmnfr, ~ normalize_cost(.x)))
-Safety_car_Norm <- Safety_car |> mutate(across(!dtmnfr, ~ normalize_benefit(.x)))
-Safety_bike_Norm <- Safety_bike |> mutate(across(!dtmnfr, ~ normalize_benefit(.x)))
-Safety_walk_Norm <- Safety_walk |> mutate(across(!dtmnfr, ~ normalize_benefit(.x)))
+Safety_car_Norm <- Safety_car |> mutate(across(!dtmnfr, ~ normalize_cost(.x)))
+Safety_bike_Norm <- Safety_bike |> mutate(across(!dtmnfr, ~ normalize_cost(.x)))
+Safety_walk_Norm <- Safety_walk |> mutate(across(!dtmnfr, ~ normalize_cost(.x)))
+# Safety_car_Norm <- Safety_car |> mutate(across(!dtmnfr, ~ normalize_benefit(.x))) # inverted - temporary fix
+# Safety_bike_Norm <- Safety_bike |> mutate(across(!dtmnfr, ~ normalize_benefit(.x)))
+# Safety_walk_Norm <- Safety_walk |> mutate(across(!dtmnfr, ~ normalize_benefit(.x)))
 
 
 # ── 3.4 Export normalised datasets ────────────────────────────────────────────
@@ -462,21 +462,21 @@ mob_walk_scores <- data.frame(
 # NOTE: severity index is inverted because it is already normalised as "cost"
 saf_car_scores <- Safety_car_Norm |>
   mutate(
-    indice_gravidade_carro = 100 - indice_gravidade_carro,
+    # indice_gravidade_carro = 100 - indice_gravidade_carro, # inverted temporary fix
     Safety_Index = indice_gravidade_carro * 0.5 + veh_motorizado * 0.5
   ) |>
   select(dtmnfr, Safety_Index)
 
 saf_bike_scores <- Safety_bike_Norm |>
   mutate(
-    indice_gravidade_bicicleta = 100 - indice_gravidade_bicicleta,
+    # indice_gravidade_bicicleta = 100 - indice_gravidade_bicicleta, # inverted temporary fix
     Safety_Index = indice_gravidade_bicicleta * 0.5 + veh_bicicleta * 0.5
   ) |>
   select(dtmnfr, Safety_Index)
 
 saf_walk_scores <- Safety_walk_Norm |>
   mutate(
-    indice_gravidade_peoes = 100 - indice_gravidade_peoes,
+    # indice_gravidade_peoes = 100 - indice_gravidade_peoes, # inverted temporary fix
     Safety_Index = indice_gravidade_peoes * 0.5 + veh_peoes * 0.5
   ) |>
   select(dtmnfr, Safety_Index)
