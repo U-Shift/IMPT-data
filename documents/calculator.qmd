@@ -74,13 +74,13 @@ $$X_{norm} = 1 + \frac{X - X_{min}}{X_{max} - X_{min}} \times 99$$
 **Cost indicators** (lower raw value → better):
 $$X_{norm} = 1 + \frac{X_{max} - X}{X_{max} - X_{min}} \times 99$$
 
-Accessibility metrics (`access_*`) are benefit indicators; mobility cost metrics (`mobility_cost_*`), PT waiting times, all affordability indicators, and all safety indicators are cost indicators.
+Accessibility metrics (`access_*`) are _benefit_ indicators; mobility cost metrics (`mobility_cost_*`), PT waiting times, all affordability indicators, and all safety indicators are _cost_ indicators.
 
 Missing values in accessibility indicators (arising from infeasible PT routes) are imputed with the mean of the respective variable prior to PCA.
 
 ## PCA-Based Dimension Scores {#sec-pca}
 
-For each dimension (Accessibility, Mobility, Safety) and at the global (all-mode) and per-mode levels, a PCA is run using `FactoMineR::PCA()` with `dtmnfr` (parish ID) as a supplementary qualitative variable.
+For each dimension (Accessibility, Mobility, Safety) and at the global (all-mode) and per-mode levels, a PCA is run using `FactoMineR::PCA()` at parish level.
 
 The **first principal component (PC1)** score is used as the dimension index, after rescaling to [1, 100]. PC1 captures the dominant axis of variation among the normalised indicators.
 
@@ -109,7 +109,7 @@ with $k = 1/\ln(n)$ and $p_{id}$ being the proportion of the dimension score for
 
 ## Spatial Aggregation {#sec-aggregation}
 
-Once scores are computed at parish level, they are aggregated to higher levels:
+Once scores are computed at parish level, they are aggregated to higher and lower levels:
 
 - **Municipality level:** population-weighted mean of parish scores.
 - **Grid level:** parishes are assigned to grid cells via the `grid_nuts.csv` cross-reference table; scores are assigned from the host parish (no further averaging at this stage).

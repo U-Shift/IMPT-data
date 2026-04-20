@@ -396,7 +396,7 @@
     "href": "calculator.html#sec-pca",
     "title": "9  Index Computation — IMPT Calculator",
     "section": "9.2 PCA-Based Dimension Scores",
-    "text": "9.2 PCA-Based Dimension Scores\nFor each dimension (Accessibility, Mobility, Safety) and at the global (all-mode) and per-mode levels, a PCA is run using FactoMineR::PCA() with dtmnfr (parish ID) as a supplementary qualitative variable.\nThe first principal component (PC1) score is used as the dimension index, after rescaling to [1, 100]. PC1 captures the dominant axis of variation among the normalised indicators.\nFor Affordability, PCA is not applied (too few indicators); instead, the normalised composite h_transp_inc_comp (housing + transport cost as share of income, modal-share weighted) is used directly as the Affordability Index.\nFor Safety per mode, an equal-weight average of the severity index and frequency (vehicle involvement count) is used instead of PCA.",
+    "text": "9.2 PCA-Based Dimension Scores\nFor each dimension (Accessibility, Mobility, Safety) and at the global (all-mode) and per-mode levels, a PCA is run using FactoMineR::PCA() at parish level.\nThe first principal component (PC1) score is used as the dimension index, after rescaling to [1, 100]. PC1 captures the dominant axis of variation among the normalised indicators.\nFor Affordability, PCA is not applied (too few indicators); instead, the normalised composite h_transp_inc_comp (housing + transport cost as share of income, modal-share weighted) is used directly as the Affordability Index.\nFor Safety per mode, an equal-weight average of the severity index and frequency (vehicle involvement count) is used instead of PCA.",
     "crumbs": [
       "**Dimensions and PCA**",
       "<span class='chapter-number'>9</span>  <span class='chapter-title'>Index Computation — IMPT Calculator</span>"
@@ -418,7 +418,7 @@
     "href": "calculator.html#sec-aggregation",
     "title": "9  Index Computation — IMPT Calculator",
     "section": "9.4 Spatial Aggregation",
-    "text": "9.4 Spatial Aggregation\nOnce scores are computed at parish level, they are aggregated to higher levels:\n\nMunicipality level: population-weighted mean of parish scores.\nGrid level: parishes are assigned to grid cells via the grid_nuts.csv cross-reference table; scores are assigned from the host parish (no further averaging at this stage).",
+    "text": "9.4 Spatial Aggregation\nOnce scores are computed at parish level, they are aggregated to higher and lower levels:\n\nMunicipality level: population-weighted mean of parish scores.\nGrid level: parishes are assigned to grid cells via the grid_nuts.csv cross-reference table; scores are assigned from the host parish (no further averaging at this stage).",
     "crumbs": [
       "**Dimensions and PCA**",
       "<span class='chapter-number'>9</span>  <span class='chapter-title'>Index Computation — IMPT Calculator</span>"
