@@ -258,7 +258,7 @@ ul.task-list li input[type="checkbox"] {
 
 
 <p><strong>Script:</strong> <a href="https://github.com/U-Shift/IMPT-data/blob/main/code/04_safety.R"><code>04_safety.R</code></a><br>
-<strong>Source:</strong> ANSR — Autoridade Nacional de Segurança Rodoviária, road accident georeferenced point data (2019–2023).</p>
+<strong>Source:</strong> ANSR — Autoridade Nacional de Segurança Rodoviária, road accident georeferenced point data (2019–2023) - <em>via PMUS TML 2025</em>.</p>
 <div class="cell" data-layout-align="default">
 <div class="cell-output-display">
 <div id="fig-safety-flow" class="quarto-float quarto-figure quarto-figure-center anchored">
@@ -266,33 +266,43 @@ ul.task-list li input[type="checkbox"] {
 <div aria-describedby="fig-safety-flow-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div>
 <pre class="mermaid mermaid-js" data-label="fig-safety-flow">flowchart TB
-    Acc["ANSR Road Accidents&lt;br/&gt;2019–2023&lt;br/&gt;(georeferenced points)"] --&gt; Filter
-    Pop["Census Population&lt;br/&gt;(parish and grid)"] --&gt; JoinPop
-    Geo["Geographic units&lt;br/&gt;(parishes, municipalities, H3 grid)"] --&gt; SJoin
+    Acc["ANSR Road Accidents&lt;br&gt;2019–2023&lt;br&gt;(georeferenced points)"]
+    Pop["Census Population&lt;br&gt;(parish and grid)"]
+    G1["Geographic units"]
     
-    Filter["Filter: last 5 years&lt;br/&gt;(2019–2023)"] --&gt; SJoin
-    SJoin["st_join: assign accidents&lt;br/&gt;to geographic units"] --&gt; ExcludeOuter["Exclude accidents&lt;br/&gt;outside built-up areas&lt;br/&gt;(ponts/bridges)"]
-    ExcludeOuter --&gt; Aggregate
+    Filter["Filter: last 5 years&lt;br&gt;(2019–2023)"]
+    SJoin["st_join: assign accidents&lt;br&gt;to geographic units"]
+    ExcludeOuter["Exclude accidents&lt;br&gt;outside localities&lt;br&gt;(freeways/bridges)"]
+    
+    Acc --&gt; Filter
+    Filter --&gt; SJoin
+    G1 --&gt; SJoin
+    SJoin --&gt; ExcludeOuter
     
     subgraph Aggregate["Aggregate per geographic unit"]
-        direction TB
-        TotalAcc["Total accidents (5 years)"] 
-        Victims["Victim counts:&lt;br/&gt;fatal, serious, slight (30-day)"]
-        Vehicles["Vehicles involved:&lt;br/&gt;motorised, cycle, pedestrian"]
-        Context["Context flags:&lt;br/&gt;at night, within localities"]
+        direction LR
+        A1["Total accidents (5 years)"] ~~~ A2["Victim counts:&lt;br&gt;fatal, serious, slight (30-day)"] ~~~ A3["Vehicles involved:&lt;br&gt;motorised, cycle, pedestrian"] ~~~ A4["Context flags:&lt;br&gt;at night, within localities"]
     end
     
-    Aggregate --&gt; JoinPop["Join census population"] --&gt; CalcIdx
+    ExcludeOuter --&gt; Aggregate
+    
+    JoinPop["Join census population"]
+    Aggregate --&gt; JoinPop
+    Pop --&gt; JoinPop
     
     subgraph CalcIdx["Compute indexes"]
-        direction TB
-        SevIdx["Severity index:&lt;br/&gt;fatalities / total victims"]
-        ModeIdx["Mode-specific severity:&lt;br/&gt;fatalities / vehicles involved (per mode)"]
-        Rate1000["Accident rate per 1,000 residents"]
-        FatalRate["Fatality rate per 1,000 residents"]
+        direction LR
+        C1["Severity index:&lt;br&gt;fatalities / total victims"] ~~~ C2["Mode-specific severity:&lt;br&gt;fatalities / vehicles involved"] ~~~ C3["Accident rate&lt;br&gt;per 1,000 residents"] ~~~ C4["Fatality rate&lt;br&gt;per 1,000 residents"]
     end
     
-    CalcIdx --&gt; BothSets["All accidents&lt;br/&gt;+&lt;br/&gt;Within-localities only"]
+    JoinPop --&gt; CalcIdx
+    
+    BothSets["All accidents&lt;br&gt;+&lt;br&gt;Within-localities only"]
+    CalcIdx --&gt; BothSets
+
+    %% Subgraph styling
+    style Aggregate fill:#f8f9fa,stroke:#adb5bd,stroke-width:1px,color:#212529
+    style CalcIdx fill:#f8f9fa,stroke:#adb5bd,stroke-width:1px,color:#212529
 </pre>
 </div>
 </div>

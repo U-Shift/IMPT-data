@@ -363,7 +363,7 @@
     "href": "safety.html",
     "title": "8  Safety",
     "section": "",
-    "text": "8.1 Accident data filtering\nScript: 04_safety.R\nSource: ANSR — Autoridade Nacional de Segurança Rodoviária, road accident georeferenced point data (2019–2023).\nAccidents located outside administrative parish boundaries are excluded. This includes accidents on major bridges (Ponte 25 de Abril, Ponte Vasco da Gama) which cannot be assigned to a parish. Only accidents reported as occurring within localities (dentro das localidades) are used for the IMPT normalisation.",
+    "text": "8.1 Accident data filtering\nScript: 04_safety.R\nSource: ANSR — Autoridade Nacional de Segurança Rodoviária, road accident georeferenced point data (2019–2023) - via PMUS TML 2025.\nAccidents located outside administrative parish boundaries are excluded. This includes accidents on major bridges (Ponte 25 de Abril, Ponte Vasco da Gama) which cannot be assigned to a parish. Only accidents reported as occurring within localities (dentro das localidades) are used for the IMPT normalisation.",
     "crumbs": [
       "**Dimensions and PCA**",
       "<span class='chapter-number'>8</span>  <span class='chapter-title'>Safety</span>"
@@ -385,7 +385,7 @@
     "href": "calculator.html",
     "title": "9  Index Computation — IMPT Calculator",
     "section": "",
-    "text": "9.1 Normalisation\nScript: 05_IMPTcalculator.R\nPackage: FactoMineR (PCA)\nAll indicators are normalised to the range [1, 100] using min-max scaling:\nBenefit indicators (higher raw value → better): \\[X_{norm} = 1 + \\frac{X - X_{min}}{X_{max} - X_{min}} \\times 99\\]\nCost indicators (lower raw value → better): \\[X_{norm} = 1 + \\frac{X_{max} - X}{X_{max} - X_{min}} \\times 99\\]\nAccessibility metrics (access_*) are benefit indicators; mobility cost metrics (mobility_cost_*), PT waiting times, and all affordability indicators are cost indicators.\nMissing values in accessibility indicators (arising from infeasible PT routes) are imputed with the mean of the respective variable prior to PCA.",
+    "text": "9.1 Normalisation\nScript: 05_IMPTcalculator.R\nPackage: FactoMineR (PCA)\nAll indicators are normalised to the range [1, 100] using min-max scaling:\nBenefit indicators (higher raw value → better): \\[X_{norm} = 1 + \\frac{X - X_{min}}{X_{max} - X_{min}} \\times 99\\]\nCost indicators (lower raw value → better): \\[X_{norm} = 1 + \\frac{X_{max} - X}{X_{max} - X_{min}} \\times 99\\]\nAccessibility metrics (access_*) are benefit indicators; mobility cost metrics (mobility_cost_*), PT waiting times, all affordability indicators, and all safety indicators are cost indicators.\nMissing values in accessibility indicators (arising from infeasible PT routes) are imputed with the mean of the respective variable prior to PCA.",
     "crumbs": [
       "**Dimensions and PCA**",
       "<span class='chapter-number'>9</span>  <span class='chapter-title'>Index Computation — IMPT Calculator</span>"
@@ -396,7 +396,7 @@
     "href": "calculator.html#sec-pca",
     "title": "9  Index Computation — IMPT Calculator",
     "section": "9.2 PCA-Based Dimension Scores",
-    "text": "9.2 PCA-Based Dimension Scores\nFor each dimension (Accessibility, Mobility, Safety) and at the global (all-mode) and per-mode levels, a PCA is run using FactoMineR::PCA() with dtmnfr (parish ID) as a supplementary qualitative variable.\nThe first principal component (PC1) score is used as the dimension index, after rescaling to [1, 100]. PC1 captures the dominant axis of variation among the normalised indicators.\nFor Affordability, PCA is not applied (too few indicators); instead, the normalised composite h_transp_inc_comp (housing + transport cost as share of income, modal-share weighted) is used directly as the Affordability Index.\nFor Safety per mode, an equal-weight average of the severity index (inverted) and frequency (vehicle involvement count) is used instead of PCA.",
+    "text": "9.2 PCA-Based Dimension Scores\nFor each dimension (Accessibility, Mobility, Safety) and at the global (all-mode) and per-mode levels, a PCA is run using FactoMineR::PCA() at parish level.\nThe first principal component (PC1) score is used as the dimension index, after rescaling to [1, 100]. PC1 captures the dominant axis of variation among the normalised indicators.\nFor Affordability, PCA is not applied (too few indicators); instead, the normalised composite h_transp_inc_comp (housing + transport cost as share of income, modal-share weighted) is used directly as the Affordability Index.\nFor Safety per mode, an equal-weight average of the severity index and frequency (vehicle involvement count) is used instead of PCA.",
     "crumbs": [
       "**Dimensions and PCA**",
       "<span class='chapter-number'>9</span>  <span class='chapter-title'>Index Computation — IMPT Calculator</span>"
@@ -418,7 +418,7 @@
     "href": "calculator.html#sec-aggregation",
     "title": "9  Index Computation — IMPT Calculator",
     "section": "9.4 Spatial Aggregation",
-    "text": "9.4 Spatial Aggregation\nOnce scores are computed at parish level, they are aggregated to higher levels:\n\nMunicipality level: population-weighted mean of parish scores.\nGrid level: parishes are assigned to grid cells via the grid_nuts.csv cross-reference table; scores are assigned from the host parish (no further averaging at this stage).",
+    "text": "9.4 Spatial Aggregation\nOnce scores are computed at parish level, they are aggregated to higher and lower levels:\n\nMunicipality level: population-weighted mean of parish scores.\nGrid level: parishes are assigned to grid cells via the grid_nuts.csv cross-reference table; scores are assigned from the host parish (no further averaging at this stage).",
     "crumbs": [
       "**Dimensions and PCA**",
       "<span class='chapter-number'>9</span>  <span class='chapter-title'>Index Computation — IMPT Calculator</span>"

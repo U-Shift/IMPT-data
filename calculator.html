@@ -297,41 +297,61 @@ window.Quarto = {
 <div aria-describedby="fig-calculator-flow-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div>
 <pre class="mermaid mermaid-js" data-label="fig-calculator-flow">flowchart TB
+    %% Nodes
+    AccIn["Accessibility indicators"]
+    MobIn["Mobility indicators"]
+    AffIn["Affordability indicators&lt;br&gt;(two fare scenarios)"]
+    SafIn["Safety indicators"]
+    
+    Ben["Benefit indicators&lt;br&gt;min→1, max→100&lt;br&gt;normalize_benefit()"]
+    Cost["Cost indicators&lt;br&gt;min→100, max→1&lt;br&gt;normalize_cost()"]
+    
+    Run["FactoMineR::PCA()&lt;br&gt;extract PC1 scores"]
+    Scale["Rescale PC1 to [1,100]&lt;br&gt;scale_0_100()"]
+    Direction["Validate direction:&lt;br&gt;check correlation with&lt;br&gt;top indicator"]
+    
+    Geom["Geometric mean&lt;br&gt;(Acc * Mob * Aff * Safety)^0.25"]
+    EntrW["Entropy-weighted mean&lt;br&gt;compute_entropy_weights()"]
+    Simple["Simple arithmetic mean&lt;br&gt;(Acc + Mob + Aff + Safety) / 4"]
+    
+    SpatialAgg["Population weighted&lt;br&gt;aggregation"]
+    Out["Final IMPT scores:&lt;br&gt;freiguesia, municipality, grid&lt;br&gt;× global and per mode"]
+
+    %% Connections
     subgraph Inputs["Input Dimension Tables (by parish)"]
-        AccIn["Accessibility indicators"]
-        MobIn["Mobility indicators"]
-        AffIn["Affordability indicators&lt;br/&gt;(two fare scenarios)"]
-        SafIn["Safety indicators"]
+        direction TB
+        AccIn ~~~ MobIn ~~~ AffIn ~~~ SafIn
     end
     
     Inputs --&gt; Normalise
     
     subgraph Normalise["Normalisation to [1,100]"]
-        direction TB
-        Ben["Benefit indicators&lt;br/&gt;min→1, max→100&lt;br/&gt;normalize_benefit()"]
-        Cost["Cost indicators&lt;br/&gt;min→100, max→1&lt;br/&gt;normalize_cost()"]
+        direction LR
+        Ben ~~~ Cost
     end
     
     Normalise --&gt; PCA
     
     subgraph PCA["PCA per dimension (global &amp; per mode)"]
-        direction TB
-        Run["FactoMineR::PCA()&lt;br/&gt;extract PC1 scores"]
-        Scale["Rescale PC1 to [1,100]&lt;br/&gt;scale_0_100()"]
-        Direction["Validate direction:&lt;br/&gt;check correlation with&lt;br/&gt;top indicator"]
+        direction LR
+        Run ~~~ Scale ~~~ Direction
     end
     
     PCA --&gt; Composite
     
     subgraph Composite["Composite IMPT Score"]
-        direction TB
-        Geom["Geometric mean&lt;br/&gt;(Acc × Mob × Aff × Safety)^(1/4)"]
-        EntrW["Entropy-weighted geometric mean&lt;br/&gt;compute_entropy_weights()"]
-        Simple["Simple arithmetic mean&lt;br/&gt;(Acc + Mob + Aff + Safety) / 4"]
+        direction LR
+        Geom ~~~ EntrW ~~~ Simple
     end
     
-    Composite --&gt; Agg["Population-weighted aggregation&lt;br/&gt;to municipality and grid levels"]
-    Agg --&gt; Out["Final IMPT scores:&lt;br/&gt;freiguesia, municipality, grid&lt;br/&gt;× global and per mode"]
+    Composite --&gt; SpatialAgg
+    SpatialAgg --&gt; Out
+
+    %% Subgraph styling
+    style Inputs fill:#f8f9fa,stroke:#adb5bd,stroke-width:1px,color:#212529
+    style Normalise fill:#f8f9fa,stroke:#adb5bd,stroke-width:1px,color:#212529
+    style PCA fill:#f8f9fa,stroke:#adb5bd,stroke-width:1px,color:#212529
+    style Composite fill:#f8f9fa,stroke:#adb5bd,stroke-width:1px,color:#212529
 </pre>
 </div>
 </div>
@@ -347,15 +367,15 @@ Figure&nbsp;9.1: IMPT index computation pipeline
 <p>All indicators are normalised to the range [1, 100] using min-max scaling:</p>
 <p><strong>Benefit indicators</strong> (higher raw value → better): <span class="math display">\[X_{norm} = 1 + \frac{X - X_{min}}{X_{max} - X_{min}} \times 99\]</span></p>
 <p><strong>Cost indicators</strong> (lower raw value → better): <span class="math display">\[X_{norm} = 1 + \frac{X_{max} - X}{X_{max} - X_{min}} \times 99\]</span></p>
-<p>Accessibility metrics (<code>access_*</code>) are benefit indicators; mobility cost metrics (<code>mobility_cost_*</code>), PT waiting times, and all affordability indicators are cost indicators.</p>
+<p>Accessibility metrics (<code>access_*</code>) are <em>benefit</em> indicators; mobility cost metrics (<code>mobility_cost_*</code>), PT waiting times, all affordability indicators, and all safety indicators are <em>cost</em> indicators.</p>
 <p>Missing values in accessibility indicators (arising from infeasible PT routes) are imputed with the mean of the respective variable prior to PCA.</p>
 </section>
 <section id="sec-pca" class="level2" data-number="9.2">
 <h2 data-number="9.2" class="anchored" data-anchor-id="sec-pca"><span class="header-section-number">9.2</span> PCA-Based Dimension Scores</h2>
-<p>For each dimension (Accessibility, Mobility, Safety) and at the global (all-mode) and per-mode levels, a PCA is run using <code>FactoMineR::PCA()</code> with <code>dtmnfr</code> (parish ID) as a supplementary qualitative variable.</p>
+<p>For each dimension (Accessibility, Mobility, Safety) and at the global (all-mode) and per-mode levels, a PCA is run using <code>FactoMineR::PCA()</code> at parish level.</p>
 <p>The <strong>first principal component (PC1)</strong> score is used as the dimension index, after rescaling to [1, 100]. PC1 captures the dominant axis of variation among the normalised indicators.</p>
 <p>For <strong>Affordability</strong>, PCA is not applied (too few indicators); instead, the normalised composite <code>h_transp_inc_comp</code> (housing + transport cost as share of income, modal-share weighted) is used directly as the Affordability Index.</p>
-<p>For <strong>Safety per mode</strong>, an equal-weight average of the severity index (inverted) and frequency (vehicle involvement count) is used instead of PCA.</p>
+<p>For <strong>Safety per mode</strong>, an equal-weight average of the severity index and frequency (vehicle involvement count) is used instead of PCA.</p>
 </section>
 <section id="sec-composite" class="level2" data-number="9.3">
 <h2 data-number="9.3" class="anchored" data-anchor-id="sec-composite"><span class="header-section-number">9.3</span> Composite IMPT Scores</h2>
@@ -371,7 +391,7 @@ Figure&nbsp;9.1: IMPT index computation pipeline
 </section>
 <section id="sec-aggregation" class="level2" data-number="9.4">
 <h2 data-number="9.4" class="anchored" data-anchor-id="sec-aggregation"><span class="header-section-number">9.4</span> Spatial Aggregation</h2>
-<p>Once scores are computed at parish level, they are aggregated to higher levels:</p>
+<p>Once scores are computed at parish level, they are aggregated to higher and lower levels:</p>
 <ul>
 <li><strong>Municipality level:</strong> population-weighted mean of parish scores.</li>
 <li><strong>Grid level:</strong> parishes are assigned to grid cells via the <code>grid_nuts.csv</code> cross-reference table; scores are assigned from the host parish (no further averaging at this stage).</li>
