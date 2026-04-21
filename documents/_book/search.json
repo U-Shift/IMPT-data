@@ -506,7 +506,7 @@
     "href": "reproducibility.html#code-repository",
     "title": "12  Reproducibility",
     "section": "",
-    "text": "github.com/U-Shift/IMPT-data\n\n\n\n\n\nTable 12.1: Pipeline script organisation\n\n\n\n\n\nPrefix\nPhase\nScript(s)\n\n\n\n\n00\nSetup\n00a_impt_data_handle.R, 00b_data_load.R\n\n\n01\nGeometry & base data preparation\n01_data_prep.R\n\n\n02\nSocio-demographics & land use\n02_*.R (5 scripts)\n\n\n03\nRouting & travel time matrices\n03_ttm_gridh3.R\n\n\n04\nDimension calculations\n04_*.R (10 scripts)\n\n\n05\nIndex computation\n05_IMPTcalculator.R\n\n\n06\nOutput & dashboard\n06a_results_load.R, 06b_dashboard_export.R",
+    "text": "github.com/U-Shift/IMPT-data\n\n\n\n\n\nTable 12.1: Pipeline script organisation\n\n\n\n\n\nPrefix\nPhase\nScript(s)\n\n\n\n\n00\nSetup\n00a_impt_data_handle.R, 00b_data_load.R\n\n\n01\nGeometry & base data preparation\n01_data_prep.R\n\n\n02\nSocio-demographics & land use\n02_*.R (5 scripts)\n\n\n03\nRouting & travel time matrices\n03_ttm_gridh3.R\n\n\n04\nDimension calculations\n04_*.R (10 scripts)\n\n\n05\nIndex computation\n05_IMPTcalculator.R\n\n\n06\nOutput & dashboard\n06a_results_load.R, 06b_dashboard_export.R\n\n\n\n\n\n\n\nThe estimate time to run all the scrips is 3 days, on a high capacity processing computer.\nThe estimate storage needed is 13 GB.",
     "crumbs": [
       "**Dashboard and Reproducibility**",
       "<span class='chapter-number'>12</span>  <span class='chapter-title'>Reproducibility</span>"
@@ -559,7 +559,7 @@
     "href": "about.html#authors",
     "title": "About",
     "section": "",
-    "text": "U-Shift Lab, Instituto Superior Técnico\n\nFilipe Moura – Principal Investigator\nfmoura@tecnico.pt | Website | ORCID: 0000-0001-7749-8490\nRosa Félix – Co-Principal Investigator\nrosamfelix@tecnico.pt | Website | ORCID: 0000-0002-5642-6006\nMauricio Orozco-Fontalvo\nmauricio.orozco@tecnico.pt | Website | ORCID: 0000-0003-0514-4647\nGonçalo Matos\ngoncaloafmatos@tecnico.pt | Website | ORCID: 0009-0001-3489-1732\nMiguel Alvelos – Project Collaborator\nMargarida Pimentel – Project Collaborator\n\n\n\nTransportes Metropolitanos de Lisboa (TML)\n\nCamila Garcia – Departamento de Estudos e Planeamento Email: camila.garcia@tmlmobilidade.pt | ORCID: 0000-0002-1114-0979\nCatarina Marcelino – Departamento de Estudos e Planeamento\nEmail: catarina.marcelino@tmlmobilidade.pt",
+    "text": "U-Shift Lab, Instituto Superior Técnico\n\nFilipe Moura – Principal Investigator\nfmoura@tecnico.pt | Website | ORCID: 0000-0001-7749-8490\nRosa Félix – Co-Principal Investigator\nrosamfelix@tecnico.pt | Website | ORCID: 0000-0002-5642-6006\nMauricio Orozco-Fontalvo\nmauricio.orozco@tecnico.pt | Website | ORCID: 0000-0003-0514-4647\nGonçalo Matos\ngoncaloafmatos@tecnico.pt | Website | ORCID: 0009-0001-3489-1732\nMiguel Alvelos – Project Collaborator\nMargarida Pimentel – Project Collaborator\n\n\n\nTransportes Metropolitanos de Lisboa (TML)\n\nCamila Garcia – Departamento de Estudos e Planeamento\ncamila.garcia@tmlmobilidade.pt | ORCID: 0000-0002-1114-0979\nCatarina Marcelino – Departamento de Estudos e Planeamento\ncatarina.marcelino@tmlmobilidade.pt",
     "crumbs": [
       "About"
     ]
