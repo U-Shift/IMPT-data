@@ -81,6 +81,9 @@ print(session)
 grid <- impt_read("/dashboard_data/grid.gpkg")
 freguesias <- impt_read("/dashboard_data/freguesias.gpkg")
 municipios <- impt_read("/dashboard_data/municipios.gpkg")
+
+
+
 mun_nuts <- impt_read("mun_nuts.csv", root = "useful_data") |> rename(nuts = nuts_id, id = mun_id, municipio = name)
 freg_nuts <- impt_read("freguesias_nuts.csv", root = "useful_data") |> rename(id = freg_id, group_id = mun_id, freguesia = name, region_id = nuts_id)
 
@@ -794,7 +797,7 @@ for (d in dimensions) {
   }
 }
 
-# 4. Export to geojson -------------------------------------------------
+# 4. Export to CSV (for download export) -------------------------------------------------
 output_dir <- "dashboard_data"
 
 output_location <- impt_write(grid_aggregated, paste(output_dir, "grid_aggregated.geojson", sep = "/"))
@@ -808,17 +811,72 @@ impt_write(municipios_aggregated |> st_drop_geometry(), paste(output_dir, "munic
 json_str <- jsonlite::toJSON(champions_list, auto_unbox = TRUE, pretty = TRUE)
 impt_write(json_str, paste(output_dir, "champions.json", sep = "/"))
 
+# freguesias_aggregated <- impt_read("/dashboard_data/freguesias_aggregated.csv")
 length(names(grid_aggregated)) # 1319
 length(names(freguesias_aggregated)) # 1717
 length(names(municipios_aggregated)) # 1708
-
-# freguesias_aggregated <- impt_read("/dashboard_data/freguesias_aggregated.csv")
 
 municipio_names <- names(municipios_aggregated) |> data.frame()
 freguesia_names <- names(freguesias_aggregated) |> data.frame()
 grid_names <- names(grid_aggregated) |> data.frame()
 
 View(freguesia_names)
+
+# 5. Export to geojson (for dashboard) -------------------------------------------------
+
+area_to_dashboard <- function(area) {
+  area |>
+    # Remove columns not displayed
+    select(
+      # Accessibility
+      -starts_with("access_jobs"), # Commuting has its own dataset
+      -starts_with("mobility_cost_jobs"),
+      -starts_with("access_transit"), # Not included in impt
+      -starts_with("mobility_cost_transit"),
+      # Mobility
+      -mobility_commuting_trips, -mobility_total_population_served_pt,
+      -contains("reduction"), # Not displayed
+      -contains("_headway_"), # Only waiting times are displayed
+      -contains("weighted_frequency"), # Only waiting times are displayed
+      -contains("_day"), # Mobility for whole day is not displayed, only hourly periods
+      -starts_with("mobility_stop_coverage_pop"),
+      -starts_with("mobility_stop_coverage_pt_served"),
+      # Affordability
+      -contains("total_money_return"),
+      -contains("total_money_2ways"),
+      -starts_with("affordability_avg_"),
+      -starts_with("affordability_trips_"),
+      # Additional indicators
+      -starts_with("veh_ownership_avg"),
+      -starts_with("veh_ownership_hh"),
+      -starts_with("veh_ownership_n"),
+    ) |>
+    select(
+      # Safety
+      # Starts by safety, but not Safety_Index nor safety_inner
+      !starts_with("safety_") | starts_with("Safety_Index") | starts_with("safety_inner")
+    )
+}
+
+freguesias_dashboard <- area_to_dashboard(freguesias_aggregated)
+municipios_dashboard <- area_to_dashboard(municipios_aggregated)
+grid_dashboard <- area_to_dashboard(grid_aggregated)
+
+impt_write(freguesias_dashboard, "dashboard_data/freguesias_dashboard.geojson")
+impt_write(municipios_dashboard, "dashboard_data/municipios_dashboard.geojson")
+impt_write(grid_dashboard, "dashboard_data/grid_dashboard.geojson")
+
+
+length(names(freguesias_dashboard)) # 1258
+length(names(municipios_dashboard)) # 1251
+length(names(grid_dashboard)) # 961
+
+fregusias_dashboard_names <- names(freguesias_dashboard) |> data.frame()
+municipios_dashboard_names <- names(municipios_dashboard) |> data.frame()
+grid_dashboard_names <- names(grid_dashboard) |> data.frame()
+
+View(fregusias_dashboard_names)
+
 # names(freguesias_aggregated)
 # freguesias_aggregated |>
 #   # select(starts_with("IMPT_score_pca_geom")) |> # Filter those that start with "IMPT_score_pca_geom"
@@ -829,6 +887,7 @@ View(freguesia_names)
 output_location <- dirname(output_location)
 files <- c(
   "grid_aggregated.geojson", "freguesias_aggregated.geojson", "municipios_aggregated.geojson",
+  "freguesias_dashboard.geojson", "municipios_dashboard.geojson", "grid_dashboard.geojson",
   "grid_aggregated.csv", "freguesias_aggregated.csv", "municipios_aggregated.csv"
 )
 for (f in files) {
