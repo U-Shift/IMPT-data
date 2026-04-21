@@ -186,12 +186,12 @@ for (i in 1:length(accessibility_measures)) {
   }
 }
 
-impt_write(freguesia_mobility, sprintf("%s/mobility_freguesia.gpkg", output_dir))
-impt_write(freguesia_mobility |> st_drop_geometry(), sprintf("%s/mobility_freguesia.csv", output_dir))
-impt_write(municipio_mobility, sprintf("%s/mobility_municipio.gpkg", output_dir))
-impt_write(municipio_mobility |> st_drop_geometry(), sprintf("%s/mobility_municipio.csv", output_dir))
-impt_write(grid_mobility, sprintf("%s/mobility_grid.gpkg", output_dir))
-impt_write(grid_mobility |> st_drop_geometry(), sprintf("%s/mobility_grid.csv", output_dir))
+impt_write(freguesia_mobility, sprintf("%s/mobility_freguesia_weekend_night.gpkg", output_dir))
+impt_write(freguesia_mobility |> st_drop_geometry(), sprintf("%s/mobility_freguesia_weekend_night.csv", output_dir))
+impt_write(municipio_mobility, sprintf("%s/mobility_municipio_weekend_night.gpkg", output_dir))
+impt_write(municipio_mobility |> st_drop_geometry(), sprintf("%s/mobility_municipio_weekend_night.csv", output_dir))
+impt_write(grid_mobility, sprintf("%s/mobility_grid_weekend_night.gpkg", output_dir))
+impt_write(grid_mobility |> st_drop_geometry(), sprintf("%s/mobility_grid_weekend_night.csv", output_dir))
 #
 # mapview(freguesia_mobility, zcol = "mobility_cost_health_walk_n1_residents")
 # mapview(freguesia_mobility, zcol = "mobility_cost_health_walk_n1_elder")

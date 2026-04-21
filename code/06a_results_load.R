@@ -4,11 +4,19 @@ freguesia_accessibility <- impt_read("/accessibility/r8/accessibility_freguesia.
 municipio_accessibility <- impt_read("/accessibility/r8/accessibility_municipio.csv")
 grid_accessibility <- impt_read("/accessibility/r8/accessibility_grid.csv")
 
+freguesia_accessibility_wn <- impt_read("/accessibility/r8/accessibility_freguesia_weekend_night.csv")
+municipio_accessibility_wn <- impt_read("/accessibility/r8/accessibility_municipio_weekend_night.csv")
+grid_accessibility_wn <- impt_read("/accessibility/r8/accessibility_grid_weekend_night.csv")
+
 # Mobility  -------------------------------------------------
 
 freguesia_mobility_costs <- impt_read("/mobility_costs/r8/mobility_freguesia.csv")
 municipio_mobility_costs <- impt_read("/mobility_costs/r8/mobility_municipio.csv")
 grid_mobility_costs <- impt_read("/mobility_costs/r8/mobility_grid.csv")
+
+freguesia_mobility_costs_wn <- impt_read("/mobility_costs/r8/mobility_freguesia_weekend_night.csv")
+municipio_mobility_costs_wn <- impt_read("/mobility_costs/r8/mobility_municipio_weekend_night.csv")
+grid_mobility_costs_wn <- impt_read("/mobility_costs/r8/mobility_grid_weekend_night.csv")
 
 freguesia_commuting <- impt_read("/mobility_commuting/freguesia_commuting.csv")
 municipio_commuting <- impt_read("/mobility_commuting/municipio_commuting.csv")

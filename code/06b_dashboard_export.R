@@ -147,12 +147,31 @@ grid_aggregated <- grid_aggregated |>
   left_join(
     grid_accessibility |>
       select(-starts_with("n_")) |> # Remove cols that start with n_ (duplicating pois data)
+      rename_with(~ stringr::str_replace(., "_0t_", "_0t_peak_"), contains("_0t_")) |> # Rewrite _nt_ to _nt_peak_
+      rename_with(~ stringr::str_replace(., "_1t_", "_1t_peak_"), contains("_1t_")) |>
+      rename_with(~ stringr::str_replace(., "_2t_", "_2t_peak_"), contains("_2t_")) |>
+      rename_with(~ stringr::str_replace(., "_3t_", "_3t_peak_"), contains("_3t_")) |>
       rename_with(~ paste0("census_", .), c(-starts_with("pois_"), -id, -starts_with("access_"))),
     by = "id"
-  ) |> # Accessibility + census data
+  ) |>
+  left_join(
+    grid_accessibility_wn |>
+      select(-starts_with("n_")) |> # Remove cols that start with n_ (duplicating pois data)
+      rename_with(~ paste0("census_", .), c(-starts_with("pois_"), -id, -starts_with("access_"))),
+    by = "id"
+  ) |>
   # Mobility
   left_join(
     grid_mobility_costs |>
+      rename_with(~ stringr::str_replace(., "_0t_", "_0t_peak_"), contains("_0t_")) |> # Rewrite _nt_ to _nt_peak_
+      rename_with(~ stringr::str_replace(., "_1t_", "_1t_peak_"), contains("_1t_")) |>
+      rename_with(~ stringr::str_replace(., "_2t_", "_2t_peak_"), contains("_2t_")) |>
+      rename_with(~ stringr::str_replace(., "_3t_", "_3t_peak_"), contains("_3t_")) |>
+      select(id, starts_with("mobility_cost")), # Ignore n_ pois repeated from accessibility and census data
+    by = "id"
+  ) |>
+  left_join(
+    grid_mobility_costs_wn |>
       select(id, starts_with("mobility_cost")), # Ignore n_ pois repeated from accessibility and census data
     by = "id"
   ) |>
@@ -297,12 +316,35 @@ freguesias_aggregated <- freguesias_aggregated |>
       rename(id = dtmnfr) |>
       mutate(id = as.character(id)) |>
       select(-starts_with("n_")) |> # Remove cols that start with n_ (duplicating pois data)
+      rename_with(~ stringr::str_replace(., "_0t_", "_0t_peak_"), contains("_0t_")) |> # Rewrite _nt_ to _nt_peak_
+      rename_with(~ stringr::str_replace(., "_1t_", "_1t_peak_"), contains("_1t_")) |>
+      rename_with(~ stringr::str_replace(., "_2t_", "_2t_peak_"), contains("_2t_")) |>
+      rename_with(~ stringr::str_replace(., "_3t_", "_3t_peak_"), contains("_3t_")) |>
       rename_with(~ paste0("census_", .), c(-starts_with("pois_"), -id, -starts_with("access_"))),
     by = "id"
-  ) |> # Accessibility + census data
+  ) |>
+  left_join(
+    freguesia_accessibility_wn |>
+      rename(id = dtmnfr) |>
+      mutate(id = as.character(id)) |>
+      select(-starts_with("n_")) |> # Remove cols that start with n_ (duplicating pois data)
+      rename_with(~ paste0("census_", .), c(-starts_with("pois_"), -id, -starts_with("access_"))),
+    by = "id"
+  ) |>
   # Mobility
   left_join(
     freguesia_mobility_costs |>
+      rename(id = dtmnfr) |>
+      mutate(id = as.character(id)) |>
+      rename_with(~ stringr::str_replace(., "_0t_", "_0t_peak_"), contains("_0t_")) |> # Rewrite _nt_ to _nt_peak_
+      rename_with(~ stringr::str_replace(., "_1t_", "_1t_peak_"), contains("_1t_")) |>
+      rename_with(~ stringr::str_replace(., "_2t_", "_2t_peak_"), contains("_2t_")) |>
+      rename_with(~ stringr::str_replace(., "_3t_", "_3t_peak_"), contains("_3t_")) |>
+      select(id, starts_with("mobility_cost")), # Ignore n_ pois repeated from accessibility and census data
+    by = "id"
+  ) |>
+  left_join(
+    freguesia_mobility_costs_wn |>
       rename(id = dtmnfr) |>
       mutate(id = as.character(id)) |>
       select(id, starts_with("mobility_cost")), # Ignore n_ pois repeated from accessibility and census data
@@ -476,12 +518,35 @@ municipios_aggregated <- municipios_aggregated |>
       left_join(mun_nuts |> select(id, municipio), by = "municipio") |>
       select(-municipio) |>
       select(-starts_with("n_")) |> # Remove cols that start with n_ (duplicating pois data)
+      rename_with(~ stringr::str_replace(., "_0t_", "_0t_peak_"), contains("_0t_")) |> # Rewrite _nt_ to _nt_peak_
+      rename_with(~ stringr::str_replace(., "_1t_", "_1t_peak_"), contains("_1t_")) |>
+      rename_with(~ stringr::str_replace(., "_2t_", "_2t_peak_"), contains("_2t_")) |>
+      rename_with(~ stringr::str_replace(., "_3t_", "_3t_peak_"), contains("_3t_")) |>
       rename_with(~ paste0("census_", .), c(-starts_with("pois_"), -id, -starts_with("access_"))),
     by = "id"
-  ) |> # Accessibility + census data
+  ) |>
+  left_join(
+    municipio_accessibility_wn |>
+      left_join(mun_nuts |> select(id, municipio), by = "municipio") |>
+      select(-municipio) |>
+      select(-starts_with("n_")) |> # Remove cols that start with n_ (duplicating pois data)
+      rename_with(~ paste0("census_", .), c(-starts_with("pois_"), -id, -starts_with("access_"))),
+    by = "id"
+  ) |>
   # Mobility
   left_join(
     municipio_mobility_costs |>
+      left_join(mun_nuts |> select(id, municipio), by = "municipio") |>
+      select(-municipio) |>
+      rename_with(~ stringr::str_replace(., "_0t_", "_0t_peak_"), contains("_0t_")) |> # Rewrite _nt_ to _nt_peak_
+      rename_with(~ stringr::str_replace(., "_1t_", "_1t_peak_"), contains("_1t_")) |>
+      rename_with(~ stringr::str_replace(., "_2t_", "_2t_peak_"), contains("_2t_")) |>
+      rename_with(~ stringr::str_replace(., "_3t_", "_3t_peak_"), contains("_3t_")) |>
+      select(id, starts_with("mobility_cost")), # Ignore n_ pois repeated from accessibility and census data
+    by = "id"
+  ) |>
+  left_join(
+    municipio_mobility_costs_wn |>
       left_join(mun_nuts |> select(id, municipio), by = "municipio") |>
       select(-municipio) |>
       select(id, starts_with("mobility_cost")), # Ignore n_ pois repeated from accessibility and census data

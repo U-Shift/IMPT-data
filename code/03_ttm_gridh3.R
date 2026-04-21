@@ -44,15 +44,15 @@ r5r_network
 root_folder <- "data" # Set to "/data/IMPT/ when running at server.ushift.pt, or "data" when running locally
 points <- points_h3
 nrow(points) # 3686 - this is the res 8 h3 grid, and 25890 for res 9
-grid_name <- "h3_res8" # fast to run, but 13.5Million combinations!. takes 17min for each run
+grid_name <- "h3_res8_30minw" # fast to run, but 13.5Million combinations!. takes 17min for each run
 mode_egress <- "WALK"
-max_walk_time <- 15 # 20?
+max_walk_time <- 30 # 20?
 max_lts <- 3 # for bike
 
 # parameters to vary
 departure_datetime_HP <- as.POSIXct("04-02-2026 08:00:00", format = "%d-%m-%Y %H:%M:%S")
-departure_datetime_FHP <- as.POSIXct("08-02-2026 20:00:00", format = "%d-%m-%Y %H:%M:%S")
-departure_datetime_night <- as.POSIXct("04-02-2026 03:00:00", format = "%d-%m-%Y %H:%M:%S")
+departure_datetime_FHP <- as.POSIXct("08-02-2026 10:00:00", format = "%d-%m-%Y %H:%M:%S")
+departure_datetime_night <- as.POSIXct("04-02-2026 22:00:00", format = "%d-%m-%Y %H:%M:%S")
 max_trip_duration_240 <- 240 # 4 hours
 max_trip_duration_120 <- 120 # 2 hours
 max_trip_duration_60 <- 60 # 1 hours
@@ -84,7 +84,7 @@ if (!dir.exists(folder_name)) {
 }
 
 for (mode in c("TRANSIT")) { # "CAR", "BICYCLE", "WALK",
-  for (max_trip_duration in c(60, 120)) {
+  for (max_trip_duration in c(120)) {
     message(paste("Running travel time matrix for mode:", mode, "max trip duration:", max_trip_duration))
 
     # Static parameters
@@ -100,7 +100,7 @@ for (mode in c("TRANSIT")) { # "CAR", "BICYCLE", "WALK",
     # > Transit has multiple departure times
     departures <- c(departure_datetime_HP)
     if (mode == "TRANSIT") {
-      departures <- c(departure_datetime_HP, departure_datetime_FHP, departure_datetime_night)
+      departures <- c(departure_datetime_FHP, departure_datetime_night)
     }
     for (departure_datetime in departures) {
       departure_datetime <- as.POSIXct(departure_datetime, origin_tz = "Europe/Lisbon")
@@ -116,32 +116,36 @@ for (mode in c("TRANSIT")) { # "CAR", "BICYCLE", "WALK",
       if (mode == "TRANSIT") {
         args$mode_egress <- mode_egress
         args$max_walk_time <- max_walk_time
-        max_rides <- c(max_rides_1, max_rides_2, max_rides_3, max_rides_4, max_rides_5)
+        max_rides <- c(max_rides_1, max_rides_2, max_rides_3, max_rides_4)
         # fare_structures = list("single" = fare_single, "pass" = fare_pass, "single_2" = fare_single_2)
         # max_fares = c(2,5,10)
       }
 
       for (mr in max_rides) {
-        for (fs in names(fare_structures)) {
+        # Ensure the loop runs once even if fare_structures has no names (NA case)
+        fs_names <- names(fare_structures)
+        if (is.null(fs_names)) fs_names <- NA
+
+        for (fs in fs_names) {
           for (mf in max_fares) {
-            if (!is.na(mf)) {
+            if (!is.na(mf) && !is.null(mf)) {
               args$max_fare <- mf
             }
-            if (!is.na(fs)) {
+            if (!is.na(fs) && !is.null(fs)) {
               args$fare_structure <- fare_structures[[fs]]
             }
-            if (!is.na(mr)) {
+            if (!is.na(mr) && !is.null(mr)) {
               args$max_rides <- mr
             }
 
             output_csv <- sprintf("%s/ttm_%s_%dmin_%s", folder_name, tolower(mode), max_trip_duration, strftime(departure_datetime, "%Y%m%d%H%M", tz = "Europe/Lisbon"))
-            if (!is.na(mr)) {
+            if (!is.na(mr) && !is.null(mr)) {
               output_csv <- sprintf("%s_%dtransfers", output_csv, mr - 1)
             }
-            if (!is.na(fs)) {
+            if (!is.na(fs) && !is.null(fs)) {
               output_csv <- sprintf("%s_%s_fare", output_csv, fs)
             }
-            if (!is.na(mf)) {
+            if (!is.na(mf) && !is.null(mf)) {
               output_csv <- sprintf("%s_maxfare%d", output_csv, mf)
             }
             if (!dir.exists(output_csv)) {

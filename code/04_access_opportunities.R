@@ -20,11 +20,17 @@ ttm_root <- "/ttm/ttm_h3_res8"
 ttm_timings <- list(5, 10, 15, 30, 45, 60, 75, 90)
 ttm_list <- list(
   # Mode, Travel time matrix file, Time cutoffs to consider
-  list("walk", "ttm_walk_120min_202602040800.rds", ttm_timings),
-  list("bike", "ttm_bicycle_120min_202602040800.rds", ttm_timings),
-  list("car", "ttm_car_120min_202602040800.rds", ttm_timings),
-  list("transit_1t", "ttm_transit_120min_202602040800_1transfers.rds", ttm_timings),
-  list("transit_2t", "ttm_transit_120min_202602040800_2transfers.rds", ttm_timings)
+  # list("walk", "ttm_walk_120min_202602040800.rds", ttm_timings),
+  # list("bike", "ttm_bicycle_120min_202602040800.rds", ttm_timings),
+  # list("car", "ttm_car_120min_202602040800.rds", ttm_timings),
+  # list("transit_0t", "ttm_transit_120min_202602040800_0transfers.rds", ttm_timings),
+  # list("transit_1t", "ttm_transit_120min_202602040800_1transfers.rds", ttm_timings),
+  # list("transit_2t", "ttm_transit_120min_202602040800_2transfers.rds", ttm_timings),
+  # list("transit_3t", "ttm_transit_120min_202602040800_3transfers.rds", ttm_timings),
+  list("transit_1t_night", "ttm_transit_120min_202602042200_1transfers.rds", ttm_timings),
+  list("transit_2t_night", "ttm_transit_120min_202602042200_2transfers.rds", ttm_timings),
+  list("transit_1t_weekend", "ttm_transit_120min_202602081000_1transfers.rds", ttm_timings),
+  list("transit_2t_weekend", "ttm_transit_120min_202602081000_2transfers.rds", ttm_timings)
 )
 
 
@@ -133,11 +139,15 @@ for (i in 1:length(pois_list)) {
 
 # 2. Aggregate by parish, population weighted
 accessibility_modes <- list(
-  list("walk", ttm_timings),
-  list("bike", ttm_timings),
-  list("car", ttm_timings),
-  list("transit_1t", ttm_timings),
-  list("transit_2t", ttm_timings)
+  # list("walk", ttm_timings),
+  # list("bike", ttm_timings),
+  # list("car", ttm_timings),
+  # list("transit_1t", ttm_timings),
+  # list("transit_2t", ttm_timings),
+  list("transit_1t_night", ttm_timings),
+  list("transit_2t_night", ttm_timings),
+  list("transit_1t_weekend", ttm_timings),
+  list("transit_2t_weekend", ttm_timings)
 )
 
 accessibility_measures <- list(
@@ -272,12 +282,12 @@ for (i in 1:length(accessibility_measures)) {
   }
 }
 
-impt_write(freguesia_accessibility, sprintf("%s/accessibility_freguesia.gpkg", output_dir))
-impt_write(freguesia_accessibility |> st_drop_geometry(), sprintf("%s/accessibility_freguesia.csv", output_dir))
-impt_write(municipio_accessibility, sprintf("%s/accessibility_municipio.gpkg", output_dir))
-impt_write(municipio_accessibility |> st_drop_geometry(), sprintf("%s/accessibility_municipio.csv", output_dir))
-impt_write(grid_access, sprintf("%s/accessibility_grid.gpkg", output_dir))
-impt_write(grid_access |> st_drop_geometry(), sprintf("%s/accessibility_grid.csv", output_dir))
+impt_write(freguesia_accessibility, sprintf("%s/accessibility_freguesia_weekend_night.gpkg", output_dir))
+impt_write(freguesia_accessibility |> st_drop_geometry(), sprintf("%s/accessibility_freguesia_weekend_night.csv", output_dir))
+impt_write(municipio_accessibility, sprintf("%s/accessibility_municipio_weekend_night.gpkg", output_dir))
+impt_write(municipio_accessibility |> st_drop_geometry(), sprintf("%s/accessibility_municipio_weekend_night.csv", output_dir))
+impt_write(grid_access, sprintf("%s/accessibility_grid_weekend_night.gpkg", output_dir))
+impt_write(grid_access |> st_drop_geometry(), sprintf("%s/accessibility_grid_weekend_night.csv", output_dir))
 #
 # mapview(municipio_accessibility, zcol = "access_transit_bus_transit_1t_5min_residents")
 # mapview(freguesia_accessibility, zcol = "access_transit_transit_1t_5min_residents")
