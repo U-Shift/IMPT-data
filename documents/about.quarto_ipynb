@@ -1,0 +1,69 @@
+{
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "# About {#sec-about}\n",
+        "\n",
+        "## Authors\n",
+        "\n",
+        "This research was conducted by the U-Shift Lab at Instituto Superior Técnico - University of Lisbon, in collaboration with the Transportes Metropolitanos de Lisboa (TML).\n",
+        "\n",
+        "### U-Shift Lab, Instituto Superior Técnico - University of Lisbon\n",
+        "\n",
+        "- **Filipe Moura** – Principal Investigator  \n",
+        "  Email: <fmoura@tecnico.pt> | [Website](https://ushift.tecnico.ulisboa.pt/team-filipe-moura/) | [ORCID: 0000-0001-7749-8490](https://orcid.org/0000-0001-7749-8490)\n",
+        "\n",
+        "- **Rosa Félix** – Co-Principal Investigator  \n",
+        "  Email: <rosamfelix@tecnico.pt> | [Website](https://www.rosafelix.bike) | [ORCID: 0000-0002-5642-6006](https://orcid.org/0000-0002-5642-6006)\n",
+        "\n",
+        "- **Mauricio Orozco-Fontalvo**  \n",
+        "  Email: <mauricio.orozco@tecnico.pt> | [Website](https://ushift.tecnico.ulisboa.pt/team-mauricio-fontalvo/) | [ORCID: 0000-0003-0514-4647](https://orcid.org/0000-0003-0514-4647)\n",
+        "\n",
+        "- **Gonçalo Matos**  \n",
+        "  Email: <goncaloafmatos@tecnico.pt> | [Website](http://gmatos.pt/) | [ORCID: 0009-0001-3489-1732](https://orcid.org/0009-0001-3489-1732)\n",
+        "\n",
+        "- **Miguel Alvelos** – Project Collaborator\n",
+        "\n",
+        "- **Margarida Pimentel** – Project Collaborator\n",
+        "\n",
+        "### Transportes Metropolitanos de Lisboa (TML)\n",
+        "\n",
+        "- **Camila Garcia** – DEP  \n",
+        "  Email: <camila.garcia@tmlmobilidade.pt> | [ORCID: 0000-0002-1114-0979](https://orcid.org/0000-0002-1114-0979)\n",
+        "\n",
+        "- **Catarina Marcelino** – DEP  \n",
+        "  Email: <catarina.marcelino@tmlmobilidade.pt>\n",
+        "\n",
+        "\n",
+        "## Cite as\n",
+        "\n",
+        "\n",
+        "\n",
+        "\n",
+        "```{bibtex}\n",
+        "@book{impt_report_2026,\n",
+        "  author    = {Orozco-Fontalvo, Mauricio and Félix, Rosa and Matos, Gonçalo and Moura, Filipe and Garcia, Camila},\n",
+        "  title     = {IMPT — Índice Multidimensional e Multimodal de Pobreza nos Transportes: methodological report},\n",
+        "  year      = {2026},\n",
+        "  month     = {April},\n",
+        "  publisher = {U-Shift Lab, Instituto Superior Técnico - University of Lisbon, Lisbon},\n",
+        "  url       = {https://u-shift.github.io/IMPT-data},\n",
+        "  <!-- doi       = {10.5281/zenodo.13115777} -->\n",
+        "}\n",
+        "```"
+      ],
+      "id": "31edd762"
+    }
+  ],
+  "metadata": {
+    "kernelspec": {
+      "display_name": "Python 3",
+      "language": "python",
+      "name": "python3"
+    }
+  },
+  "nbformat": 4,
+  "nbformat_minor": 5
+}

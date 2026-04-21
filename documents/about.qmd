@@ -1,0 +1,51 @@
+# About {#sec-about .unnumbered}
+
+## Authors
+
+This research was conducted by the U-Shift Lab at Instituto Superior Técnico - University of Lisbon, in collaboration with the Transportes Metropolitanos de Lisboa (TML).
+
+### U-Shift Lab, Instituto Superior Técnico{.unnumbered}
+
+- **Filipe Moura** – Principal Investigator  
+  <fmoura@tecnico.pt> | [Website](https://ushift.tecnico.ulisboa.pt/team-filipe-moura/) | [ORCID: 0000-0001-7749-8490](https://orcid.org/0000-0001-7749-8490)
+
+- **Rosa Félix** – Co-Principal Investigator  
+  <rosamfelix@tecnico.pt> | [Website](https://www.rosafelix.bike) | [ORCID: 0000-0002-5642-6006](https://orcid.org/0000-0002-5642-6006)
+
+- **Mauricio Orozco-Fontalvo**  
+  <mauricio.orozco@tecnico.pt> | [Website](https://ushift.tecnico.ulisboa.pt/team-mauricio-fontalvo/) | [ORCID: 0000-0003-0514-4647](https://orcid.org/0000-0003-0514-4647)
+
+- **Gonçalo Matos**  
+  <goncaloafmatos@tecnico.pt> | [Website](http://gmatos.pt/) | [ORCID: 0009-0001-3489-1732](https://orcid.org/0009-0001-3489-1732)
+
+- **Miguel Alvelos** – Project Collaborator
+
+- **Margarida Pimentel** – Project Collaborator
+
+### Transportes Metropolitanos de Lisboa (TML){.unnumbered}
+
+- **Camila Garcia** – Departamento de Estudos e Planeamento
+  Email: <camila.garcia@tmlmobilidade.pt> | [ORCID: 0000-0002-1114-0979](https://orcid.org/0000-0002-1114-0979)
+
+- **Catarina Marcelino** – Departamento de Estudos e Planeamento  
+  Email: <catarina.marcelino@tmlmobilidade.pt>
+
+
+## Cite as
+
+```bibtex
+@book{impt_report_2026,
+  author    = {Orozco-Fontalvo, Mauricio and Félix, Rosa and Matos, Gonçalo and Moura, Filipe and Garcia, Camila},
+  title     = {IMPT — Índice Multidimensional e Multimodal de Pobreza nos Transportes: methodological report},
+  year      = {2026},
+  month     = {April},
+  publisher = {U-Shift Lab, Instituto Superior Técnico - University of Lisbon, Lisbon},
+  url       = {https://u-shift.github.io/IMPT-data},
+  doi       = {10.5281/zenodo.XXXXX}
+}
+```
+
+## Funding
+
+This research was funded by Science4Policy
+[continue...]

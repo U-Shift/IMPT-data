@@ -4,7 +4,7 @@
 
 All data preparation and analysis scripts are available in the IMPT-data GitHub repository:
 
-> `https://github.com/U-Shift/IMPT-data`
+> [github.com/U-Shift/IMPT-data](https://github.com/U-Shift/IMPT-data)
 
 Scripts are organised with a numeric prefix indicating execution order:
 
@@ -15,7 +15,7 @@ Scripts are organised with a numeric prefix indicating execution order:
 | 02 | Socio-demographics & land use | [`02_*.R`](https://github.com/U-Shift/IMPT-data/tree/main/code/) (5 scripts) |
 | 03 | Routing & travel time matrices | [`03_ttm_gridh3.R`](https://github.com/U-Shift/IMPT-data/blob/main/code/03_ttm_gridh3.R) |
 | 04 | Dimension calculations | [`04_*.R`](https://github.com/U-Shift/IMPT-data/tree/main/code/) (10 scripts) |
-| 05 | Index computation | [`05_IMPTcalculator.R`](https://github.com/U-Shift/IMPT-data/blob/main/code/05_IMPTcalculator.R), [`05a_results_export_pca.R`](https://github.com/U-Shift/IMPT-data/blob/main/code/05a_results_export_pca.R) |
+| 05 | Index computation | [`05_IMPTcalculator.R`](https://github.com/U-Shift/IMPT-data/blob/main/code/05_IMPTcalculator.R) |
 | 06 | Output & dashboard | [`06a_results_load.R`](https://github.com/U-Shift/IMPT-data/blob/main/code/06a_results_load.R), [`06b_dashboard_export.R`](https://github.com/U-Shift/IMPT-data/blob/main/code/06b_dashboard_export.R) |
 
 : Pipeline script organisation {#tbl-scripts}
@@ -32,3 +32,7 @@ To replicate the IMPT for another Portuguese metropolitan area:
 6. Run scripts in order (00 → 06).
 
 The H3 grid generation, routing engine, and scoring methodology are entirely generic and require no structural changes.
+
+## Dashboard
+
+The code to build the IMPT dashboard is not included in this repository. You can find it in the [IMPT-web](https://github.com/U-Shift/IMPT-web) repository.

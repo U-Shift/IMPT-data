@@ -74,7 +74,8 @@ $$X_{norm} = 1 + \frac{X - X_{min}}{X_{max} - X_{min}} \times 99$$
 **Cost indicators** (lower raw value → better):
 $$X_{norm} = 1 + \frac{X_{max} - X}{X_{max} - X_{min}} \times 99$$
 
-Accessibility metrics (`access_*`) are _benefit_ indicators; mobility cost metrics (`mobility_cost_*`), PT waiting times, all affordability indicators, and all safety indicators are _cost_ indicators.
+-   **Accessibility** metrics (`access_*`) are _benefit_ indicators.
+-   **Mobility** cost metrics (`mobility_cost_*`), PT waiting times, all **affordability** indicators, and all **safety** indicators are _cost_ indicators.
 
 Missing values in accessibility indicators (arising from infeasible PT routes) are imputed with the mean of the respective variable prior to PCA.
 
@@ -86,7 +87,7 @@ The **first principal component (PC1)** score is used as the dimension index, af
 
 For **Affordability**, PCA is not applied (too few indicators); instead, the normalised composite `h_transp_inc_comp` (housing + transport cost as share of income, modal-share weighted) is used directly as the Affordability Index.
 
-For **Safety per mode**, an equal-weight average of the severity index and frequency (vehicle involvement count) is used instead of PCA.
+For **Safety per mode**, an equal-weight average of the severity index (per mode) and total vehicles involved (per mode) is used instead of PCA.
 
 ## Composite IMPT Scores {#sec-composite}
 

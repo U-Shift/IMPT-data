@@ -466,21 +466,21 @@ mob_walk_scores <- data.frame(
 saf_car_scores <- Safety_car_Norm |>
   mutate(
     # indice_gravidade_carro = 100 - indice_gravidade_carro, # inverted temporary fix
-    Safety_Index = indice_gravidade_carro * 0.5 + veh_motorizado_per * 0.5
+    Safety_Index = indice_gravidade_carro * 0.5 + veh_motorizado * 0.5 # use total instead of percentage
   ) |>
   select(dtmnfr, Safety_Index)
 
 saf_bike_scores <- Safety_bike_Norm |>
   mutate(
     # indice_gravidade_bicicleta = 100 - indice_gravidade_bicicleta, # inverted temporary fix
-    Safety_Index = indice_gravidade_bicicleta * 0.5 + veh_bicicleta_per * 0.5
+    Safety_Index = indice_gravidade_bicicleta * 0.5 + veh_bicicleta * 0.5
   ) |>
   select(dtmnfr, Safety_Index)
 
 saf_walk_scores <- Safety_walk_Norm |>
   mutate(
     # indice_gravidade_peoes = 100 - indice_gravidade_peoes, # inverted temporary fix
-    Safety_Index = indice_gravidade_peoes * 0.5 + veh_peoes_per * 0.5
+    Safety_Index = indice_gravidade_peoes * 0.5 + veh_peoes * 0.5
   ) |>
   select(dtmnfr, Safety_Index)
 
@@ -488,9 +488,9 @@ saf_walk_scores <- Safety_walk_Norm |>
 # ── 4.3 PCA diagnostics ───────────────────────────────────────────────────────
 
 pca_list <- list(
-  Accessibility_GB   = pca_access,
-  Mobility_GB        = pca_mobility,
-  Safety_GB          = pca_safety,
+  Accessibility_all   = pca_access,
+  Mobility_all        = pca_mobility,
+  Safety_all          = pca_safety,
   Accessibility_car  = pca_car_access,
   Accessibility_pt   = pca_pt_access,
   Accessibility_bike = pca_bike_access,

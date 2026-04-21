@@ -385,7 +385,18 @@
     "href": "calculator.html",
     "title": "9  Index Computation — IMPT Calculator",
     "section": "",
-    "text": "9.1 Normalisation\nScript: 05_IMPTcalculator.R\nPackage: FactoMineR (PCA)\nAll indicators are normalised to the range [1, 100] using min-max scaling:\nBenefit indicators (higher raw value → better): \\[X_{norm} = 1 + \\frac{X - X_{min}}{X_{max} - X_{min}} \\times 99\\]\nCost indicators (lower raw value → better): \\[X_{norm} = 1 + \\frac{X_{max} - X}{X_{max} - X_{min}} \\times 99\\]\nAccessibility metrics (access_*) are benefit indicators; mobility cost metrics (mobility_cost_*), PT waiting times, all affordability indicators, and all safety indicators are cost indicators.\nMissing values in accessibility indicators (arising from infeasible PT routes) are imputed with the mean of the respective variable prior to PCA.",
+    "text": "9.1 Normalisation\nScript: 05_IMPTcalculator.R\nPackage: FactoMineR (PCA)\nAll indicators are normalised to the range [1, 100] using min-max scaling:\nBenefit indicators (higher raw value → better): \\[X_{norm} = 1 + \\frac{X - X_{min}}{X_{max} - X_{min}} \\times 99\\]\nCost indicators (lower raw value → better): \\[X_{norm} = 1 + \\frac{X_{max} - X}{X_{max} - X_{min}} \\times 99\\]\nMissing values in accessibility indicators (arising from infeasible PT routes) are imputed with the mean of the respective variable prior to PCA.",
+    "crumbs": [
+      "**Dimensions and PCA**",
+      "<span class='chapter-number'>9</span>  <span class='chapter-title'>Index Computation — IMPT Calculator</span>"
+    ]
+  },
+  {
+    "objectID": "calculator.html#sec-normalisation",
+    "href": "calculator.html#sec-normalisation",
+    "title": "9  Index Computation — IMPT Calculator",
+    "section": "",
+    "text": "Accessibility metrics (access_*) are benefit indicators.\nMobility cost metrics (mobility_cost_*), PT waiting times, all affordability indicators, and all safety indicators are cost indicators.",
     "crumbs": [
       "**Dimensions and PCA**",
       "<span class='chapter-number'>9</span>  <span class='chapter-title'>Index Computation — IMPT Calculator</span>"
@@ -396,7 +407,7 @@
     "href": "calculator.html#sec-pca",
     "title": "9  Index Computation — IMPT Calculator",
     "section": "9.2 PCA-Based Dimension Scores",
-    "text": "9.2 PCA-Based Dimension Scores\nFor each dimension (Accessibility, Mobility, Safety) and at the global (all-mode) and per-mode levels, a PCA is run using FactoMineR::PCA() at parish level.\nThe first principal component (PC1) score is used as the dimension index, after rescaling to [1, 100]. PC1 captures the dominant axis of variation among the normalised indicators.\nFor Affordability, PCA is not applied (too few indicators); instead, the normalised composite h_transp_inc_comp (housing + transport cost as share of income, modal-share weighted) is used directly as the Affordability Index.\nFor Safety per mode, an equal-weight average of the severity index and frequency (vehicle involvement count) is used instead of PCA.",
+    "text": "9.2 PCA-Based Dimension Scores\nFor each dimension (Accessibility, Mobility, Safety) and at the global (all-mode) and per-mode levels, a PCA is run using FactoMineR::PCA() at parish level.\nThe first principal component (PC1) score is used as the dimension index, after rescaling to [1, 100]. PC1 captures the dominant axis of variation among the normalised indicators.\nFor Affordability, PCA is not applied (too few indicators); instead, the normalised composite h_transp_inc_comp (housing + transport cost as share of income, modal-share weighted) is used directly as the Affordability Index.\nFor Safety per mode, an equal-weight average of the severity index (per mode) and total vehicles involved (per mode) is used instead of PCA.",
     "crumbs": [
       "**Dimensions and PCA**",
       "<span class='chapter-number'>9</span>  <span class='chapter-title'>Index Computation — IMPT Calculator</span>"
@@ -429,7 +440,7 @@
     "href": "pca_results.html",
     "title": "10  PCA Diagnostics",
     "section": "",
-    "text": "The following table summarises the variance explained by PC1 in each PCA run:\n\n\n\n\nTable 10.1: PCA diagnostics — variance explained by PC1 (indicative values; run 05_IMPTcalculator.R for up-to-date results)\n\n\n\n\n\n\nDimension / Mode\nPC1 Variance (%)\nTop contributing variable\n\n\n\n\nAccessibility (global)\n[run script]\n[run script]\n\n\nMobility (global)\n[run script]\n[run script]\n\n\nSafety (global)\n[run script]\n[run script]\n\n\nAccessibility – Car\n[run script]\n[run script]\n\n\nAccessibility – PT\n[run script]\n[run script]\n\n\nAccessibility – Bike\n[run script]\n[run script]\n\n\nAccessibility – Walk\n[run script]\n[run script]\n\n\nMobility – Car\n[run script]\n[run script]\n\n\nMobility – PT\n[run script]\n[run script]\n\n\nMobility – Bike\n[run script]\n[run script]\n\n\nMobility – Walk\n[run script]\n[run script]\n\n\nSafety – Car\n[run script]\n[run script]\n\n\nSafety – Bike\n[run script]\n[run script]\n\n\nSafety – Walk\n[run script]\n[run script]\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nTip\n\n\n\nTo populate this table automatically, source 05_IMPTcalculator.R and read PCA_Variance_Table.csv and PCA_Variance_and_Correlations.csv from the results folder.",
+    "text": "The following table summarises the variance explained by PC1 in each PCA run:\n\n\n\n\nTable 10.1: PCA diagnostics — variance explained by PC1 (generated from 05_IMPTcalculator.R outputs)\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nTip\n\n\n\nTable data are read automatically from /impt/pca_scores/PCA_Variance_Table.csv and PCA_Variance_and_Correlations.csv, which are generated by 05_IMPTcalculator.R. Re-run that script to refresh the values after any changes to the input data.",
     "crumbs": [
       "**Dimensions and PCA**",
       "<span class='chapter-number'>10</span>  <span class='chapter-title'>PCA Diagnostics</span>"
@@ -440,7 +451,7 @@
     "href": "output_dashboard.html",
     "title": "11  Output and Dashboard",
     "section": "",
-    "text": "11.1 Output Files\nFinal results are stored in three geographic formats for each spatial level:\nResults are uploaded to the project data server at https://impt.server.ushift.pt, to the ushift server at https://ushift.tecnico.ulisboa.pt/content/impt/, and to the GitHub release using piggyback.",
+    "text": "11.1 Output Files\nFinal results are stored in three geographic formats for each spatial level:\nResults are uploaded to the project data server at https://impt.server.ushift.pt, to the ushift server at https://ushift.tecnico.ulisboa.pt/content/impt/, and to the GitHub release using piggyback (TBC when drafting release).",
     "crumbs": [
       "**Dashboard and Reproducibility**",
       "<span class='chapter-number'>11</span>  <span class='chapter-title'>Output and Dashboard</span>"
@@ -451,7 +462,7 @@
     "href": "output_dashboard.html#output-files",
     "title": "11  Output and Dashboard",
     "section": "",
-    "text": "Table 11.1: Output file formats\n\n\n\n\n\n\n\n\n\n\nLevel\nFormat\nVariables\n\n\n\n\nParish (freguesia)\nCSV + GeoPackage\nAll dimension scores + IMPT scores\n\n\nMunicipality (município)\nCSV + GeoPackage\nPopulation-weighted means\n\n\nH3 Grid\nCSV + GeoPackage\nAssigned from host parish",
+    "text": "Table 11.1: Output file formats\n\n\n\n\n\n\n\n\n\n\nLevel\nFormats\nVariables\n\n\n\n\nParish (freguesia)\nCSV + GeoPackage\nAll dimension scores + IMPT scores\n\n\nMunicipality (município)\nCSV + GeoPackage\nPopulation-weighted means + IMPT scores\n\n\nH3 Grid\nCSV + GeoPackage\nAssigned from host parish + Computed at grid level when makes sense",
     "crumbs": [
       "**Dashboard and Reproducibility**",
       "<span class='chapter-number'>11</span>  <span class='chapter-title'>Output and Dashboard</span>"
@@ -462,7 +473,7 @@
     "href": "output_dashboard.html#sec-dashboard",
     "title": "11  Output and Dashboard",
     "section": "11.2 Dashboard Export",
-    "text": "11.2 Dashboard Export\nScript: 06b_dashboard_export.R\nThe dashboard export script joins all indicator tables (accessibility, mobility, affordability, safety, census/land use, IMPT scores) with the spatial geometry files and exports them as three aggregated GeoJSON files for direct use in the web dashboard:\n\ngrid_aggregated.geojson\nfreguesias_aggregated.geojson\nmunicipios_aggregated.geojson\n\nA champions lookup file (champions.json) is also exported, identifying the top contributing indicators to each dimension’s PC1, for display in the dashboard sidebar.",
+    "text": "11.2 Dashboard Export\nThe dashboard export process consists of two main steps:\n\nData Loading: 06a_results_load.R This script loads and prepares all indicator results (accessibility, mobility, safety, etc.) across the three spatial levels.\nJoining and Export: 06b_dashboard_export.R This script joins the prepared indicator tables and all the relevant metrics with the spatial geometry files and exports them as three aggregated GeoJSON files for direct use in the web dashboard:\n\n\ngrid_aggregated.geojson\nfreguesias_aggregated.geojson\nmunicipios_aggregated.geojson\n\nA champions lookup file (champions.json) is also exported, identifying the top contributing indicators to each dimension’s PC1 score, for display in the dashboard sidebar.",
     "crumbs": [
       "**Dashboard and Reproducibility**",
       "<span class='chapter-number'>11</span>  <span class='chapter-title'>Output and Dashboard</span>"
@@ -473,7 +484,7 @@
     "href": "output_dashboard.html#web-dashboard",
     "title": "11  Output and Dashboard",
     "section": "11.3 Web Dashboard",
-    "text": "11.3 Web Dashboard\nThe IMPT results are visualised in an interactive web dashboard built with React + TypeScript + Vite, using Leaflet/MapLibre for map rendering. The dashboard is available at:\n\nushift.pt/apps/impt\n\nThe dashboard supports:\n\nMap visualisation by metric, mode, and geographic level\nMetric cards with legend, description, and top contributor indicators\nDynamic IMPT score computation with user-defined dimension weights\nPT fare scenario switching (single fare vs. Navegante pass)\nDownload results and indicators as CSV and GeoJSON",
+    "text": "11.3 Web Dashboard\nThe IMPT results are visualised in an interactive web dashboard built with React + TypeScript + Vite, using Leaflet/MapLibre for map rendering. The dashboard is available at:\n\nushift.pt/apps/impt\n\nThe dashboard provides a comprehensive suite of features for exploring the data:\n\nMulti-scale Map Visualisation: Explore indicators by geographic level (Grid, Parish, Municipality), transport mode (Car, PT, Bike, Walk), and specific land-use and socio-demographic variables.\nComposite Index Aggregation: Switch between different IMPT calculation methods, including equal weights, critical (geometric mean), contrasting (entropy), or dynamic user-defined weights.\nAHP Weighting Methodology: Built-in Analytic Hierarchy Process (AHP) survey to help users mathematically derive optimal, consistent dimension weights for the dynamic IMPT score.\nPT Fare Scenarios: Toggle between single-fare and Navegante pass scenarios to immediately see their impact on affordability.\nArea Profiling: Detailed side-panels showing regional contrasts, subarea dynamics, and modal share profiles for the selected geographic unit.\nContextual and Land Use Layers: View built area classifications, population density, and demographic ratios alongside mobility metrics.\nAccessibility & UI: Colorblind mode, light/dark theme toggles, and switchable base maps (Simplified, Satellite, OpenStreetMap).\nOpen Data: Direct download of all the results and indicators as CSV and GeoJSON.",
     "crumbs": [
       "**Dashboard and Reproducibility**",
       "<span class='chapter-number'>11</span>  <span class='chapter-title'>Output and Dashboard</span>"
@@ -495,7 +506,7 @@
     "href": "reproducibility.html#code-repository",
     "title": "12  Reproducibility",
     "section": "",
-    "text": "https://github.com/U-Shift/IMPT-data\n\n\n\n\n\nTable 12.1: Pipeline script organisation\n\n\n\n\n\nPrefix\nPhase\nScript(s)\n\n\n\n\n00\nSetup\n00a_impt_data_handle.R, 00b_data_load.R\n\n\n01\nGeometry & base data preparation\n01_data_prep.R\n\n\n02\nSocio-demographics & land use\n02_*.R (5 scripts)\n\n\n03\nRouting & travel time matrices\n03_ttm_gridh3.R\n\n\n04\nDimension calculations\n04_*.R (10 scripts)\n\n\n05\nIndex computation\n05_IMPTcalculator.R, 05a_results_export_pca.R\n\n\n06\nOutput & dashboard\n06a_results_load.R, 06b_dashboard_export.R",
+    "text": "github.com/U-Shift/IMPT-data\n\n\n\n\n\nTable 12.1: Pipeline script organisation\n\n\n\n\n\nPrefix\nPhase\nScript(s)\n\n\n\n\n00\nSetup\n00a_impt_data_handle.R, 00b_data_load.R\n\n\n01\nGeometry & base data preparation\n01_data_prep.R\n\n\n02\nSocio-demographics & land use\n02_*.R (5 scripts)\n\n\n03\nRouting & travel time matrices\n03_ttm_gridh3.R\n\n\n04\nDimension calculations\n04_*.R (10 scripts)\n\n\n05\nIndex computation\n05_IMPTcalculator.R\n\n\n06\nOutput & dashboard\n06a_results_load.R, 06b_dashboard_export.R",
     "crumbs": [
       "**Dashboard and Reproducibility**",
       "<span class='chapter-number'>12</span>  <span class='chapter-title'>Reproducibility</span>"
@@ -513,6 +524,17 @@
     ]
   },
   {
+    "objectID": "reproducibility.html#dashboard",
+    "href": "reproducibility.html#dashboard",
+    "title": "12  Reproducibility",
+    "section": "12.3 Dashboard",
+    "text": "12.3 Dashboard\nThe code to build the IMPT dashboard is not included in this repository. You can find it in the IMPT-web repository.",
+    "crumbs": [
+      "**Dashboard and Reproducibility**",
+      "<span class='chapter-number'>12</span>  <span class='chapter-title'>Reproducibility</span>"
+    ]
+  },
+  {
     "objectID": "references.html",
     "href": "references.html",
     "title": "References",
@@ -520,6 +542,46 @@
     "text": "Lovelace, Robin, and Rosa Félix. 2022. “Odjitter: Jitter\nOrigin-Destination Data.” https://github.com/itsleeds/odjitter.\n\n\nLovelace, Robin, Rosa Félix, and Dustin Carlino. 2022. “Jittering:\nA Computationally Efficient Method for Generating Realistic Route\nNetworks from Origin-Destination Data.” Findings. https://doi.org/10.32866/001c.33873.\n\n\nPereira, Rafael H. M., and Daniel Herszenhut. 2022. Accessibility:\nTransport Accessibility Measures. https://ipeagit.github.io/accessibility/.\n\n\nPereira, Rafael H. M., Marcus Saraiva, Daniel Herszenhut, Carlos K. V.\nBraga, and Matthew Wigginton Conway. 2021. “R5r: Rapid Realistic\nRouting on Multimodal Transport Networks with R5 in\nR.” Findings. https://doi.org/10.32866/001c.21262.\n\n\nUber Technologies. 2018. “H3: A Hexagonal Hierarchical Spatial\nIndex.” https://h3geo.org.",
     "crumbs": [
       "References"
+    ]
+  },
+  {
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": "About",
+    "section": "",
+    "text": "Authors\nThis research was conducted by the U-Shift Lab at Instituto Superior Técnico - University of Lisbon, in collaboration with the Transportes Metropolitanos de Lisboa (TML).",
+    "crumbs": [
+      "About"
+    ]
+  },
+  {
+    "objectID": "about.html#authors",
+    "href": "about.html#authors",
+    "title": "About",
+    "section": "",
+    "text": "U-Shift Lab, Instituto Superior Técnico\n\nFilipe Moura – Principal Investigator\nfmoura@tecnico.pt | Website | ORCID: 0000-0001-7749-8490\nRosa Félix – Co-Principal Investigator\nrosamfelix@tecnico.pt | Website | ORCID: 0000-0002-5642-6006\nMauricio Orozco-Fontalvo\nmauricio.orozco@tecnico.pt | Website | ORCID: 0000-0003-0514-4647\nGonçalo Matos\ngoncaloafmatos@tecnico.pt | Website | ORCID: 0009-0001-3489-1732\nMiguel Alvelos – Project Collaborator\nMargarida Pimentel – Project Collaborator\n\n\n\nTransportes Metropolitanos de Lisboa (TML)\n\nCamila Garcia – Departamento de Estudos e Planeamento Email: camila.garcia@tmlmobilidade.pt | ORCID: 0000-0002-1114-0979\nCatarina Marcelino – Departamento de Estudos e Planeamento\nEmail: catarina.marcelino@tmlmobilidade.pt",
+    "crumbs": [
+      "About"
+    ]
+  },
+  {
+    "objectID": "about.html#cite-as",
+    "href": "about.html#cite-as",
+    "title": "About",
+    "section": "Cite as",
+    "text": "Cite as\n@book{impt_report_2026,\n  author    = {Orozco-Fontalvo, Mauricio and Félix, Rosa and Matos, Gonçalo and Moura, Filipe and Garcia, Camila},\n  title     = {IMPT — Índice Multidimensional e Multimodal de Pobreza nos Transportes: methodological report},\n  year      = {2026},\n  month     = {April},\n  publisher = {U-Shift Lab, Instituto Superior Técnico - University of Lisbon, Lisbon},\n  url       = {https://u-shift.github.io/IMPT-data},\n  doi       = {10.5281/zenodo.XXXXX}\n}",
+    "crumbs": [
+      "About"
+    ]
+  },
+  {
+    "objectID": "about.html#funding",
+    "href": "about.html#funding",
+    "title": "About",
+    "section": "Funding",
+    "text": "Funding\nThis research was funded by Science4Policy [continue…]",
+    "crumbs": [
+      "About"
     ]
   }
 ]
