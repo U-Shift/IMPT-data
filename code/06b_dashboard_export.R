@@ -146,18 +146,16 @@ grid_aggregated <- grid_aggregated |>
   # Accessibility
   left_join(
     grid_accessibility |>
-      select(-starts_with("n_")) |> # Remove cols that start with n_ (duplicating pois data)
       rename_with(~ stringr::str_replace(., "_0t_", "_0t_peak_"), contains("_0t_")) |> # Rewrite _nt_ to _nt_peak_
       rename_with(~ stringr::str_replace(., "_1t_", "_1t_peak_"), contains("_1t_")) |>
       rename_with(~ stringr::str_replace(., "_2t_", "_2t_peak_"), contains("_2t_")) |>
       rename_with(~ stringr::str_replace(., "_3t_", "_3t_peak_"), contains("_3t_")) |>
-      rename_with(~ paste0("census_", .), c(-starts_with("pois_"), -id, -starts_with("access_"))),
+      select(id, starts_with("access_")), # Ignore n_ pois and census data as they have they own datasets
     by = "id"
   ) |>
   left_join(
     grid_accessibility_wn |>
-      select(-starts_with("n_")) |> # Remove cols that start with n_ (duplicating pois data)
-      rename_with(~ paste0("census_", .), c(-starts_with("pois_"), -id, -starts_with("access_"))),
+      select(id, starts_with("access_")), # Ignore n_ pois and census data as they have they own datasets
     by = "id"
   ) |>
   # Mobility
@@ -243,12 +241,14 @@ grid_aggregated <- grid_aggregated |>
   # Safety
   left_join(
     grid_safety |>
+      select(-population, -localidades_dentro) |>
       rename(id = grid_id) |>
       rename_with(~ paste0("safety_", .), -id),
     by = "id"
   ) |>
   left_join(
     grid_safety_inner |>
+      select(-population) |>
       rename(id = grid_id) |>
       mutate(
         veh_car_per = veh_motorizado / total_veiculos,
@@ -297,12 +297,14 @@ grid_aggregated <- grid_aggregated |>
   ) |>
   left_join(
     grid_access_gap_time |>
+      select(grid_id, accessibility_gap, relative_gap_time) |> # Other columns duplicate commuting
       rename(id = grid_id, relative_gap_time_pt = relative_gap_time, accessibility_gap_pt = accessibility_gap) |>
       rename_with(~ paste0("access_gap_time_", .), -id),
     by = "id"
   ) |>
   left_join(
     grid_access_gap_money |>
+      select(grid_id, cost_gap, relative_gap_cost) |> # Other columns duplicate affordability
       rename(id = grid_id) |>
       rename_with(~ paste0("access_gap_money_", .), -id),
     by = "id"
@@ -315,20 +317,18 @@ freguesias_aggregated <- freguesias_aggregated |>
     freguesia_accessibility |>
       rename(id = dtmnfr) |>
       mutate(id = as.character(id)) |>
-      select(-starts_with("n_")) |> # Remove cols that start with n_ (duplicating pois data)
       rename_with(~ stringr::str_replace(., "_0t_", "_0t_peak_"), contains("_0t_")) |> # Rewrite _nt_ to _nt_peak_
       rename_with(~ stringr::str_replace(., "_1t_", "_1t_peak_"), contains("_1t_")) |>
       rename_with(~ stringr::str_replace(., "_2t_", "_2t_peak_"), contains("_2t_")) |>
       rename_with(~ stringr::str_replace(., "_3t_", "_3t_peak_"), contains("_3t_")) |>
-      rename_with(~ paste0("census_", .), c(-starts_with("pois_"), -id, -starts_with("access_"))),
+      select(id, starts_with("access_")), # Ignore n_ pois and census data as they have they own datasets
     by = "id"
   ) |>
   left_join(
     freguesia_accessibility_wn |>
       rename(id = dtmnfr) |>
       mutate(id = as.character(id)) |>
-      select(-starts_with("n_")) |> # Remove cols that start with n_ (duplicating pois data)
-      rename_with(~ paste0("census_", .), c(-starts_with("pois_"), -id, -starts_with("access_"))),
+      select(id, starts_with("access_")), # Ignore n_ pois and census data as they have they own datasets
     by = "id"
   ) |>
   # Mobility
@@ -432,6 +432,7 @@ freguesias_aggregated <- freguesias_aggregated |>
   # Safety
   left_join(
     freguesia_safety |>
+      select(-population, -localidades_dentro) |>
       rename(id = freg_id) |>
       mutate(id = as.character(id)) |>
       rename_with(~ paste0("safety_", .), -id),
@@ -439,6 +440,7 @@ freguesias_aggregated <- freguesias_aggregated |>
   ) |>
   left_join(
     freguesia_safety_inner |>
+      select(-population) |>
       rename(id = freg_id) |>
       mutate(id = as.character(id)) |>
       mutate(
@@ -496,6 +498,7 @@ freguesias_aggregated <- freguesias_aggregated |>
   ) |>
   left_join(
     freguesia_access_gap_time |>
+      select(freg_id, accessibility_gap, relative_gap_time) |> # Other columns duplicate commuting
       rename(id = freg_id, relative_gap_time_pt = relative_gap_time, accessibility_gap_pt = accessibility_gap) |>
       mutate(id = as.character(id)) |>
       rename_with(~ paste0("access_gap_time_", .), -id),
@@ -503,6 +506,7 @@ freguesias_aggregated <- freguesias_aggregated |>
   ) |>
   left_join(
     freguesia_access_gap_money |>
+      select(freg_id, cost_gap, relative_gap_cost) |> # Other columns duplicate affordability
       rename(id = freg_id) |>
       mutate(id = as.character(id)) |>
       rename_with(~ paste0("access_gap_money_", .), -id),
@@ -517,20 +521,18 @@ municipios_aggregated <- municipios_aggregated |>
     municipio_accessibility |>
       left_join(mun_nuts |> select(id, municipio), by = "municipio") |>
       select(-municipio) |>
-      select(-starts_with("n_")) |> # Remove cols that start with n_ (duplicating pois data)
       rename_with(~ stringr::str_replace(., "_0t_", "_0t_peak_"), contains("_0t_")) |> # Rewrite _nt_ to _nt_peak_
       rename_with(~ stringr::str_replace(., "_1t_", "_1t_peak_"), contains("_1t_")) |>
       rename_with(~ stringr::str_replace(., "_2t_", "_2t_peak_"), contains("_2t_")) |>
       rename_with(~ stringr::str_replace(., "_3t_", "_3t_peak_"), contains("_3t_")) |>
-      rename_with(~ paste0("census_", .), c(-starts_with("pois_"), -id, -starts_with("access_"))),
+      select(id, starts_with("access_")), # Ignore n_ pois and census data as they have they own datasets
     by = "id"
   ) |>
   left_join(
     municipio_accessibility_wn |>
       left_join(mun_nuts |> select(id, municipio), by = "municipio") |>
       select(-municipio) |>
-      select(-starts_with("n_")) |> # Remove cols that start with n_ (duplicating pois data)
-      rename_with(~ paste0("census_", .), c(-starts_with("pois_"), -id, -starts_with("access_"))),
+      select(id, starts_with("access_")), # Ignore n_ pois and census data as they have they own datasets
     by = "id"
   ) |>
   # Mobility
@@ -633,12 +635,14 @@ municipios_aggregated <- municipios_aggregated |>
   # Safety
   left_join(
     municipio_safety |>
+      select(-population, -localidades_dentro) |>
       rename(id = mun_id) |>
       rename_with(~ paste0("safety_", .), -id),
     by = "id"
   ) |>
   left_join(
     municipio_safety_inner |>
+      select(-population) |>
       rename(id = mun_id) |>
       mutate(
         veh_car_per = veh_motorizado / total_veiculos,
@@ -689,12 +693,14 @@ municipios_aggregated <- municipios_aggregated |>
   ) |>
   left_join(
     municipio_access_gap_time |>
+      select(mun_id, accessibility_gap, relative_gap_time) |> # Other columns duplicate commuting
       rename(id = mun_id, relative_gap_time_pt = relative_gap_time, accessibility_gap_pt = accessibility_gap) |>
       rename_with(~ paste0("access_gap_time_", .), -id),
     by = "id"
   ) |>
   left_join(
     municipio_access_gap_money |>
+      select(mun_id, cost_gap, relative_gap_cost) |> # Other columns duplicate affordability
       rename(id = mun_id) |>
       rename_with(~ paste0("access_gap_money_", .), -id),
     by = "id"
@@ -802,9 +808,9 @@ impt_write(municipios_aggregated |> st_drop_geometry(), paste(output_dir, "munic
 json_str <- jsonlite::toJSON(champions_list, auto_unbox = TRUE, pretty = TRUE)
 impt_write(json_str, paste(output_dir, "champions.json", sep = "/"))
 
-length(names(grid_aggregated)) # 831
-length(names(freguesias_aggregated)) # 1057
-length(names(municipios_aggregated)) # 1048
+length(names(grid_aggregated)) # 1319
+length(names(freguesias_aggregated)) # 1717
+length(names(municipios_aggregated)) # 1708
 
 # freguesias_aggregated <- impt_read("/dashboard_data/freguesias_aggregated.csv")
 
