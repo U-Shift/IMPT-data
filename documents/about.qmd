@@ -4,36 +4,39 @@
 
 This research was conducted by the U-Shift Lab at Instituto Superior Técnico - University of Lisbon, in collaboration with the Transportes Metropolitanos de Lisboa (TML).
 
-### U-Shift Lab, Instituto Superior Técnico{.unnumbered}
+|  |  |
+|:---------------------------:|:-----------------------------------------:|
+| ![](images/clipboard-685979306.jpeg){width="241"} | ![](images/clipboard-1837000547.png){width="282"} |
 
-- **Filipe Moura** – Principal Investigator  
-  <fmoura@tecnico.pt> | [Website](https://ushift.tecnico.ulisboa.pt/team-filipe-moura/) | [ORCID: 0000-0001-7749-8490](https://orcid.org/0000-0001-7749-8490)
+### U-Shift Lab, Instituto Superior Técnico {.unnumbered}
 
-- **Rosa Félix** – Co-Principal Investigator  
-  <rosamfelix@tecnico.pt> | [Website](https://www.rosafelix.bike) | [ORCID: 0000-0002-5642-6006](https://orcid.org/0000-0002-5642-6006)
+-   **Filipe Moura** – Principal Investigator\
+    [fmoura\@tecnico.pt](mailto:fmoura@tecnico.pt){.email} \| [Website](https://ushift.tecnico.ulisboa.pt/team-filipe-moura/) \| [ORCID: 0000-0001-7749-8490](https://orcid.org/0000-0001-7749-8490)
 
-- **Mauricio Orozco-Fontalvo**  
-  <mauricio.orozco@tecnico.pt> | [Website](https://ushift.tecnico.ulisboa.pt/team-mauricio-fontalvo/) | [ORCID: 0000-0003-0514-4647](https://orcid.org/0000-0003-0514-4647)
+-   **Rosa Félix** – Co-Principal Investigator\
+    [rosamfelix\@tecnico.pt](mailto:rosamfelix@tecnico.pt){.email} \| [Website](https://www.rosafelix.bike) \| [ORCID: 0000-0002-5642-6006](https://orcid.org/0000-0002-5642-6006)
 
-- **Gonçalo Matos**  
-  <goncaloafmatos@tecnico.pt> | [Website](http://gmatos.pt/) | [ORCID: 0009-0001-3489-1732](https://orcid.org/0009-0001-3489-1732)
+-   **Mauricio Orozco-Fontalvo**\
+    [mauricio.orozco\@tecnico.pt](mailto:mauricio.orozco@tecnico.pt){.email} \| [Website](https://ushift.tecnico.ulisboa.pt/team-mauricio-fontalvo/) \| [ORCID: 0000-0003-0514-4647](https://orcid.org/0000-0003-0514-4647)
 
-- **Miguel Alvelos** – Project Collaborator
+-   **Gonçalo Matos**\
+    [goncaloafmatos\@tecnico.pt](mailto:goncaloafmatos@tecnico.pt){.email} \| [Website](http://gmatos.pt/) \| [ORCID: 0009-0001-3489-1732](https://orcid.org/0009-0001-3489-1732)
 
-- **Margarida Pimentel** – Project Collaborator
+-   **Miguel Alvelos** – Project Collaborator
 
-### Transportes Metropolitanos de Lisboa (TML){.unnumbered}
+-   **Margarida Pimentel** – Project Collaborator
 
-- **Camila Garcia** – Departamento de Estudos e Planeamento
-  Email: <camila.garcia@tmlmobilidade.pt> | [ORCID: 0000-0002-1114-0979](https://orcid.org/0000-0002-1114-0979)
+### Transportes Metropolitanos de Lisboa (TML) {.unnumbered}
 
-- **Catarina Marcelino** – Departamento de Estudos e Planeamento  
-  Email: <catarina.marcelino@tmlmobilidade.pt>
+-   **Camila Garcia** – Departamento de Estudos e Planeamento\
+    [camila.garcia\@tmlmobilidade.pt](mailto:camila.garcia@tmlmobilidade.pt){.email} \| [ORCID: 0000-0002-1114-0979](https://orcid.org/0000-0002-1114-0979)
 
+-   **Catarina Marcelino** – Departamento de Estudos e Planeamento\
+    [catarina.marcelino\@tmlmobilidade.pt](mailto:catarina.marcelino@tmlmobilidade.pt){.email}
 
 ## Cite as
 
-```bibtex
+``` bibtex
 @book{impt_report_2026,
   author    = {Orozco-Fontalvo, Mauricio and Félix, Rosa and Matos, Gonçalo and Moura, Filipe and Garcia, Camila},
   title     = {IMPT — Índice Multidimensional e Multimodal de Pobreza nos Transportes: methodological report},
@@ -47,5 +50,4 @@ This research was conducted by the U-Shift Lab at Instituto Superior Técnico - 
 
 ## Funding
 
-This research was funded by Science4Policy
-[continue...]
+This research was funded by Science4Policy **\[continue...\]**
