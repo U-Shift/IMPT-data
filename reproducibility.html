@@ -70,6 +70,17 @@ ul.task-list li input[type="checkbox"] {
 }</script>
 
 
+<meta name="citation_title" content="[[12]{.chapter-number}&nbsp; [Reproducibility]{.chapter-title}]{#sec-reproducibility .quarto-section-identifier}">
+<meta name="citation_language" content="en">
+<meta name="citation_reference" content="citation_title=Jittering: A computationally efficient method for generating realistic route networks from origin-destination data;,citation_author=Robin Lovelace;,citation_author=Rosa Félix;,citation_author=Dustin Carlino;,citation_publication_date=2022;,citation_cover_date=2022;,citation_year=2022;,citation_fulltext_html_url=https://doi.org/10.32866/001c.33873;,citation_doi=10.32866/001c.33873;,citation_journal_title=Findings;">
+<meta name="citation_reference" content="citation_title=r5r: Rapid realistic routing on multimodal transport networks with R5 in R;,citation_author=Rafael H. M. Pereira;,citation_author=Marcus Saraiva;,citation_author=Daniel Herszenhut;,citation_author=Carlos K. V. Braga;,citation_author=Matthew Wigginton Conway;,citation_publication_date=2021;,citation_cover_date=2021;,citation_year=2021;,citation_fulltext_html_url=https://doi.org/10.32866/001c.21262;,citation_doi=10.32866/001c.21262;,citation_journal_title=Findings;">
+<meta name="citation_reference" content="citation_title=Accessibility: Transport accessibility measures;,citation_author=Rafael H. M. Pereira;,citation_author=Daniel Herszenhut;,citation_publication_date=2022;,citation_cover_date=2022;,citation_year=2022;,citation_fulltext_html_url=https://ipeagit.github.io/accessibility/;">
+<meta name="citation_reference" content="citation_title=Odjitter: Jitter origin-destination data;,citation_author=Robin Lovelace;,citation_author=Rosa Félix;,citation_publication_date=2022;,citation_cover_date=2022;,citation_year=2022;,citation_fulltext_html_url=https://github.com/itsleeds/odjitter;">
+<meta name="citation_reference" content="citation_title=H3: A hexagonal hierarchical spatial index;,citation_author=Uber Technologies;,citation_publication_date=2018;,citation_cover_date=2018;,citation_year=2018;,citation_fulltext_html_url=https://h3geo.org;">
+<meta name="citation_reference" content="citation_title=Censos 2021 — base geográfica de referenciação de informação, NUTS 3 lisboa;,citation_author=INE — Instituto Nacional de Estatística;,citation_publication_date=2021;,citation_cover_date=2021;,citation_year=2021;,citation_fulltext_html_url=https://mapas.ine.pt/download/filesGPG/2021/nuts3/BGRI21_170.zip;">
+<meta name="citation_reference" content="citation_title=Inquérito à mobilidade nas áreas metropolitanas do porto e de lisboa — IMOB 2017;,citation_author=INE — Instituto Nacional de Estatística;,citation_publication_date=2018;,citation_cover_date=2018;,citation_year=2018;">
+<meta name="citation_reference" content="citation_title=Carta administrativa oficial de portugal, CAOP 2024.1;,citation_author=DGT — Direção-Geral do Território;,citation_publication_date=2024;,citation_cover_date=2024;,citation_year=2024;,citation_fulltext_html_url=https://geo2.dgterritorio.gov.pt/caop;">
+<meta name="citation_reference" content="citation_title=Portaria n.º 1553-d/2008, de 31 de dezembro — ajudas de custo e transportes em automóvel próprio;,citation_author=República Portuguesa;,citation_publication_date=2008;,citation_cover_date=2008;,citation_year=2008;,citation_fulltext_html_url=https://diariodarepublica.pt/dr/detalhe/portaria/1553-d-2008-243733;">
 </head>
 
 <body class="nav-sidebar floating">
@@ -217,6 +228,12 @@ ul.task-list li input[type="checkbox"] {
  <span class="menu-text">References</span></a>
   </div>
 </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./about.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">About</span></a>
+  </div>
+</li>
     </ul>
     </div>
 </nav>
@@ -229,6 +246,7 @@ ul.task-list li input[type="checkbox"] {
   <ul>
   <li><a href="#code-repository" id="toc-code-repository" class="nav-link active" data-scroll-target="#code-repository"><span class="header-section-number">12.1</span> Code Repository</a></li>
   <li><a href="#replication-for-other-areas" id="toc-replication-for-other-areas" class="nav-link" data-scroll-target="#replication-for-other-areas"><span class="header-section-number">12.2</span> Replication for Other Areas</a></li>
+  <li><a href="#dashboard" id="toc-dashboard" class="nav-link" data-scroll-target="#dashboard"><span class="header-section-number">12.3</span> Dashboard</a></li>
   </ul>
 </nav>
     </div>
@@ -258,7 +276,7 @@ ul.task-list li input[type="checkbox"] {
 <h2 data-number="12.1" class="anchored" data-anchor-id="code-repository"><span class="header-section-number">12.1</span> Code Repository</h2>
 <p>All data preparation and analysis scripts are available in the IMPT-data GitHub repository:</p>
 <blockquote class="blockquote">
-<p><code>https://github.com/U-Shift/IMPT-data</code></p>
+<p><a href="https://github.com/U-Shift/IMPT-data">github.com/U-Shift/IMPT-data</a></p>
 </blockquote>
 <p>Scripts are organised with a numeric prefix indicating execution order:</p>
 <div id="tbl-scripts" class="quarto-float quarto-figure quarto-figure-center anchored">
@@ -304,7 +322,7 @@ Table&nbsp;12.1: Pipeline script organisation
 <tr class="even">
 <td>05</td>
 <td>Index computation</td>
-<td><a href="https://github.com/U-Shift/IMPT-data/blob/main/code/05_IMPTcalculator.R"><code>05_IMPTcalculator.R</code></a>, <a href="https://github.com/U-Shift/IMPT-data/blob/main/code/05a_results_export_pca.R"><code>05a_results_export_pca.R</code></a></td>
+<td><a href="https://github.com/U-Shift/IMPT-data/blob/main/code/05_IMPTcalculator.R"><code>05_IMPTcalculator.R</code></a></td>
 </tr>
 <tr class="odd">
 <td>06</td>
@@ -315,6 +333,10 @@ Table&nbsp;12.1: Pipeline script organisation
 </table>
 </div>
 </figure>
+</div>
+<div class="calout-note">
+<p>The estimate <strong>time</strong> to run all the scrips is <strong>3 days</strong>, on a high capacity processing computer.</p>
+<p>The estimate <strong>storage</strong> needed is <strong>13 GB</strong>.</p>
 </div>
 </section>
 <section id="replication-for-other-areas" class="level2" data-number="12.2">
@@ -329,6 +351,10 @@ Table&nbsp;12.1: Pipeline script organisation
 <li>Run scripts in order (00 → 06).</li>
 </ol>
 <p>The H3 grid generation, routing engine, and scoring methodology are entirely generic and require no structural changes.</p>
+</section>
+<section id="dashboard" class="level2" data-number="12.3">
+<h2 data-number="12.3" class="anchored" data-anchor-id="dashboard"><span class="header-section-number">12.3</span> Dashboard</h2>
+<p>The code to build the IMPT dashboard is not included in this repository. You can find it in the <a href="https://github.com/U-Shift/IMPT">IMPT-web</a> repository.</p>
 
 
 </section>

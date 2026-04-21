@@ -68,10 +68,33 @@ ul.task-list li input[type="checkbox"] {
     "search-label": "Search"
   }
 }</script>
-<script src="site_libs/kePrint-0.0.1/kePrint.js"></script>
-<link href="site_libs/lightable-0.0.1/lightable.css" rel="stylesheet">
+<link href="site_libs/htmltools-fill-0.5.9/fill.css" rel="stylesheet">
+<script src="site_libs/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<link href="site_libs/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet">
+<script src="site_libs/datatables-binding-0.34.0/datatables.js"></script>
+<script src="site_libs/jquery-3.6.1/jquery-3.6.1.min.js"></script>
+<link href="site_libs/dt-core-1.13.6/css/jquery.dataTables.min.css" rel="stylesheet">
+<link href="site_libs/dt-core-1.13.6/css/jquery.dataTables.extra.css" rel="stylesheet">
+<script src="site_libs/dt-core-1.13.6/js/jquery.dataTables.min.js"></script>
+<link href="site_libs/nouislider-7.0.10/jquery.nouislider.min.css" rel="stylesheet">
+<script src="site_libs/nouislider-7.0.10/jquery.nouislider.min.js"></script>
+<link href="site_libs/selectize-0.12.0/selectize.bootstrap3.css" rel="stylesheet">
+<script src="site_libs/selectize-0.12.0/selectize.min.js"></script>
+<link href="site_libs/crosstalk-1.2.2/css/crosstalk.min.css" rel="stylesheet">
+<script src="site_libs/crosstalk-1.2.2/js/crosstalk.min.js"></script>
 
 
+<meta name="citation_title" content="[[10]{.chapter-number}&nbsp; [PCA Diagnostics]{.chapter-title}]{#sec-pca-diagnostics .quarto-section-identifier}">
+<meta name="citation_language" content="en">
+<meta name="citation_reference" content="citation_title=Jittering: A computationally efficient method for generating realistic route networks from origin-destination data;,citation_author=Robin Lovelace;,citation_author=Rosa Félix;,citation_author=Dustin Carlino;,citation_publication_date=2022;,citation_cover_date=2022;,citation_year=2022;,citation_fulltext_html_url=https://doi.org/10.32866/001c.33873;,citation_doi=10.32866/001c.33873;,citation_journal_title=Findings;">
+<meta name="citation_reference" content="citation_title=r5r: Rapid realistic routing on multimodal transport networks with R5 in R;,citation_author=Rafael H. M. Pereira;,citation_author=Marcus Saraiva;,citation_author=Daniel Herszenhut;,citation_author=Carlos K. V. Braga;,citation_author=Matthew Wigginton Conway;,citation_publication_date=2021;,citation_cover_date=2021;,citation_year=2021;,citation_fulltext_html_url=https://doi.org/10.32866/001c.21262;,citation_doi=10.32866/001c.21262;,citation_journal_title=Findings;">
+<meta name="citation_reference" content="citation_title=Accessibility: Transport accessibility measures;,citation_author=Rafael H. M. Pereira;,citation_author=Daniel Herszenhut;,citation_publication_date=2022;,citation_cover_date=2022;,citation_year=2022;,citation_fulltext_html_url=https://ipeagit.github.io/accessibility/;">
+<meta name="citation_reference" content="citation_title=Odjitter: Jitter origin-destination data;,citation_author=Robin Lovelace;,citation_author=Rosa Félix;,citation_publication_date=2022;,citation_cover_date=2022;,citation_year=2022;,citation_fulltext_html_url=https://github.com/itsleeds/odjitter;">
+<meta name="citation_reference" content="citation_title=H3: A hexagonal hierarchical spatial index;,citation_author=Uber Technologies;,citation_publication_date=2018;,citation_cover_date=2018;,citation_year=2018;,citation_fulltext_html_url=https://h3geo.org;">
+<meta name="citation_reference" content="citation_title=Censos 2021 — base geográfica de referenciação de informação, NUTS 3 lisboa;,citation_author=INE — Instituto Nacional de Estatística;,citation_publication_date=2021;,citation_cover_date=2021;,citation_year=2021;,citation_fulltext_html_url=https://mapas.ine.pt/download/filesGPG/2021/nuts3/BGRI21_170.zip;">
+<meta name="citation_reference" content="citation_title=Inquérito à mobilidade nas áreas metropolitanas do porto e de lisboa — IMOB 2017;,citation_author=INE — Instituto Nacional de Estatística;,citation_publication_date=2018;,citation_cover_date=2018;,citation_year=2018;">
+<meta name="citation_reference" content="citation_title=Carta administrativa oficial de portugal, CAOP 2024.1;,citation_author=DGT — Direção-Geral do Território;,citation_publication_date=2024;,citation_cover_date=2024;,citation_year=2024;,citation_fulltext_html_url=https://geo2.dgterritorio.gov.pt/caop;">
+<meta name="citation_reference" content="citation_title=Portaria n.º 1553-d/2008, de 31 de dezembro — ajudas de custo e transportes em automóvel próprio;,citation_author=República Portuguesa;,citation_publication_date=2008;,citation_cover_date=2008;,citation_year=2008;,citation_fulltext_html_url=https://diariodarepublica.pt/dr/detalhe/portaria/1553-d-2008-243733;">
 </head>
 
 <body class="nav-sidebar floating">
@@ -219,6 +242,12 @@ ul.task-list li input[type="checkbox"] {
  <span class="menu-text">References</span></a>
   </div>
 </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./about.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">About</span></a>
+  </div>
+</li>
     </ul>
     </div>
 </nav>
@@ -254,93 +283,12 @@ ul.task-list li input[type="checkbox"] {
 <div id="tbl-pca-summary" class="cell quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-pca-summary-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table&nbsp;10.1: PCA diagnostics — variance explained by PC1 (indicative values; run <a href="https://github.com/U-Shift/IMPT-data/blob/main/code/05_IMPTcalculator.R"><code>05_IMPTcalculator.R</code></a> for up-to-date results)
+Table&nbsp;10.1: PCA diagnostics — variance explained by PC1 (generated from <a href="https://github.com/U-Shift/IMPT-data/blob/main/code/05_IMPTcalculator.R"><code>05_IMPTcalculator.R</code></a> outputs)
 </figcaption>
 <div aria-describedby="tbl-pca-summary-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
-<table class="table do-not-create-environment cell caption-top table-sm table-striped small" data-quarto-postprocess="true">
-<thead>
-<tr class="header">
-<th style="text-align: left;" data-quarto-table-cell-role="th">Dimension / Mode</th>
-<th style="text-align: left;" data-quarto-table-cell-role="th">PC1 Variance (%)</th>
-<th style="text-align: left;" data-quarto-table-cell-role="th">Top contributing variable</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">Accessibility (global)</td>
-<td style="text-align: left;">[run script]</td>
-<td style="text-align: left;">[run script]</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">Mobility (global)</td>
-<td style="text-align: left;">[run script]</td>
-<td style="text-align: left;">[run script]</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">Safety (global)</td>
-<td style="text-align: left;">[run script]</td>
-<td style="text-align: left;">[run script]</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">Accessibility – Car</td>
-<td style="text-align: left;">[run script]</td>
-<td style="text-align: left;">[run script]</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">Accessibility – PT</td>
-<td style="text-align: left;">[run script]</td>
-<td style="text-align: left;">[run script]</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">Accessibility – Bike</td>
-<td style="text-align: left;">[run script]</td>
-<td style="text-align: left;">[run script]</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">Accessibility – Walk</td>
-<td style="text-align: left;">[run script]</td>
-<td style="text-align: left;">[run script]</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">Mobility – Car</td>
-<td style="text-align: left;">[run script]</td>
-<td style="text-align: left;">[run script]</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">Mobility – PT</td>
-<td style="text-align: left;">[run script]</td>
-<td style="text-align: left;">[run script]</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">Mobility – Bike</td>
-<td style="text-align: left;">[run script]</td>
-<td style="text-align: left;">[run script]</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">Mobility – Walk</td>
-<td style="text-align: left;">[run script]</td>
-<td style="text-align: left;">[run script]</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">Safety – Car</td>
-<td style="text-align: left;">[run script]</td>
-<td style="text-align: left;">[run script]</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">Safety – Bike</td>
-<td style="text-align: left;">[run script]</td>
-<td style="text-align: left;">[run script]</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">Safety – Walk</td>
-<td style="text-align: left;">[run script]</td>
-<td style="text-align: left;">[run script]</td>
-</tr>
-</tbody>
-</table>
-
-
+<div class="datatables html-widget html-fill-item" id="htmlwidget-4d3e84b32416c9a1edee" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-4d3e84b32416c9a1edee">{"x":{"filter":"top","vertical":false,"filterHTML":"<tr>\n  <td data-type=\"factor\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"width: 100%; display: none;\">\n      <select multiple=\"multiple\" style=\"width: 100%;\" data-options=\"[&quot;Accessibility&quot;,&quot;Mobility&quot;,&quot;Safety&quot;]\"><\/select>\n    <\/div>\n  <\/td>\n  <td data-type=\"factor\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"width: 100%; display: none;\">\n      <select multiple=\"multiple\" style=\"width: 100%;\" data-options=\"[&quot;All&quot;,&quot;Bike&quot;,&quot;Car&quot;,&quot;PT&quot;,&quot;Walk&quot;]\"><\/select>\n    <\/div>\n  <\/td>\n  <td data-type=\"number\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"45.4\" data-max=\"63.9\" data-scale=\"1\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"character\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"number\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"-0.79\" data-max=\"0.99\" data-scale=\"2\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n<\/tr>","data":[["Accessibility","Accessibility","Accessibility","Accessibility","Accessibility","Mobility","Mobility","Mobility","Mobility","Mobility","Safety","Safety","Safety","Safety","Safety","Accessibility","Accessibility","Accessibility","Accessibility","Accessibility","Accessibility","Accessibility","Accessibility","Accessibility","Accessibility","Accessibility","Accessibility","Accessibility","Accessibility","Accessibility","Accessibility","Accessibility","Accessibility","Accessibility","Accessibility","Mobility","Mobility","Mobility","Mobility","Mobility","Mobility","Mobility","Mobility","Mobility","Mobility","Mobility","Mobility","Mobility","Mobility","Mobility"],["All","All","All","All","All","All","All","All","All","All","All","All","All","All","All","Car","Car","Car","Car","Car","PT","PT","PT","PT","PT","Bike","Bike","Bike","Bike","Bike","Walk","Walk","Walk","Walk","Walk","Car","Car","PT","PT","PT","PT","PT","Bike","Bike","Bike","Bike","Bike","Walk","Walk","Walk"],[60.2,60.2,60.2,60.2,60.2,45.4,45.4,45.4,45.4,45.4,52.6,52.6,52.6,52.6,52.6,63.9,63.9,63.9,63.9,63.9,62.7,62.7,62.7,62.7,62.7,61.5,61.5,61.5,61.5,61.5,60.6,60.6,60.6,60.6,60.6,62.2,62.2,59.6,59.6,59.6,59.6,59.6,60,60,60,60,60,50.4,50.4,50.4],["mobility_cost_groceries_walk_n3_residents","mobility_cost_groceries_car_n3_residents","mobility_cost_groceries_transit_2t_n3_residents","mobility_cost_health_bike_n1_residents","mobility_cost_health_transit_2t_n1_residents","mobility_commuting_avg_tt_transit_2t_120m_15w","mobility_transit_weighted_waiting_time_peak","PT_Waitingtime","mobility_commuting_avg_tt_bike","PT_Weight_frequency_peak","total_vitimas30","total_acidentes","feridos_ligeiros30","total_veiculos","feridos_graves30","mobility_cost_groceries_car_n3_residents","access_schools_primary_car_30min_kids","mobility_cost_greenspaces_car_n1_residents","access_health_car_30min_residents","mobility_cost_recreation_car_n3_residents","mobility_cost_groceries_transit_2t_n3_residents","access_schools_primary_transit_2t_30min_kids","mobility_cost_health_transit_2t_n1_residents","access_health_transit_2t_30min_residents","mobility_cost_greenspaces_transit_2t_n1_residents","mobility_cost_health_bike_n1_residents","access_schools_primary_bike_15min_kids","access_health_bike_15min_residents","mobility_cost_groceries_bike_n3_residents","mobility_cost_schools_primary_bike_n1_kids","mobility_cost_groceries_walk_n3_residents","mobility_cost_health_walk_n1_residents","access_schools_primary_walk_15min_kids","mobility_cost_schools_primary_walk_n1_kids","mobility_cost_greenspaces_walk_n1_residents","road_length","mobility_commuting_avg_tt_car","PT_Waitingtime","mobility_transit_weighted_waiting_time_peak","mobility_commuting_avg_tt_transit_2t_120m_15w","PT_Weight_frequency_peak","pct_pt_all","segregated_cycleway_length","cycleway_length","cycleway_to_road_ratio","cycling_quality_ratio","mobility_commuting_avg_tt_bike","pedpath_to_road_ratio","mobility_commuting_avg_tt_walk","pedpath_length"],[0.91,0.9,0.9,0.88,0.87,0.9399999999999999,0.88,0.88,0.85,0.84,0.99,0.99,0.99,0.98,0.8,0.91,0.88,0.87,0.87,0.86,0.91,0.89,0.89,0.86,0.85,0.88,0.87,0.85,0.85,0.82,0.89,0.87,0.84,0.84,0.83,0.79,-0.79,0.9399999999999999,0.9399999999999999,0.92,0.89,0.86,0.93,0.92,0.89,0.53,0.48,0.88,0.86,0.05]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>Dimension<\/th>\n      <th>Mode<\/th>\n      <th>PC1 Var (%)<\/th>\n      <th>Variable<\/th>\n      <th>r with PC1<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"paging":false,"dom":"tif","autoWidth":true,"columnDefs":[{"className":"dt-center","targets":"_all"},{"name":"Dimension","targets":0},{"name":"Mode","targets":1},{"name":"PC1 Var (%)","targets":2},{"name":"Variable","targets":3},{"name":"r with PC1","targets":4}],"order":[],"orderClasses":false,"orderCellsTop":true}},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>
 </figure>
@@ -356,7 +304,7 @@ Tip
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>To populate this table automatically, source <a href="https://github.com/U-Shift/IMPT-data/blob/main/code/05_IMPTcalculator.R"><code>05_IMPTcalculator.R</code></a> and read <code>PCA_Variance_Table.csv</code> and <code>PCA_Variance_and_Correlations.csv</code> from the results folder.</p>
+<p>Table data are read automatically from <code>/impt/pca_scores/PCA_Variance_Table.csv</code> and <code>PCA_Variance_and_Correlations.csv</code>, which are generated by <a href="https://github.com/U-Shift/IMPT-data/blob/main/code/05_IMPTcalculator.R"><code>05_IMPTcalculator.R</code></a>. Re-run that script to refresh the values after any changes to the input data.</p>
 </div>
 </div>
 

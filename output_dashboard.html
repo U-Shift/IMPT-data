@@ -70,6 +70,17 @@ ul.task-list li input[type="checkbox"] {
 }</script>
 
 
+<meta name="citation_title" content="[[11]{.chapter-number}&nbsp; [Output and Dashboard]{.chapter-title}]{#sec-output .quarto-section-identifier}">
+<meta name="citation_language" content="en">
+<meta name="citation_reference" content="citation_title=Jittering: A computationally efficient method for generating realistic route networks from origin-destination data;,citation_author=Robin Lovelace;,citation_author=Rosa Félix;,citation_author=Dustin Carlino;,citation_publication_date=2022;,citation_cover_date=2022;,citation_year=2022;,citation_fulltext_html_url=https://doi.org/10.32866/001c.33873;,citation_doi=10.32866/001c.33873;,citation_journal_title=Findings;">
+<meta name="citation_reference" content="citation_title=r5r: Rapid realistic routing on multimodal transport networks with R5 in R;,citation_author=Rafael H. M. Pereira;,citation_author=Marcus Saraiva;,citation_author=Daniel Herszenhut;,citation_author=Carlos K. V. Braga;,citation_author=Matthew Wigginton Conway;,citation_publication_date=2021;,citation_cover_date=2021;,citation_year=2021;,citation_fulltext_html_url=https://doi.org/10.32866/001c.21262;,citation_doi=10.32866/001c.21262;,citation_journal_title=Findings;">
+<meta name="citation_reference" content="citation_title=Accessibility: Transport accessibility measures;,citation_author=Rafael H. M. Pereira;,citation_author=Daniel Herszenhut;,citation_publication_date=2022;,citation_cover_date=2022;,citation_year=2022;,citation_fulltext_html_url=https://ipeagit.github.io/accessibility/;">
+<meta name="citation_reference" content="citation_title=Odjitter: Jitter origin-destination data;,citation_author=Robin Lovelace;,citation_author=Rosa Félix;,citation_publication_date=2022;,citation_cover_date=2022;,citation_year=2022;,citation_fulltext_html_url=https://github.com/itsleeds/odjitter;">
+<meta name="citation_reference" content="citation_title=H3: A hexagonal hierarchical spatial index;,citation_author=Uber Technologies;,citation_publication_date=2018;,citation_cover_date=2018;,citation_year=2018;,citation_fulltext_html_url=https://h3geo.org;">
+<meta name="citation_reference" content="citation_title=Censos 2021 — base geográfica de referenciação de informação, NUTS 3 lisboa;,citation_author=INE — Instituto Nacional de Estatística;,citation_publication_date=2021;,citation_cover_date=2021;,citation_year=2021;,citation_fulltext_html_url=https://mapas.ine.pt/download/filesGPG/2021/nuts3/BGRI21_170.zip;">
+<meta name="citation_reference" content="citation_title=Inquérito à mobilidade nas áreas metropolitanas do porto e de lisboa — IMOB 2017;,citation_author=INE — Instituto Nacional de Estatística;,citation_publication_date=2018;,citation_cover_date=2018;,citation_year=2018;">
+<meta name="citation_reference" content="citation_title=Carta administrativa oficial de portugal, CAOP 2024.1;,citation_author=DGT — Direção-Geral do Território;,citation_publication_date=2024;,citation_cover_date=2024;,citation_year=2024;,citation_fulltext_html_url=https://geo2.dgterritorio.gov.pt/caop;">
+<meta name="citation_reference" content="citation_title=Portaria n.º 1553-d/2008, de 31 de dezembro — ajudas de custo e transportes em automóvel próprio;,citation_author=República Portuguesa;,citation_publication_date=2008;,citation_cover_date=2008;,citation_year=2008;,citation_fulltext_html_url=https://diariodarepublica.pt/dr/detalhe/portaria/1553-d-2008-243733;">
 </head>
 
 <body class="nav-sidebar floating">
@@ -217,6 +228,12 @@ ul.task-list li input[type="checkbox"] {
  <span class="menu-text">References</span></a>
   </div>
 </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./about.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">About</span></a>
+  </div>
+</li>
     </ul>
     </div>
 </nav>
@@ -273,7 +290,7 @@ Table&nbsp;11.1: Output file formats
 <thead>
 <tr class="header">
 <th>Level</th>
-<th>Format</th>
+<th>Formats</th>
 <th>Variables</th>
 </tr>
 </thead>
@@ -286,44 +303,50 @@ Table&nbsp;11.1: Output file formats
 <tr class="even">
 <td>Municipality (<em>município</em>)</td>
 <td>CSV + GeoPackage</td>
-<td>Population-weighted means</td>
+<td>Population-weighted means + IMPT scores</td>
 </tr>
 <tr class="odd">
 <td>H3 Grid</td>
 <td>CSV + GeoPackage</td>
-<td>Assigned from host parish</td>
+<td>Assigned from host parish + Computed at grid level when makes sense</td>
 </tr>
 </tbody>
 </table>
 </div>
 </figure>
 </div>
-<p>Results are uploaded to the project data server at <code>https://impt.server.ushift.pt</code>, to the ushift server at <code>https://ushift.tecnico.ulisboa.pt/content/impt/</code>, and to the GitHub release using <code>piggyback</code>.</p>
+<p>Results are uploaded to the project data server at <code>https://impt.server.ushift.pt</code>, to the ushift server at <code>https://ushift.tecnico.ulisboa.pt/content/impt/</code>, and to the GitHub release using <code>piggyback</code> (TBC when drafting release).</p>
 </section>
 <section id="sec-dashboard" class="level2" data-number="11.2">
 <h2 data-number="11.2" class="anchored" data-anchor-id="sec-dashboard"><span class="header-section-number">11.2</span> Dashboard Export</h2>
-<p><strong>Script:</strong> <a href="https://github.com/U-Shift/IMPT-data/blob/main/code/06b_dashboard_export.R"><code>06b_dashboard_export.R</code></a></p>
-<p>The dashboard export script joins all indicator tables (accessibility, mobility, affordability, safety, census/land use, IMPT scores) with the spatial geometry files and exports them as three aggregated <strong>GeoJSON</strong> files for direct use in the web dashboard:</p>
+<p>The dashboard export process consists of two main steps:</p>
+<ol type="1">
+<li><p><strong>Data Loading:</strong> <a href="https://github.com/U-Shift/IMPT-data/blob/main/code/06a_results_load.R"><code>06a_results_load.R</code></a> This script loads and prepares all indicator results (accessibility, mobility, safety, etc.) across the three spatial levels.</p></li>
+<li><p><strong>Joining and Export:</strong> <a href="https://github.com/U-Shift/IMPT-data/blob/main/code/06b_dashboard_export.R"><code>06b_dashboard_export.R</code></a> This script joins the prepared indicator tables and all the relevant metrics with the spatial geometry files and exports them as three aggregated <strong>GeoJSON</strong> files for direct use in the web dashboard:</p></li>
+</ol>
 <ul>
 <li><code>grid_aggregated.geojson</code></li>
 <li><code>freguesias_aggregated.geojson</code></li>
 <li><code>municipios_aggregated.geojson</code></li>
 </ul>
-<p>A champions lookup file (<code>champions.json</code>) is also exported, identifying the <strong>top contributing indicators</strong> to each dimension’s PC1, for display in the dashboard sidebar.</p>
+<p>A champions lookup file (<code>champions.json</code>) is also exported, identifying the <strong>top contributing indicators</strong> to each dimension’s PC1 score, for display in the dashboard sidebar.</p>
 </section>
 <section id="web-dashboard" class="level2" data-number="11.3">
 <h2 data-number="11.3" class="anchored" data-anchor-id="web-dashboard"><span class="header-section-number">11.3</span> Web Dashboard</h2>
 <p>The IMPT results are visualised in an interactive web dashboard built with <strong>React + TypeScript + Vite</strong>, using <strong>Leaflet/MapLibre</strong> for map rendering. The dashboard is available at:</p>
-<blockquote class="blockquote">
+<div style="font-size: 1.5em; text-align: center; margin: 1em 0;">
 <p><a href="https://ushift.pt/apps/impt">ushift.pt/apps/impt</a></p>
-</blockquote>
-<p>The dashboard supports:</p>
+</div>
+<p>The dashboard provides a comprehensive suite of features for exploring the data:</p>
 <ul>
-<li>Map visualisation by metric, mode, and geographic level</li>
-<li>Metric cards with legend, description, and top contributor indicators</li>
-<li>Dynamic IMPT score computation with user-defined dimension weights</li>
-<li>PT fare scenario switching (single fare vs.&nbsp;Navegante pass)</li>
-<li>Download results and indicators as CSV and GeoJSON</li>
+<li><strong>Multi-scale Map Visualisation:</strong> Explore indicators by geographic level (Grid, Parish, Municipality), transport mode (Car, PT, Bike, Walk), and specific land-use and socio-demographic variables.</li>
+<li><strong>Composite Index Aggregation:</strong> Switch between different IMPT calculation methods, including equal weights, critical (geometric mean), contrasting (entropy), or dynamic user-defined weights.</li>
+<li><strong>AHP Weighting Methodology:</strong> Built-in Analytic Hierarchy Process (AHP) survey to help users mathematically derive optimal, consistent dimension weights for the dynamic IMPT score.</li>
+<li><strong>PT Fare Scenarios:</strong> Toggle between single-fare and Navegante pass scenarios to immediately see their impact on affordability.</li>
+<li><strong>Area Profiling:</strong> Detailed side-panels showing regional contrasts, subarea dynamics, and modal share profiles for the selected geographic unit.</li>
+<li><strong>Contextual and Land Use Layers:</strong> View built area classifications, population density, and demographic ratios alongside mobility metrics.</li>
+<li><strong>Accessibility &amp; UI:</strong> Colorblind mode, light/dark theme toggles, and switchable base maps (Simplified, Satellite, OpenStreetMap).</li>
+<li><strong>Open Data:</strong> Direct download of all the results and indicators as CSV and GeoJSON.</li>
 </ul>
 
 

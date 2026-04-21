@@ -102,6 +102,17 @@ window.Quarto = {
 };
 </script>
 
+<meta name="citation_title" content="[[9]{.chapter-number}&nbsp; [Index Computation — IMPT Calculator]{.chapter-title}]{#sec-calculator .quarto-section-identifier}">
+<meta name="citation_language" content="en">
+<meta name="citation_reference" content="citation_title=Jittering: A computationally efficient method for generating realistic route networks from origin-destination data;,citation_author=Robin Lovelace;,citation_author=Rosa Félix;,citation_author=Dustin Carlino;,citation_publication_date=2022;,citation_cover_date=2022;,citation_year=2022;,citation_fulltext_html_url=https://doi.org/10.32866/001c.33873;,citation_doi=10.32866/001c.33873;,citation_journal_title=Findings;">
+<meta name="citation_reference" content="citation_title=r5r: Rapid realistic routing on multimodal transport networks with R5 in R;,citation_author=Rafael H. M. Pereira;,citation_author=Marcus Saraiva;,citation_author=Daniel Herszenhut;,citation_author=Carlos K. V. Braga;,citation_author=Matthew Wigginton Conway;,citation_publication_date=2021;,citation_cover_date=2021;,citation_year=2021;,citation_fulltext_html_url=https://doi.org/10.32866/001c.21262;,citation_doi=10.32866/001c.21262;,citation_journal_title=Findings;">
+<meta name="citation_reference" content="citation_title=Accessibility: Transport accessibility measures;,citation_author=Rafael H. M. Pereira;,citation_author=Daniel Herszenhut;,citation_publication_date=2022;,citation_cover_date=2022;,citation_year=2022;,citation_fulltext_html_url=https://ipeagit.github.io/accessibility/;">
+<meta name="citation_reference" content="citation_title=Odjitter: Jitter origin-destination data;,citation_author=Robin Lovelace;,citation_author=Rosa Félix;,citation_publication_date=2022;,citation_cover_date=2022;,citation_year=2022;,citation_fulltext_html_url=https://github.com/itsleeds/odjitter;">
+<meta name="citation_reference" content="citation_title=H3: A hexagonal hierarchical spatial index;,citation_author=Uber Technologies;,citation_publication_date=2018;,citation_cover_date=2018;,citation_year=2018;,citation_fulltext_html_url=https://h3geo.org;">
+<meta name="citation_reference" content="citation_title=Censos 2021 — base geográfica de referenciação de informação, NUTS 3 lisboa;,citation_author=INE — Instituto Nacional de Estatística;,citation_publication_date=2021;,citation_cover_date=2021;,citation_year=2021;,citation_fulltext_html_url=https://mapas.ine.pt/download/filesGPG/2021/nuts3/BGRI21_170.zip;">
+<meta name="citation_reference" content="citation_title=Inquérito à mobilidade nas áreas metropolitanas do porto e de lisboa — IMOB 2017;,citation_author=INE — Instituto Nacional de Estatística;,citation_publication_date=2018;,citation_cover_date=2018;,citation_year=2018;">
+<meta name="citation_reference" content="citation_title=Carta administrativa oficial de portugal, CAOP 2024.1;,citation_author=DGT — Direção-Geral do Território;,citation_publication_date=2024;,citation_cover_date=2024;,citation_year=2024;,citation_fulltext_html_url=https://geo2.dgterritorio.gov.pt/caop;">
+<meta name="citation_reference" content="citation_title=Portaria n.º 1553-d/2008, de 31 de dezembro — ajudas de custo e transportes em automóvel próprio;,citation_author=República Portuguesa;,citation_publication_date=2008;,citation_cover_date=2008;,citation_year=2008;,citation_fulltext_html_url=https://diariodarepublica.pt/dr/detalhe/portaria/1553-d-2008-243733;">
 </head>
 
 <body class="nav-sidebar floating">
@@ -249,6 +260,12 @@ window.Quarto = {
  <span class="menu-text">References</span></a>
   </div>
 </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./about.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">About</span></a>
+  </div>
+</li>
     </ul>
     </div>
 </nav>
@@ -367,7 +384,10 @@ Figure&nbsp;9.1: IMPT index computation pipeline
 <p>All indicators are normalised to the range [1, 100] using min-max scaling:</p>
 <p><strong>Benefit indicators</strong> (higher raw value → better): <span class="math display">\[X_{norm} = 1 + \frac{X - X_{min}}{X_{max} - X_{min}} \times 99\]</span></p>
 <p><strong>Cost indicators</strong> (lower raw value → better): <span class="math display">\[X_{norm} = 1 + \frac{X_{max} - X}{X_{max} - X_{min}} \times 99\]</span></p>
-<p>Accessibility metrics (<code>access_*</code>) are <em>benefit</em> indicators; mobility cost metrics (<code>mobility_cost_*</code>), PT waiting times, all affordability indicators, and all safety indicators are <em>cost</em> indicators.</p>
+<ul>
+<li><strong>Accessibility</strong> metrics (<code>access_*</code>) are <em>benefit</em> indicators.</li>
+<li><strong>Mobility</strong> cost metrics (<code>mobility_cost_*</code>), PT waiting times, all <strong>affordability</strong> indicators, and all <strong>safety</strong> indicators are <em>cost</em> indicators.</li>
+</ul>
 <p>Missing values in accessibility indicators (arising from infeasible PT routes) are imputed with the mean of the respective variable prior to PCA.</p>
 </section>
 <section id="sec-pca" class="level2" data-number="9.2">
@@ -375,7 +395,7 @@ Figure&nbsp;9.1: IMPT index computation pipeline
 <p>For each dimension (Accessibility, Mobility, Safety) and at the global (all-mode) and per-mode levels, a PCA is run using <code>FactoMineR::PCA()</code> at parish level.</p>
 <p>The <strong>first principal component (PC1)</strong> score is used as the dimension index, after rescaling to [1, 100]. PC1 captures the dominant axis of variation among the normalised indicators.</p>
 <p>For <strong>Affordability</strong>, PCA is not applied (too few indicators); instead, the normalised composite <code>h_transp_inc_comp</code> (housing + transport cost as share of income, modal-share weighted) is used directly as the Affordability Index.</p>
-<p>For <strong>Safety per mode</strong>, an equal-weight average of the severity index and frequency (vehicle involvement count) is used instead of PCA.</p>
+<p>For <strong>Safety per mode</strong>, an equal-weight average of the severity index (per mode) and total vehicles involved (per mode) is used instead of PCA.</p>
 </section>
 <section id="sec-composite" class="level2" data-number="9.3">
 <h2 data-number="9.3" class="anchored" data-anchor-id="sec-composite"><span class="header-section-number">9.3</span> Composite IMPT Scores</h2>
