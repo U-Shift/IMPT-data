@@ -23,7 +23,6 @@ book:
         - affordability.qmd
         - safety.qmd
         - calculator.qmd
-        - pca_results.qmd
     - part: "**Dashboard and Reproducibility**"
       chapters:
         - output_dashboard.qmd
@@ -32,6 +31,7 @@ book:
     - about.qmd
   appendices:
     - metadata.qmd
+    - pca_results.qmd
 
 bibliography: references.bib
 
