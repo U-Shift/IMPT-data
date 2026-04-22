@@ -4,9 +4,7 @@
 
 This research was conducted by the U-Shift Lab at Instituto Superior Técnico - University of Lisbon, in collaboration with the Transportes Metropolitanos de Lisboa (TML).
 
-|  |  |
-|:---------------------------:|:-----------------------------------------:|
-| ![](images/clipboard-685979306.jpeg){width="241"} | ![](images/clipboard-1837000547.png){width="282"} |
+![](images/logo_acknowledgement_tml.png){width="100%"}
 
 ### U-Shift Lab, Instituto Superior Técnico {.unnumbered}
 
@@ -50,4 +48,6 @@ This research was conducted by the U-Shift Lab at Instituto Superior Técnico - 
 
 ## Funding
 
-This research was funded by Science4Policy **\[continue...\]**
+This research was funded by Science4Policy, a PLANAPP - Centre for Planning and Evaluation of Public Policies iniciative to support the definition and implementation of public policies based on scientific evidence.
+
+![](images/logo_planapp.png){width="100%"}
