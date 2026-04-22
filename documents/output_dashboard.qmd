@@ -24,9 +24,11 @@ The dashboard export process consists of two main steps:
 2.  **Joining and Export:** [`06b_dashboard_export.R`](https://github.com/U-Shift/IMPT-data/blob/main/code/06b_dashboard_export.R)
     This script joins the prepared indicator tables and all the relevant metrics with the spatial geometry files and exports them as three aggregated **GeoJSON** files for direct use in the web dashboard:
 
-- `grid_aggregated.geojson`
-- `freguesias_aggregated.geojson`
-- `municipios_aggregated.geojson`
+- `grid_{aggregated/dashboard¹}.geojson`
+- `freguesias_{aggregated/dashboard¹}.geojson`
+- `municipios_{aggregated/dashboard¹}.geojson`
+
+> ¹ `aggregated` refers to the full dataset, `dashboard` to a reduced version with only the variables displayed for faster loading.
 
 A champions lookup file (`champions.json`) is also exported, identifying the **top contributing indicators** to each dimension's PC1 score, for display in the dashboard sidebar.
 
