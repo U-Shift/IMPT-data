@@ -807,6 +807,12 @@ impt_write(Final_Results_Master_grid_bike, "/impt/results/IMPT_PCA_and_Entropy_S
 impt_write(Final_Results_Master_grid_walk, "/impt/results/IMPT_PCA_and_Entropy_Scores_walk_grid.csv")
 
 
+
+# Export for report -------------------------------------------------------
+
+write_csv(pca_variance_report, "data/impt/pca_scores/PCA_Variance_and_Correlations.csv")
+write_csv(pca_summary_table, "data/impt/pca_scores/PCA_Variance_Table.csv")
+
 # =============================================================================
 # SECTION 7 – VISUALISATION  (requires 00_data_load.R to have loaded `freguesias`)
 # =============================================================================
