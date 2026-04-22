@@ -44,7 +44,7 @@ ul.task-list li input[type="checkbox"] {
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-1639bb64a19928aae5da347f8145b16e.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-37d11a445f1a4f387c765ace15bdb02a.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -423,16 +423,24 @@ Figure&nbsp;10.1: IMPT index computation pipeline
 <p>The <strong>first principal component (PC1)</strong> score is used as the dimension index, after rescaling to [1, 100]. PC1 captures the dominant axis of variation among the normalised indicators.</p>
 <p>For <strong>Affordability</strong>, PCA is not applied (too few indicators); instead, the normalised composite <code>h_transp_inc_comp</code> (housing + transport cost as share of income, modal-share weighted) is used directly as the Affordability Index.</p>
 <p>For <strong>Safety per mode</strong>, an equal-weight average of the severity index (per mode) and total vehicles involved (per mode) is used instead of PCA.</p>
+<p>For <strong>Mobility - Car</strong> PCA is not applied (too few indicators); instead, we assumed an equal-weight average of the normalized composite <code>mobility_commuting_avg_tt_car</code> and <code>road_length</code>.</p>
 </section>
 <section id="sec-composite" class="level2" data-number="10.3">
 <h2 data-number="10.3" class="anchored" data-anchor-id="sec-composite"><span class="header-section-number">10.3</span> Composite IMPT Scores</h2>
 <p>Three aggregation methods are computed for the global IMPT and each per-mode IMPT:</p>
 <ol type="1">
-<li><p><strong>Geometric mean</strong> (equal weights): <span class="math display">\[IMPT_{geom} = \left(\prod_{d} (S_d + 1)\right)^{1/n} - 1\]</span></p></li>
-<li><p><strong>Arithmetic mean</strong> (equal weights): <span class="math display">\[IMPT_{avg} = \frac{1}{n} \sum_d S_d\]</span></p></li>
-<li><p><strong>Entropy-weighted geometric mean</strong>: <span class="math display">\[IMPT_{entropy} = \prod_d (S_d + 1)^{w_d} - 1\]</span></p></li>
+<li><strong>Geometric mean</strong> (equal weights): <span class="math display">\[IMPT_{geom} = \left(\prod_{d} (S_d + 1)\right)^{1/n} - 1\]</span></li>
+</ol>
+<p>Partially compensatory: penalizes dimensions with very low values non-linearly. Highlights the most critical situations, where at least one dimension is severely deficient.</p>
+<ol start="2" type="1">
+<li><strong>Arithmetic mean</strong> (equal weights): <span class="math display">\[IMPT_{avg} = \frac{1}{n} \sum_d S_d\]</span></li>
+</ol>
+<p>Compensatory: high vulnerability in one dimension can be offset by good performance in others. Suitable for setting aggregate policy targets and communicating to non-specialist audiences.</p>
+<ol start="3" type="1">
+<li><strong>Entropy-weighted geometric mean</strong>: <span class="math display">\[IMPT_{entropy} = \prod_d (S_d + 1)^{w_d} - 1\]</span></li>
 </ol>
 <p>where weights <span class="math inline">\(w_d\)</span> are derived from the <strong>entropy weighting method</strong>:</p>
+<p>Weights are determined by the empirical dispersion of the dimensions across parishes: the dimension that varies most among territories receives greater weight. Maximises territorial contrast and is useful for competitive prioritisation of interventions.</p>
 <p><span class="math display">\[w_d = \frac{d_d}{\sum_j d_j}, \quad d_d = 1 - e_d, \quad e_d = -k \sum_i p_{id} \ln(p_{id})\]</span></p>
 <p>with <span class="math inline">\(k = 1/\ln(n)\)</span> and <span class="math inline">\(p_{id}\)</span> being the proportion of the dimension score for area <span class="math inline">\(i\)</span>.</p>
 </section>
