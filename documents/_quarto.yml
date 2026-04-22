@@ -13,6 +13,7 @@ book:
     - part: "**Data**"
       chapters:
         - data_sources.qmd
+        - data_access.qmd
         - data_preparation.qmd
         - transport_routing.qmd
     - part: "**Dimensions and PCA**"
@@ -26,6 +27,7 @@ book:
     - part: "**Dashboard and Reproducibility**"
       chapters:
         - output_dashboard.qmd
+        - metadata.qmd
         - reproducibility.qmd
     - references.qmd
     - about.qmd

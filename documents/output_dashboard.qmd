@@ -12,7 +12,7 @@ Final results are stored in three geographic formats for each spatial level:
 
 : Output file formats {#tbl-output}
 
-Results are uploaded to the project data server at `https://impt.server.ushift.pt`, to the ushift server at `https://ushift.tecnico.ulisboa.pt/content/impt/`, and to the GitHub release using `piggyback` (TBC when drafting release).
+Results are uploaded to the project data server at `https://impt.server.ushift.pt`, to the U-Shift server at [https://ushift.tecnico.ulisboa.pt/content/impt/](https://ushift.tecnico.ulisboa.pt/content/impt/), and to the [GitHub releases](https://github.com/U-Shift/IMPT-data/releases).
 
 ## Dashboard Export {#sec-dashboard}
 
@@ -24,11 +24,20 @@ The dashboard export process consists of two main steps:
 2.  **Joining and Export:** [`06b_dashboard_export.R`](https://github.com/U-Shift/IMPT-data/blob/main/code/06b_dashboard_export.R)
     This script joins the prepared indicator tables and all the relevant metrics with the spatial geometry files and exports them as three aggregated **GeoJSON** files for direct use in the web dashboard:
 
-- `grid_aggregated.geojson`
-- `freguesias_aggregated.geojson`
-- `municipios_aggregated.geojson`
+- `grid_{aggregated/dashboard¹}.geojson`
+- `freguesias_{aggregated/dashboard¹}.geojson`
+- `municipios_{aggregated/dashboard¹}.geojson`
+
+> ¹ `aggregated` refers to the full dataset, `dashboard` to a reduced version with only the variables displayed for faster loading.
 
 A champions lookup file (`champions.json`) is also exported, identifying the **top contributing indicators** to each dimension's PC1 score, for display in the dashboard sidebar.
+
+::: callout-note
+Mind that the columns of data loaded at `code/06a_results_load.R` and those exported by `code/06b_dashboard_export.R` may differ, as the latest script performs some data cleaning and renaming to ensure data standardization and consistency.
+
+For instance, different naming for the same mode are replaced by a single naming (such as "road", "carro" or "private_vehicle" to "car") and the mode in any variable is moved to the end of the variable name to simplify the frontend data binding (for example, `access_recreation_walk_15min_residents` becomes `access_recreation_15min_residents_walk`).
+
+:::
 
 ## Web Dashboard
 
