@@ -29,8 +29,8 @@ flowchart TB
     
     CumCut --> Agg["Aggregate to parish/municipality<br/>(weighted mean by population segment)"]
     CostCalc --> Agg
-    Agg --> Out["Output: access\_{poi}\_{time}\_{census}\_{mode}"]
-    Agg --> Out2["Output: mobility_cost\_{poi}\_{n}\_{census}\_{mode}"]
+    Agg --> Out["Output: access\_{poi}\_{mode}\_{time}\_{census}"]
+    Agg --> Out2["Output: mobility_cost\_{poi}\_{mode}\_{n}\_{census}"]
 ```
 
 ## Cumulative accessibility
@@ -45,11 +45,11 @@ The resulting values are then aggregated to parishes and municipalities using a 
 **Metric naming convention:**
 
 Accessibility metrics follow the pattern:  
-`access_{poi_type}_{time}_{census_group¹}_{mode}`
+`access_{poi_type}_{mode}_{time}_{census_group¹}`
 
 > ¹ Accessibility is computed at grid level, so metrics for this scale are not aggregated by census group.
 
-For example: `access_health_30min_residents_pt` is the number of health facilities reachable by public transit within 30 minutes, for the total resident population for the parish and municipality levels. At the grid level, it is called `access_health_30min_pt`.
+For example: `access_health_pt_30min_residents` is the number of health facilities reachable by public transit within 30 minutes, for the total resident population for the parish and municipality levels. At the grid level, it is called `access_health_pt_30min_residents`.
 
 ## Time to closest opportunity (mobility costs)
 
@@ -63,6 +63,6 @@ The resulting values are then aggregated to parishes and municipalities using a 
 **Metric naming convention:**
 
 Accessibility metrics follow the pattern:  
-`mobility_cost_{poi_type}_{n}_{census_group¹}_{mode}`
+`mobility_cost_{poi_type}_{mode}_{n}_{census_group¹}`
 
 > ¹ Accessibility is computed at grid level, so metrics for this scale are not aggregated by census group.

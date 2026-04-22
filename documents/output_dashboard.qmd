@@ -30,6 +30,13 @@ The dashboard export process consists of two main steps:
 
 A champions lookup file (`champions.json`) is also exported, identifying the **top contributing indicators** to each dimension's PC1 score, for display in the dashboard sidebar.
 
+::: callout-note
+Mind that the columns of data loaded at `code/06a_results_load.R` and those exported by `code/06b_dashboard_export.R` may differ, as the latest script performs some data cleaning and renaming to ensure data standardization and consistency.
+
+For instance, different naming for the same mode are replaced by a single naming (such as "road", "carro" or "private_vehicle" to "car") and the mode in any variable is moved to the end of the variable name to simplify the frontend data binding (for example, `access_recreation_walk_15min_residents` becomes `access_recreation_15min_residents_walk`).
+
+:::
+
 ## Web Dashboard
 
 The IMPT results are visualised in an interactive web dashboard built with **React + TypeScript + Vite**, using **Leaflet/MapLibre** for map rendering. The dashboard is available at:
