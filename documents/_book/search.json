@@ -14,7 +14,7 @@
     "href": "index.html#sec-area",
     "title": "IMPT — Índice Multidimensional e Multimodal de Pobreza nos Transportes",
     "section": "1.1 Study Area",
-    "text": "1.1 Study Area\nThe study area corresponds to the Lisbon Metropolitan Area (AML), defined as the combination of the NUTS-III sub-regions Grande Lisboa and Península de Setúbal, using administrative boundaries from CAOP 2024.1 (Carta Administrativa Oficial de Portugal, Direção-Geral do Território).\nThe geographic areas used throughout the pipeline include three nested levels:\n\nMunicipalities (municípios): 18 units\nParishes (freguesias): 124 units (post-2013 and 2024 reform boundaries, updated to CAOP 2024)\n\nH3 Hexagonal Grid, Resolution 8 (primary unit for routing calculations): 3,686 hexagons, edge length ≈ 531 m, average area ≈ 0.74 km². This is a universal grid.\n\n\n\n\n\n\n\nNoteAdministrative boundary update\n\n\n\nSeveral parishes changed between the 2016 IMOB travel survey, the Census 2021, and the CAOP 2024 boundaries. A conversion table and area-weighted redistribution procedure was applied to ensure consistency (see Section 3.2).",
+    "text": "1.1 Study Area\nThe study area corresponds to the Lisbon Metropolitan Area (AML), defined as the combination of the NUTS-III sub-regions Grande Lisboa and Península de Setúbal, using administrative boundaries from CAOP 2024.1 (Carta Administrativa Oficial de Portugal, Direção-Geral do Território).\nThe geographic areas used throughout the pipeline include three nested levels:\n\nMunicipalities (municípios): 18 units\nParishes (freguesias): 124 units (post-2013 and 2024 reform boundaries, updated to CAOP 2024)\n\nH3 Hexagonal Grid, Resolution 8 (primary unit for routing calculations): 3,686 hexagons, edge length ≈ 531 m, average area ≈ 0.74 km². This is a universal grid.\n\n\n\n\n\n\n\nNoteAdministrative boundary update\n\n\n\nSeveral parishes changed between the 2016 IMOB travel survey, the Census 2021, and the CAOP 2024 boundaries. A conversion table and area-weighted redistribution procedure was applied to ensure consistency (see Section 4.1).",
     "crumbs": [
       "<span class='chapter-number'>1</span>  <span class='chapter-title'>Introduction</span>"
     ]
@@ -75,12 +75,12 @@
   {
     "objectID": "data_preparation.html",
     "href": "data_preparation.html",
-    "title": "3  Data Preparation",
+    "title": "4  Data Preparation",
     "section": "",
-    "text": "3.1 Infrastructure and Helper Functions\n00a_impt_data_handle.R defines two core helper functions:\nThese functions abstract away the data storage location, making the pipeline portable.\n00b_data_load.R sets up globally-used variables (study area boundaries, grid, ids correspondence between levels, etc.) that are reused across scripts.",
+    "text": "4.1 Study Area\n00b_data_load.R sets up globally-used variables (study area boundaries, grid, ids correspondence between levels, etc.) that are reused across scripts.\nTo run for different study areas, this script must be updated to reflect the desired boundaries.",
     "crumbs": [
       "**Data**",
-      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Data Preparation</span>"
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Data Preparation</span>"
     ]
   },
   {
@@ -97,100 +97,100 @@
   {
     "objectID": "data_preparation.html#sec-data-prep-boundaries",
     "href": "data_preparation.html#sec-data-prep-boundaries",
-    "title": "3  Data Preparation",
-    "section": "3.2 Administrative Boundaries",
-    "text": "3.2 Administrative Boundaries\nSource: CAOP 2024.1 (DGT — Direção-Geral do Território)\nThe full continental Portugal polygon file is filtered to the Grande Lisboa and Península de Setúbal NUTS-II sub-regions. For the municipality of Lisboa, parish boundaries with the Tagus estuary are replaced by clipped geometries (FREGUESIASgeo.gpkg - using CAOP 2016 parish limits) to remove the water area in Lisbon municipality.\nFor parishes with multiple polygon features (due to small islands), only the polygon with the largest area is retained.\n\n3.2.1 Conversion of 2016 to 2024 Parish Codes\nThe Census 2021 and IMOB 2017 travel survey use 2016 parish codes (DICOFRE). Several parishes were split between 2016 and 2024. A manual conversion table was created after inspecting the differences:\n\n\n\nTable 3.1: Parish code conversions from 2016 to 2024\n\n\n\n\n\nOld DICOFRE (2016)\nNew DICOFRE(s) (2024)\n\n\n\n\n151007\n151008, 151009, 151010\n\n\n111127\n111134, 111135\n\n\n111123\n111129, 111131, 111132\n\n\n111126\n111130, 111133\n\n\n\n\n\n\nTrips associated with split parishes were redistributed proportionally to the area of the new parishes. Conservation of total trip counts was validated using assertthat.",
+    "title": "4  Data Preparation",
+    "section": "4.2 Administrative Boundaries",
+    "text": "4.2 Administrative Boundaries\nSource: CAOP 2024.1 (DGT — Direção-Geral do Território)\nThe full continental Portugal polygon file is filtered to the Grande Lisboa and Península de Setúbal NUTS-II sub-regions. For the municipality of Lisboa, parish boundaries with the Tagus estuary are replaced by clipped geometries (FREGUESIASgeo.gpkg - using CAOP 2016 parish limits) to remove the water area in Lisbon municipality.\nFor parishes with multiple polygon features (due to small islands), only the polygon with the largest area is retained.\n\n4.2.1 Conversion of 2016 to 2024 Parish Codes\nThe Census 2021 and IMOB 2017 travel survey use 2016 parish codes (DICOFRE). Several parishes were split between 2016 and 2024. A manual conversion table was created after inspecting the differences:\n\n\n\nTable 4.1: Parish code conversions from 2016 to 2024\n\n\n\n\n\nOld DICOFRE (2016)\nNew DICOFRE(s) (2024)\n\n\n\n\n151007\n151008, 151009, 151010\n\n\n111127\n111134, 111135\n\n\n111123\n111129, 111131, 111132\n\n\n111126\n111130, 111133\n\n\n\n\n\n\nTrips associated with split parishes were redistributed proportionally to the area of the new parishes. Conservation of total trip counts was validated using assertthat.",
     "crumbs": [
       "**Data**",
-      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Data Preparation</span>"
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Data Preparation</span>"
     ]
   },
   {
     "objectID": "data_preparation.html#sec-grid",
     "href": "data_preparation.html#sec-grid",
-    "title": "3  Data Preparation",
-    "section": "3.3 H3 Hexagonal Grid",
-    "text": "3.3 H3 Hexagonal Grid\n\n\n\n\n\n\nflowchart LR\n    AML[\"AML boundary&lt;br/&gt;CAOP 2024\"] --&gt; H3[\"h3jsr::polygon_to_cells&lt;br/&gt;Resolution 8\"]\n    H3 --&gt; Cells[\"3,686 hexagons&lt;br/&gt;531m edge, 0.74 km2 avg\"]\n    Cells --&gt; C[\"Grid centroids&lt;br/&gt;for routing\"]\n    Cells --&gt; G[\"Grid index table&lt;br/&gt;mapping levels\"]\n\n\n\n\nFigure 3.1: H3 grid generation and spatial assignment\n\n\n\n\n\nThe H3 hexagonal grid is generated at Resolution 8 using the h3jsr package (Uber Technologies 2018). Resolution 8 provides a spatial unit with an average edge length of ~531 m and average area of ~0.74 km², which offers a good balance between spatial detail and computational tractability for routing-based accessibility measures.\nThe H3 grid covers the AML with 3,686 active hexagons (those intersecting the administrative boundaries). At the limits, if a hexagon covers less than 50% of the administrative area, it is excluded from the analysis. Each hexagon is assigned to a parish and municipality via a cross-reference table (grid_nuts.csv).",
+    "title": "4  Data Preparation",
+    "section": "4.3 H3 Hexagonal Grid",
+    "text": "4.3 H3 Hexagonal Grid\n\n\n\n\n\n\nflowchart LR\n    AML[\"AML boundary&lt;br/&gt;CAOP 2024\"] --&gt; H3[\"h3jsr::polygon_to_cells&lt;br/&gt;Resolution 8\"]\n    H3 --&gt; Cells[\"3,686 hexagons&lt;br/&gt;531m edge, 0.74 km2 avg\"]\n    Cells --&gt; C[\"Grid centroids&lt;br/&gt;for routing\"]\n    Cells --&gt; G[\"Grid index table&lt;br/&gt;mapping levels\"]\n\n\n\n\nFigure 4.1: H3 grid generation and spatial assignment\n\n\n\n\n\nThe H3 hexagonal grid is generated at Resolution 8 using the h3jsr package (Uber Technologies 2018). Resolution 8 provides a spatial unit with an average edge length of ~531 m and average area of ~0.74 km², which offers a good balance between spatial detail and computational tractability for routing-based accessibility measures.\nThe H3 grid covers the AML with 3,686 active hexagons (those intersecting the administrative boundaries). At the limits, if a hexagon covers less than 50% of the administrative area, it is excluded from the analysis. Each hexagon is assigned to a parish and municipality via a cross-reference table (grid_nuts.csv).",
     "crumbs": [
       "**Data**",
-      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Data Preparation</span>"
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Data Preparation</span>"
     ]
   },
   {
     "objectID": "data_preparation.html#sec-census",
     "href": "data_preparation.html#sec-census",
-    "title": "3  Data Preparation",
-    "section": "3.4 Census Data Processing",
-    "text": "3.4 Census Data Processing\nSource: INE Census 2021, BGRI 2021 at the base statistical unit level (BGRI — Base Geográfica de Referenciação de Informação), NUTS-3 Área Metropolitana de Lisboa (code 170).\nCensus BGRI polygons are converted to centroids. The following variables are extracted:\n\n\n\nTable 3.2: Census variables used in IMPT\n\n\n\n\n\n\n\n\n\n\nVariable\nINE field\nDescription\n\n\n\n\npopulation\nN_INDIVIDUOS\nTotal residents\n\n\nhouseholds\nN_NUCLEOS_FAMILIARES\nTotal households\n\n\nyouth\nN_INDIVIDUOS_0_14\nResidents aged 0–14\n\n\nadults\nN_INDIVIDUOS_15_24 + N_INDIVIDUOS_25_64\nResidents aged 15–64\n\n\nelderly\nN_INDIVIDUOS_65_OU_MAIS\nResidents aged 65+\n\n\nwomen\nN_INDIVIDUOS_M\nFemale residents\n\n\nbuildings\nN_EDIFICIOS_CLASSICOS\nClassic buildings\n\n\nbuildings_pre1945\nN_EDIFICIOS_CONSTR_ANTES_1945\nBuildings built before 1945\n\n\n\n\n\n\nFor parish- and municipality-level aggregation, census data from 2016-era parishes are redistributed to 2024 parishes using the area-weighted conversion table described in Section 3.2.1.",
+    "title": "4  Data Preparation",
+    "section": "4.4 Census Data Processing",
+    "text": "4.4 Census Data Processing\nSource: INE Census 2021, BGRI 2021 at the base statistical unit level (BGRI — Base Geográfica de Referenciação de Informação), NUTS-3 Área Metropolitana de Lisboa (code 170).\nCensus BGRI polygons are converted to centroids. The following variables are extracted:\n\n\n\nTable 4.2: Census variables used in IMPT\n\n\n\n\n\n\n\n\n\n\nVariable\nINE field\nDescription\n\n\n\n\npopulation\nN_INDIVIDUOS\nTotal residents\n\n\nhouseholds\nN_NUCLEOS_FAMILIARES\nTotal households\n\n\nyouth\nN_INDIVIDUOS_0_14\nResidents aged 0–14\n\n\nadults\nN_INDIVIDUOS_15_24 + N_INDIVIDUOS_25_64\nResidents aged 15–64\n\n\nelderly\nN_INDIVIDUOS_65_OU_MAIS\nResidents aged 65+\n\n\nwomen\nN_INDIVIDUOS_M\nFemale residents\n\n\nbuildings\nN_EDIFICIOS_CLASSICOS\nClassic buildings\n\n\nbuildings_pre1945\nN_EDIFICIOS_CONSTR_ANTES_1945\nBuildings built before 1945\n\n\n\n\n\n\nFor parish- and municipality-level aggregation, census data from 2016-era parishes are redistributed to 2024 parishes using the area-weighted conversion table described in Section 4.2.1.",
     "crumbs": [
       "**Data**",
-      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Data Preparation</span>"
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Data Preparation</span>"
     ]
   },
   {
     "objectID": "data_preparation.html#sec-cos",
     "href": "data_preparation.html#sec-cos",
-    "title": "3  Data Preparation",
-    "section": "3.5 Dasymetric Grid Population Redistribution (COS 2023)",
-    "text": "3.5 Dasymetric Grid Population Redistribution (COS 2023)\nSource: COS 2023 v1 (Direção-Geral do Território), residential land use classes\nTo achieve a more accurate population distribution within the H3 grid, a dasymetric mapping approach is applied using the Carta de Ocupação do Solo (COS) 2023. This is a relevan method, in particular when dealing with BGRI polygons that cover large areas, accross multiple hexagons cells - preventing that one single hexagon is assigned the entire population of the BGRI polygon with it’s centroid.\nResidential areas are extracted with the following classes and assigned weighting factors:\n\n\n\nTable 3.3: COS 2023 residential classes and dasymetric weights\n\n\n\n\n\nCOS 2023 classification\nWeight\n\n\n\n\nContínuas predominantemente verticais\n3.0\n\n\nContínuas predominantemente horizontais\n1.0\n\n\nDescontínuas\n0.6\n\n\nDescontínuas esparsas\n0.3\n\n\n\n\n\n\nThe procedure (02_census_grid_with_cos.R):\n\nCensus BGRI polygons are intersected with COS residential patches and H3 grid cells.\nFor each BGRI fragment, a weighted score is computed as fragment_area × weight.\nEach BGRI’s population is distributed proportionally to the weighted score of each fragment.\nResults are summed per H3 cell.\n\nThis recovers approximately 99.4% of the total AML population (2,854,660 vs. 2,870,208 in the census), a significant improvement over simple centroid assignment.\n\n\n\n\n\n\nImportant\n\n\n\nThe land use and census data from the dasymetric method is only used at the grid level for the calculation of fine-grain indicators. For the other levels, the Census 2021 BGRI data is used directly.",
+    "title": "4  Data Preparation",
+    "section": "4.5 Dasymetric Grid Population Redistribution (COS 2023)",
+    "text": "4.5 Dasymetric Grid Population Redistribution (COS 2023)\nSource: COS 2023 v1 (Direção-Geral do Território), residential land use classes\nTo achieve a more accurate population distribution within the H3 grid, a dasymetric mapping approach is applied using the Carta de Ocupação do Solo (COS) 2023. This is a relevan method, in particular when dealing with BGRI polygons that cover large areas, accross multiple hexagons cells - preventing that one single hexagon is assigned the entire population of the BGRI polygon with it’s centroid.\nResidential areas are extracted with the following classes and assigned weighting factors:\n\n\n\nTable 4.3: COS 2023 residential classes and dasymetric weights\n\n\n\n\n\nCOS 2023 classification\nWeight\n\n\n\n\nContínuas predominantemente verticais\n3.0\n\n\nContínuas predominantemente horizontais\n1.0\n\n\nDescontínuas\n0.6\n\n\nDescontínuas esparsas\n0.3\n\n\n\n\n\n\nThe procedure (02_census_grid_with_cos.R):\n\nCensus BGRI polygons are intersected with COS residential patches and H3 grid cells.\nFor each BGRI fragment, a weighted score is computed as fragment_area × weight.\nEach BGRI’s population is distributed proportionally to the weighted score of each fragment.\nResults are summed per H3 cell.\n\nThis recovers approximately 99.4% of the total AML population (2,854,660 vs. 2,870,208 in the census), a significant improvement over simple centroid assignment.\n\n\n\n\n\n\nImportant\n\n\n\nThe land use and census data from the dasymetric method is only used at the grid level for the calculation of fine-grain indicators. For the other levels, the Census 2021 BGRI data is used directly.",
     "crumbs": [
       "**Data**",
-      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Data Preparation</span>"
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Data Preparation</span>"
     ]
   },
   {
     "objectID": "data_preparation.html#sec-pois",
     "href": "data_preparation.html#sec-pois",
-    "title": "3  Data Preparation",
-    "section": "3.6 Points of Interest (POIs)",
-    "text": "3.6 Points of Interest (POIs)\nPOIs are collected from three sources: OpenStreetMap, Carris Metropolitana open datasets, and GTFS feeds. The following categories are used:\n\n\n\n\nTable 3.4: POI categories, sources, and filters\n\n\n\n\n\n\nCategory\nIdentifier\nSource\nFilter / Description\n\n\n\n\nHealthcare (all)\nhealth\nCM\nAll health centres\n\n\nHospitals\nhealth_hospital\nCM\nname contains 'Hospital' or 'Centro de Medicina'\n\n\nPrimary care centres\nhealth_primary\nCM\nname contains 'Centro de Saúde'\n\n\nSupermarkets/grocery\ngroceries\nOSM\n`type %in% c('supermarket','convenience')`\n\n\nGreen spaces\ngreenspaces\nOSM\n`group == 'leisure' & type %in% c('park','garden')`\n\n\nRecreation\nrecreation\nOSM\n`type %in% c('library','theatre','cinema','restaurant','cafe','bar','pub','pitch','fitness_station','swimming_pool','sports_centre','fitness_center')`\n\n\nSchools (all)\nschools\nCM\nAll school types\n\n\nPrimary schools\nschools_primary\nCM\npre_school==1 &#124; basic_1==1 &#124; basic_2==1 &#124; basic_3==1\n\n\nTransit stops (all)\ntransit\nGTFS (all operators)\nAll stops from all operators\n\n\nTransit stops (bus)\ntransit_bus\nGTFS (Carris, CM, TCB, Cascais próxima)\nBus operators only\n\n\nTransit stops (mass transit)\ntransit_mass\nGTFS (CP, Fertagus, Metro, MTS, TTSL)\nRail, metro, ferry operators\n\n\nJobs\njobs\nIMOB 2018\nJittered OD destinations (see [#sec-jittering])",
+    "title": "4  Data Preparation",
+    "section": "4.6 Points of Interest (POIs)",
+    "text": "4.6 Points of Interest (POIs)\nPOIs are collected from three sources: OpenStreetMap, Carris Metropolitana open datasets, and GTFS feeds. The following categories are used:\n\n\n\n\nTable 4.4: POI categories, sources, and filters\n\n\n\n\n\n\nCategory\nIdentifier\nSource\nFilter / Description\n\n\n\n\nHealthcare (all)\nhealth\nCM\nAll health centres\n\n\nHospitals\nhealth_hospital\nCM\nname contains 'Hospital' or 'Centro de Medicina'\n\n\nPrimary care centres\nhealth_primary\nCM\nname contains 'Centro de Saúde'\n\n\nSupermarkets/grocery\ngroceries\nOSM\n`type %in% c('supermarket','convenience')`\n\n\nGreen spaces\ngreenspaces\nOSM\n`group == 'leisure' & type %in% c('park','garden')`\n\n\nRecreation\nrecreation\nOSM\n`type %in% c('library','theatre','cinema','restaurant','cafe','bar','pub','pitch','fitness_station','swimming_pool','sports_centre','fitness_center')`\n\n\nSchools (all)\nschools\nCM\nAll school types\n\n\nPrimary schools\nschools_primary\nCM\npre_school==1 &#124; basic_1==1 &#124; basic_2==1 &#124; basic_3==1\n\n\nTransit stops (all)\ntransit\nGTFS (all operators)\nAll stops from all operators\n\n\nTransit stops (bus)\ntransit_bus\nGTFS (Carris, CM, TCB, Cascais próxima)\nBus operators only\n\n\nTransit stops (mass transit)\ntransit_mass\nGTFS (CP, Fertagus, Metro, MTS, TTSL)\nRail, metro, ferry operators\n\n\nJobs\njobs\nIMOB 2018\nJittered OD destinations (see [#sec-jittering])",
     "crumbs": [
       "**Data**",
-      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Data Preparation</span>"
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Data Preparation</span>"
     ]
   },
   {
     "objectID": "data_preparation.html#sec-jittering",
     "href": "data_preparation.html#sec-jittering",
-    "title": "3  Data Preparation",
-    "section": "3.7 Travel Survey Data and OD Jittering",
-    "text": "3.7 Travel Survey Data and OD Jittering\nSource: IMOB 2017/18 — Inquérito à Mobilidade nas Áreas Metropolitanas do Porto e de Lisboa (INE / AMT). https://www.ine.pt/xurl/pub/349495406\nThe IMOB survey served as base to produce the OD matrix at parish level with modal split (walk, bike, car, public transit, other), available at biclaR project.\n\n3.7.1 Jobs as a proxy\nSince high-resolution employment data was not available (or open) for the AML during the report development, employment locations were proxied using the jittered destinations of trips from the IMOB 2017 travel survey. Specifically, trips with the purpose “Ir para o trabalho” (Commute to work) and “Tratar de assuntos profissionais” (Work-related business) were extracted, and their jittered destination points were used as POIs representing the spatial distribution of jobs.\nSince accessibility and cost computations require disaggregated spatial locations, jittering is applied to generate point-level OD pairs.\n\n\n3.7.2 Jittering Algorithm\nJittering is performed using the odjitter R package (Lovelace and Félix 2022), following the approach described in Lovelace, Félix, and Carlino (2022).\nThe algorithm disaggregates parish-level trip counts into point-to-point flows. The following layers and weights are used:\n\nOrigins: Randomly sampled points within residential buildings.\nDestinations: Sampled from a building layer (from GDA), weighted by building volume (estimated as height * footprint_m2). This ensures that areas with higher office and industrial density attract more jittered trips.\nThreshold: A disaggregation threshold of 50 trips is applied, meaning any OD flow with more than 50 trips is split into multiple point-to-point pairs to provide higher spatial resolution.\nDeterministic Randomization: A fixed seed (rng_seed = 42) is used to ensure the generated points are consistent across pipeline runs.\n\nThe process generates approximately 18,500 jittered OD pairs representing the daily commuting pattern in the AML. This is then expanded to the real number of trips using the PESOFIN weights.",
+    "title": "4  Data Preparation",
+    "section": "4.7 Travel Survey Data and OD Jittering",
+    "text": "4.7 Travel Survey Data and OD Jittering\nSource: IMOB 2017/18 — Inquérito à Mobilidade nas Áreas Metropolitanas do Porto e de Lisboa (INE / AMT). https://www.ine.pt/xurl/pub/349495406\nThe IMOB survey served as base to produce the OD matrix at parish level with modal split (walk, bike, car, public transit, other), available at biclaR project.\n\n4.7.1 Jobs as a proxy\nSince high-resolution employment data was not available (or open) for the AML during the report development, employment locations were proxied using the jittered destinations of trips from the IMOB 2017 travel survey. Specifically, trips with the purpose “Ir para o trabalho” (Commute to work) and “Tratar de assuntos profissionais” (Work-related business) were extracted, and their jittered destination points were used as POIs representing the spatial distribution of jobs.\nSince accessibility and cost computations require disaggregated spatial locations, jittering is applied to generate point-level OD pairs.\n\n\n4.7.2 Jittering Algorithm\nJittering is performed using the odjitter R package (Lovelace and Félix 2022), following the approach described in Lovelace, Félix, and Carlino (2022).\nThe algorithm disaggregates parish-level trip counts into point-to-point flows. The following layers and weights are used:\n\nOrigins: Randomly sampled points within residential buildings.\nDestinations: Sampled from a building layer (from GDA), weighted by building volume (estimated as height * footprint_m2). This ensures that areas with higher office and industrial density attract more jittered trips.\nThreshold: A disaggregation threshold of 50 trips is applied, meaning any OD flow with more than 50 trips is split into multiple point-to-point pairs to provide higher spatial resolution.\nDeterministic Randomization: A fixed seed (rng_seed = 42) is used to ensure the generated points are consistent across pipeline runs.\n\nThe process generates approximately 18,500 jittered OD pairs representing the daily commuting pattern in the AML. This is then expanded to the real number of trips using the PESOFIN weights.",
     "crumbs": [
       "**Data**",
-      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Data Preparation</span>"
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Data Preparation</span>"
     ]
   },
   {
     "objectID": "data_preparation.html#sec-network",
     "href": "data_preparation.html#sec-network",
-    "title": "3  Data Preparation",
-    "section": "3.8 Road Network and DEM",
-    "text": "3.8 Road Network and DEM\nRoad network: Exported from HOT Export Tool in .pbf format for use with r5r. The network includes all OSM road types and GTFS transit feeds.\nElevation: Digital Elevation Model at 30 m resolution downloaded from Copernicus ESA (Copernicus DEM GLO-30). Used to account for topographic effects on walking and cycling travel times via the Minetti metabolic-equivalent cost function.\nThe r5r network is built using r5r::build_network() with the elevation = \"MINETTI\" option.",
+    "title": "4  Data Preparation",
+    "section": "4.8 Road Network and DEM",
+    "text": "4.8 Road Network and DEM\nRoad network: Exported from HOT Export Tool in .pbf format for use with r5r. The network includes all OSM road types and GTFS transit feeds.\nElevation: Digital Elevation Model at 30 m resolution downloaded from Copernicus ESA (Copernicus DEM GLO-30). Used to account for topographic effects on walking and cycling travel times via the Minetti metabolic-equivalent cost function.\nThe r5r network is built using r5r::build_network() with the elevation = \"MINETTI\" option.",
     "crumbs": [
       "**Data**",
-      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Data Preparation</span>"
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Data Preparation</span>"
     ]
   },
   {
     "objectID": "data_preparation.html#sec-modal-share",
     "href": "data_preparation.html#sec-modal-share",
-    "title": "3  Data Preparation",
-    "section": "3.9 Modal Share from Census",
-    "text": "3.9 Modal Share from Census\nSource: Census 2021 — question on mode used for the daily commute.\nScript 02_census_modalShare.R extracts and computes modal shares (private vehicle, public transit, active modes) at parish and municipality level. These are used to compute modal-share-weighted affordability metrics (see Chapter 7).",
+    "title": "4  Data Preparation",
+    "section": "4.9 Modal Share from Census",
+    "text": "4.9 Modal Share from Census\nSource: Census 2021 — question on mode used for the daily commute.\nScript 02_census_modalShare.R extracts and computes modal shares (private vehicle, public transit, active modes) at parish and municipality level. These are used to compute modal-share-weighted affordability metrics (see Chapter 7).",
     "crumbs": [
       "**Data**",
-      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Data Preparation</span>"
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Data Preparation</span>"
     ]
   },
   {
     "objectID": "data_preparation.html#sec-veh-ownership",
     "href": "data_preparation.html#sec-veh-ownership",
-    "title": "3  Data Preparation",
-    "section": "3.10 Vehicle Ownership",
-    "text": "3.10 Vehicle Ownership\nSource: IMOB 2017 data (02_veh_ownership.R).\nVehicle ownership variables include average motorised vehicles per household and percentage of households without a vehicle, aggregated at parish and municipality level.\n\n\n\n\nLovelace, Robin, and Rosa Félix. 2022. “Odjitter: Jitter Origin-Destination Data.” https://github.com/itsleeds/odjitter.\n\n\nLovelace, Robin, Rosa Félix, and Dustin Carlino. 2022. “Jittering: A Computationally Efficient Method for Generating Realistic Route Networks from Origin-Destination Data.” Findings. https://doi.org/10.32866/001c.33873.\n\n\nUber Technologies. 2018. “H3: A Hexagonal Hierarchical Spatial Index.” https://h3geo.org.",
+    "title": "4  Data Preparation",
+    "section": "4.10 Vehicle Ownership",
+    "text": "4.10 Vehicle Ownership\nSource: IMOB 2017 data (02_veh_ownership.R).\nVehicle ownership variables include average motorised vehicles per household and percentage of households without a vehicle, aggregated at parish and municipality level.\n\n\n\n\nLovelace, Robin, and Rosa Félix. 2022. “Odjitter: Jitter Origin-Destination Data.” https://github.com/itsleeds/odjitter.\n\n\nLovelace, Robin, Rosa Félix, and Dustin Carlino. 2022. “Jittering: A Computationally Efficient Method for Generating Realistic Route Networks from Origin-Destination Data.” Findings. https://doi.org/10.32866/001c.33873.\n\n\nUber Technologies. 2018. “H3: A Hexagonal Hierarchical Spatial Index.” https://h3geo.org.",
     "crumbs": [
       "**Data**",
-      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Data Preparation</span>"
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Data Preparation</span>"
     ]
   },
   {
@@ -449,45 +449,45 @@
   {
     "objectID": "output_dashboard.html",
     "href": "output_dashboard.html",
-    "title": "11  Output and Dashboard",
+    "title": "12  Output and Dashboard",
     "section": "",
-    "text": "11.1 Output Files\nFinal results are stored in three geographic formats for each spatial level:\nResults are uploaded to the project data server at https://impt.server.ushift.pt, to the ushift server at https://ushift.tecnico.ulisboa.pt/content/impt/, and to the GitHub release using piggyback (TBC when drafting release).",
+    "text": "12.1 Output Files\nFinal results are stored in three geographic formats for each spatial level:\nResults are uploaded to the project data server at https://impt.server.ushift.pt, to the ushift server at https://ushift.tecnico.ulisboa.pt/content/impt/, and to the GitHub release using piggyback (TBC when drafting release).",
     "crumbs": [
       "**Dashboard and Reproducibility**",
-      "<span class='chapter-number'>11</span>  <span class='chapter-title'>Output and Dashboard</span>"
+      "<span class='chapter-number'>12</span>  <span class='chapter-title'>Output and Dashboard</span>"
     ]
   },
   {
     "objectID": "output_dashboard.html#output-files",
     "href": "output_dashboard.html#output-files",
-    "title": "11  Output and Dashboard",
+    "title": "12  Output and Dashboard",
     "section": "",
-    "text": "Table 11.1: Output file formats\n\n\n\n\n\n\n\n\n\n\nLevel\nFormats\nVariables\n\n\n\n\nParish (freguesia)\nCSV + GeoPackage\nAll dimension scores + IMPT scores\n\n\nMunicipality (município)\nCSV + GeoPackage\nPopulation-weighted means + IMPT scores\n\n\nH3 Grid\nCSV + GeoPackage\nAssigned from host parish + Computed at grid level when makes sense",
+    "text": "Table 12.1: Output file formats\n\n\n\n\n\n\n\n\n\n\nLevel\nFormats\nVariables\n\n\n\n\nParish (freguesia)\nCSV + GeoPackage\nAll dimension scores + IMPT scores\n\n\nMunicipality (município)\nCSV + GeoPackage\nPopulation-weighted means + IMPT scores\n\n\nH3 Grid\nCSV + GeoPackage\nAssigned from host parish + Computed at grid level when makes sense",
     "crumbs": [
       "**Dashboard and Reproducibility**",
-      "<span class='chapter-number'>11</span>  <span class='chapter-title'>Output and Dashboard</span>"
+      "<span class='chapter-number'>12</span>  <span class='chapter-title'>Output and Dashboard</span>"
     ]
   },
   {
     "objectID": "output_dashboard.html#sec-dashboard",
     "href": "output_dashboard.html#sec-dashboard",
-    "title": "11  Output and Dashboard",
-    "section": "11.2 Dashboard Export",
-    "text": "11.2 Dashboard Export\nThe dashboard export process consists of two main steps:\n\nData Loading: 06a_results_load.R This script loads and prepares all indicator results (accessibility, mobility, safety, etc.) across the three spatial levels.\nJoining and Export: 06b_dashboard_export.R This script joins the prepared indicator tables and all the relevant metrics with the spatial geometry files and exports them as three aggregated GeoJSON files for direct use in the web dashboard:\n\n\ngrid_aggregated.geojson\nfreguesias_aggregated.geojson\nmunicipios_aggregated.geojson\n\nA champions lookup file (champions.json) is also exported, identifying the top contributing indicators to each dimension’s PC1 score, for display in the dashboard sidebar.\n\n\n\n\n\n\nNote\n\n\n\nMind that the columns of data loaded at code/06a_results_load.R and those exported by code/06b_dashboard_export.R may differ, as the latest script performs some data cleaning and renaming to ensure data standardization and consistency.\nFor instance, different naming for the same mode are replaced by a single naming (such as “road”, “carro” or “private_vehicle” to “car”) and the mode in any variable is moved to the end of the variable name to simplify the frontend data binding (for example, access_recreation_walk_15min_residents becomes access_recreation_15min_residents_walk).",
+    "title": "12  Output and Dashboard",
+    "section": "12.2 Dashboard Export",
+    "text": "12.2 Dashboard Export\nThe dashboard export process consists of two main steps:\n\nData Loading: 06a_results_load.R This script loads and prepares all indicator results (accessibility, mobility, safety, etc.) across the three spatial levels.\nJoining and Export: 06b_dashboard_export.R This script joins the prepared indicator tables and all the relevant metrics with the spatial geometry files and exports them as three aggregated GeoJSON files for direct use in the web dashboard:\n\n\ngrid_aggregated.geojson\nfreguesias_aggregated.geojson\nmunicipios_aggregated.geojson\n\nA champions lookup file (champions.json) is also exported, identifying the top contributing indicators to each dimension’s PC1 score, for display in the dashboard sidebar.\n\n\n\n\n\n\nNote\n\n\n\nMind that the columns of data loaded at code/06a_results_load.R and those exported by code/06b_dashboard_export.R may differ, as the latest script performs some data cleaning and renaming to ensure data standardization and consistency.\nFor instance, different naming for the same mode are replaced by a single naming (such as “road”, “carro” or “private_vehicle” to “car”) and the mode in any variable is moved to the end of the variable name to simplify the frontend data binding (for example, access_recreation_walk_15min_residents becomes access_recreation_15min_residents_walk).",
     "crumbs": [
       "**Dashboard and Reproducibility**",
-      "<span class='chapter-number'>11</span>  <span class='chapter-title'>Output and Dashboard</span>"
+      "<span class='chapter-number'>12</span>  <span class='chapter-title'>Output and Dashboard</span>"
     ]
   },
   {
     "objectID": "output_dashboard.html#web-dashboard",
     "href": "output_dashboard.html#web-dashboard",
-    "title": "11  Output and Dashboard",
-    "section": "11.3 Web Dashboard",
-    "text": "11.3 Web Dashboard\nThe IMPT results are visualised in an interactive web dashboard built with React + TypeScript + Vite, using Leaflet/MapLibre for map rendering. The dashboard is available at:\n\nushift.pt/apps/impt\n\nThe dashboard provides a comprehensive suite of features for exploring the data:\n\nMulti-scale Map Visualisation: Explore indicators by geographic level (Grid, Parish, Municipality), transport mode (Car, PT, Bike, Walk), and specific land-use and socio-demographic variables.\nComposite Index Aggregation: Switch between different IMPT calculation methods, including equal weights, critical (geometric mean), contrasting (entropy), or dynamic user-defined weights.\nAHP Weighting Methodology: Built-in Analytic Hierarchy Process (AHP) survey to help users mathematically derive optimal, consistent dimension weights for the dynamic IMPT score.\nPT Fare Scenarios: Toggle between single-fare and Navegante pass scenarios to immediately see their impact on affordability.\nArea Profiling: Detailed side-panels showing regional contrasts, subarea dynamics, and modal share profiles for the selected geographic unit.\nContextual and Land Use Layers: View built area classifications, population density, and demographic ratios alongside mobility metrics.\nAccessibility & UI: Colorblind mode, light/dark theme toggles, and switchable base maps (Simplified, Satellite, OpenStreetMap).\nOpen Data: Direct download of all the results and indicators as CSV and GeoJSON.",
+    "title": "12  Output and Dashboard",
+    "section": "12.3 Web Dashboard",
+    "text": "12.3 Web Dashboard\nThe IMPT results are visualised in an interactive web dashboard built with React + TypeScript + Vite, using Leaflet/MapLibre for map rendering. The dashboard is available at:\n\nushift.pt/apps/impt\n\nThe dashboard provides a comprehensive suite of features for exploring the data:\n\nMulti-scale Map Visualisation: Explore indicators by geographic level (Grid, Parish, Municipality), transport mode (Car, PT, Bike, Walk), and specific land-use and socio-demographic variables.\nComposite Index Aggregation: Switch between different IMPT calculation methods, including equal weights, critical (geometric mean), contrasting (entropy), or dynamic user-defined weights.\nAHP Weighting Methodology: Built-in Analytic Hierarchy Process (AHP) survey to help users mathematically derive optimal, consistent dimension weights for the dynamic IMPT score.\nPT Fare Scenarios: Toggle between single-fare and Navegante pass scenarios to immediately see their impact on affordability.\nArea Profiling: Detailed side-panels showing regional contrasts, subarea dynamics, and modal share profiles for the selected geographic unit.\nContextual and Land Use Layers: View built area classifications, population density, and demographic ratios alongside mobility metrics.\nAccessibility & UI: Colorblind mode, light/dark theme toggles, and switchable base maps (Simplified, Satellite, OpenStreetMap).\nOpen Data: Direct download of all the results and indicators as CSV and GeoJSON.",
     "crumbs": [
       "**Dashboard and Reproducibility**",
-      "<span class='chapter-number'>11</span>  <span class='chapter-title'>Output and Dashboard</span>"
+      "<span class='chapter-number'>12</span>  <span class='chapter-title'>Output and Dashboard</span>"
     ]
   },
   {
@@ -604,6 +604,17 @@
     "crumbs": [
       "**Dimensions and PCA**",
       "<span class='chapter-number'>6</span>  <span class='chapter-title'>Accessibility</span>"
+    ]
+  },
+  {
+    "objectID": "data_access.html",
+    "href": "data_access.html",
+    "title": "3  Data Access",
+    "section": "",
+    "text": "Despite being reproducible and replicable, the high amount of data generated makes it difficult to distribute the full dataset. Thus, before running any of the scripts in the pipeline, primary data sources should be downloaded manually to the data/ folder.\n00a_impt_data_handle.R defines two core helper functions:\n\nimpt_read(path): reads CSV, GeoPackage, GeoJSON, or RDS files. When running on the ushift-alfa server, it reads from the local /data/IMPT/ directory; on any other machine, it fetches via HTTPS from https://impt.server.ushift.pt using an API key.\nimpt_write(content, path): writes to the same location logic (server vs. local data/ folder).\n\nThese functions abstract away the data storage location, making the pipeline portable.",
+    "crumbs": [
+      "**Data**",
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Data Access</span>"
     ]
   }
 ]

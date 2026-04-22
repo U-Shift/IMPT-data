@@ -1,0 +1,10 @@
+# Data Access
+
+Despite being reproducible and replicable, the high amount of data generated makes it difficult to distribute the full dataset. Thus, before running any of the scripts in the pipeline, primary data sources should be downloaded manually to the `data/` folder.
+
+**[`00a_impt_data_handle.R`](https://github.com/U-Shift/IMPT-data/blob/main/code/00a_impt_data_handle.R)** defines two core helper functions:
+
+- `impt_read(path)`: reads CSV, GeoPackage, GeoJSON, or RDS files. When running on the `ushift-alfa` server, it reads from the local `/data/IMPT/` directory; on any other machine, it fetches via HTTPS from `https://impt.server.ushift.pt` using an API key.
+- `impt_write(content, path)`: writes to the same location logic (server vs. local `data/` folder).
+
+These functions abstract away the data storage location, making the pipeline portable.

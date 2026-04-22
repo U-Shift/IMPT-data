@@ -811,7 +811,9 @@ impt_write(municipios_aggregated |> st_drop_geometry(), paste(output_dir, "munic
 json_str <- jsonlite::toJSON(champions_list, auto_unbox = TRUE, pretty = TRUE)
 impt_write(json_str, paste(output_dir, "champions.json", sep = "/"))
 
+# grid_aggregated <- impt_read("/dashboard_data/grid_aggregated.csv")
 # freguesias_aggregated <- impt_read("/dashboard_data/freguesias_aggregated.csv")
+# municipios_aggregated <- impt_read("/dashboard_data/municipios_aggregated.csv")
 length(names(grid_aggregated)) # 1319
 length(names(freguesias_aggregated)) # 1717
 length(names(municipios_aggregated)) # 1708
@@ -821,6 +823,7 @@ freguesia_names <- names(freguesias_aggregated) |> data.frame()
 grid_names <- names(grid_aggregated) |> data.frame()
 
 View(freguesia_names)
+View(grid_names)
 
 # 5. Export to geojson (for dashboard) -------------------------------------------------
 

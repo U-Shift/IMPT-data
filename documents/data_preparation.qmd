@@ -1,19 +1,14 @@
 # Data Preparation {#sec-data-prep}
 
 ::: callout-note
-This phase corresponds to scripts **`00a`**, **`00b`**, **`01`**, **`02_*`** in the pipeline.
+This phase corresponds to scripts `00b_*`, `01_*` and `02_*` in the pipeline.
 :::
 
-## Infrastructure and Helper Functions {#sec-helper}
-
-**[`00a_impt_data_handle.R`](https://github.com/U-Shift/IMPT-data/blob/main/code/00a_impt_data_handle.R)** defines two core helper functions:
-
-- `impt_read(path)`: reads CSV, GeoPackage, GeoJSON, or RDS files. When running on the `ushift-alfa` server, it reads from the local `/data/IMPT/` directory; on any other machine, it fetches via HTTPS from `https://impt.server.ushift.pt` using an API key.
-- `impt_write(content, path)`: writes to the same location logic (server vs. local `data/` folder).
-
-These functions abstract away the data storage location, making the pipeline portable.
+## Study Area
 
 **[`00b_data_load.R`](https://github.com/U-Shift/IMPT-data/blob/main/code/00b_data_load.R)** sets up globally-used variables (study area boundaries, grid, ids correspondence between levels, etc.) that are reused across scripts.
+
+To run for different study areas, this script must be updated to reflect the desired boundaries.
 
 ## Administrative Boundaries {#sec-data-prep-boundaries}
 
@@ -121,7 +116,6 @@ library(kableExtra)
 ```{r}
 #| label: tbl-pois
 #| tbl-cap: "POI categories, sources, and filters"
-
 pois <- data.frame(
     Category = c(
         "Healthcare (all)", "Hospitals", "Primary care centres",

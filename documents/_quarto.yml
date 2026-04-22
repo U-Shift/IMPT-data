@@ -13,6 +13,7 @@ book:
     - part: "**Data**"
       chapters:
         - data_sources.qmd
+        - data_access.qmd
         - data_preparation.qmd
         - transport_routing.qmd
     - part: "**Dimensions and PCA**"
