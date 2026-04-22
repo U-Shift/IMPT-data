@@ -106,7 +106,7 @@ freguesias_mobility <- impt_read("/mobility_commuting/freguesia_commuting.csv") 
     # Number of transfers for key destinations (transit)
     mobility_transit_commuting_mean_transfers,
     # PT Waiting Times
-    mobility_transit_weighted_waiting_time_peak,
+    mobility_transit_weighted_waiting_time_peak, mobility_transit_weighted_waiting_time_night, mobility_transit_weighted_waiting_time_weekend,
     # Night/weekend service availability
     mobility_transit_weighted_frequency_reduction_night, mobility_transit_weighted_frequency_reduction_weekend
   ) |>
@@ -494,17 +494,17 @@ saf_walk_scores <- Safety_walk_Norm |>
 # ── 4.3 PCA diagnostics ───────────────────────────────────────────────────────
 
 pca_list <- list(
-  Accessibility_all   = pca_access,
-  Mobility_all        = pca_mobility,
-  Safety_all          = pca_safety,
-  Accessibility_car  = pca_car_access,
-  Accessibility_pt   = pca_pt_access,
+  Accessibility_all = pca_access,
+  Mobility_all = pca_mobility,
+  Safety_all = pca_safety,
+  Accessibility_car = pca_car_access,
+  Accessibility_pt = pca_pt_access,
   Accessibility_bike = pca_bike_access,
   Accessibility_walk = pca_walk_access,
   # Mobility_car       = pca_car_mobility,
-  Mobility_pt        = pca_pt_mobility,
-  Mobility_bike      = pca_bike_mobility,
-  Mobility_walk      = pca_walk_mobility
+  Mobility_pt = pca_pt_mobility,
+  Mobility_bike = pca_bike_mobility,
+  Mobility_walk = pca_walk_mobility
   # Safety_car         = pca_car_safety,
   # Safety_bike        = pca_bike_safety,
   # Safety_walk        = pca_walk_safety

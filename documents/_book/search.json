@@ -491,58 +491,47 @@
     ]
   },
   {
-    "objectID": "metadata.html",
-    "href": "metadata.html",
-    "title": "Appendix A — Metadata",
-    "section": "",
-    "text": "This section summarizes the structure of the project output datasets, available at the U-Shift server at https://ushift.tecnico.ulisboa.pt/content/impt/, and on the GitHub releases.\n\n\n\n\n\n\n\n\n\nDimension\nColumn name\nDescription\nUnit\n\n\n\n\n\nid\nGeometry identifier (grid id, dtmnfr for parishes and dtmn for municipalities)\n-\n\n\n\ngroup_id\nGroup id (parish id for grid and municipality id for parishes)\n-\n\n\n\nname\nGeometry name (grid id or parish/municipality name)\n-\n\n\n\nregion_id\nNUTS 2 code\n-\n\n\n\nIMPT_{method}_{mode¹}Ex.: IMPT_score_pca_geom_walk\nIMPT Index\n%\n\n\n\n{dimension}_Index_{mode¹}Ex.: Accessibility_Index\nPCA result for dimension metrics aggregation\n%\n\n\nAccessibility\naccess_{poi_type}_{time}_{census_gp²}_{mode¹}Ex.: access_health_60min_residents_walk\nNumber of opportunities reachable within time\n#\n\n\nAccessibility\npois_n_{poi_type}Ex.: pois_n_health\nNumber of points of interest for a category\n#\n\n\nAccessibility\naccess_gap_{time/money}_{mode¹}Ex.: access_gap_time_pt\nAccessibility gaps metrics\nmin, €\n\n\nMobility\nmobility_cost_{poi_type}_n{closest}_{census_gp²}_{mode¹}Ex.: mobility_cost_health_n1_residents_walk\nTravel cost/time to closest opportunities\nmin\n\n\nMobility\nmobility_commuting_avg_tt_{mode¹}Ex.: mobility_commuting_avg_tt_bike\nCommuting average travel times\nmin\n\n\nMobility\nmobility_commuting_trips\nNumber of commuting trips\n#\n\n\nMobility\nmobility_commuting_mean_transfers_pt\nAverage number of transfers on public transport per commuting trip\n#\n\n\nMobility\nmobility_commuting_{weighted_headway/weighted_waiting_time/total_frequency}_{period}_ptEx.: mobility_weighted_waiting_time_peak_pt\nPublic transit service provision metrics (headway, frequency, wait time)\nmin, #\n\n\nMobility\nmobility_n_stops_pt\nNumber of public transport stops\n#\n\n\nMobility\nmobility_frequency_ratio_peak_{period}_ptEx.: mobility_frequency_reduction_weekend_pt\nRatio of public transport frequency during period, compared to peak hour\n%\n\n\nMobility\nmobility_stop_coverage_{pop/pct}_{mode¹}Ex.: mobility_stop_coverage_pct_bus_pt\nPublic transit stop coverage\n%, #\n\n\nMobility\nmobility_shared_mobility_points\nNumber of shared mobility points available\n#\n\n\nMobility\nmobility_infrastructure_{indicator}_{mode¹}Ex.: mobility_infrastructure_length_bike\nMobility infrastructure metrics (length, area, ratios)\nm, ha, %\n\n\nMobility\nmodal_census_share_{mode¹}Ex.: modal_census_share_pt\nModal share from Census\n%, #\n\n\nMobility\nmodal_imob_share_{mode¹}Ex.: modal_imob_share_car\nModal share from IMOB data\n%, #\n\n\nAffordability\naffordability_total_money_{mode¹}Ex.: affordability_total_money_car\nTotal cost of transport\n€\n\n\nAffordability\naffordability_avg_{tt/distance}_{mode¹}Ex.: affordability_avg_distance_car\nAverage travel time/distance for commuting trips\nmin, km\n\n\nAffordability\naffordability_trips_{mode¹}Ex.: affordability_trips_car\nNumber of commuting trips\n#\n\n\nAffordability\naffordability_{h_transp/transp}_inc_comp_{mode¹}Ex.: affordability_transp_inc_comp_pass\nTransport (+ housing) burden\n%\n\n\nSafety\nsafety{_inner³}_{victim_type}30Ex.: safety_feridos_ligeiros30\nNumber of victims of road accidents in 30 days\n#\n\n\nSafety\nsafety{_inner³}_indice_gravidade_{mode¹}Ex.: safety_indice_gravidade_bike\nRoad accident severity index for mode of transport\n%\n\n\nSafety\nsafety{_inner³}_veh_{mode¹}Ex.: safety_veh_car\nNumber of vehicles involved in road accidents\n#\n\n\nSafety\nsafety{_inner³}_acidentes_per_1000res\nNumber of road accidents per 1000 residents\n#\n\n\nSafety\nsafety{_inner³}_vitimas_mortais30_per_1000res\nNumber of fatalities from road accidents per 1000 residents\n#\n\n\nCensus & Land Use\ncensus_{income/landuse}_{indicator}Ex.: census_income_gini_coef\nCensus socioeconomic and land use data\nMultiple\n\n\n\nNotes:\n¹ When the mode is not specified, the index is computed for all modes combined.\n² Computations were performed at the grid level, so aggregation by population was only computed for parish and municipality scales.\n³ When inner is present, the indicator applies for inside localities (dentro das localidades) of the region, excluding freeways and high speed bridges. When not present, all the accidents are being considered.",
-    "crumbs": [
-      "Appendices",
-      "<span class='chapter-number'>A</span>  <span class='chapter-title'>Metadata</span>"
-    ]
-  },
-  {
     "objectID": "reproducibility.html",
     "href": "reproducibility.html",
-    "title": "14  Reproducibility",
+    "title": "13  Reproducibility",
     "section": "",
-    "text": "14.1 Code Repository\nAll data preparation and analysis scripts are available in the IMPT-data GitHub repository:\nScripts are organised with a numeric prefix indicating execution order:",
+    "text": "13.1 Code Repository\nAll data preparation and analysis scripts are available in the IMPT-data GitHub repository:\nScripts are organised with a numeric prefix indicating execution order:",
     "crumbs": [
       "**Dashboard and Reproducibility**",
-      "<span class='chapter-number'>14</span>  <span class='chapter-title'>Reproducibility</span>"
+      "<span class='chapter-number'>13</span>  <span class='chapter-title'>Reproducibility</span>"
     ]
   },
   {
     "objectID": "reproducibility.html#code-repository",
     "href": "reproducibility.html#code-repository",
-    "title": "14  Reproducibility",
+    "title": "13  Reproducibility",
     "section": "",
-    "text": "github.com/U-Shift/IMPT-data\n\n\n\n\n\nTable 14.1: Pipeline script organisation\n\n\n\n\n\nPrefix\nPhase\nScript(s)\n\n\n\n\n00\nSetup\n00a_impt_data_handle.R, 00b_data_load.R\n\n\n01\nGeometry & base data preparation\n01_data_prep.R\n\n\n02\nSocio-demographics & land use\n02_*.R (5 scripts)\n\n\n03\nRouting & travel time matrices\n03_ttm_gridh3.R\n\n\n04\nDimension calculations\n04_*.R (10 scripts)\n\n\n05\nIndex computation\n05_IMPTcalculator.R\n\n\n06\nOutput & dashboard\n06a_results_load.R, 06b_dashboard_export.R\n\n\n\n\n\n\n\nThe estimate time to run all the scrips is 3 days, on a high capacity processing computer.\nThe estimate storage needed is 13 GB.",
+    "text": "github.com/U-Shift/IMPT-data\n\n\n\n\n\nTable 13.1: Pipeline script organisation\n\n\n\n\n\nPrefix\nPhase\nScript(s)\n\n\n\n\n00\nSetup\n00a_impt_data_handle.R, 00b_data_load.R\n\n\n01\nGeometry & base data preparation\n01_data_prep.R\n\n\n02\nSocio-demographics & land use\n02_*.R (5 scripts)\n\n\n03\nRouting & travel time matrices\n03_ttm_gridh3.R\n\n\n04\nDimension calculations\n04_*.R (10 scripts)\n\n\n05\nIndex computation\n05_IMPTcalculator.R\n\n\n06\nOutput & dashboard\n06a_results_load.R, 06b_dashboard_export.R\n\n\n\n\n\n\n\nThe estimate time to run all the scrips is 3 days, on a high capacity processing computer.\nThe estimate storage needed is 13 GB.",
     "crumbs": [
       "**Dashboard and Reproducibility**",
-      "<span class='chapter-number'>14</span>  <span class='chapter-title'>Reproducibility</span>"
+      "<span class='chapter-number'>13</span>  <span class='chapter-title'>Reproducibility</span>"
     ]
   },
   {
     "objectID": "reproducibility.html#replication-for-other-areas",
     "href": "reproducibility.html#replication-for-other-areas",
-    "title": "14  Reproducibility",
-    "section": "14.2 Replication for Other Areas",
-    "text": "14.2 Replication for Other Areas\nTo replicate the IMPT for another Portuguese metropolitan area:\n\nReplace the CAOP 2024 filter (NUTS-II codes \"Grande Lisboa\" and \"Península de Setúbal\") with the target region.\nUpdate the GTFS operator list in 01_data_prep.R.\nObtain the IMOB travel survey OD matrix for the target area, and apply the dicofre conversion if needed.\nSet up a HOT Export Tool bounding box for the new area.\nDownload the relevant Copernicus DEM tile.\nRun scripts in order (00 → 06).\n\nThe H3 grid generation, routing engine, and scoring methodology are entirely generic and require no structural changes.",
+    "title": "13  Reproducibility",
+    "section": "13.2 Replication for Other Areas",
+    "text": "13.2 Replication for Other Areas\nTo replicate the IMPT for another Portuguese metropolitan area:\n\nReplace the CAOP 2024 filter (NUTS-II codes \"Grande Lisboa\" and \"Península de Setúbal\") with the target region.\nUpdate the GTFS operator list in 01_data_prep.R.\nObtain the IMOB travel survey OD matrix for the target area, and apply the dicofre conversion if needed.\nSet up a HOT Export Tool bounding box for the new area.\nDownload the relevant Copernicus DEM tile.\nRun scripts in order (00 → 06).\n\nThe H3 grid generation, routing engine, and scoring methodology are entirely generic and require no structural changes.",
     "crumbs": [
       "**Dashboard and Reproducibility**",
-      "<span class='chapter-number'>14</span>  <span class='chapter-title'>Reproducibility</span>"
+      "<span class='chapter-number'>13</span>  <span class='chapter-title'>Reproducibility</span>"
     ]
   },
   {
     "objectID": "reproducibility.html#dashboard",
     "href": "reproducibility.html#dashboard",
-    "title": "14  Reproducibility",
-    "section": "14.3 Dashboard",
-    "text": "14.3 Dashboard\nThe code to build the IMPT dashboard is not included in this repository. You can find it in the IMPT-web repository.",
+    "title": "13  Reproducibility",
+    "section": "13.3 Dashboard",
+    "text": "13.3 Dashboard\nThe code to build the IMPT dashboard is not included in this repository. You can find it in the IMPT-web repository.",
     "crumbs": [
       "**Dashboard and Reproducibility**",
-      "<span class='chapter-number'>14</span>  <span class='chapter-title'>Reproducibility</span>"
+      "<span class='chapter-number'>13</span>  <span class='chapter-title'>Reproducibility</span>"
     ]
   },
   {
@@ -593,6 +582,17 @@
     "text": "Funding\nThis research was funded by Science4Policy, a PLANAPP - Centre for Planning and Evaluation of Public Policies iniciative to support the definition and implementation of public policies based on scientific evidence.",
     "crumbs": [
       "About"
+    ]
+  },
+  {
+    "objectID": "metadata.html",
+    "href": "metadata.html",
+    "title": "Appendix A — Metadata",
+    "section": "",
+    "text": "This section summarizes the structure of the project output datasets, available at the U-Shift server at https://ushift.tecnico.ulisboa.pt/content/impt/, and on the GitHub releases.\n\n\n\n\n\n\n\n\n\nDimension\nColumn name\nDescription\nUnit\n\n\n\n\n\nid\nGeometry identifier (grid id, dtmnfr for parishes and dtmn for municipalities)\n-\n\n\n\ngroup_id\nGroup id (parish id for grid and municipality id for parishes)\n-\n\n\n\nname\nGeometry name (grid id or parish/municipality name)\n-\n\n\n\nregion_id\nNUTS 2 code\n-\n\n\n\nIMPT_{method}_{mode¹}Ex.: IMPT_score_pca_geom_walk\nIMPT Index\n%\n\n\n\n{dimension}_Index_{mode¹}Ex.: Accessibility_Index\nPCA result for dimension metrics aggregation\n%\n\n\nAccessibility\naccess_{poi_type}_{time}_{census_gp²}_{mode¹}Ex.: access_health_60min_residents_walk\nNumber of opportunities reachable within time\n#\n\n\nAccessibility\npois_n_{poi_type}Ex.: pois_n_health\nNumber of points of interest for a category\n#\n\n\nAccessibility\naccess_gap_{time/money}_{mode¹}Ex.: access_gap_time_pt\nAccessibility gaps metrics\nmin, €\n\n\nMobility\nmobility_cost_{poi_type}_n{closest}_{census_gp²}_{mode¹}Ex.: mobility_cost_health_n1_residents_walk\nTravel cost/time to closest opportunities\nmin\n\n\nMobility\nmobility_commuting_avg_tt_{mode¹}Ex.: mobility_commuting_avg_tt_bike\nCommuting average travel times\nmin\n\n\nMobility\nmobility_commuting_trips\nNumber of commuting trips\n#\n\n\nMobility\nmobility_commuting_mean_transfers_pt\nAverage number of transfers on public transport per commuting trip\n#\n\n\nMobility\nmobility_commuting_{weighted_headway/weighted_waiting_time/total_frequency}_{period}_ptEx.: mobility_weighted_waiting_time_peak_pt\nPublic transit service provision metrics (headway, frequency, wait time)\nmin, #\n\n\nMobility\nmobility_n_stops_pt\nNumber of public transport stops\n#\n\n\nMobility\nmobility_frequency_ratio_peak_{period}_ptEx.: mobility_frequency_reduction_weekend_pt\nRatio of public transport frequency during period, compared to peak hour\n%\n\n\nMobility\nmobility_stop_coverage_{pop/pct}_{mode¹}Ex.: mobility_stop_coverage_pct_bus_pt\nPublic transit stop coverage\n%, #\n\n\nMobility\nmobility_shared_mobility_points\nNumber of shared mobility points available\n#\n\n\nMobility\nmobility_infrastructure_{indicator}_{mode¹}Ex.: mobility_infrastructure_length_bike\nMobility infrastructure metrics (length, area, ratios)\nm, ha, %\n\n\nMobility\nmodal_census_share_{mode¹}Ex.: modal_census_share_pt\nModal share from Census\n%, #\n\n\nMobility\nmodal_imob_share_{mode¹}Ex.: modal_imob_share_car\nModal share from IMOB data\n%, #\n\n\nAffordability\naffordability_total_money_{mode¹}Ex.: affordability_total_money_car\nTotal cost of transport\n€\n\n\nAffordability\naffordability_avg_{tt/distance}_{mode¹}Ex.: affordability_avg_distance_car\nAverage travel time/distance for commuting trips\nmin, km\n\n\nAffordability\naffordability_trips_{mode¹}Ex.: affordability_trips_car\nNumber of commuting trips\n#\n\n\nAffordability\naffordability_{h_transp/transp}_inc_comp_{mode¹}Ex.: affordability_transp_inc_comp_pass\nTransport (+ housing) burden\n%\n\n\nSafety\nsafety{_inner³}_{victim_type}30Ex.: safety_feridos_ligeiros30\nNumber of victims of road accidents in 30 days\n#\n\n\nSafety\nsafety{_inner³}_indice_gravidade_{mode¹}Ex.: safety_indice_gravidade_bike\nRoad accident severity index for mode of transport\n%\n\n\nSafety\nsafety{_inner³}_veh_{mode¹}Ex.: safety_veh_car\nNumber of vehicles involved in road accidents\n#\n\n\nSafety\nsafety{_inner³}_acidentes_per_1000res\nNumber of road accidents per 1000 residents\n#\n\n\nSafety\nsafety{_inner³}_vitimas_mortais30_per_1000res\nNumber of fatalities from road accidents per 1000 residents\n#\n\n\nCensus & Land Use\ncensus_{income/landuse}_{indicator}Ex.: census_income_gini_coef\nCensus socioeconomic and land use data\nMultiple\n\n\n\nNotes:\n¹ When the mode is not specified, the index is computed for all modes combined.\n² Computations were performed at the grid level, so aggregation by population was only computed for parish and municipality scales.\n³ When inner is present, the indicator applies for inside localities (dentro das localidades) of the region, excluding freeways and high speed bridges. When not present, all the accidents are being considered.",
+    "crumbs": [
+      "Appendices",
+      "<span class='chapter-number'>A</span>  <span class='chapter-title'>Metadata</span>"
     ]
   }
 ]
