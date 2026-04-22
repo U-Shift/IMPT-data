@@ -405,12 +405,12 @@ pca_pt_access <- PCA(Accessibility_pt_Norm, quali.sup = 1, graph = FALSE)
 pca_bike_access <- PCA(Accessibility_bike_Norm, quali.sup = 1, graph = FALSE)
 pca_walk_access <- PCA(Accessibility_walk_Norm, quali.sup = 1, graph = FALSE)
 
-pca_car_mobility <- PCA(Mobility_car_Norm, quali.sup = 1, graph = FALSE)
+# pca_car_mobility <- PCA(Mobility_car_Norm, quali.sup = 1, graph = FALSE) #only 2 variables
 pca_pt_mobility <- PCA(Mobility_pt_Norm, quali.sup = 1, graph = FALSE)
 pca_bike_mobility <- PCA(Mobility_bike_Norm, quali.sup = 1, graph = FALSE)
 pca_walk_mobility <- PCA(Mobility_walk_Norm, quali.sup = 1, graph = FALSE)
 
-# pca_car_safety <- PCA(Safety_car_Norm |> select(-veh_motorizado), quali.sup = 1, graph = FALSE)
+# pca_car_safety <- PCA(Safety_car_Norm |> select(-veh_motorizado), quali.sup = 1, graph = FALSE) #only 2 variables
 # pca_bike_safety <- PCA(Safety_bike_Norm |> select(-veh_bicicleta), quali.sup = 1, graph = FALSE)
 # pca_walk_safety <- PCA(Safety_walk_Norm |> select(-veh_peoes), quali.sup = 1, graph = FALSE)
 
@@ -444,10 +444,6 @@ aff_pt_scores_singlefare <- Affordability_pt_Norm_singlefare |>
   rename(Affordability_Index_singlefare = h_transp_inc_pt)
 
 # Per-mode mobility scores
-mob_car_scores <- data.frame(
-  dtmnfr = Mobility_car_Norm$dtmnfr,
-  Mobility_Index = scale_0_100(pca_car_mobility$ind$coord[, 1])
-)
 mob_pt_scores <- data.frame(
   dtmnfr = Mobility_pt_Norm$dtmnfr,
   Mobility_Index = scale_0_100(pca_pt_mobility$ind$coord[, 1])
@@ -460,6 +456,16 @@ mob_walk_scores <- data.frame(
   dtmnfr = Mobility_walk_Norm$dtmnfr,
   Mobility_Index = scale_0_100(pca_walk_mobility$ind$coord[, 1])
 )
+# mob_car_scores <- data.frame(
+#   dtmnfr = Mobility_car_Norm$dtmnfr,
+#   Mobility_Index = scale_0_100(pca_car_mobility$ind$coord[, 1])
+# )
+mob_car_scores <- Mobility_car_Norm |>
+  mutate(
+    Mobility_Index = mobility_commuting_avg_tt_car * 0.5 + road_length * 0.5 # equal weights for Car Mobility
+  ) |>
+  select(dtmnfr, Mobility_Index)
+
 
 # Per-mode safety scores (equal-weight average of severity index + frequency)
 # NOTE: severity index is inverted because it is already normalised as "cost"
@@ -495,7 +501,7 @@ pca_list <- list(
   Accessibility_pt   = pca_pt_access,
   Accessibility_bike = pca_bike_access,
   Accessibility_walk = pca_walk_access,
-  Mobility_car       = pca_car_mobility,
+  # Mobility_car       = pca_car_mobility,
   Mobility_pt        = pca_pt_mobility,
   Mobility_bike      = pca_bike_mobility,
   Mobility_walk      = pca_walk_mobility
