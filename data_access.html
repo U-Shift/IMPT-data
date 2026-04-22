@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>2&nbsp; Data Sources – IMPT — Índice Multidimensional e Multimodal de Pobreza nos Transportes</title>
+<title>3&nbsp; Data Access – IMPT — Índice Multidimensional e Multimodal de Pobreza nos Transportes</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -30,8 +30,8 @@ ul.task-list li input[type="checkbox"] {
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./data_access.html" rel="next">
-<link href="./index.html" rel="prev">
+<link href="./data_preparation.html" rel="next">
+<link href="./data_sources.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
@@ -68,11 +68,9 @@ ul.task-list li input[type="checkbox"] {
     "search-label": "Search"
   }
 }</script>
-<script src="site_libs/kePrint-0.0.1/kePrint.js"></script>
-<link href="site_libs/lightable-0.0.1/lightable.css" rel="stylesheet">
 
 
-<meta name="citation_title" content="[[2]{.chapter-number}&nbsp; [Data Sources]{.chapter-title}]{#sec-data-sources .quarto-section-identifier}">
+<meta name="citation_title" content="[3]{.chapter-number}&nbsp; [Data Access]{.chapter-title}">
 <meta name="citation_language" content="en">
 <meta name="citation_reference" content="citation_title=Jittering: A computationally efficient method for generating realistic route networks from origin-destination data;,citation_author=Robin Lovelace;,citation_author=Rosa Félix;,citation_author=Dustin Carlino;,citation_publication_date=2022;,citation_cover_date=2022;,citation_year=2022;,citation_fulltext_html_url=https://doi.org/10.32866/001c.33873;,citation_doi=10.32866/001c.33873;,citation_journal_title=Findings;">
 <meta name="citation_reference" content="citation_title=r5r: Rapid realistic routing on multimodal transport networks with R5 in R;,citation_author=Rafael H. M. Pereira;,citation_author=Marcus Saraiva;,citation_author=Daniel Herszenhut;,citation_author=Carlos K. V. Braga;,citation_author=Matthew Wigginton Conway;,citation_publication_date=2021;,citation_cover_date=2021;,citation_year=2021;,citation_fulltext_html_url=https://doi.org/10.32866/001c.21262;,citation_doi=10.32866/001c.21262;,citation_journal_title=Findings;">
@@ -94,7 +92,7 @@ ul.task-list li input[type="checkbox"] {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./data_sources.html"><strong>Data</strong></a></li><li class="breadcrumb-item"><a href="./data_sources.html"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Data Sources</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./data_sources.html"><strong>Data</strong></a></li><li class="breadcrumb-item"><a href="./data_access.html"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Data Access</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -136,13 +134,13 @@ ul.task-list li input[type="checkbox"] {
       <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./data_sources.html" class="sidebar-item-text sidebar-link active">
+  <a href="./data_sources.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Data Sources</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./data_access.html" class="sidebar-item-text sidebar-link">
+  <a href="./data_access.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Data Access</span></span></a>
   </div>
 </li>
@@ -253,23 +251,15 @@ ul.task-list li input[type="checkbox"] {
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        <nav id="TOC" role="doc-toc" class="toc-active">
-    <h2 id="toc-title">Table of contents</h2>
-   
-  <ul>
-  <li><a href="#primary-data-sources" id="toc-primary-data-sources" class="nav-link active" data-scroll-target="#primary-data-sources"><span class="header-section-number">2.1</span> Primary Data Sources</a></li>
-  <li><a href="#sec-gtfs-operators" id="toc-sec-gtfs-operators" class="nav-link" data-scroll-target="#sec-gtfs-operators"><span class="header-section-number">2.2</span> GTFS Transit Operators</a></li>
-  <li><a href="#sec-packages" id="toc-sec-packages" class="nav-link" data-scroll-target="#sec-packages"><span class="header-section-number">2.3</span> R Packages</a></li>
-  </ul>
-</nav>
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+        
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./data_sources.html"><strong>Data</strong></a></li><li class="breadcrumb-item"><a href="./data_sources.html"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Data Sources</span></a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./data_sources.html"><strong>Data</strong></a></li><li class="breadcrumb-item"><a href="./data_access.html"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Data Access</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title"><span id="sec-data-sources" class="quarto-section-identifier"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Data Sources</span></span></h1>
+<h1 class="title"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Data Access</span></h1>
 </div>
 
 
@@ -286,354 +276,15 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<section id="primary-data-sources" class="level2" data-number="2.1">
-<h2 data-number="2.1" class="anchored" data-anchor-id="primary-data-sources"><span class="header-section-number">2.1</span> Primary Data Sources</h2>
-<div class="cell">
-<div id="tbl-datasources" class="cell quarto-float quarto-figure quarto-figure-center anchored">
-<figure class="quarto-float quarto-float-tbl figure">
-<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-datasources-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table&nbsp;2.1: Primary data sources used in the IMPT pipeline
-</figcaption>
-<div aria-describedby="tbl-datasources-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<div class="cell-output-display">
-<table class="table do-not-create-environment cell caption-top table-sm table-striped small" data-quarto-postprocess="true">
-<thead>
-<tr class="header">
-<th style="text-align: left;" data-quarto-table-cell-role="th">Code</th>
-<th style="text-align: left;" data-quarto-table-cell-role="th">Dataset</th>
-<th style="text-align: left;" data-quarto-table-cell-role="th">Reference period</th>
-<th style="text-align: left;" data-quarto-table-cell-role="th">Source</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">CAOP</td>
-<td style="text-align: left; width: 9cm;">CAOP 2024.1 — Administrative Boundaries</td>
-<td style="text-align: left;">2024</td>
-<td style="text-align: left; width: 5.5cm;"><a href="https://www.dgterritorio.gov.pt/sites/default/files/ficheiros-cartografia/CAOP_Continente_2024.1-gpkg.zip" target="_blank">https://www.dgterritorio.gov.pt/sites/default/files/ficheiros-cartografia/CAOP_Continente_2024.1-gpkg.zip</a></td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">BGRI21</td>
-<td style="text-align: left; width: 9cm;">Census 2021 — Base Geográfica de Referenciação de Informação</td>
-<td style="text-align: left;">2021</td>
-<td style="text-align: left; width: 5.5cm;"><a href="https://mapas.ine.pt/download/filesGPG/2021/nuts3/BGRI21_170.zip" target="_blank">https://mapas.ine.pt/download/filesGPG/2021/nuts3/BGRI21_170.zip</a></td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">IMOB</td>
-<td style="text-align: left; width: 9cm;">IMOB 2017/18 — Inquérito à Mobilidade nas Áreas Metropolitanas</td>
-<td style="text-align: left;">2018</td>
-<td style="text-align: left; width: 5.5cm;"><a href="https://www.ine.pt/xurl/pub/349495406" target="_blank">https://www.ine.pt/xurl/pub/349495406</a></td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">GTFS</td>
-<td style="text-align: left; width: 9cm;">GTFS — General Transit Feed Specification (all AML operators)</td>
-<td style="text-align: left;">2026-02</td>
-<td style="text-align: left; width: 5.5cm;">Multiple operators — see <a href="#sec-gtfs-operators">GTFS Operators</a></td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">OSM-RN</td>
-<td style="text-align: left; width: 9cm;">OpenStreetMap (OSM) — Road network</td>
-<td style="text-align: left;">2026-01</td>
-<td style="text-align: left; width: 5.5cm;"><a href="https://export.hotosm.org/exports/4782f0b8-6778-4c0e-8e4f-97fc62e7f240" target="_blank">https://export.hotosm.org/exports/4782f0b8-6778-4c0e-8e4f-97fc62e7f240</a></td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">OSM-POI</td>
-<td style="text-align: left; width: 9cm;">OpenStreetMap (OSM) — POIs</td>
-<td style="text-align: left;">2024-04</td>
-<td style="text-align: left; width: 5.5cm;"><a href="https://export.hotosm.org%20/%20https://github.com/U-Shift/SiteSelection/releases/download/0.1/osm_poi_landuse.gpkg" target="_blank">https://export.hotosm.org / https://github.com/U-Shift/SiteSelection/releases/download/0.1/osm_poi_landuse.gpkg</a></td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">CM</td>
-<td style="text-align: left; width: 9cm;">Carris Metropolitana — Health centres and schools datasets</td>
-<td style="text-align: left;">2024</td>
-<td style="text-align: left; width: 5.5cm;"><a href="https://github.com/carrismetropolitana/datasets" target="_blank">https://github.com/carrismetropolitana/datasets</a></td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">ANSR</td>
-<td style="text-align: left; width: 9cm;">ANSR — Road accident data (Sinistralidade Rodoviária)</td>
-<td style="text-align: left;">2019–2023</td>
-<td style="text-align: left; width: 5.5cm;"><a href="https://pmmus.tmlmobilidade.pt/" target="_blank">https://pmmus.tmlmobilidade.pt/</a></td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">INE-Inc</td>
-<td style="text-align: left; width: 9cm;">INE — Household income by parish (Rendimento agregado 2023)</td>
-<td style="text-align: left;">2023</td>
-<td style="text-align: left; width: 5.5cm;"><a href="https://www.ine.pt/xurl/pub/66303599" target="_blank">https://www.ine.pt/xurl/pub/66303599</a></td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">INE-Hous</td>
-<td style="text-align: left; width: 9cm;">INE — Housing costs by parish (Habitação custos 2021)</td>
-<td style="text-align: left;">2021</td>
-<td style="text-align: left; width: 5.5cm;"><a href="https://www.ine.pt/xurl/pub/65586079" target="_blank">https://www.ine.pt/xurl/pub/65586079</a></td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">GBA</td>
-<td style="text-align: left; width: 9cm;">Global Building Atlas - Building heights</td>
-<td style="text-align: left;">2026</td>
-<td style="text-align: left; width: 5.5cm;"><a href="https://github.com/zhu-xlab/GlobalBuildingAtlas" target="_blank">https://github.com/zhu-xlab/GlobalBuildingAtlas</a></td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">PMUS</td>
-<td style="text-align: left; width: 9cm;">TML PMUS - Shared mobility docks</td>
-<td style="text-align: left;">2025</td>
-<td style="text-align: left; width: 5.5cm;"><a href="https://pmmus.tmlmobilidade.pt/" target="_blank">https://pmmus.tmlmobilidade.pt/</a></td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">COS</td>
-<td style="text-align: left; width: 9cm;">COS 2023 v1 — Land use Map</td>
-<td style="text-align: left;">2023</td>
-<td style="text-align: left; width: 5.5cm;"><a href="https://geo2.dgterritorio.gov.pt/cos/S2/COS2023/COS2023v1-S2-gpkg.zip" target="_blank">https://geo2.dgterritorio.gov.pt/cos/S2/COS2023/COS2023v1-S2-gpkg.zip</a></td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">IP</td>
-<td style="text-align: left; width: 9cm;">Infraestruturas de Portugal — Toll cost</td>
-<td style="text-align: left;">2026</td>
-<td style="text-align: left; width: 5.5cm;"><a href="https://portagens.infraestruturasdeportugal.pt" target="_blank">https://portagens.infraestruturasdeportugal.pt</a></td>
-</tr>
-</tbody>
-</table>
+<p>Despite being reproducible and replicable, the high amount of data generated makes it difficult to distribute the full dataset. Thus, before running any of the scripts in the pipeline, primary data sources should be downloaded manually to the <code>data/</code> folder.</p>
+<p><strong><a href="https://github.com/U-Shift/IMPT-data/blob/main/code/00a_impt_data_handle.R"><code>00a_impt_data_handle.R</code></a></strong> defines two core helper functions:</p>
+<ul>
+<li><code>impt_read(path)</code>: reads CSV, GeoPackage, GeoJSON, or RDS files. When running on the <code>ushift-alfa</code> server, it reads from the local <code>/data/IMPT/</code> directory; on any other machine, it fetches via HTTPS from <code>https://impt.server.ushift.pt</code> using an API key.</li>
+<li><code>impt_write(content, path)</code>: writes to the same location logic (server vs.&nbsp;local <code>data/</code> folder).</li>
+</ul>
+<p>These functions abstract away the data storage location, making the pipeline portable.</p>
 
 
-</div>
-</div>
-</figure>
-</div>
-</div>
-</section>
-<section id="sec-gtfs-operators" class="level2" data-number="2.2">
-<h2 data-number="2.2" class="anchored" data-anchor-id="sec-gtfs-operators"><span class="header-section-number">2.2</span> GTFS Transit Operators</h2>
-<p>Travel time matrices for public transit and stop-level frequency statistics were computed using GTFS feeds downloaded on <strong>04/02/2026</strong> from the following operators:</p>
-<div class="cell">
-<div id="tbl-gtfs" class="cell quarto-float quarto-figure quarto-figure-center anchored">
-<figure class="quarto-float quarto-float-tbl figure">
-<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-gtfs-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table&nbsp;2.2: GTFS feeds used in the IMPT pipeline
-</figcaption>
-<div aria-describedby="tbl-gtfs-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<div class="cell-output-display">
-<table class="table do-not-create-environment cell caption-top table-sm table-striped small" data-quarto-postprocess="true">
-<thead>
-<tr class="header">
-<th style="text-align: left;" data-quarto-table-cell-role="th">Operator</th>
-<th style="text-align: left;" data-quarto-table-cell-role="th">Mode</th>
-<th style="text-align: left;" data-quarto-table-cell-role="th">GTFS URL</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">Carris Metropolitana</td>
-<td style="text-align: left;">Bus</td>
-<td style="text-align: left; width: 8cm;"><a href="https://api.carrismetropolitana.pt/gtfs" target="_blank">https://api.carrismetropolitana.pt/gtfs</a></td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">Carris Municipal (Lisboa)</td>
-<td style="text-align: left;">Bus</td>
-<td style="text-align: left; width: 8cm;"><a href="https://gateway.carris.pt/gateway/gtfs/api/v2.8/GTFS" target="_blank">https://gateway.carris.pt/gateway/gtfs/api/v2.8/GTFS</a></td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">MobiCascais</td>
-<td style="text-align: left;">Bus</td>
-<td style="text-align: left; width: 8cm;"><a href="https://drive.google.com/u/0/uc?id=13ucYiAJRtu-gXsLa02qKJrGOgDjbnUWX&amp;export=download" target="_blank">https://drive.google.com/u/0/uc?id=13ucYiAJRtu-gXsLa02qKJrGOgDjbnUWX&amp;export=download</a></td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">Transportes Coletivos do Barreiro (TCB)</td>
-<td style="text-align: left;">Bus</td>
-<td style="text-align: left; width: 8cm;"><a href="https://backend.tcbarreiro.pt/download-gtfs" target="_blank">https://backend.tcbarreiro.pt/download-gtfs</a></td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">Metropolitano de Lisboa (Metro)</td>
-<td style="text-align: left;">Metro</td>
-<td style="text-align: left; width: 8cm;"><a href="https://metrolisboa.pt/google_transit/googleTransit.zip" target="_blank">https://metrolisboa.pt/google_transit/googleTransit.zip</a></td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">Comboios de Portugal (CP)</td>
-<td style="text-align: left;">Rail</td>
-<td style="text-align: left; width: 8cm;"><a href="https://publico.cp.pt/gtfs/gtfs.zip" target="_blank">https://publico.cp.pt/gtfs/gtfs.zip</a></td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">Fertagus</td>
-<td style="text-align: left;">Rail</td>
-<td style="text-align: left; width: 8cm;"><a href="https://mts.pt/imt/MTS-20240129.zip" target="_blank">https://mts.pt/imt/MTS-20240129.zip</a></td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">Metro Transportes do Sul (MTS)</td>
-<td style="text-align: left;">Light Rail</td>
-<td style="text-align: left; width: 8cm;"><a href="https://fertagus.pt/GTFSTMLzip/Fertagus_GTFS.zip" target="_blank">https://fertagus.pt/GTFSTMLzip/Fertagus_GTFS.zip</a></td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">Transtejo/Soflusa (TTSL)</td>
-<td style="text-align: left;">Ferry</td>
-<td style="text-align: left; width: 8cm;"><a href="https://api.transtejo.pt/files/GTFS.zip" target="_blank">https://api.transtejo.pt/files/GTFS.zip</a></td>
-</tr>
-</tbody>
-</table>
-
-
-</div>
-</div>
-</figure>
-</div>
-</div>
-</section>
-<section id="sec-packages" class="level2" data-number="2.3">
-<h2 data-number="2.3" class="anchored" data-anchor-id="sec-packages"><span class="header-section-number">2.3</span> R Packages</h2>
-<p>The following R packages are used across the pipeline:</p>
-<div class="cell">
-<div id="tbl-packages" class="cell quarto-float quarto-figure quarto-figure-center anchored">
-<figure class="quarto-float quarto-float-tbl figure">
-<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-packages-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table&nbsp;2.3: Key R packages used in the IMPT pipeline
-</figcaption>
-<div aria-describedby="tbl-packages-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<div class="cell-output-display">
-<table class="table do-not-create-environment cell caption-top table-sm table-striped small" data-quarto-postprocess="true">
-<thead>
-<tr class="header">
-<th style="text-align: left;" data-quarto-table-cell-role="th">Package</th>
-<th style="text-align: left;" data-quarto-table-cell-role="th">Primary purpose in IMPT</th>
-<th style="text-align: left;" data-quarto-table-cell-role="th">CRAN?</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd" data-grouplength="4">
-<td colspan="3" style="border-bottom: 1px solid"><strong>Data reading</strong></td>
-</tr>
-<tr class="even">
-<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">readr</td>
-<td style="text-align: left; width: 9cm;">Fast CSV reading/writing</td>
-<td style="text-align: left;">Yes</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">readxl</td>
-<td style="text-align: left; width: 9cm;">Excel file reading (INE data)</td>
-<td style="text-align: left;">Yes</td>
-</tr>
-<tr class="even">
-<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">openxlsx</td>
-<td style="text-align: left; width: 9cm;">Excel file reading (safety data)</td>
-<td style="text-align: left;">Yes</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">lubridate</td>
-<td style="text-align: left; width: 9cm;">Date/time manipulation</td>
-<td style="text-align: left;">Yes</td>
-</tr>
-<tr class="even" data-grouplength="4">
-<td colspan="3" style="border-bottom: 1px solid"><strong>Data manipulation</strong></td>
-</tr>
-<tr class="odd">
-<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">dplyr</td>
-<td style="text-align: left; width: 9cm;">Data manipulation</td>
-<td style="text-align: left;">Yes</td>
-</tr>
-<tr class="even">
-<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">tidyr</td>
-<td style="text-align: left; width: 9cm;">Data reshaping</td>
-<td style="text-align: left;">Yes</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">stringr</td>
-<td style="text-align: left; width: 9cm;">String manipulation</td>
-<td style="text-align: left;">Yes</td>
-</tr>
-<tr class="even">
-<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">tidyverse</td>
-<td style="text-align: left; width: 9cm;">Collection of data science packages</td>
-<td style="text-align: left;">Yes</td>
-</tr>
-<tr class="odd" data-grouplength="5">
-<td colspan="3" style="border-bottom: 1px solid"><strong>Geo spatial data</strong></td>
-</tr>
-<tr class="even">
-<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">sf</td>
-<td style="text-align: left; width: 9cm;">Spatial data handling (read, write, join, transform)</td>
-<td style="text-align: left;">Yes</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">terra</td>
-<td style="text-align: left; width: 9cm;">DEM raster data processing</td>
-<td style="text-align: left;">Yes</td>
-</tr>
-<tr class="even">
-<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">mapview</td>
-<td style="text-align: left; width: 9cm;">Interactive map visualisation</td>
-<td style="text-align: left;">Yes</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">stplanr</td>
-<td style="text-align: left; width: 9cm;">OD line-to-point conversion</td>
-<td style="text-align: left;">Yes</td>
-</tr>
-<tr class="even">
-<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">h3jsr</td>
-<td style="text-align: left; width: 9cm;">H3 hexagonal grid generation</td>
-<td style="text-align: left;">No*</td>
-</tr>
-<tr class="odd" data-grouplength="5">
-<td colspan="3" style="border-bottom: 1px solid"><strong>Routing and accessibility</strong></td>
-</tr>
-<tr class="even">
-<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">r5r</td>
-<td style="text-align: left; width: 9cm;">Multimodal travel time matrix computation</td>
-<td style="text-align: left;">Yes</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">accessibility</td>
-<td style="text-align: left; width: 9cm;">Cumulative accessibility and cost-to-closest measures</td>
-<td style="text-align: left;">Yes</td>
-</tr>
-<tr class="even">
-<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">odjitter</td>
-<td style="text-align: left; width: 9cm;">Origin-Destination jittering</td>
-<td style="text-align: left;">No*</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">tidytransit</td>
-<td style="text-align: left; width: 9cm;">GTFS feed processing and stop frequencies</td>
-<td style="text-align: left;">Yes</td>
-</tr>
-<tr class="even">
-<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">GTFShift</td>
-<td style="text-align: left; width: 9cm;">GTFS loading, route frequency, filtering</td>
-<td style="text-align: left;">No*</td>
-</tr>
-<tr class="odd" data-grouplength="1">
-<td colspan="3" style="border-bottom: 1px solid"><strong>PCA</strong></td>
-</tr>
-<tr class="even">
-<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">FactoMineR</td>
-<td style="text-align: left; width: 9cm;">Principal Component Analysis</td>
-<td style="text-align: left;">Yes</td>
-</tr>
-<tr class="odd" data-grouplength="1">
-<td colspan="3" style="border-bottom: 1px solid"><strong>Tests</strong></td>
-</tr>
-<tr class="even">
-<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">assertthat</td>
-<td style="text-align: left; width: 9cm;">Runtime assertion checks</td>
-<td style="text-align: left;">Yes</td>
-</tr>
-<tr class="odd" data-grouplength="1">
-<td colspan="3" style="border-bottom: 1px solid"><strong>Piggyback</strong></td>
-</tr>
-<tr class="even">
-<td style="text-align: left; padding-left: 2em;" data-indentlevel="1">piggyback</td>
-<td style="text-align: left; width: 9cm;">GitHub release asset upload/download</td>
-<td style="text-align: left;">Yes</td>
-</tr>
-</tbody>
-</table>
-
-
-</div>
-</div>
-</figure>
-</div>
-</div>
-<p>* <em>Installed from GitHub: <code>odjitter</code> (<code>itsleeds/odjitter</code>, R subdirectory), <code>GTFShift</code> (<code>U-Shift/GTFShift</code>), <code>h3jsr</code> (<code>obrl-soil/h3jsr</code>).</em></p>
-
-
-</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -1055,13 +706,13 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="./index.html" class="pagination-link" aria-label="Introduction">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction</span></span>
+      <a href="./data_sources.html" class="pagination-link" aria-label="Data Sources">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Data Sources</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./data_access.html" class="pagination-link" aria-label="Data Access">
-        <span class="nav-page-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Data Access</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./data_preparation.html" class="pagination-link" aria-label="Data Preparation">
+        <span class="nav-page-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Data Preparation</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
