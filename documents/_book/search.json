@@ -196,89 +196,89 @@
   {
     "objectID": "transport_routing.html",
     "href": "transport_routing.html",
-    "title": "4  Travel Time Matrix",
+    "title": "5  Travel Time Matrix",
     "section": "",
-    "text": "Script: 03_ttm_gridh3.R\nPackage: r5r (Pereira et al. 2021)\nA travel time matrix (TTM) is computed between all H3 grid centroids for the AML, for each transport mode, using r5r::travel_time_matrix(). The parameters used are:\n\n\n\n\nTable 4.1: Travel time matrix parameters\n\n\n\n\n\n\nParameter\nValue\n\n\n\n\nSpatial unit\nH3 Resolution 8 centroids (~3,686 origins)\n\n\nPercentile\n50th percentile (median)\n\n\nMax trip duration\n120 minutes\n\n\nModes\nWalk, Bike, Car, Public Transit (×2 transfer scenarios)\n\n\nPT egress mode\nWALK\n\n\nPT max walking time\n15 minutes, 20 minutes (2 scenarios of egress)\n\n\nPT departure datetime\nWednesday 04/02/2026 at 08:00 AM\n\n\nPT max transfers (scenario 1)\nmax_rides = 2 (1 transfer)\n\n\nPT max transfers (scenario 2)\nmax_rides = 3 (2 transfers)\n\n\nCycling max Level of Traffic Stress\nLTS ≤ 3 (comfortable streets)\n\n\nElevation model\nMINETTI metabolic-equivalent\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nNote\n\n\n\nThe 50th percentile travel time is used so that results represent typical (median) travel conditions rather than best- or worst-case scenarios. All parameters not listed here use r5r defaults.\n\n\nThis process is long and computationally expensive. It is recommended to run it in a powerful machine. The travel_time_matrix() function does not compute the geometry of the routes, only the travel times. The geometry of the routes is computed in the accessibility section.\nThe results are stored so we have a OD matrix of travel time between all H3 cells for each transport mode and scenario.\n\n\n\n\nPereira, Rafael H. M., Marcus Saraiva, Daniel Herszenhut, Carlos K. V. Braga, and Matthew Wigginton Conway. 2021. “R5r: Rapid Realistic Routing on Multimodal Transport Networks with R5 in R.” Findings. https://doi.org/10.32866/001c.21262.",
+    "text": "Script: 03_ttm_gridh3.R\nPackage: r5r (Pereira et al. 2021)\nA travel time matrix (TTM) is computed between all H3 grid centroids for the AML, for each transport mode, using r5r::travel_time_matrix(). The parameters used are:\n\n\n\n\nTable 5.1: Travel time matrix parameters\n\n\n\n\n\n\nParameter\nValue\n\n\n\n\nSpatial unit\nH3 Resolution 8 centroids (~3,686 origins)\n\n\nPercentile\n50th percentile (median)\n\n\nMax trip duration\n120 minutes\n\n\nModes\nWalk, Bike, Car, Public Transit (×2 transfer scenarios)\n\n\nPT egress mode\nWALK\n\n\nPT max walking time\n15 minutes, 20 minutes (2 scenarios of egress)\n\n\nPT departure datetime\nWednesday 04/02/2026 at 08:00 AM\n\n\nPT max transfers (scenario 1)\nmax_rides = 2 (1 transfer)\n\n\nPT max transfers (scenario 2)\nmax_rides = 3 (2 transfers)\n\n\nCycling max Level of Traffic Stress\nLTS ≤ 3 (comfortable streets)\n\n\nElevation model\nMINETTI metabolic-equivalent\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nNote\n\n\n\nThe 50th percentile travel time is used so that results represent typical (median) travel conditions rather than best- or worst-case scenarios. All parameters not listed here use r5r defaults.\n\n\nThis process is long and computationally expensive. It is recommended to run it in a powerful machine. The travel_time_matrix() function does not compute the geometry of the routes, only the travel times. The geometry of the routes is computed in the accessibility section.\nThe results are stored so we have a OD matrix of travel time between all H3 cells for each transport mode and scenario.\n\n\n\n\nPereira, Rafael H. M., Marcus Saraiva, Daniel Herszenhut, Carlos K. V. Braga, and Matthew Wigginton Conway. 2021. “R5r: Rapid Realistic Routing on Multimodal Transport Networks with R5 in R.” Findings. https://doi.org/10.32866/001c.21262.",
     "crumbs": [
       "**Data**",
-      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Travel Time Matrix</span>"
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Travel Time Matrix</span>"
     ]
   },
   {
     "objectID": "mobility.html",
     "href": "mobility.html",
-    "title": "5  Mobility",
+    "title": "6  Mobility",
     "section": "",
-    "text": "5.1 Commuting travel times\nMobility indicators cover infrastructure availability and quality, public transport coverage and service levels, commuting patterns, and shared mobility provision.\nScript: 04_mobility_commuting.R\nUsing the jittered IMOB OD pairs (for commuting) and the travel time matrices, average commuting travel times are computed for each geographical unit and mode, weighted by number of trips. Trips with no feasible route within the constraints are assigned the maximum travel time (120 min) and counted separately as “not accomplishable” trips (PNA — Percentagem Não Alcançáveis).\nflowchart TB\n    TTM[\"Travel Time Matrix&lt;br/&gt;(all modes)\"] --&gt; Match\n    ODs[\"Jittered OD pairs&lt;br/&gt;(IMOB 2017 commuting)\"] --&gt; Match\n    Grid[\"H3 Grid\"] --&gt; Match\n    \n    subgraph Match[\"Spatial Assignment & Matching\"]\n        direction TB\n        JoinGrid[\"Assign each OD&lt;br/&gt;to origin grid cell\"] --&gt; Lookup[\"Look up travel time&lt;br/&gt;for each OD pair&lt;br/&gt;in TTM\"]\n        Lookup --&gt; Fill[\"Fill missing:&lt;br/&gt;max_duration = 120 min&lt;br/&gt;(NAs = not accomplishable)\"]\n    end\n    \n    Match --&gt; AggMode[\"Aggregate by&lt;br/&gt;geographic unit × mode\"]\n    AggMode --&gt; Output[\"avg_tt_{mode}&lt;br/&gt;trips, trips_na_{mode}&lt;br/&gt;PNA_{mode}\"]\n\n\n\n\nFigure 5.1: Commuting travel time computation",
+    "text": "6.1 Commuting travel times\nMobility indicators cover infrastructure availability and quality, public transport coverage and service levels, commuting patterns, and shared mobility provision.\nScript: 04_mobility_commuting.R\nUsing the jittered IMOB OD pairs (for commuting) and the travel time matrices, average commuting travel times are computed for each geographical unit and mode, weighted by number of trips. Trips with no feasible route within the constraints are assigned the maximum travel time (120 min) and counted separately as “not accomplishable” trips (PNA — Percentagem Não Alcançáveis).\nflowchart TB\n    TTM[\"Travel Time Matrix&lt;br/&gt;(all modes)\"] --&gt; Match\n    ODs[\"Jittered OD pairs&lt;br/&gt;(IMOB 2017 commuting)\"] --&gt; Match\n    Grid[\"H3 Grid\"] --&gt; Match\n    \n    subgraph Match[\"Spatial Assignment & Matching\"]\n        direction TB\n        JoinGrid[\"Assign each OD&lt;br/&gt;to origin grid cell\"] --&gt; Lookup[\"Look up travel time&lt;br/&gt;for each OD pair&lt;br/&gt;in TTM\"]\n        Lookup --&gt; Fill[\"Fill missing:&lt;br/&gt;max_duration = 120 min&lt;br/&gt;(NAs = not accomplishable)\"]\n    end\n    \n    Match --&gt; AggMode[\"Aggregate by&lt;br/&gt;geographic unit × mode\"]\n    AggMode --&gt; Output[\"avg_tt_{mode}&lt;br/&gt;trips, trips_na_{mode}&lt;br/&gt;PNA_{mode}\"]\n\n\n\n\nFigure 6.1: Commuting travel time computation",
     "crumbs": [
       "**Dimensions and PCA**",
-      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Mobility</span>"
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Mobility</span>"
     ]
   },
   {
     "objectID": "mobility.html#number-of-pt-transfers",
     "href": "mobility.html#number-of-pt-transfers",
-    "title": "5  Mobility",
-    "section": "5.2 Number of PT transfers",
-    "text": "5.2 Number of PT transfers\nScript: 04_mobility_commuting.R\nFor each commuting OD pair, the minimum number of transfers required for each PTransit route (for 0, 1, 2, and 3 transfers) is assigned to each OD pair, and population-weighted mean transfers are computed per geographical unit. The result is the average minimum number of transfers to commute to work, using PTransit.",
+    "title": "6  Mobility",
+    "section": "6.2 Number of PT transfers",
+    "text": "6.2 Number of PT transfers\nScript: 04_mobility_commuting.R\nFor each commuting OD pair, the minimum number of transfers required for each PTransit route (for 0, 1, 2, and 3 transfers) is assigned to each OD pair, and population-weighted mean transfers are computed per geographical unit. The result is the average minimum number of transfers to commute to work, using PTransit.",
     "crumbs": [
       "**Dimensions and PCA**",
-      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Mobility</span>"
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Mobility</span>"
     ]
   },
   {
     "objectID": "mobility.html#walking-and-cycling-infrastructure-ratio",
     "href": "mobility.html#walking-and-cycling-infrastructure-ratio",
-    "title": "5  Mobility",
-    "section": "5.3 Walking and Cycling infrastructure ratio",
-    "text": "5.3 Walking and Cycling infrastructure ratio\nScript: 04_mobility.R\n\n5.3.1 Walking infrastructure ratio\nThe pedestrian infrastructure ratio is the proportion of road length that includes pedestrian infrastructure, computed using OSM data:\n\\[R_{ped} = \\frac{\\text{pedestrian path length}}{\\text{road length}}\\]\nRoad classification uses highway tags: motorway, trunk, primary, secondary, tertiary, unclassified, residential, living_street, plus link variants.\nPedestrian infrastructure uses tags: highway = footway | pedestrian | steps | residential and footway = sidewalk | crossing | path | platform | corridor | alley | track, and sidewalk = both | left | right.\n\n\n5.3.2 Cycling infrastructure ratio and type\nScript: 04_mobility_bike_infrastructure.R\nThe cycling infrastructure ratio is computed analogously to the pedestrian ratio by comparing cycleway length to total road length. Infrastructure data is extracted from OpenStreetMap and classified according to its type and level of segregation:\n\nCycle track or lane: Segregated or light-separated tracks exclusive for cycling (Ciclovia segregada).\n\nhighway = cycleway\nhighway = path & bicycle = designated\nsegregated = yes | no\ncycleway tags containing: separate, buffered_lane, segregated, lane, or track.\n\nAdvisory lane: Marked cycle lanes shared with motor vehicles, such as sharrows or advisory lanes (Via partilhada com veículos motorizados / zonas 30).\n\ncycleway tags containing: shared_lane.\n\nProtected Active: Infrastructure shared with pedestrians but protected from motor vehicles (Via partilhada com peões).\n\nhighway = pedestrian & bicycle = designated.\nRefinement of highway = path | footway | pedestrian when foot access is explicitly allowed on cycling paths without physical segregation.\n\n\nThe primary indicators are:\nCycling infrastructure ratio: \\[R_{cyc} = \\frac{\\text{total cycleway length}}{\\text{road length}}\\]\nCycling quality ratio: \\[R_{cyc,q} = \\frac{\\text{segregated cycleway length}}{\\text{total cycleway length}}\\]\nWhere “segregated cycleway length” corresponds to the Cycle track or lane category.",
+    "title": "6  Mobility",
+    "section": "6.3 Walking and Cycling infrastructure ratio",
+    "text": "6.3 Walking and Cycling infrastructure ratio\nScript: 04_mobility.R\n\n6.3.1 Walking infrastructure ratio\nThe pedestrian infrastructure ratio is the proportion of road length that includes pedestrian infrastructure, computed using OSM data:\n\\[R_{ped} = \\frac{\\text{pedestrian path length}}{\\text{road length}}\\]\nRoad classification uses highway tags: motorway, trunk, primary, secondary, tertiary, unclassified, residential, living_street, plus link variants.\nPedestrian infrastructure uses tags: highway = footway | pedestrian | steps | residential and footway = sidewalk | crossing | path | platform | corridor | alley | track, and sidewalk = both | left | right.\n\n\n6.3.2 Cycling infrastructure ratio and type\nScript: 04_mobility_bike_infrastructure.R\nThe cycling infrastructure ratio is computed analogously to the pedestrian ratio by comparing cycleway length to total road length. Infrastructure data is extracted from OpenStreetMap and classified according to its type and level of segregation:\n\nCycle track or lane: Segregated or light-separated tracks exclusive for cycling (Ciclovia segregada).\n\nhighway = cycleway\nhighway = path & bicycle = designated\nsegregated = yes | no\ncycleway tags containing: separate, buffered_lane, segregated, lane, or track.\n\nAdvisory lane: Marked cycle lanes shared with motor vehicles, such as sharrows or advisory lanes (Via partilhada com veículos motorizados / zonas 30).\n\ncycleway tags containing: shared_lane.\n\nProtected Active: Infrastructure shared with pedestrians but protected from motor vehicles (Via partilhada com peões).\n\nhighway = pedestrian & bicycle = designated.\nRefinement of highway = path | footway | pedestrian when foot access is explicitly allowed on cycling paths without physical segregation.\n\n\nThe primary indicators are:\nCycling infrastructure ratio: \\[R_{cyc} = \\frac{\\text{total cycleway length}}{\\text{road length}}\\]\nCycling quality ratio: \\[R_{cyc,q} = \\frac{\\text{segregated cycleway length}}{\\text{total cycleway length}}\\]\nWhere “segregated cycleway length” corresponds to the Cycle track or lane category.",
     "crumbs": [
       "**Dimensions and PCA**",
-      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Mobility</span>"
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Mobility</span>"
     ]
   },
   {
     "objectID": "mobility.html#pt-stop-coverage",
     "href": "mobility.html#pt-stop-coverage",
-    "title": "5  Mobility",
-    "section": "5.4 PT stop coverage",
-    "text": "5.4 PT stop coverage\nScripts: 04_isochrones_PTstops.R, 04_mobility_transit_population.R\nPackage: r5r\nPopulation coverage by public transport is estimated using walking isochrones around PT stops, differentiated by transport mode and their typical service area. Isochrones are computed with r5r::isochrone() using the WALK mode and the AML street network.\n\n5.4.1 Isochrone estimation by PT mode\nThree mode groups are defined based on stop type (identified from GTFS stop_id prefixes) and their standard catchment areas:\n\n\n\nTable 5.1: PT mode groups and walking catchment thresholds\n\n\n\n\n\n\n\n\n\n\n\nMode group\nOperators\nWalking threshold\nRationale\n\n\n\n\nBus\nCarris, MobiCascais, Transportes Colectivos Barreiro\n5 minutes\nHigh-density stop network; short acceptable walk\n\n\nSubway & light rail\nMetro de Lisboa, MTS\n10 minutes\nFewer stops, higher service quality\n\n\nTrain & ferry\nCP, Fertagus, Transtejo, Soflusa\n15 minutes\nSparse network; users accept longer walks\n\n\n\n\n\n\nBus stops are first consolidated by merging stops within 30 m of each other into a single representative centroid (using a 15 m buffer union), reducing the dataset from ~16 000 to ~10 700 origins before routing. Isochrones are computed in batches and dissolved into a single polygon per mode group. Stops that could not be routed are replaced with 300 m Euclidean buffers.\nA union isochrone is computed from all three layers to estimate coverage by any PT mode, avoiding double-counting of population in overlapping catchment areas.\n\n\n5.4.2 Population estimation (dasymetric method)\nAll methods share the same COS residential building polygons as the spatial proxy for where population lives, weighted by residential density class:\n\n\n\nTable 5.2: Population and building density weights for COS land use classes\n\n\n\n\n\nCOS class\nWeight\n\n\n\n\nContínuas predominantemente verticais\n3.0\n\n\nContínuas predominantemente horizontais\n1.0\n\n\nDescontínuas\n0.6\n\n\nDescontínuas esparsas\n0.3\n\n\n\n\n\n\nDifferent aggregation strategies are used at each scale, due to the geometric relationship between spatial units:\n\n5.4.2.1 Grid level (H3 r8)\nBecause H3 hex boundaries do not align with COS or BGRI polygon boundaries, a fragment-centroid approach would assign a building fragment’s entire population to one hex even when the fragment straddles two. To avoid this mismatch, the grid-level method computes the fraction of each hex’s weighted COS building area that falls inside the isochrone:\n\\[f_i = \\frac{\\sum_{k} A_{k \\cap \\text{iso} \\cap \\text{hex}_i} \\times w_k}{\\sum_{k} A_{k \\cap \\text{hex}_i} \\times w_k}\\]\nwhere \\(k\\) indexes COS polygons and \\(w_k\\) is the density weight. Population served is then:\n\\[P_i = \\text{pop}_i \\times f_i\\]\nwhere \\(\\text{pop}_i\\) is the hex population from the dasymetric grid (grid_with_cos). \n\n\n5.4.2.2 Freguesia and município levels\nBGRI census blocks nest perfectly within administrative boundaries. The method therefore uses building fragments — intersections of COS polygons with BGRI blocks — and apportions each BGRI’s population by the fraction of its weighted building area that falls inside the isochrone:\n\\[P_{iso} = \\sum_{\\text{fragments}} N_{\\text{BGRI}} \\times \\frac{A_{frag,iso} \\times w_{frag}}{\\sum_{\\text{BGRI}} A_{frag} \\times w_{frag}}\\]\nThe centroid of each fragment is used to assign it to the administrative unit, and fragments go directly to administrative boundaries — not via the grid — to avoid misalignment from hexes that only partially overlap them. Total population for percentage calculations is derived from the same building fragment method, not from raw BGRI totals, ensuring a consistent denominator.\nMetrics produced per mode group and scale:\n\npop_pt_{mode} — population within walking distance of each mode (or all modes)\npct_pt_{mode} — percentage of population within walking distance of each mode (or all modes)",
+    "title": "6  Mobility",
+    "section": "6.4 PT stop coverage",
+    "text": "6.4 PT stop coverage\nScripts: 04_isochrones_PTstops.R, 04_mobility_transit_population.R\nPackage: r5r\nPopulation coverage by public transport is estimated using walking isochrones around PT stops, differentiated by transport mode and their typical service area. Isochrones are computed with r5r::isochrone() using the WALK mode and the AML street network.\n\n6.4.1 Isochrone estimation by PT mode\nThree mode groups are defined based on stop type (identified from GTFS stop_id prefixes) and their standard catchment areas:\n\n\n\nTable 6.1: PT mode groups and walking catchment thresholds\n\n\n\n\n\n\n\n\n\n\n\nMode group\nOperators\nWalking threshold\nRationale\n\n\n\n\nBus\nCarris, MobiCascais, Transportes Colectivos Barreiro\n5 minutes\nHigh-density stop network; short acceptable walk\n\n\nSubway & light rail\nMetro de Lisboa, MTS\n10 minutes\nFewer stops, higher service quality\n\n\nTrain & ferry\nCP, Fertagus, Transtejo, Soflusa\n15 minutes\nSparse network; users accept longer walks\n\n\n\n\n\n\nBus stops are first consolidated by merging stops within 30 m of each other into a single representative centroid (using a 15 m buffer union), reducing the dataset from ~16 000 to ~10 700 origins before routing. Isochrones are computed in batches and dissolved into a single polygon per mode group. Stops that could not be routed are replaced with 300 m Euclidean buffers.\nA union isochrone is computed from all three layers to estimate coverage by any PT mode, avoiding double-counting of population in overlapping catchment areas.\n\n\n6.4.2 Population estimation (dasymetric method)\nAll methods share the same COS residential building polygons as the spatial proxy for where population lives, weighted by residential density class:\n\n\n\nTable 6.2: Population and building density weights for COS land use classes\n\n\n\n\n\nCOS class\nWeight\n\n\n\n\nContínuas predominantemente verticais\n3.0\n\n\nContínuas predominantemente horizontais\n1.0\n\n\nDescontínuas\n0.6\n\n\nDescontínuas esparsas\n0.3\n\n\n\n\n\n\nDifferent aggregation strategies are used at each scale, due to the geometric relationship between spatial units:\n\n6.4.2.1 Grid level (H3 r8)\nBecause H3 hex boundaries do not align with COS or BGRI polygon boundaries, a fragment-centroid approach would assign a building fragment’s entire population to one hex even when the fragment straddles two. To avoid this mismatch, the grid-level method computes the fraction of each hex’s weighted COS building area that falls inside the isochrone:\n\\[f_i = \\frac{\\sum_{k} A_{k \\cap \\text{iso} \\cap \\text{hex}_i} \\times w_k}{\\sum_{k} A_{k \\cap \\text{hex}_i} \\times w_k}\\]\nwhere \\(k\\) indexes COS polygons and \\(w_k\\) is the density weight. Population served is then:\n\\[P_i = \\text{pop}_i \\times f_i\\]\nwhere \\(\\text{pop}_i\\) is the hex population from the dasymetric grid (grid_with_cos). \n\n\n6.4.2.2 Freguesia and município levels\nBGRI census blocks nest perfectly within administrative boundaries. The method therefore uses building fragments — intersections of COS polygons with BGRI blocks — and apportions each BGRI’s population by the fraction of its weighted building area that falls inside the isochrone:\n\\[P_{iso} = \\sum_{\\text{fragments}} N_{\\text{BGRI}} \\times \\frac{A_{frag,iso} \\times w_{frag}}{\\sum_{\\text{BGRI}} A_{frag} \\times w_{frag}}\\]\nThe centroid of each fragment is used to assign it to the administrative unit, and fragments go directly to administrative boundaries — not via the grid — to avoid misalignment from hexes that only partially overlap them. Total population for percentage calculations is derived from the same building fragment method, not from raw BGRI totals, ensuring a consistent denominator.\nMetrics produced per mode group and scale:\n\npop_pt_{mode} — population within walking distance of each mode (or all modes)\npct_pt_{mode} — percentage of population within walking distance of each mode (or all modes)",
     "crumbs": [
       "**Dimensions and PCA**",
-      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Mobility</span>"
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Mobility</span>"
     ]
   },
   {
     "objectID": "mobility.html#pt-headways-and-waiting-times",
     "href": "mobility.html#pt-headways-and-waiting-times",
-    "title": "5  Mobility",
-    "section": "5.5 PT headways and waiting times",
-    "text": "5.5 PT headways and waiting times\nScript: 04_mobility_transit.R\nPackage: tidytransit\nStop-level service frequencies are computed with tidytransit::get_stop_frequency() for four time windows:\n\n\n\nTable 5.3: PT service frequency periods\n\n\n\n\n\nPeriod\nDate\nTime window\n\n\n\n\nWeekday peak\nWed 04/02/2026\n08:00–09:00\n\n\nWeekday full day\nWed 04/02/2026\n00:00–48:00\n\n\nWeekday night\nWed 04/02/2026\n22:00–23:00\n\n\nWeekend\nSun 08/02/2026\n10:00–11:00\n\n\n\n\n\n\nA 500 m buffer per stop is used to allocate stops to census population centroids. Results are aggregated to parishes and municipalities as population-weighted mean headway and waiting time.\nAdditionally, frequency reduction factors are computed to characterise night and weekend service reduction.",
+    "title": "6  Mobility",
+    "section": "6.5 PT headways and waiting times",
+    "text": "6.5 PT headways and waiting times\nScript: 04_mobility_transit.R\nPackage: tidytransit\nStop-level service frequencies are computed with tidytransit::get_stop_frequency() for four time windows:\n\n\n\nTable 6.3: PT service frequency periods\n\n\n\n\n\nPeriod\nDate\nTime window\n\n\n\n\nWeekday peak\nWed 04/02/2026\n08:00–09:00\n\n\nWeekday full day\nWed 04/02/2026\n00:00–48:00\n\n\nWeekday night\nWed 04/02/2026\n22:00–23:00\n\n\nWeekend\nSun 08/02/2026\n10:00–11:00\n\n\n\n\n\n\nA 500 m buffer per stop is used to allocate stops to census population centroids. Results are aggregated to parishes and municipalities as population-weighted mean headway and waiting time.\nAdditionally, frequency reduction factors are computed to characterise night and weekend service reduction.",
     "crumbs": [
       "**Dimensions and PCA**",
-      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Mobility</span>"
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Mobility</span>"
     ]
   },
   {
     "objectID": "mobility.html#shared-mobility",
     "href": "mobility.html#shared-mobility",
-    "title": "5  Mobility",
-    "section": "5.6 Shared mobility",
-    "text": "5.6 Shared mobility\nScript: 04_mobility.R\nSource: TML PMUS (Shared mobility dock locations). https://pmmus.tmlmobilidade.pt/\nThe number of shared mobility points (physical and virtual docks) is counted per parish and per grid cell.",
+    "title": "6  Mobility",
+    "section": "6.6 Shared mobility",
+    "text": "6.6 Shared mobility\nScript: 04_mobility.R\nSource: TML PMUS (Shared mobility dock locations). https://pmmus.tmlmobilidade.pt/\nThe number of shared mobility points (physical and virtual docks) is counted per parish and per grid cell.",
     "crumbs": [
       "**Dimensions and PCA**",
-      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Mobility</span>"
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Mobility</span>"
     ]
   },
   {
     "objectID": "accessibility.html",
     "href": "accessibility.html",
-    "title": "6  Accessibility",
+    "title": "7  Accessibility",
     "section": "",
-    "text": "6.1 Cumulative accessibility\nAccessibility indicators measure the spatial accessibility of opportunities for different population groups using two metrics: cumulative accessibility and travel time to the closest opportunities.\nScript: 04_access_opportunities.R\nFunction: accessibility::cumulative_cutoff() (Pereira and Herszenhut 2022)\nCumulative accessibility measures the number of opportunities of each category reachable within a given travel time. It is computed considering different time cut-offs, to evaluate how the number of opportunities reachable increase with a progressively higher time budget.\nThe resulting values are then aggregated to parishes and municipalities using a population-weighted mean, separately for each demographic group (residents, kids, active, elderly).\nMetric naming convention:\nAccessibility metrics follow the pattern:\naccess_{poi_type}_{mode}_{time}_{census_group¹}\nFor example: access_health_pt_30min_residents is the number of health facilities reachable by public transit within 30 minutes, for the total resident population for the parish and municipality levels. At the grid level, it is called access_health_pt_30min_residents.",
+    "text": "7.1 Cumulative accessibility\nAccessibility indicators measure the spatial accessibility of opportunities for different population groups using two metrics: cumulative accessibility and travel time to the closest opportunities.\nScript: 04_access_opportunities.R\nFunction: accessibility::cumulative_cutoff() (Pereira and Herszenhut 2022)\nCumulative accessibility measures the number of opportunities of each category reachable within a given travel time. It is computed considering different time cut-offs, to evaluate how the number of opportunities reachable increase with a progressively higher time budget.\nThe resulting values are then aggregated to parishes and municipalities using a population-weighted mean, separately for each demographic group (residents, kids, active, elderly).\nMetric naming convention:\nAccessibility metrics follow the pattern:\naccess_{poi_type}_{mode}_{time}_{census_group¹}\nFor example: access_health_pt_30min_residents is the number of health facilities reachable by public transit within 30 minutes, for the total resident population for the parish and municipality levels. At the grid level, it is called access_health_pt_30min_residents.",
     "crumbs": [
       "**Dimensions and PCA**",
-      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Accessibility</span>"
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>Accessibility</span>"
     ]
   },
   {
@@ -295,155 +295,155 @@
   {
     "objectID": "accessibility.html#time-to-closest-opportunity-mobility-costs",
     "href": "accessibility.html#time-to-closest-opportunity-mobility-costs",
-    "title": "6  Accessibility",
-    "section": "6.2 Time to closest opportunity (mobility costs)",
-    "text": "6.2 Time to closest opportunity (mobility costs)\nScript: 04_mobility_costs_time.R\nFunction: accessibility::cost_to_closest() (Pereira and Herszenhut 2022)\nTo determine the time to closest opportunities, different number of closest opportunities (1, 2, and 3) are considered, to determine how the travel time to the closest opportunity change with a stricter criteria of opportunities considered.\nThe resulting values are then aggregated to parishes and municipalities using a population-weighted mean, separately for each demographic group (residents, kids, active, elderly).\nMetric naming convention:\nAccessibility metrics follow the pattern:\nmobility_cost_{poi_type}_{mode}_{n}_{census_group¹}\n\n¹ Accessibility is computed at grid level, so metrics for this scale are not aggregated by census group.\n\n\n\n\n\nPereira, Rafael H. M., and Daniel Herszenhut. 2022. Accessibility: Transport Accessibility Measures. https://ipeagit.github.io/accessibility/.",
+    "title": "7  Accessibility",
+    "section": "7.2 Time to closest opportunity (mobility costs)",
+    "text": "7.2 Time to closest opportunity (mobility costs)\nScript: 04_mobility_costs_time.R\nFunction: accessibility::cost_to_closest() (Pereira and Herszenhut 2022)\nTo determine the time to closest opportunities, different number of closest opportunities (1, 2, and 3) are considered, to determine how the travel time to the closest opportunity change with a stricter criteria of opportunities considered.\nThe resulting values are then aggregated to parishes and municipalities using a population-weighted mean, separately for each demographic group (residents, kids, active, elderly).\nMetric naming convention:\nAccessibility metrics follow the pattern:\nmobility_cost_{poi_type}_{mode}_{n}_{census_group¹}\n\n¹ Accessibility is computed at grid level, so metrics for this scale are not aggregated by census group.\n\n\n\n\n\nPereira, Rafael H. M., and Daniel Herszenhut. 2022. Accessibility: Transport Accessibility Measures. https://ipeagit.github.io/accessibility/.",
     "crumbs": [
       "**Dimensions and PCA**",
-      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Accessibility</span>"
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>Accessibility</span>"
     ]
   },
   {
     "objectID": "affordability.html",
     "href": "affordability.html",
-    "title": "7  Affordability",
+    "title": "8  Affordability",
     "section": "",
-    "text": "7.1 Car costs\nScript: 04_affordability.R, 04_mobility_costs_money_car.R, 04_mobility_costs_money_pt.R, 04_mobility_costs_money_pt_cost_structure.R\nAffordability is assessed by comparing annual transport and housing costs against household income. Commuting costs are computed for both car and public transport using r5r::detailed_itineraries() on the full set of IMOB OD commuting pairs. The costs are estimated for one-way trips (home - workplace) during the morning peak.\nScript: 04_mobility_costs_money_car.R\nCar commuting cost per trip = distance cost + tolls:\n\\[C_{car} = d \\times 0.40\\text{ €/km} + C_{toll}\\]\nThe fixed cost of 0.40 €/km is based on Portaria n.º 1553-D/2008 de 31 de dezembro, which sets mileage allowance covering fuel and car maintenance.\nTolls are computed via the Infraestruturas de Portugal toll calculator using the route geometry returned by r5r::detailed_itineraries().",
+    "text": "8.1 Car costs\nScript: 04_affordability.R, 04_mobility_costs_money_car.R, 04_mobility_costs_money_pt.R, 04_mobility_costs_money_pt_cost_structure.R\nAffordability is assessed by comparing annual transport and housing costs against household income. Commuting costs are computed for both car and public transport using r5r::detailed_itineraries() on the full set of IMOB OD commuting pairs. The costs are estimated for one-way trips (home - workplace) during the morning peak.\nScript: 04_mobility_costs_money_car.R\nCar commuting cost per trip = distance cost + tolls:\n\\[C_{car} = d \\times 0.40\\text{ €/km} + C_{toll}\\]\nThe fixed cost of 0.40 €/km is based on Portaria n.º 1553-D/2008 de 31 de dezembro, which sets mileage allowance covering fuel and car maintenance.\nTolls are computed via the Infraestruturas de Portugal toll calculator using the route geometry returned by r5r::detailed_itineraries().",
     "crumbs": [
       "**Dimensions and PCA**",
-      "<span class='chapter-number'>7</span>  <span class='chapter-title'>Affordability</span>"
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>Affordability</span>"
     ]
   },
   {
     "objectID": "affordability.html#public-transport-costs-two-scenarios",
     "href": "affordability.html#public-transport-costs-two-scenarios",
-    "title": "7  Affordability",
-    "section": "7.2 Public transport costs — Two scenarios",
-    "text": "7.2 Public transport costs — Two scenarios\nScripts: 04_mobility_costs_money_pt.R, 04_mobility_costs_money_pt_cost_structure.R\nTo account for uncertainty in PT fare payment practices, two cost scenarios are defined:\nScenario A — Single fare (pre-Navegante baseline):\nBased on Carris Lisboa revenue data:\n\nTotal single ticket validations: 17,424,000\nTotal single ticket revenue: 33,278,000 €\nAverage cost per single ticket: ~1.91 €\n\nFor Metropolitano de Lisboa, the cost per single ticket is 1.72 to 1.90 € depending on the line and whether it crosses the river.\nWe assumed a single ticket cost of 1.91 € for all modes in Scenario A. Free transfers within the same mode for 60 minutes are assumed. Different-mode transfers incur an additional charge.\nScenario B — Monthly pass (Navegante):\nBased on operator revenue data for monthly passes:\n\n\n\nPass type\nPass recharges\nPrice\n\n\n\n\nNavegante Metropolitano\n5,063,510\n40 €\n\n\nNavegante Municipal\n887,190\n30 €\n\n\nSub-23\n1,103,782\n20 €\n\n\nSenior (65+)\n243,784\n80 €\n\n\nFree (youth)\n3,425,013\n0 €\n\n\n\nAverage monthly cost paid per pass holder: ~25.25 €\nAssuming 44 journeys/month (2 trips × 22 working days): ~0.57 €/trip",
+    "title": "8  Affordability",
+    "section": "8.2 Public transport costs — Two scenarios",
+    "text": "8.2 Public transport costs — Two scenarios\nScripts: 04_mobility_costs_money_pt.R, 04_mobility_costs_money_pt_cost_structure.R\nTo account for uncertainty in PT fare payment practices, two cost scenarios are defined:\nScenario A — Single fare (pre-Navegante baseline):\nBased on Carris Lisboa revenue data:\n\nTotal single ticket validations: 17,424,000\nTotal single ticket revenue: 33,278,000 €\nAverage cost per single ticket: ~1.91 €\n\nFor Metropolitano de Lisboa, the cost per single ticket is 1.72 to 1.90 € depending on the line and whether it crosses the river.\nWe assumed a single ticket cost of 1.91 € for all modes in Scenario A. Free transfers within the same mode for 60 minutes are assumed. Different-mode transfers incur an additional charge.\nScenario B — Monthly pass (Navegante):\nBased on operator revenue data for monthly passes:\n\n\n\nPass type\nPass recharges\nPrice\n\n\n\n\nNavegante Metropolitano\n5,063,510\n40 €\n\n\nNavegante Municipal\n887,190\n30 €\n\n\nSub-23\n1,103,782\n20 €\n\n\nSenior (65+)\n243,784\n80 €\n\n\nFree (youth)\n3,425,013\n0 €\n\n\n\nAverage monthly cost paid per pass holder: ~25.25 €\nAssuming 44 journeys/month (2 trips × 22 working days): ~0.57 €/trip",
     "crumbs": [
       "**Dimensions and PCA**",
-      "<span class='chapter-number'>7</span>  <span class='chapter-title'>Affordability</span>"
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>Affordability</span>"
     ]
   },
   {
     "objectID": "affordability.html#composite-affordability-indicators",
     "href": "affordability.html#composite-affordability-indicators",
-    "title": "7  Affordability",
-    "section": "7.3 Composite affordability indicators",
-    "text": "7.3 Composite affordability indicators\nTransport expenditure is expressed as a share of household income, with two variants (with and without housing costs): We considered 250 working days per year to calculate the annual transport costs (two trips per day). Toll costs are considered for both ways differently, since the bridges’ tolls are paid only one-way.\n\\[\\text{transp\\_inc}_{car} = \\frac{C_{car}}{I_{household}}\\]\n\\[\\text{h\\_transp\\_inc}_{car} = \\frac{C_{car} + C_{housing}}{I_{household}}\\]\nAll costs are annualised and computed for a single household[€/year/household].\nA modal-share-weighted composite indicator combines car and PT costs proportionally to Census 2021 modal shares:\n\\[\\text{transp\\_inc}_{weighted} = \\frac{C_{car} \\cdot s_{car} + C_{PT} \\cdot s_{PT}}{s_{car} + s_{PT} + s_{active}}\\]\nwhere \\(s_m\\) is the modal share of mode \\(m\\) from Census 2021.\nCar costs are additionally adjusted for vehicle occupancy rate (from IMOB 2017, Table IV.7) and household size and mobile population fraction (from IMOB 2017, Table II.1), to convert per-trip costs to a household-level annual burden.\nTo convert per-trip costs to a household-level annual burden, the final annual household transport expenditure as a share of income, accounting for all adjustments and modal shares, is computed as:\n\\[\n\\text{transp\\_inc\\_comp} = \\frac{HH_{\\text{size}} \\cdot P_{\\text{mobile}}}{I_{\\text{household}}} \\cdot \\left[ \\left( \\frac{C_{\\text{car,day}}}{O} \\cdot \\frac{s_{\\text{car}}}{s_{\\text{car}} + s_{\\text{PT}} + s_{\\text{active}}} \\right) + (C_{\\text{PT,day}} \\cdot \\frac{s_{\\text{PT}}}{s_{\\text{car}} + s_{\\text{PT}} + s_{\\text{active}}}) \\right] \\cdot N_{\\text{days}}\n\\]\nWhere:\n\n\\(N_{\\text{days}} = 250\\) working days per year.\n\\(HH_{\\text{size}}\\) is the average household size.\n\\(P_{\\text{mobile}}\\) is the fraction of mobile population.\n\\(I_{\\text{household}}\\) is the average annual household income.\n\\(C_{\\text{car,day}}\\) and \\(C_{\\text{PT,day}}\\) are the round-trip costs for car and public transport.\n\\(O\\) is the vehicle occupancy rate.\n\\(s_{\\text{car}}\\), \\(s_{\\text{PT}}\\), and \\(s_{\\text{active}}\\) are the modal shares from Census 2021.\n\nFor the variant including housing costs (\\(\\text{h\\_transp\\_inc\\_comp}\\)), the annualised housing cost \\(C_{\\text{housing,year}}\\) is added to the numerator.\nIncome data: household income per parish from INE (Rendimento agregado 2023). https://www.ine.pt/xurl/pub/66303599 (See Section 7.4))\nHousing costs: median monthly housing cost per parish from INE (Habitação custos 2021). https://www.ine.pt/xurl/pub/65586079 (See Section 7.5))\n\n\n\n\n\n\nNoteCanha parish\n\n\n\nThe parish of Canha (dtmnfr = 150701) is not served by any GTFS operator, resulting in NA PT costs. These values are imputed using the mean of neighbouring parishes within the same municipality (Montijo).",
+    "title": "8  Affordability",
+    "section": "8.3 Composite affordability indicators",
+    "text": "8.3 Composite affordability indicators\nTransport expenditure is expressed as a share of household income, with two variants (with and without housing costs): We considered 250 working days per year to calculate the annual transport costs (two trips per day). Toll costs are considered for both ways differently, since the bridges’ tolls are paid only one-way.\n\\[\\text{transp\\_inc}_{car} = \\frac{C_{car}}{I_{household}}\\]\n\\[\\text{h\\_transp\\_inc}_{car} = \\frac{C_{car} + C_{housing}}{I_{household}}\\]\nAll costs are annualised and computed for a single household[€/year/household].\nA modal-share-weighted composite indicator combines car and PT costs proportionally to Census 2021 modal shares:\n\\[\\text{transp\\_inc}_{weighted} = \\frac{C_{car} \\cdot s_{car} + C_{PT} \\cdot s_{PT}}{s_{car} + s_{PT} + s_{active}}\\]\nwhere \\(s_m\\) is the modal share of mode \\(m\\) from Census 2021.\nCar costs are additionally adjusted for vehicle occupancy rate (from IMOB 2017, Table IV.7) and household size and mobile population fraction (from IMOB 2017, Table II.1), to convert per-trip costs to a household-level annual burden.\nTo convert per-trip costs to a household-level annual burden, the final annual household transport expenditure as a share of income, accounting for all adjustments and modal shares, is computed as:\n\\[\n\\text{transp\\_inc\\_comp} = \\frac{HH_{\\text{size}} \\cdot P_{\\text{mobile}}}{I_{\\text{household}}} \\cdot \\left[ \\left( \\frac{C_{\\text{car,day}}}{O} \\cdot \\frac{s_{\\text{car}}}{s_{\\text{car}} + s_{\\text{PT}} + s_{\\text{active}}} \\right) + (C_{\\text{PT,day}} \\cdot \\frac{s_{\\text{PT}}}{s_{\\text{car}} + s_{\\text{PT}} + s_{\\text{active}}}) \\right] \\cdot N_{\\text{days}}\n\\]\nWhere:\n\n\\(N_{\\text{days}} = 250\\) working days per year.\n\\(HH_{\\text{size}}\\) is the average household size.\n\\(P_{\\text{mobile}}\\) is the fraction of mobile population.\n\\(I_{\\text{household}}\\) is the average annual household income.\n\\(C_{\\text{car,day}}\\) and \\(C_{\\text{PT,day}}\\) are the round-trip costs for car and public transport.\n\\(O\\) is the vehicle occupancy rate.\n\\(s_{\\text{car}}\\), \\(s_{\\text{PT}}\\), and \\(s_{\\text{active}}\\) are the modal shares from Census 2021.\n\nFor the variant including housing costs (\\(\\text{h\\_transp\\_inc\\_comp}\\)), the annualised housing cost \\(C_{\\text{housing,year}}\\) is added to the numerator.\nIncome data: household income per parish from INE (Rendimento agregado 2023). https://www.ine.pt/xurl/pub/66303599 (See Section 8.4))\nHousing costs: median monthly housing cost per parish from INE (Habitação custos 2021). https://www.ine.pt/xurl/pub/65586079 (See Section 8.5))\n\n\n\n\n\n\nNoteCanha parish\n\n\n\nThe parish of Canha (dtmnfr = 150701) is not served by any GTFS operator, resulting in NA PT costs. These values are imputed using the mean of neighbouring parishes within the same municipality (Montijo).",
     "crumbs": [
       "**Dimensions and PCA**",
-      "<span class='chapter-number'>7</span>  <span class='chapter-title'>Affordability</span>"
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>Affordability</span>"
     ]
   },
   {
     "objectID": "affordability.html#sec-income",
     "href": "affordability.html#sec-income",
-    "title": "7  Affordability",
-    "section": "7.4 Income, Gini Coefficient and Palma Ratio",
-    "text": "7.4 Income, Gini Coefficient and Palma Ratio\nScript: 02_land_use_export.R\nSource: INE — Rendimento Agregado Local 2023 (ERendimentoNLocal2023.xlsx). https://www.ine.pt/xurl/pub/66303599\nIncome — total median annual income, by household, liquid, is sourced from Statistics Portugal (INE), at municipality and parish levels.\nIncome inequality is characterised by two indicators computed at municipality level and assigned to parishes and grid cells:\nGini coefficient — measures overall income inequality on a scale from 0 (perfect equality) to 1 (maximum inequality). Data is computed directly from the INE publication for each municipality. Income is considered by mean household income, liquid.\nPalma ratio — measures the ratio of the income share of the top 10% to the bottom 40% of the population, a measure more sensitive to inequality at the extremes:\n\\[\\text{Palma} = \\frac{\\text{income share of top 10\\%}}{\\text{income share of bottom 40\\%}}\\]\nBoth indicators are sourced directly from the INE publication for each municipality and parish. Grid cells are assigned the values of their corresponding parish via the grid_nuts.csv cross-reference table.",
+    "title": "8  Affordability",
+    "section": "8.4 Income, Gini Coefficient and Palma Ratio",
+    "text": "8.4 Income, Gini Coefficient and Palma Ratio\nScript: 02_land_use_export.R\nSource: INE — Rendimento Agregado Local 2023 (ERendimentoNLocal2023.xlsx). https://www.ine.pt/xurl/pub/66303599\nIncome — total median annual income, by household, liquid, is sourced from Statistics Portugal (INE), at municipality and parish levels.\nIncome inequality is characterised by two indicators computed at municipality level and assigned to parishes and grid cells:\nGini coefficient — measures overall income inequality on a scale from 0 (perfect equality) to 1 (maximum inequality). Data is computed directly from the INE publication for each municipality. Income is considered by mean household income, liquid.\nPalma ratio — measures the ratio of the income share of the top 10% to the bottom 40% of the population, a measure more sensitive to inequality at the extremes:\n\\[\\text{Palma} = \\frac{\\text{income share of top 10\\%}}{\\text{income share of bottom 40\\%}}\\]\nBoth indicators are sourced directly from the INE publication for each municipality and parish. Grid cells are assigned the values of their corresponding parish via the grid_nuts.csv cross-reference table.",
     "crumbs": [
       "**Dimensions and PCA**",
-      "<span class='chapter-number'>7</span>  <span class='chapter-title'>Affordability</span>"
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>Affordability</span>"
     ]
   },
   {
     "objectID": "affordability.html#sec-housing",
     "href": "affordability.html#sec-housing",
-    "title": "7  Affordability",
-    "section": "7.5 Housing costs",
-    "text": "7.5 Housing costs\nScript: 02_land_use_export.R\nSource: INE — Habitação custos 2021 (Habitaccao_Custos_2021.xlsx). https://www.ine.pt/xurl/pub/65586079\nMedian monthly housing cost and rent, by parish, is sourced from Statistics Portugal (INE), Census 2021, at municipality and parish levels. Grid cells are assigned the values of their corresponding parish via the grid_nuts.csv cross-reference table.",
+    "title": "8  Affordability",
+    "section": "8.5 Housing costs",
+    "text": "8.5 Housing costs\nScript: 02_land_use_export.R\nSource: INE — Habitação custos 2021 (Habitaccao_Custos_2021.xlsx). https://www.ine.pt/xurl/pub/65586079\nMedian monthly housing cost and rent, by parish, is sourced from Statistics Portugal (INE), Census 2021, at municipality and parish levels. Grid cells are assigned the values of their corresponding parish via the grid_nuts.csv cross-reference table.",
     "crumbs": [
       "**Dimensions and PCA**",
-      "<span class='chapter-number'>7</span>  <span class='chapter-title'>Affordability</span>"
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>Affordability</span>"
     ]
   },
   {
     "objectID": "safety.html",
     "href": "safety.html",
-    "title": "8  Safety",
+    "title": "9  Safety",
     "section": "",
-    "text": "8.1 Accident data filtering\nScript: 04_safety.R\nSource: ANSR — Autoridade Nacional de Segurança Rodoviária, road accident georeferenced point data (2019–2023) - via PMUS TML 2025.\nAccidents located outside administrative parish boundaries are excluded. This includes accidents on major bridges (Ponte 25 de Abril, Ponte Vasco da Gama) which cannot be assigned to a parish. Only accidents reported as occurring within localities (dentro das localidades) are used for the IMPT normalisation.",
+    "text": "9.1 Accident data filtering\nScript: 04_safety.R\nSource: ANSR — Autoridade Nacional de Segurança Rodoviária, road accident georeferenced point data (2019–2023) - via PMUS TML 2025.\nAccidents located outside administrative parish boundaries are excluded. This includes accidents on major bridges (Ponte 25 de Abril, Ponte Vasco da Gama) which cannot be assigned to a parish. Only accidents reported as occurring within localities (dentro das localidades) are used for the IMPT normalisation.",
     "crumbs": [
       "**Dimensions and PCA**",
-      "<span class='chapter-number'>8</span>  <span class='chapter-title'>Safety</span>"
+      "<span class='chapter-number'>9</span>  <span class='chapter-title'>Safety</span>"
     ]
   },
   {
     "objectID": "safety.html#safety-indicators-computed",
     "href": "safety.html#safety-indicators-computed",
-    "title": "8  Safety",
-    "section": "8.2 Safety indicators computed",
-    "text": "8.2 Safety indicators computed\nFor each geographical unit and transport mode:\n\n\n\nTable 8.1: Safety indicators\n\n\n\n\n\n\n\n\n\nIndicator\nFormula\n\n\n\n\nTotal accidents (5 years)\nCount\n\n\nFatalities (30-day)\nSum VM_30d\n\n\nSerious injuries (30-day)\nSum FG_30d\n\n\nSlight injuries (30-day)\nSum FL_30d\n\n\nAccident rate\ntotal_acidentes / population × 1000\n\n\nFatality rate\nvitimas_mortais30 / population × 1000\n\n\nSeverity index (total)\nfatalities / total_victims\n\n\nSeverity index (motorised)\nfatalities / motorised_vehicles_involved\n\n\nSeverity index (cycling)\nfatalities / cycling_involved\n\n\nSeverity index (pedestrian)\nfatalities / pedestrians_involved",
+    "title": "9  Safety",
+    "section": "9.2 Safety indicators computed",
+    "text": "9.2 Safety indicators computed\nFor each geographical unit and transport mode:\n\n\n\nTable 9.1: Safety indicators\n\n\n\n\n\n\n\n\n\nIndicator\nFormula\n\n\n\n\nTotal accidents (5 years)\nCount\n\n\nFatalities (30-day)\nSum VM_30d\n\n\nSerious injuries (30-day)\nSum FG_30d\n\n\nSlight injuries (30-day)\nSum FL_30d\n\n\nAccident rate\ntotal_acidentes / population × 1000\n\n\nFatality rate\nvitimas_mortais30 / population × 1000\n\n\nSeverity index (total)\nfatalities / total_victims\n\n\nSeverity index (motorised)\nfatalities / motorised_vehicles_involved\n\n\nSeverity index (cycling)\nfatalities / cycling_involved\n\n\nSeverity index (pedestrian)\nfatalities / pedestrians_involved",
     "crumbs": [
       "**Dimensions and PCA**",
-      "<span class='chapter-number'>8</span>  <span class='chapter-title'>Safety</span>"
+      "<span class='chapter-number'>9</span>  <span class='chapter-title'>Safety</span>"
     ]
   },
   {
     "objectID": "calculator.html",
     "href": "calculator.html",
-    "title": "9  Index Computation — IMPT Calculator",
+    "title": "10  Index Computation — IMPT Calculator",
     "section": "",
-    "text": "9.1 Normalisation\nScript: 05_IMPTcalculator.R\nPackage: FactoMineR (PCA)\nAll indicators are normalised to the range [1, 100] using min-max scaling:\nBenefit indicators (higher raw value → better): \\[X_{norm} = 1 + \\frac{X - X_{min}}{X_{max} - X_{min}} \\times 99\\]\nCost indicators (lower raw value → better): \\[X_{norm} = 1 + \\frac{X_{max} - X}{X_{max} - X_{min}} \\times 99\\]\nMissing values in accessibility indicators (arising from infeasible PT routes) are imputed with the mean of the respective variable prior to PCA.",
+    "text": "10.1 Normalisation\nScript: 05_IMPTcalculator.R\nPackage: FactoMineR (PCA)\nAll indicators are normalised to the range [1, 100] using min-max scaling:\nBenefit indicators (higher raw value → better): \\[X_{norm} = 1 + \\frac{X - X_{min}}{X_{max} - X_{min}} \\times 99\\]\nCost indicators (lower raw value → better): \\[X_{norm} = 1 + \\frac{X_{max} - X}{X_{max} - X_{min}} \\times 99\\]\nMissing values in accessibility indicators (arising from infeasible PT routes) are imputed with the mean of the respective variable prior to PCA.",
     "crumbs": [
       "**Dimensions and PCA**",
-      "<span class='chapter-number'>9</span>  <span class='chapter-title'>Index Computation — IMPT Calculator</span>"
+      "<span class='chapter-number'>10</span>  <span class='chapter-title'>Index Computation — IMPT Calculator</span>"
     ]
   },
   {
     "objectID": "calculator.html#sec-normalisation",
     "href": "calculator.html#sec-normalisation",
-    "title": "9  Index Computation — IMPT Calculator",
+    "title": "10  Index Computation — IMPT Calculator",
     "section": "",
     "text": "Accessibility metrics (access_*) are benefit indicators.\nMobility cost metrics (mobility_cost_*), PT waiting times, all affordability indicators, and all safety indicators are cost indicators.",
     "crumbs": [
       "**Dimensions and PCA**",
-      "<span class='chapter-number'>9</span>  <span class='chapter-title'>Index Computation — IMPT Calculator</span>"
+      "<span class='chapter-number'>10</span>  <span class='chapter-title'>Index Computation — IMPT Calculator</span>"
     ]
   },
   {
     "objectID": "calculator.html#sec-pca",
     "href": "calculator.html#sec-pca",
-    "title": "9  Index Computation — IMPT Calculator",
-    "section": "9.2 PCA-Based Dimension Scores",
-    "text": "9.2 PCA-Based Dimension Scores\nFor each dimension (Accessibility, Mobility, Safety) and at the global (all-mode) and per-mode levels, a PCA is run using FactoMineR::PCA() at parish level.\nThe first principal component (PC1) score is used as the dimension index, after rescaling to [1, 100]. PC1 captures the dominant axis of variation among the normalised indicators.\nFor Affordability, PCA is not applied (too few indicators); instead, the normalised composite h_transp_inc_comp (housing + transport cost as share of income, modal-share weighted) is used directly as the Affordability Index.\nFor Safety per mode, an equal-weight average of the severity index (per mode) and total vehicles involved (per mode) is used instead of PCA.",
+    "title": "10  Index Computation — IMPT Calculator",
+    "section": "10.2 PCA-Based Dimension Scores",
+    "text": "10.2 PCA-Based Dimension Scores\nFor each dimension (Accessibility, Mobility, Safety) and at the global (all-mode) and per-mode levels, a PCA is run using FactoMineR::PCA() at parish level.\nThe first principal component (PC1) score is used as the dimension index, after rescaling to [1, 100]. PC1 captures the dominant axis of variation among the normalised indicators.\nFor Affordability, PCA is not applied (too few indicators); instead, the normalised composite h_transp_inc_comp (housing + transport cost as share of income, modal-share weighted) is used directly as the Affordability Index.\nFor Safety per mode, an equal-weight average of the severity index (per mode) and total vehicles involved (per mode) is used instead of PCA.",
     "crumbs": [
       "**Dimensions and PCA**",
-      "<span class='chapter-number'>9</span>  <span class='chapter-title'>Index Computation — IMPT Calculator</span>"
+      "<span class='chapter-number'>10</span>  <span class='chapter-title'>Index Computation — IMPT Calculator</span>"
     ]
   },
   {
     "objectID": "calculator.html#sec-composite",
     "href": "calculator.html#sec-composite",
-    "title": "9  Index Computation — IMPT Calculator",
-    "section": "9.3 Composite IMPT Scores",
-    "text": "9.3 Composite IMPT Scores\nThree aggregation methods are computed for the global IMPT and each per-mode IMPT:\n\nGeometric mean (equal weights): \\[IMPT_{geom} = \\left(\\prod_{d} (S_d + 1)\\right)^{1/n} - 1\\]\nArithmetic mean (equal weights): \\[IMPT_{avg} = \\frac{1}{n} \\sum_d S_d\\]\nEntropy-weighted geometric mean: \\[IMPT_{entropy} = \\prod_d (S_d + 1)^{w_d} - 1\\]\n\nwhere weights \\(w_d\\) are derived from the entropy weighting method:\n\\[w_d = \\frac{d_d}{\\sum_j d_j}, \\quad d_d = 1 - e_d, \\quad e_d = -k \\sum_i p_{id} \\ln(p_{id})\\]\nwith \\(k = 1/\\ln(n)\\) and \\(p_{id}\\) being the proportion of the dimension score for area \\(i\\).",
+    "title": "10  Index Computation — IMPT Calculator",
+    "section": "10.3 Composite IMPT Scores",
+    "text": "10.3 Composite IMPT Scores\nThree aggregation methods are computed for the global IMPT and each per-mode IMPT:\n\nGeometric mean (equal weights): \\[IMPT_{geom} = \\left(\\prod_{d} (S_d + 1)\\right)^{1/n} - 1\\]\nArithmetic mean (equal weights): \\[IMPT_{avg} = \\frac{1}{n} \\sum_d S_d\\]\nEntropy-weighted geometric mean: \\[IMPT_{entropy} = \\prod_d (S_d + 1)^{w_d} - 1\\]\n\nwhere weights \\(w_d\\) are derived from the entropy weighting method:\n\\[w_d = \\frac{d_d}{\\sum_j d_j}, \\quad d_d = 1 - e_d, \\quad e_d = -k \\sum_i p_{id} \\ln(p_{id})\\]\nwith \\(k = 1/\\ln(n)\\) and \\(p_{id}\\) being the proportion of the dimension score for area \\(i\\).",
     "crumbs": [
       "**Dimensions and PCA**",
-      "<span class='chapter-number'>9</span>  <span class='chapter-title'>Index Computation — IMPT Calculator</span>"
+      "<span class='chapter-number'>10</span>  <span class='chapter-title'>Index Computation — IMPT Calculator</span>"
     ]
   },
   {
     "objectID": "calculator.html#sec-aggregation",
     "href": "calculator.html#sec-aggregation",
-    "title": "9  Index Computation — IMPT Calculator",
-    "section": "9.4 Spatial Aggregation",
-    "text": "9.4 Spatial Aggregation\nOnce scores are computed at parish level, they are aggregated to higher and lower levels:\n\nMunicipality level: population-weighted mean of parish scores.\nGrid level: parishes are assigned to grid cells via the grid_nuts.csv cross-reference table; scores are assigned from the host parish (no further averaging at this stage).",
+    "title": "10  Index Computation — IMPT Calculator",
+    "section": "10.4 Spatial Aggregation",
+    "text": "10.4 Spatial Aggregation\nOnce scores are computed at parish level, they are aggregated to higher and lower levels:\n\nMunicipality level: population-weighted mean of parish scores.\nGrid level: parishes are assigned to grid cells via the grid_nuts.csv cross-reference table; scores are assigned from the host parish (no further averaging at this stage).",
     "crumbs": [
       "**Dimensions and PCA**",
-      "<span class='chapter-number'>9</span>  <span class='chapter-title'>Index Computation — IMPT Calculator</span>"
+      "<span class='chapter-number'>10</span>  <span class='chapter-title'>Index Computation — IMPT Calculator</span>"
     ]
   },
   {
     "objectID": "pca_results.html",
     "href": "pca_results.html",
-    "title": "10  PCA Diagnostics",
+    "title": "11  PCA Diagnostics",
     "section": "",
-    "text": "The following table summarises the variance explained by PC1 in each PCA run:\n\n\n\n\nTable 10.1: PCA diagnostics — variance explained by PC1 (generated from 05_IMPTcalculator.R outputs)\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nTip\n\n\n\nTable data are read automatically from /impt/pca_scores/PCA_Variance_Table.csv and PCA_Variance_and_Correlations.csv, which are generated by 05_IMPTcalculator.R. Re-run that script to refresh the values after any changes to the input data.",
+    "text": "The following table summarises the variance explained by PC1 in each PCA run:\n\n\n\n\nTable 11.1: PCA diagnostics — variance explained by PC1 (generated from 05_IMPTcalculator.R outputs)\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nTip\n\n\n\nTable data are read automatically from /impt/pca_scores/PCA_Variance_Table.csv and PCA_Variance_and_Correlations.csv, which are generated by 05_IMPTcalculator.R. Re-run that script to refresh the values after any changes to the input data.",
     "crumbs": [
       "**Dimensions and PCA**",
-      "<span class='chapter-number'>10</span>  <span class='chapter-title'>PCA Diagnostics</span>"
+      "<span class='chapter-number'>11</span>  <span class='chapter-title'>PCA Diagnostics</span>"
     ]
   },
   {
@@ -451,7 +451,7 @@
     "href": "output_dashboard.html",
     "title": "12  Output and Dashboard",
     "section": "",
-    "text": "12.1 Output Files\nFinal results are stored in three geographic formats for each spatial level:\nResults are uploaded to the project data server at https://impt.server.ushift.pt, to the ushift server at https://ushift.tecnico.ulisboa.pt/content/impt/, and to the GitHub release using piggyback (TBC when drafting release).",
+    "text": "12.1 Output Files\nFinal results are stored in three geographic formats for each spatial level:\nResults are uploaded to the project data server at https://impt.server.ushift.pt, to the ushift server at https://ushift.tecnico.ulisboa.pt/content/impt/, and to the GitHub releases.",
     "crumbs": [
       "**Dashboard and Reproducibility**",
       "<span class='chapter-number'>12</span>  <span class='chapter-title'>Output and Dashboard</span>"
@@ -493,45 +493,45 @@
   {
     "objectID": "reproducibility.html",
     "href": "reproducibility.html",
-    "title": "12  Reproducibility",
+    "title": "13  Reproducibility",
     "section": "",
-    "text": "12.1 Code Repository\nAll data preparation and analysis scripts are available in the IMPT-data GitHub repository:\nScripts are organised with a numeric prefix indicating execution order:",
+    "text": "13.1 Code Repository\nAll data preparation and analysis scripts are available in the IMPT-data GitHub repository:\nScripts are organised with a numeric prefix indicating execution order:",
     "crumbs": [
       "**Dashboard and Reproducibility**",
-      "<span class='chapter-number'>12</span>  <span class='chapter-title'>Reproducibility</span>"
+      "<span class='chapter-number'>13</span>  <span class='chapter-title'>Reproducibility</span>"
     ]
   },
   {
     "objectID": "reproducibility.html#code-repository",
     "href": "reproducibility.html#code-repository",
-    "title": "12  Reproducibility",
+    "title": "13  Reproducibility",
     "section": "",
-    "text": "github.com/U-Shift/IMPT-data\n\n\n\n\n\nTable 12.1: Pipeline script organisation\n\n\n\n\n\nPrefix\nPhase\nScript(s)\n\n\n\n\n00\nSetup\n00a_impt_data_handle.R, 00b_data_load.R\n\n\n01\nGeometry & base data preparation\n01_data_prep.R\n\n\n02\nSocio-demographics & land use\n02_*.R (5 scripts)\n\n\n03\nRouting & travel time matrices\n03_ttm_gridh3.R\n\n\n04\nDimension calculations\n04_*.R (10 scripts)\n\n\n05\nIndex computation\n05_IMPTcalculator.R\n\n\n06\nOutput & dashboard\n06a_results_load.R, 06b_dashboard_export.R\n\n\n\n\n\n\n\nThe estimate time to run all the scrips is 3 days, on a high capacity processing computer.\nThe estimate storage needed is 13 GB.",
+    "text": "github.com/U-Shift/IMPT-data\n\n\n\n\n\nTable 13.1: Pipeline script organisation\n\n\n\n\n\nPrefix\nPhase\nScript(s)\n\n\n\n\n00\nSetup\n00a_impt_data_handle.R, 00b_data_load.R\n\n\n01\nGeometry & base data preparation\n01_data_prep.R\n\n\n02\nSocio-demographics & land use\n02_*.R (5 scripts)\n\n\n03\nRouting & travel time matrices\n03_ttm_gridh3.R\n\n\n04\nDimension calculations\n04_*.R (10 scripts)\n\n\n05\nIndex computation\n05_IMPTcalculator.R\n\n\n06\nOutput & dashboard\n06a_results_load.R, 06b_dashboard_export.R\n\n\n\n\n\n\n\nThe estimate time to run all the scrips is 3 days, on a high capacity processing computer.\nThe estimate storage needed is 13 GB.",
     "crumbs": [
       "**Dashboard and Reproducibility**",
-      "<span class='chapter-number'>12</span>  <span class='chapter-title'>Reproducibility</span>"
+      "<span class='chapter-number'>13</span>  <span class='chapter-title'>Reproducibility</span>"
     ]
   },
   {
     "objectID": "reproducibility.html#replication-for-other-areas",
     "href": "reproducibility.html#replication-for-other-areas",
-    "title": "12  Reproducibility",
-    "section": "12.2 Replication for Other Areas",
-    "text": "12.2 Replication for Other Areas\nTo replicate the IMPT for another Portuguese metropolitan area:\n\nReplace the CAOP 2024 filter (NUTS-II codes \"Grande Lisboa\" and \"Península de Setúbal\") with the target region.\nUpdate the GTFS operator list in 01_data_prep.R.\nObtain the IMOB travel survey OD matrix for the target area, and apply the dicofre conversion if needed.\nSet up a HOT Export Tool bounding box for the new area.\nDownload the relevant Copernicus DEM tile.\nRun scripts in order (00 → 06).\n\nThe H3 grid generation, routing engine, and scoring methodology are entirely generic and require no structural changes.",
+    "title": "13  Reproducibility",
+    "section": "13.2 Replication for Other Areas",
+    "text": "13.2 Replication for Other Areas\nTo replicate the IMPT for another Portuguese metropolitan area:\n\nReplace the CAOP 2024 filter (NUTS-II codes \"Grande Lisboa\" and \"Península de Setúbal\") with the target region.\nUpdate the GTFS operator list in 01_data_prep.R.\nObtain the IMOB travel survey OD matrix for the target area, and apply the dicofre conversion if needed.\nSet up a HOT Export Tool bounding box for the new area.\nDownload the relevant Copernicus DEM tile.\nRun scripts in order (00 → 06).\n\nThe H3 grid generation, routing engine, and scoring methodology are entirely generic and require no structural changes.",
     "crumbs": [
       "**Dashboard and Reproducibility**",
-      "<span class='chapter-number'>12</span>  <span class='chapter-title'>Reproducibility</span>"
+      "<span class='chapter-number'>13</span>  <span class='chapter-title'>Reproducibility</span>"
     ]
   },
   {
     "objectID": "reproducibility.html#dashboard",
     "href": "reproducibility.html#dashboard",
-    "title": "12  Reproducibility",
-    "section": "12.3 Dashboard",
-    "text": "12.3 Dashboard\nThe code to build the IMPT dashboard is not included in this repository. You can find it in the IMPT-web repository.",
+    "title": "13  Reproducibility",
+    "section": "13.3 Dashboard",
+    "text": "13.3 Dashboard\nThe code to build the IMPT dashboard is not included in this repository. You can find it in the IMPT-web repository.",
     "crumbs": [
       "**Dashboard and Reproducibility**",
-      "<span class='chapter-number'>12</span>  <span class='chapter-title'>Reproducibility</span>"
+      "<span class='chapter-number'>13</span>  <span class='chapter-title'>Reproducibility</span>"
     ]
   },
   {
@@ -598,12 +598,12 @@
   {
     "objectID": "accessibility.html#cumulative-accessibility",
     "href": "accessibility.html#cumulative-accessibility",
-    "title": "6  Accessibility",
+    "title": "7  Accessibility",
     "section": "",
     "text": "¹ Accessibility is computed at grid level, so metrics for this scale are not aggregated by census group.",
     "crumbs": [
       "**Dimensions and PCA**",
-      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Accessibility</span>"
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>Accessibility</span>"
     ]
   },
   {
