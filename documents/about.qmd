@@ -40,7 +40,7 @@ This research was conducted by the U-Shift Lab at Instituto Superior Técnico - 
   title     = {IMPT — Índice Multidimensional e Multimodal de Pobreza nos Transportes: methodological report},
   year      = {2026},
   month     = {April},
-  publisher = {U-Shift Lab, Instituto Superior Técnico - University of Lisbon, Lisbon},
+  publisher = {CERIS, Instituto Superior Técnico - University of Lisbon, Lisbon},
   url       = {https://u-shift.github.io/IMPT-data},
   doi       = {10.5281/zenodo.XXXXX}
 }

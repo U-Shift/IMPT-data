@@ -89,6 +89,8 @@ For **Affordability**, PCA is not applied (too few indicators); instead, the nor
 
 For **Safety per mode**, an equal-weight average of the severity index (per mode) and total vehicles involved (per mode) is used instead of PCA.
 
+For **Mobility - Car** PCA is not applied (too few indicators); instead, we assumed an equal-weight average of the normalized composite `mobility_commuting_avg_tt_car` and `road_length`.
+
 ## Composite IMPT Scores {#sec-composite}
 
 Three aggregation methods are computed for the global IMPT and each per-mode IMPT:
@@ -96,13 +98,22 @@ Three aggregation methods are computed for the global IMPT and each per-mode IMP
 1. **Geometric mean** (equal weights):
 $$IMPT_{geom} = \left(\prod_{d} (S_d + 1)\right)^{1/n} - 1$$
 
+Partially compensatory: penalizes dimensions with very low values non-linearly. Highlights the most critical situations, where at least one dimension is severely deficient.
+
+
 2. **Arithmetic mean** (equal weights):
 $$IMPT_{avg} = \frac{1}{n} \sum_d S_d$$
+
+Compensatory: high vulnerability in one dimension can be offset by good performance in others. Suitable for setting aggregate policy targets and communicating to non-specialist audiences.
+
 
 3. **Entropy-weighted geometric mean**:
 $$IMPT_{entropy} = \prod_d (S_d + 1)^{w_d} - 1$$
 
 where weights $w_d$ are derived from the **entropy weighting method**:
+
+Weights are determined by the empirical dispersion of the dimensions across parishes: the dimension that varies most among territories receives greater weight. Maximises territorial contrast and is useful for competitive prioritisation of interventions.
+
 
 $$w_d = \frac{d_d}{\sum_j d_j}, \quad d_d = 1 - e_d, \quad e_d = -k \sum_i p_{id} \ln(p_{id})$$
 
