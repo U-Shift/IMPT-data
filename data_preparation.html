@@ -2,13 +2,16 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.8.26">
+<meta name="generator" content="quarto-1.9.37">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
 <title>4&nbsp; Data Preparation – IMPT — Índice Multidimensional e Multimodal de Pobreza nos Transportes</title>
 <style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
 div.columns{display: flex; gap: min(4vw, 1.5em);}
@@ -24,7 +27,6 @@ ul.task-list li input[type="checkbox"] {
 div.csl-bib-body { }
 div.csl-entry {
   clear: both;
-  margin-bottom: 0em;
 }
 .hanging-indent div.csl-entry {
   margin-left:2em;
@@ -54,15 +56,14 @@ div.csl-indent {
 <link href="./data_access.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
-<script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="site_libs/quarto-html/anchor.min.js"></script>
 <link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-587c61ba64f3a5504c4d52d930310e48.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-236bb3c5a66f3594c4496ee898b66846.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-1639bb64a19928aae5da347f8145b16e.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -559,7 +560,7 @@ Table&nbsp;4.4: POI categories, sources, and filters
 </figcaption>
 <div aria-describedby="tbl-pois-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
-<table class="table do-not-create-environment cell caption-top table-sm table-striped small">
+<table class="table cell caption-top table-sm table-striped small">
 <thead>
 <tr class="header">
 <th style="text-align: left;" data-quarto-table-cell-role="th">Category</th>
@@ -660,7 +661,7 @@ Table&nbsp;4.4: POI categories, sources, and filters
 </section>
 <section id="jittering-algorithm" class="level3" data-number="4.7.2">
 <h3 data-number="4.7.2" class="anchored" data-anchor-id="jittering-algorithm"><span class="header-section-number">4.7.2</span> Jittering Algorithm</h3>
-<p>Jittering is performed using the <code>odjitter</code> R package <span class="citation" data-cites="Lovelace_odjitter_2022">(<a href="references.html#ref-Lovelace_odjitter_2022" role="doc-biblioref">Lovelace and Félix 2022</a>)</span>, following the approach described in <span class="citation" data-cites="Lovelace_2022">Lovelace, Félix, and Carlino (<a href="references.html#ref-Lovelace_2022" role="doc-biblioref">2022</a>)</span>.</p>
+<p>Jittering is performed using the <code>odjitter</code> R package <span class="citation" data-cites="Lovelace_odjitter_2022">(<a href="references.html#ref-Lovelace_odjitter_2022" role="doc-biblioref">Lovelace and Félix 2022</a>)</span>, following the approach described in <span class="citation" data-cites="Lovelace_2022">Lovelace et al. (<a href="references.html#ref-Lovelace_2022" role="doc-biblioref">2022</a>)</span>.</p>
 <p>The algorithm disaggregates parish-level trip counts into point-to-point flows. The following layers and weights are used:</p>
 <ul>
 <li><strong>Origins</strong>: Randomly sampled points within residential buildings.</li>
@@ -688,15 +689,15 @@ Table&nbsp;4.4: POI categories, sources, and filters
 <p>Vehicle ownership variables include average motorised vehicles per household and percentage of households without a vehicle, aggregated at parish and municipality level.</p>
 
 
-<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list" style="display: none">
+<div id="refs" class="references csl-bib-body hanging-indent" role="list" style="display: none">
 <div id="ref-Lovelace_odjitter_2022" class="csl-entry" role="listitem">
-Lovelace, Robin, and Rosa Félix. 2022. <span>“Odjitter: Jitter Origin-Destination Data.”</span> <a href="https://github.com/itsleeds/odjitter">https://github.com/itsleeds/odjitter</a>.
+Lovelace, Robin, and Rosa Félix. 2022. <em>Odjitter: Jitter Origin-Destination Data</em>. <a href="https://github.com/itsleeds/odjitter">https://github.com/itsleeds/odjitter</a>.
 </div>
 <div id="ref-Lovelace_2022" class="csl-entry" role="listitem">
-Lovelace, Robin, Rosa Félix, and Dustin Carlino. 2022. <span>“Jittering: A Computationally Efficient Method for Generating Realistic Route Networks from Origin-Destination Data.”</span> <em>Findings</em>. <a href="https://doi.org/10.32866/001c.33873">https://doi.org/10.32866/001c.33873</a>.
+Lovelace, Robin, Rosa Félix, and Dustin Carlino. 2022. <span>“Jittering: A Computationally Efficient Method for Generating Realistic Route Networks from Origin-Destination Data.”</span> <em>Findings</em>, ahead of print. <a href="https://doi.org/10.32866/001c.33873">https://doi.org/10.32866/001c.33873</a>.
 </div>
 <div id="ref-Uber_H3_2018" class="csl-entry" role="listitem">
-Uber Technologies. 2018. <span>“H3: A Hexagonal Hierarchical Spatial Index.”</span> <a href="https://h3geo.org">https://h3geo.org</a>.
+Uber Technologies. 2018. <em>H3: A Hexagonal Hierarchical Spatial Index</em>. <a href="https://h3geo.org">https://h3geo.org</a>.
 </div>
 </div>
 </section>
