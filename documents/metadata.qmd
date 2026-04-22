@@ -43,5 +43,5 @@ This section summarizes the structure of the project output datasets, available 
 
 ² Computations were performed at the grid level, so aggregation by population was only computed for parish and municipality scales.
 
-³ When `inner` is present, the indicator applies for inner areas of the region, exclusing highways and high speed roads. When not present, all the road network is considered.
+³ When `inner` is present, the indicator applies for inside localities (_dentro das localidades_) of the region, excluding freeways and high speed bridges. When not present, all the accidents are being considered.
 
