@@ -2,39 +2,39 @@
 
 This section summarizes the structure of the project output datasets, available at the U-Shift server at [https://ushift.tecnico.ulisboa.pt/content/impt/](https://ushift.tecnico.ulisboa.pt/content/impt/), and on the [GitHub releases](https://github.com/U-Shift/IMPT-data/releases).
 
-| Dimension | Column name structure | Column name example |  Description | Unit | 
-| ---- | ---- | ---- | ------------ | ---- |
-|  | `id` |  | Geometry identifier (grid id, dtmnfr for parishes and dtmn for municipalities) | - |
-| | `group_id` | | Group id (parish id for grid and municipality id for parishes) | - |
-|  | `name` | | Geometry name (grid id or parish/municipality name) | - |
-|  | `region_id` |  | NUTS 2 code | - | 
-|  | `IMPT_{method}_{mode¹}` | `IMPT_score_pca_geom_walk` | IMPT Index | % |
-|  | `{dimension}_Index_{mode¹}` | `Accessibility_Index` | PCA result for dimension metrics aggregation | % |
-| Accessibility | `access_{poi_type}_{time}_{census_gp²}_{mode¹}` | `access_health_60min_residents_walk` | Number of opportunities reachable within time | # |
-| Accessibility | `pois_n_{poi_type}` | `pois_n_health` | Number of points of interest for a category | # |
-| Accessibility | `access_gap_{time/money}_{mode¹}` | `access_gap_time_pt` | Accessibility gaps metrics | min, € |
-| Mobility | `mobility_cost_{poi_type}_n{closest}_{census_gp²}_{mode¹}` | `mobility_cost_health_n1_residents_walk` | Travel cost/time to closest opportunities | min |
-| Mobility | `mobility_commuting_avg_tt_{mode¹}` | `mobility_commuting_avg_tt_bike` | Commuting average travel times | min |
-| Mobility | `mobility_commuting_trips` | | Number of commuting trips | # |
-| Mobility | `mobility_commuting_mean_transfers_pt` | | Average number of transfers on public transport per commuting trip | # |
-| Mobility | `mobility_commuting_{weighted_headway/weighted_waiting_time/total_frequency}_{period}_pt` | `mobility_weighted_waiting_time_peak_pt` | Public transit service provision metrics (headway, frequency, wait time) | min, # |
-| Mobility | `mobility_n_stops_pt` | - | Number of public transport stops | # |
-| Mobility | `mobility_frequency_ratio_peak_{period}_pt` | `mobility_frequency_reduction_weekend_pt` | Ratio of public transport frequency during period, compared to peak hour | % |
-| Mobility | `mobility_stop_coverage_{pop/pct}_{mode¹}` | `mobility_stop_coverage_pct_bus_pt` | Public transit stop coverage | %, # |
-| Mobility | `mobility_shared_mobility_points` | | Number of shared mobility points available | # |
-| Mobility | `mobility_infrastructure_{indicator}_{mode¹}` | `mobility_infrastructure_length_bike` | Mobility infrastructure metrics (length, area, ratios) | m, ha, % |
-| Mobility | `modal_census_share_{mode¹}` | `modal_census_share_pt` | Modal share from Census | %, # |
-| Mobility | `modal_imob_share_{mode¹}` | `modal_imob_share_car` | Modal share from IMOB data | %, # |
-| Affordability | `afforability_total_money_{mode¹}` | `affordability_total_money_car` | Total cost of transport | € |
-| Affordability | `afforability_avg_{tt/distance}_{mode¹}` | affordability_avg_distance_car | Average travel time/distance for commuting trips | min, km |
-| Affordability | `affordability_trips_{mode¹}` | affordability_trips_car | Number of commuting trips | # |
-| Affordability | `affordability_{h_transp/transp}_inc_comp_{mode¹}` | affordability_transp_inc_comp_pass | Transport (+ housing) burdern | % | 
-| Safety | `safety{_inner³}_{victim_type}30` | safety_feridos_ligeiros30 | Number of victims of road accidents in 30 days | # |
-| Safety | `safety{_inner³}_indice_gravidade_{mode¹}` |  safety_indice_gravidade_bike | Road accident severity index for mode of transport | % |
-| Safety | `safety{_inner³}_veh_{mode¹}` | `safety_veh_car` | Number of vehicles involved in road accidents | # |
-| Safety | `safety{_inner³}_acidentes_per_1000res` | | Number of road accidents per 1000 residents | # |
-| Safety | `safety{_inner³}_vitimas_mortais30_per_1000res` | | Number of fatalities from road accidents per 1000 residents | # |
-| Census & Land Use | `census_{income/landuse}_{indicator}` | `census_income_gini_coef` | Census socioeconomic and land use data | Multiple |
+| Dimension | Column name | Description | Unit | 
+| ---- | ---- | ------------ | ---- |
+|  | `id` | Geometry identifier (grid id, dtmnfr for parishes and dtmn for municipalities) | - |
+| | `group_id` | Group id (parish id for grid and municipality id for parishes) | - |
+|  | `name` | Geometry name (grid id or parish/municipality name) | - |
+|  | `region_id` | NUTS 2 code | - | 
+|  | `IMPT_{method}_{mode¹}`<br/>Ex.: IMPT_score_pca_geom_walk | IMPT Index | % |
+|  | `{dimension}_Index_{mode¹}`<br/>Ex.: Accessibility_Index | PCA result for dimension metrics aggregation | % |
+| Accessibility | `access_{poi_type}_{time}_{census_gp²}_{mode¹}`<br/>Ex.: access_health_60min_residents_walk | Number of opportunities reachable within time | # |
+| Accessibility | `pois_n_{poi_type}`<br/>Ex.: pois_n_health | Number of points of interest for a category | # |
+| Accessibility | `access_gap_{time/money}_{mode¹}`<br/>Ex.: access_gap_time_pt | Accessibility gaps metrics | min, € |
+| Mobility | `mobility_cost_{poi_type}_n{closest}_{census_gp²}_{mode¹}`<br/>Ex.: mobility_cost_health_n1_residents_walk | Travel cost/time to closest opportunities | min |
+| Mobility | `mobility_commuting_avg_tt_{mode¹}`<br/>Ex.: mobility_commuting_avg_tt_bike | Commuting average travel times | min |
+| Mobility | `mobility_commuting_trips` | Number of commuting trips | # |
+| Mobility | `mobility_commuting_mean_transfers_pt` | Average number of transfers on public transport per commuting trip | # |
+| Mobility | `mobility_commuting_{weighted_headway/weighted_waiting_time/total_frequency}_{period}_pt`<br/>Ex.: mobility_weighted_waiting_time_peak_pt | Public transit service provision metrics (headway, frequency, wait time) | min, # |
+| Mobility | `mobility_n_stops_pt` | Number of public transport stops | # |
+| Mobility | `mobility_frequency_ratio_peak_{period}_pt`<br/>Ex.: mobility_frequency_reduction_weekend_pt | Ratio of public transport frequency during period, compared to peak hour | % |
+| Mobility | `mobility_stop_coverage_{pop/pct}_{mode¹}`<br/>Ex.: mobility_stop_coverage_pct_bus_pt | Public transit stop coverage | %, # |
+| Mobility | `mobility_shared_mobility_points` | Number of shared mobility points available | # |
+| Mobility | `mobility_infrastructure_{indicator}_{mode¹}`<br/>Ex.: mobility_infrastructure_length_bike | Mobility infrastructure metrics (length, area, ratios) | m, ha, % |
+| Mobility | `modal_census_share_{mode¹}`<br/>Ex.: modal_census_share_pt | Modal share from Census | %, # |
+| Mobility | `modal_imob_share_{mode¹}`<br/>Ex.: modal_imob_share_car | Modal share from IMOB data | %, # |
+| Affordability | `affordability_total_money_{mode¹}`<br/>Ex.: affordability_total_money_car | Total cost of transport | € |
+| Affordability | `affordability_avg_{tt/distance}_{mode¹}`<br/>Ex.: affordability_avg_distance_car | Average travel time/distance for commuting trips | min, km |
+| Affordability | `affordability_trips_{mode¹}`<br/>Ex.: affordability_trips_car | Number of commuting trips | # |
+| Affordability | `affordability_{h_transp/transp}_inc_comp_{mode¹}`<br/>Ex.: affordability_transp_inc_comp_pass | Transport (+ housing) burden | % | 
+| Safety | `safety{_inner³}_{victim_type}30`<br/>Ex.: safety_feridos_ligeiros30 | Number of victims of road accidents in 30 days | # |
+| Safety | `safety{_inner³}_indice_gravidade_{mode¹}`<br/>Ex.: safety_indice_gravidade_bike | Road accident severity index for mode of transport | % |
+| Safety | `safety{_inner³}_veh_{mode¹}`<br/>Ex.: safety_veh_car | Number of vehicles involved in road accidents | # |
+| Safety | `safety{_inner³}_acidentes_per_1000res` | Number of road accidents per 1000 residents | # |
+| Safety | `safety{_inner³}_vitimas_mortais30_per_1000res` | Number of fatalities from road accidents per 1000 residents | # |
+| Census & Land Use | `census_{income/landuse}_{indicator}`<br/>Ex.: census_income_gini_coef | Census socioeconomic and land use data | Multiple |
 
 
 **Notes:**
