@@ -1,0 +1,19 @@
+# Metadata
+
+This section summarizes the structure of the project output datasets, available at the U-Shift server at [https://ushift.tecnico.ulisboa.pt/content/impt/](https://ushift.tecnico.ulisboa.pt/content/impt/), and on the [GitHub releases](https://github.com/U-Shift/IMPT-data/releases).
+
+| Dimension | Column name structure | Column name example |  Description | Unit | 
+| ---- | ---- | ---- | ------------ | ---- |
+|  | `id` |  | Geometry identifier (grid id, dtmnfr for parishes and dtmn for municipalities) | - |
+|  | `name` | | Geometry name (grid id or parish/municipality name) | - |
+|  | `region_id` |  | NUTS 2 code | - | 
+|  | `{dimension}_Index_{mode¹}` | `Accessibility_Index` | PCA result for dimension metrics aggregation | % |
+| Accessibility | `access_{poi_type}_{time}_{census_gp²}_{mode¹}` | `access_health_60min_residents_walk` | Number of opportunities reachable within time | # |
+
+**Notes:**
+
+¹ When the mode is not specified, the index is computed for all modes combined.
+
+² Computations were performed at the grid level, so aggregation by population was only computed for parish and municipality scales.
+
+

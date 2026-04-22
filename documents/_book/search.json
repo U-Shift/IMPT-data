@@ -14,7 +14,7 @@
     "href": "index.html#sec-area",
     "title": "IMPT — Índice Multidimensional e Multimodal de Pobreza nos Transportes",
     "section": "1.1 Study Area",
-    "text": "1.1 Study Area\nThe study area corresponds to the Lisbon Metropolitan Area (AML), defined as the combination of the NUTS-III sub-regions Grande Lisboa and Península de Setúbal, using administrative boundaries from CAOP 2024.1 (Carta Administrativa Oficial de Portugal, Direção-Geral do Território).\nThe geographic areas used throughout the pipeline include three nested levels:\n\nMunicipalities (municípios): 18 units\nParishes (freguesias): 124 units (post-2013 and 2024 reform boundaries, updated to CAOP 2024)\n\nH3 Hexagonal Grid, Resolution 8 (primary unit for routing calculations): 3,686 hexagons, edge length ≈ 531 m, average area ≈ 0.74 km². This is a universal grid.\n\n\n\n\n\n\n\nNoteAdministrative boundary update\n\n\n\nSeveral parishes changed between the 2016 IMOB travel survey, the Census 2021, and the CAOP 2024 boundaries. A conversion table and area-weighted redistribution procedure was applied to ensure consistency (see Section 4.1).",
+    "text": "1.1 Study Area\nThe study area corresponds to the Lisbon Metropolitan Area (AML), defined as the combination of the NUTS-III sub-regions Grande Lisboa and Península de Setúbal, using administrative boundaries from CAOP 2024.1 (Carta Administrativa Oficial de Portugal, Direção-Geral do Território).\nThe geographic areas used throughout the pipeline include three nested levels:\n\nMunicipalities (municípios): 18 units\nParishes (freguesias): 124 units (post-2013 and 2024 reform boundaries, updated to CAOP 2024)\n\nH3 Hexagonal Grid, Resolution 8 (primary unit for routing calculations): 3,686 hexagons, edge length ≈ 531 m, average area ≈ 0.74 km². This is a universal grid.\n\n\n\n\n\n\n\nNoteAdministrative boundary update\n\n\n\nSeveral parishes changed between the 2016 IMOB travel survey, the Census 2021, and the CAOP 2024 boundaries. A conversion table and area-weighted redistribution procedure was applied to ensure consistency (see Section 4.2).",
     "crumbs": [
       "<span class='chapter-number'>1</span>  <span class='chapter-title'>Introduction</span>"
     ]
@@ -176,7 +176,7 @@
     "href": "data_preparation.html#sec-modal-share",
     "title": "4  Data Preparation",
     "section": "4.9 Modal Share from Census",
-    "text": "4.9 Modal Share from Census\nSource: Census 2021 — question on mode used for the daily commute.\nScript 02_census_modalShare.R extracts and computes modal shares (private vehicle, public transit, active modes) at parish and municipality level. These are used to compute modal-share-weighted affordability metrics (see Chapter 7).",
+    "text": "4.9 Modal Share from Census\nSource: Census 2021 — question on mode used for the daily commute.\nScript 02_census_modalShare.R extracts and computes modal shares (private vehicle, public transit, active modes) at parish and municipality level. These are used to compute modal-share-weighted affordability metrics (see Chapter 8).",
     "crumbs": [
       "**Data**",
       "<span class='chapter-number'>4</span>  <span class='chapter-title'>Data Preparation</span>"
@@ -473,7 +473,7 @@
     "href": "output_dashboard.html#sec-dashboard",
     "title": "12  Output and Dashboard",
     "section": "12.2 Dashboard Export",
-    "text": "12.2 Dashboard Export\nThe dashboard export process consists of two main steps:\n\nData Loading: 06a_results_load.R This script loads and prepares all indicator results (accessibility, mobility, safety, etc.) across the three spatial levels.\nJoining and Export: 06b_dashboard_export.R This script joins the prepared indicator tables and all the relevant metrics with the spatial geometry files and exports them as three aggregated GeoJSON files for direct use in the web dashboard:\n\n\ngrid_{aggregated/dashboard¹}.geojson\nfreguesias_{aggregated/dashboard¹}.geojson\nmunicipios_{aggregated/dashboard¹}.geojson\n\n\n¹ aggregated refers to the full dataset, dashboard to a reduced version for faster loading.\n\nA champions lookup file (champions.json) is also exported, identifying the top contributing indicators to each dimension’s PC1 score, for display in the dashboard sidebar.\n\n\n\n\n\n\nNote\n\n\n\nMind that the columns of data loaded at code/06a_results_load.R and those exported by code/06b_dashboard_export.R may differ, as the latest script performs some data cleaning and renaming to ensure data standardization and consistency.\nFor instance, different naming for the same mode are replaced by a single naming (such as “road”, “carro” or “private_vehicle” to “car”) and the mode in any variable is moved to the end of the variable name to simplify the frontend data binding (for example, access_recreation_walk_15min_residents becomes access_recreation_15min_residents_walk).",
+    "text": "12.2 Dashboard Export\nThe dashboard export process consists of two main steps:\n\nData Loading: 06a_results_load.R This script loads and prepares all indicator results (accessibility, mobility, safety, etc.) across the three spatial levels.\nJoining and Export: 06b_dashboard_export.R This script joins the prepared indicator tables and all the relevant metrics with the spatial geometry files and exports them as three aggregated GeoJSON files for direct use in the web dashboard:\n\n\ngrid_{aggregated/dashboard¹}.geojson\nfreguesias_{aggregated/dashboard¹}.geojson\nmunicipios_{aggregated/dashboard¹}.geojson\n\n\n¹ aggregated refers to the full dataset, dashboard to a reduced version with only the variables displayed for faster loading.\n\nA champions lookup file (champions.json) is also exported, identifying the top contributing indicators to each dimension’s PC1 score, for display in the dashboard sidebar.\n\n\n\n\n\n\nNote\n\n\n\nMind that the columns of data loaded at code/06a_results_load.R and those exported by code/06b_dashboard_export.R may differ, as the latest script performs some data cleaning and renaming to ensure data standardization and consistency.\nFor instance, different naming for the same mode are replaced by a single naming (such as “road”, “carro” or “private_vehicle” to “car”) and the mode in any variable is moved to the end of the variable name to simplify the frontend data binding (for example, access_recreation_walk_15min_residents becomes access_recreation_15min_residents_walk).",
     "crumbs": [
       "**Dashboard and Reproducibility**",
       "<span class='chapter-number'>12</span>  <span class='chapter-title'>Output and Dashboard</span>"
@@ -615,6 +615,17 @@
     "crumbs": [
       "**Data**",
       "<span class='chapter-number'>3</span>  <span class='chapter-title'>Data Access</span>"
+    ]
+  },
+  {
+    "objectID": "metadata.html",
+    "href": "metadata.html",
+    "title": "13  Metadata",
+    "section": "",
+    "text": "This section summarizes the structure of the project output datasets, available at the U-Shift server at https://ushift.tecnico.ulisboa.pt/content/impt/, and on the GitHub releases.\n\n\n\n\n\n\n\n\n\n\nDimension\nColumn name structure\nColumn name example\nDescription\nUnit\n\n\n\n\n\nid\n\nGeometry identifier (grid id, dtmnfr for parishes and dtmn for municipalities)\n-\n\n\n\nname\n\nGeometry name (grid id or parish/municipality name)\n-\n\n\n\nregion_id\n\nNUTS 2 code\n-\n\n\n\n{dimension}_Index_{mode¹}\nAccessibility_Index\nPCA result for dimension metrics aggregation\n%\n\n\nAccessibility\naccess_{poi_type}_{time}_{census_gp²}_{mode¹}\naccess_health_60min_residents_walk\nNumber of opportunities reachable within time\n#\n\n\n\nNotes:\n¹ When the mode is not specified, the index is computed for all modes combined.\n² Computations were performed at the grid level, so aggregation by population was only computed for parish and municipality scales.",
+    "crumbs": [
+      "**Dashboard and Reproducibility**",
+      "<span class='chapter-number'>13</span>  <span class='chapter-title'>Metadata</span>"
     ]
   }
 ]
