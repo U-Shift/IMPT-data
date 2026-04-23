@@ -108,7 +108,9 @@ freguesias_mobility <- impt_read("/mobility_commuting/freguesia_commuting.csv") 
     # PT Waiting Times
     mobility_transit_weighted_waiting_time_peak, mobility_transit_weighted_waiting_time_night, mobility_transit_weighted_waiting_time_weekend,
     # PT Frequency
-    mobility_transit_weighted_frequency_peak, mobility_transit_weighted_frequency_reduction_night, mobility_transit_weighted_frequency_reduction_weekend
+    mobility_transit_weighted_frequency_peak, mobility_transit_weighted_frequency_night, mobility_transit_weighted_frequency_weekend,
+    # PT Frequency Reduction
+    mobility_transit_weighted_frequency_reduction_night, mobility_transit_weighted_frequency_reduction_weekend
   ) |>
   mutate(dtmnfr = as.integer(id)) |>
   select(-id)
