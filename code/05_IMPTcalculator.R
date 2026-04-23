@@ -16,7 +16,7 @@
 library(dplyr)
 library(readr)
 library(stringr)
-library(FactoMineR)
+library(FactoMineR) # library(devtools); install_github("husson/FactoMineR")
 library(sf)
 library(mapview)
 
@@ -107,26 +107,17 @@ freguesias_mobility <- impt_read("/mobility_commuting/freguesia_commuting.csv") 
     mobility_transit_commuting_mean_transfers,
     # PT Waiting Times
     mobility_transit_weighted_waiting_time_peak, mobility_transit_weighted_waiting_time_night, mobility_transit_weighted_waiting_time_weekend,
-    # Night/weekend service availability
-    mobility_transit_weighted_frequency_reduction_night, mobility_transit_weighted_frequency_reduction_weekend
+    # PT Frequency
+    mobility_transit_weighted_frequency_peak, mobility_transit_weighted_frequency_reduction_night, mobility_transit_weighted_frequency_reduction_weekend
   ) |>
   mutate(dtmnfr = as.integer(id)) |>
   select(-id)
-
-# Transit headways
-freguesias_headways <- impt_read("/mobility_transit/freguesias_headways.csv") |>
-  select(dtmnfr, weighted_frequency_peak, weighted_waiting_time_peak) |>
-  rename(
-    PT_Weight_frequency_peak = weighted_frequency_peak,
-    PT_Waitingtime           = weighted_waiting_time_peak
-  )
 
 # Join all mobility tables
 Mobility <- freguesias_infrastructure_ratio |>
   left_join(freguesias_stops_coverage, by = "dtmnfr") |>
   left_join(freguesias_shared_mobility, by = "dtmnfr") |>
-  left_join(freguesias_mobility, by = "dtmnfr") |>
-  left_join(freguesias_headways, by = "dtmnfr")
+  left_join(freguesias_mobility, by = "dtmnfr")
 
 
 # ── 1.3 Safety ────────────────────────────────────────────────────────────────
