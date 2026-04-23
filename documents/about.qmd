@@ -17,7 +17,7 @@ This research was conducted by the U-Shift Lab at Instituto Superior Técnico - 
 -   **Mauricio Orozco-Fontalvo**\
     [mauricio.orozco\@tecnico.pt](mailto:mauricio.orozco@tecnico.pt){.email} \| [Website](https://ushift.tecnico.ulisboa.pt/team-mauricio-fontalvo/) \| [ORCID: 0000-0003-0514-4647](https://orcid.org/0000-0003-0514-4647)
 
--   **Gonçalo Matos**\
+-   **Gonçalo F. Matos**\
     [goncaloafmatos\@tecnico.pt](mailto:goncaloafmatos@tecnico.pt){.email} \| [Website](http://gmatos.pt/) \| [ORCID: 0009-0001-3489-1732](https://orcid.org/0009-0001-3489-1732)
 
 -   **Miguel Alvelos** – Project Collaborator
