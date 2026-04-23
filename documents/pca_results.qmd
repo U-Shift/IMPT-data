@@ -12,18 +12,17 @@ library(dplyr)
 library(readr)
 library(tidyr)
 library(DT)
+
+source("../code/00a_impt_data_handle.R")
+
+pca_var <- impt_read("impt/pca_scores/PCA_Variance_Table.csv")
+
+pca_cors <- impt_read("impt/pca_scores/PCA_Variance_and_Correlations.csv")
 ```
 
 ```{r}
 #| label: tbl-pca-summary
 #| tbl-cap: "PCA diagnostics — variance explained by PC1 (generated from [`05_IMPTcalculator.R`](https://github.com/U-Shift/IMPT-data/blob/main/code/05_IMPTcalculator.R) outputs)"
-pca_var <- readr::read_csv("../data/impt/pca_scores/PCA_Variance_Table.csv",
-    show_col_types = FALSE
-)
-pca_cors <- readr::read_csv("../data/impt/pca_scores/PCA_Variance_and_Correlations.csv",
-    show_col_types = FALSE
-)
-
 # Top 5 variables per dimension = highest |correlation| with PC1
 top_vars <- pca_cors |>
     dplyr::group_by(Dimension_Mode) |>
