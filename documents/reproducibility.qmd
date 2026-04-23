@@ -20,7 +20,7 @@ Scripts are organised with a numeric prefix indicating execution order:
 
 : Pipeline script organisation {#tbl-scripts}
 
-:::calout-note
+::: {.callout-note}
 The estimate **time** to run all the scrips is **3 days**, on a high capacity processing computer.
 
 The estimate **storage** needed is **13 GB**.
