@@ -68,6 +68,9 @@ div.csl-indent {
 <link href="site_libs/bootstrap/bootstrap-f301bfec8aa1688484056fecac87ffb6.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
 <link href="site_libs/bootstrap/bootstrap-dark-8da15c8200cabd653792465749d5391a.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
 <link href="site_libs/bootstrap/bootstrap-f301bfec8aa1688484056fecac87ffb6.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script src="site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
+<link href="site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
+<link href="site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -553,7 +556,34 @@ Note
 <section id="sec-data-prep-boundaries" class="level2" data-number="4.2">
 <h2 data-number="4.2" class="anchored" data-anchor-id="sec-data-prep-boundaries"><span class="header-section-number">4.2</span> Administrative Boundaries</h2>
 <p><strong>Source:</strong> CAOP 2024.1 <span class="citation" data-cites="caop_2024">(<a href="references.html#ref-caop_2024" role="doc-biblioref">DGT 2024</a>)</span></p>
-<p>The full continental Portugal polygon file is filtered to the <strong>Grande Lisboa</strong> and <strong>Península de Setúbal</strong> NUTS-II sub-regions. For the municipality of Lisboa, parish boundaries with the Tagus estuary are replaced by clipped geometries (<code>FREGUESIASgeo.gpkg</code> - using CAOP 2016 parish limits) to remove the water area in Lisbon municipality.</p>
+<p>The full continental Portugal polygon file is filtered to the <strong>Grande Lisboa</strong> and <strong>Península de Setúbal</strong> NUTS-II sub-regions. For the municipality of Lisboa, parish boundaries with the Tagus estuary are replaced by clipped geometries (<code>FREGUESIASgeo.gpkg</code> - using CAOP 2016 parish limits) to remove the water area in Lisbon municipality (<a href="#fig-administrative-boundaries" class="quarto-xref">Figure&nbsp;<span>4.1</span></a>).</p>
+<div id="fig-administrative-boundaries" class="quarto-layout-panel">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-administrative-boundaries-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="images/maps/administrative_boundaries_before.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1" title="CAOP 2024.1 original geometry"><img src="images/maps/administrative_boundaries_before.png" class="img-fluid figure-img"></a></p>
+<figcaption>CAOP 2024.1 original geometry</figcaption>
+</figure>
+</div>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="images/maps/administrative_boundaries_after.png" class="lightbox" data-gallery="quarto-lightbox-gallery-2" title="Lisbon geomerty adjusted"><img src="images/maps/administrative_boundaries_after.png" class="img-fluid figure-img"></a></p>
+<figcaption>Lisbon geomerty adjusted</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-administrative-boundaries-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;4.1: Lisbon geometry administrative boundaries adjustment
+</figcaption>
+</figure>
+</div>
 <p>For parishes with multiple polygon features (due to small islands), only the polygon with the largest area is retained.</p>
 <section id="sec-dicofre" class="level3" data-number="4.2.1">
 <h3 data-number="4.2.1" class="anchored" data-anchor-id="sec-dicofre"><span class="header-section-number">4.2.1</span> Conversion of 2016 to 2024 Parish Codes</h3>
@@ -613,7 +643,7 @@ Table&nbsp;4.1: Parish code conversions from 2016 to 2024
 </div>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-grid-overview-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;4.1: H3 grid generation and spatial assignment
+Figure&nbsp;4.2: H3 grid generation and spatial assignment
 </figcaption>
 </figure>
 </div>
@@ -1381,6 +1411,38 @@ Uber Technologies. 2018. <span>“H3: A Hexagonal Hierarchical Spatial Index.”
 </div>
   </div>
 </footer>
+<script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","descPosition":"bottom","loop":false,"openEffect":"zoom","selector":".lightbox"});
+(function() {
+  let previousOnload = window.onload;
+  window.onload = () => {
+    if (previousOnload) {
+      previousOnload();
+    }
+    lightboxQuarto.on('slide_before_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      const href = trigger.getAttribute('href');
+      if (href !== null) {
+        const imgEl = window.document.querySelector(`a[href="${href}"] img`);
+        if (imgEl !== null) {
+          const srcAttr = imgEl.getAttribute("src");
+          if (srcAttr && srcAttr.startsWith("data:")) {
+            slideConfig.href = srcAttr;
+          }
+        }
+      } 
+    });
+  
+    lightboxQuarto.on('slide_after_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(slideNode);
+      }
+    });
+  
+  };
+  
+})();
+          </script>
 
 
 
