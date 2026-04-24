@@ -2,16 +2,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.9.37">
+<meta name="generator" content="quarto-1.8.25">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Appendix B — PCA Diagnostics – IMPT — Índice Multidimensional e Multimodal de Pobreza nos Transportes</title>
+<title>Appendix B — PCA Diagnostics – &lt;img src='images/logo.png' width='100%' height='auto' /&gt;&lt;br/&gt; IMPT — Índice Multidimensional e Multimodal de Pobreza nos Transportes&lt;br/&gt;</title>
 <style>
-/* Default styles provided by pandoc.
-** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
-*/
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
 div.columns{display: flex; gap: min(4vw, 1.5em);}
@@ -34,16 +31,22 @@ ul.task-list li input[type="checkbox"] {
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
 <link href="./metadata.html" rel="prev">
+<link href="./images/icon.ico" rel="icon">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="site_libs/quarto-html/anchor.min.js"></script>
 <link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-7b89279ff1a6dce999919e0e67d4d9ec.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark-707d8167ce6003fca903bfe2be84ab7f.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-7b89279ff1a6dce999919e0e67d4d9ec.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-37d11a445f1a4f387c765ace15bdb02a.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-f301bfec8aa1688484056fecac87ffb6.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark-8da15c8200cabd653792465749d5391a.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="site_libs/bootstrap/bootstrap-f301bfec8aa1688484056fecac87ffb6.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -75,7 +78,7 @@ ul.task-list li input[type="checkbox"] {
 <script src="site_libs/htmlwidgets-1.6.4/htmlwidgets.js"></script>
 <link href="site_libs/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet">
 <script src="site_libs/datatables-binding-0.34.0/datatables.js"></script>
-<script src="site_libs/jquery-3.6.1/jquery-3.6.1.min.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <link href="site_libs/dt-core-1.13.6/css/jquery.dataTables.min.css" rel="stylesheet">
 <link href="site_libs/dt-core-1.13.6/css/jquery.dataTables.extra.css" rel="stylesheet">
 <script src="site_libs/dt-core-1.13.6/js/jquery.dataTables.min.js"></script>
@@ -89,18 +92,201 @@ ul.task-list li input[type="checkbox"] {
 
 <meta name="citation_title" content="[Appendix B — PCA Diagnostics]{#sec-pca-diagnostics .quarto-section-identifier}">
 <meta name="citation_language" content="en">
-<meta name="citation_reference" content="citation_title=Jittering: A computationally efficient method for generating realistic route networks from origin-destination data;,citation_author=Robin Lovelace;,citation_author=Rosa Félix;,citation_author=Dustin Carlino;,citation_publication_date=2022;,citation_cover_date=2022;,citation_year=2022;,citation_fulltext_html_url=https://doi.org/10.32866/001c.33873;,citation_doi=10.32866/001c.33873;,citation_journal_title=Findings;">
-<meta name="citation_reference" content="citation_title=r5r: Rapid realistic routing on multimodal transport networks with R5 in R;,citation_author=Rafael H. M. Pereira;,citation_author=Marcus Saraiva;,citation_author=Daniel Herszenhut;,citation_author=Carlos K. V. Braga;,citation_author=Matthew Wigginton Conway;,citation_publication_date=2021;,citation_cover_date=2021;,citation_year=2021;,citation_fulltext_html_url=https://doi.org/10.32866/001c.21262;,citation_doi=10.32866/001c.21262;,citation_journal_title=Findings;">
-<meta name="citation_reference" content="citation_title=Accessibility: Transport accessibility measures;,citation_author=Rafael H. M. Pereira;,citation_author=Daniel Herszenhut;,citation_publication_date=2022;,citation_cover_date=2022;,citation_year=2022;,citation_fulltext_html_url=https://ipeagit.github.io/accessibility/;">
-<meta name="citation_reference" content="citation_title=Odjitter: Jitter origin-destination data;,citation_author=Robin Lovelace;,citation_author=Rosa Félix;,citation_publication_date=2022;,citation_cover_date=2022;,citation_year=2022;,citation_fulltext_html_url=https://github.com/itsleeds/odjitter;">
-<meta name="citation_reference" content="citation_title=H3: A hexagonal hierarchical spatial index;,citation_author=Uber Technologies;,citation_publication_date=2018;,citation_cover_date=2018;,citation_year=2018;,citation_fulltext_html_url=https://h3geo.org;">
-<meta name="citation_reference" content="citation_title=Censos 2021 — base geográfica de referenciação de informação, NUTS 3 lisboa;,citation_author=INE — Instituto Nacional de Estatística;,citation_publication_date=2021;,citation_cover_date=2021;,citation_year=2021;,citation_fulltext_html_url=https://mapas.ine.pt/download/filesGPG/2021/nuts3/BGRI21_170.zip;">
-<meta name="citation_reference" content="citation_title=Inquérito à mobilidade nas áreas metropolitanas do porto e de lisboa — IMOB 2017;,citation_author=INE — Instituto Nacional de Estatística;,citation_publication_date=2018;,citation_cover_date=2018;,citation_year=2018;">
-<meta name="citation_reference" content="citation_title=Carta administrativa oficial de portugal, CAOP 2024.1;,citation_author=DGT — Direção-Geral do Território;,citation_publication_date=2024;,citation_cover_date=2024;,citation_year=2024;,citation_fulltext_html_url=https://geo2.dgterritorio.gov.pt/caop;">
-<meta name="citation_reference" content="citation_title=Portaria n.º 1553-d/2008, de 31 de dezembro — ajudas de custo e transportes em automóvel próprio;,citation_author=República Portuguesa;,citation_publication_date=2008;,citation_cover_date=2008;,citation_year=2008;,citation_fulltext_html_url=https://diariodarepublica.pt/dr/detalhe/portaria/1553-d-2008-243733;">
+<meta name="citation_reference" content="citation_title=Jittering: A Computationally Efficient Method for Generating Realistic Route Networks from Origin-Destination Data;,citation_author=Robin Lovelace;,citation_author=Rosa Félix;,citation_author=Dustin Carlino;,citation_publication_date=2022;,citation_cover_date=2022;,citation_year=2022;,citation_fulltext_html_url=https://doi.org/10.32866/001c.33873;,citation_doi=10.32866/001c.33873;,citation_journal_title=Findings;">
+<meta name="citation_reference" content="citation_title=r5r: Rapid Realistic Routing on Multimodal Transport Networks with R5 in R;,citation_author=Rafael H. M. Pereira;,citation_author=Marcus Saraiva;,citation_author=Daniel Herszenhut;,citation_author=Carlos K. V. Braga;,citation_author=Matthew Wigginton Conway;,citation_publication_date=2021;,citation_cover_date=2021;,citation_year=2021;,citation_fulltext_html_url=https://doi.org/10.32866/001c.21262;,citation_doi=10.32866/001c.21262;,citation_journal_title=Findings;">
+<meta name="citation_reference" content="citation_title=accessibility: Transport Accessibility Measures;,citation_author=Rafael H. M. Pereira;,citation_author=Daniel Herszenhut;,citation_publication_date=2022;,citation_cover_date=2022;,citation_year=2022;,citation_fulltext_html_url=https://ipeagit.github.io/accessibility/;">
+<meta name="citation_reference" content="citation_title=odjitter: Jitter Origin-Destination Data;,citation_author=Robin Lovelace;,citation_author=Rosa Félix;,citation_publication_date=2022;,citation_cover_date=2022;,citation_year=2022;,citation_fulltext_html_url=https://github.com/itsleeds/odjitter;">
+<meta name="citation_reference" content="citation_title=H3: A Hexagonal Hierarchical Spatial Index;,citation_author=Uber Technologies;,citation_publication_date=2018;,citation_cover_date=2018;,citation_year=2018;,citation_fulltext_html_url=https://h3geo.org;">
+<meta name="citation_reference" content="citation_title=Censos 2021 — Base Geográfica de Referenciação de Informação, NUTS 3 Lisboa;,citation_author=Instituto Nacional de Estatística INE;,citation_publication_date=2021;,citation_cover_date=2021;,citation_year=2021;,citation_fulltext_html_url=https://mapas.ine.pt/download/filesGPG/2021/nuts3/BGRI21_170.zip;">
+<meta name="citation_reference" content="citation_title=Inquérito à Mobilidade nas Áreas Metropolitanas do Porto e de Lisboa — IMOB 2017;,citation_author=Instituto Nacional de Estatística INE;,citation_publication_date=2018;,citation_cover_date=2018;,citation_year=2018;,citation_fulltext_html_url=https://www.ine.pt/xurl/pub/349495406;">
+<meta name="citation_reference" content="citation_title=Carta Administrativa Oficial de Portugal, CAOP 2024.1;,citation_author=DGT — Direção-Geral do Território;,citation_publication_date=2024;,citation_cover_date=2024;,citation_year=2024;,citation_fulltext_html_url=https://geo2.dgterritorio.gov.pt/caop;">
+<meta name="citation_reference" content="citation_title=Portaria n.º 1553-D/2008, de 31 de dezembro — Ajudas de custo e transportes em automóvel próprio;,citation_author=República Portuguesa;,citation_publication_date=2008;,citation_cover_date=2008;,citation_year=2008;,citation_fulltext_html_url=https://diariodarepublica.pt/dr/detalhe/portaria/1553-d-2008-243733;">
+<meta name="citation_reference" content="citation_title=Carta Administrativa Oficial de Portugal 2024.1;,citation_author=Direção-Geral do Território DGT;,citation_publication_date=2024;,citation_cover_date=2024;,citation_year=2024;,citation_fulltext_html_url=https://www.dgterritorio.gov.pt/atividades/cartografia/cartografia-tematica/caop;">
+<meta name="citation_reference" content="citation_title=COSc2023 - Carta de Ocupação do Solo Conjuntural de 2023;,citation_author=Direção-Geral do Território DGT;,citation_publication_date=2023;,citation_cover_date=2023;,citation_year=2023;,citation_fulltext_html_url=https://www.dgterritorio.gov.pt/COSc2023-Carta-de-Ocupacao-do-Solo-Conjuntural-de-2023;">
+<meta name="citation_reference" content="citation_title=h3jsr: Access Uber’s H3 Library;,citation_author=Lauren O’Brien;,citation_publication_date=2023-01;,citation_cover_date=2023-01;,citation_year=2023;,citation_fulltext_html_url=https://cran.r-project.org/web/packages/h3jsr/index.html;">
+<meta name="citation_reference" content="citation_title=OpenStreetMap: Map data available under the Open Database License (ODbL);,citation_author=undefined OpenStreetMap;,citation_publication_date=2026;,citation_cover_date=2026;,citation_year=2026;,citation_fulltext_html_url=https://www.openstreetmap.org/;">
+<meta name="citation_reference" content="citation_title=datasets;,citation_author=Carris Metropolitana;,citation_publication_date=2026-04;,citation_cover_date=2026-04;,citation_year=2026;,citation_fulltext_html_url=https://github.com/carrismetropolitana/datasets;,citation_publisher=Carris Metropolitana;">
+<meta name="citation_reference" content="citation_title=HOT Export Tool;,citation_author=Humanitarian OpenStreetMap Team HOT;,citation_publication_date=2026;,citation_cover_date=2026;,citation_year=2026;,citation_fulltext_html_url=https://export.hotosm.org/;">
+<meta name="citation_reference" content="citation_title=Copernicus Browser;,citation_author=Copernicus EU;,citation_publication_date=2026;,citation_cover_date=2026;,citation_year=2026;,citation_fulltext_html_url=https://browser.dataspace.copernicus.eu/;">
+<meta name="citation_reference" content="citation_title=População residente que vive no alojamento a maior parte do ano (N.º) por Local de residência à data dos Censos [2021] (NUTS - 2013), Sexo, Condição perante o trabalho, Principal meio de transporte e Local de trabalho ou estudo;,citation_author=Instituto Nacional de Estatística INE;,citation_publication_date=2021;,citation_cover_date=2021;,citation_year=2021;,citation_fulltext_html_url=https://tabulador.ine.pt/indicador/?id=0011704;">
+<meta name="citation_reference" content="citation_title=tidytransit: Read, Validate, Analyze, and Map GTFS Feeds;,citation_author=Flavio Poletti;,citation_author=Daniel Herszenhut;,citation_author=Mark Padgham;,citation_author=Tom Buckley;,citation_author=Danton Noriega-Goodwin;,citation_author=Angela Li;,citation_author=Elaine McVey;,citation_author=Charles Hans Thompson;,citation_author=Michael Sumner;,citation_author=Patrick Hausmann;,citation_author=Bob Rudis;,citation_author=James Lamb;,citation_author=Alexandra Kapp;,citation_author=Kearey Smith;,citation_author=Dave Vautin;,citation_author=Kyle Walker;,citation_author=Davis Vaughan;,citation_author=Ryan Rymarczyk;,citation_author=Kirill Müller;,citation_publication_date=2026-01;,citation_cover_date=2026-01;,citation_year=2026;,citation_fulltext_html_url=https://cran.r-project.org/web/packages/tidytransit/index.html;">
+<meta name="citation_reference" content="citation_title=PMMUS – Plano Metropolitano de Mobilidade Urbana Sustentável da amL;,citation_author=Transportes Metropolitanos de Lisboa TML;,citation_author=Consultores Associados Lda. Way2Go;,citation_publication_date=2025;,citation_cover_date=2025;,citation_year=2025;,citation_fulltext_html_url=https://pmmus.tmlmobilidade.pt/;">
+<meta name="citation_reference" content="citation_title=Portaria n.º 1553-D/2008, de 31 de dezembro;,citation_author=Ministério das Finanças e da Administração Pública;,citation_publication_date=2008;,citation_cover_date=2008;,citation_year=2008;,citation_fulltext_html_url=https://diariodarepublica.pt/dr/detalhe/portaria/1553-d-2008-243733;,citation_volume=n.º 252/2008, 4º Suplemento, Série I de 2008-12-31;,citation_journal_title=Diário da República;">
+<meta name="citation_reference" content="citation_title=Cálculo de percursos com portagens;,citation_author=Infraestruturas de Portugal IP;,citation_publication_date=2026;,citation_cover_date=2026;,citation_year=2026;,citation_fulltext_html_url=https://portagens.infraestruturasdeportugal.pt/;">
+<meta name="citation_reference" content="citation_title=Relatório e Contas 2024;,citation_author=undefined Carris;,citation_publication_date=2024-04;,citation_cover_date=2024-04;,citation_year=2024;,citation_fulltext_html_url=https://www.carris.pt/media/ikvdezmc/relat%C3%B3rio-e-contas-carris-2024.pdf;">
+<meta name="citation_reference" content="citation_title=Tarifas;,citation_author=Metro de Lisboa;,citation_publication_date=2025;,citation_cover_date=2025;,citation_year=2025;,citation_fulltext_html_url=https://www.metrolisboa.pt/wp-content/uploads/2025/12/Tarifas_site_2026_PT.pdf;">
+<meta name="citation_reference" content="citation_title=Estatísticas do rendimento ao nível local - Indicadores de rendimento declarado no IRS - 2023;,citation_author=Instituto Nacional de Estatística INE;,citation_publication_date=2025;,citation_cover_date=2025;,citation_year=2025;,citation_fulltext_html_url=https://www.ine.pt/xurl/pub/66303599;">
+<meta name="citation_reference" content="citation_title=Censos - Resultados definitivos - 2021;,citation_author=Instituto Nacional de Estatística INE;,citation_publication_date=2022;,citation_cover_date=2022;,citation_year=2022;,citation_fulltext_html_url=https://www.ine.pt/xurl/pub/65586079;">
+<meta name="citation_reference" content="citation_title=FactoMineR: Multivariate Exploratory Data Analysis and Data Mining;,citation_author=Francois Husson;,citation_author=Julie Josse;,citation_author=Sebastien Le;,citation_author=Jeremy Mazet;,citation_publication_date=2026-04;,citation_cover_date=2026-04;,citation_year=2026;,citation_fulltext_html_url=https://cran.r-project.org/web/packages/FactoMineR/index.html;">
+<meta name="citation_reference" content="citation_title=React;,citation_author=undefined Meta;,citation_publication_date=2026;,citation_cover_date=2026;,citation_year=2026;,citation_fulltext_html_url=https://react.dev/;">
+<meta name="citation_reference" content="citation_title=Vite;,citation_author=VoidZero Inc.;,citation_publication_date=2026;,citation_cover_date=2026;,citation_year=2026;,citation_fulltext_html_url=https://vite.dev;,citation_journal_title=vitejs;">
+<meta name="citation_reference" content="citation_title=Leaflet — an open-source JavaScript library for interactive maps;,citation_author=Volodymyr Agafonkin;,citation_publication_date=2026;,citation_cover_date=2026;,citation_year=2026;,citation_fulltext_html_url=https://leafletjs.com/;">
+<meta name="citation_reference" content="citation_title=Tailwind CSS - Rapidly build modern websites without ever leaving your HTML.;,citation_author=Tailwind Labs Inc.;,citation_publication_date=2026;,citation_cover_date=2026;,citation_year=2026;,citation_fulltext_html_url=https://tailwindcss.com/;">
 </head>
 
-<body class="nav-sidebar floating quarto-light">
+<body class="nav-sidebar floating quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
@@ -122,9 +308,16 @@ ul.task-list li input[type="checkbox"] {
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
 <!-- sidebar -->
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
-    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header sidebar-header-stacked">
+      <a href="./index.html" class="sidebar-logo-link">
+      </a>
     <div class="sidebar-title mb-0 py-0">
-      <a href="./">IMPT — Índice Multidimensional e Multimodal de Pobreza nos Transportes</a> 
+      <a href="./"><img src="images/logo.png" width="100%" height="auto"><br> IMPT — Índice Multidimensional e Multimodal de Pobreza nos Transportes<br></a> 
+        <div class="sidebar-tools-main tools-wide">
+    <a href="https://github.com/U-Shift/IMPT-data/" title="GitHub Repository" class="quarto-navigation-tool px-1" aria-label="GitHub Repository" target="_blank"><i class="bi bi-github"></i></a>
+    <a href="https://ushift.pt/apps/impt" title="Interactive Dashboard" class="quarto-navigation-tool px-1" aria-label="Interactive Dashboard" target="_blank"><i class="bi bi-map-fill"></i></a>
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
     </div>
       </div>
         <div class="mt-2 flex-shrink-0 align-items-center">
@@ -285,6 +478,7 @@ ul.task-list li input[type="checkbox"] {
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
+
 <header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./metadata.html">Appendices</a></li><li class="breadcrumb-item"><a href="./pca_results.html"><span class="chapter-number">B</span>&nbsp; <span class="chapter-title">PCA Diagnostics</span></a></li></ol></nav>
 <div class="quarto-title">
 <h1 class="title"><span id="sec-pca-diagnostics" class="quarto-section-identifier">Appendix B — PCA Diagnostics</span></h1>
@@ -313,8 +507,8 @@ Table&nbsp;B.1: PCA diagnostics — variance explained by PC1 (generated from <a
 </figcaption>
 <div aria-describedby="tbl-pca-summary-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
-<div class="datatables html-widget html-fill-item" id="htmlwidget-28b7c7b473c7e1cbebc2" style="width:100%;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-28b7c7b473c7e1cbebc2">{"x":{"filter":"top","vertical":false,"filterHTML":"<tr>\n  <td data-type=\"factor\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"width: 100%; display: none;\">\n      <select multiple=\"multiple\" style=\"width: 100%;\" data-options=\"[&quot;Accessibility&quot;,&quot;Mobility&quot;,&quot;Safety&quot;]\"><\/select>\n    <\/div>\n  <\/td>\n  <td data-type=\"factor\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"width: 100%; display: none;\">\n      <select multiple=\"multiple\" style=\"width: 100%;\" data-options=\"[&quot;All&quot;,&quot;Bike&quot;,&quot;Car&quot;,&quot;PT&quot;,&quot;Walk&quot;]\"><\/select>\n    <\/div>\n  <\/td>\n  <td data-type=\"number\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"45.4\" data-max=\"63.9\" data-scale=\"1\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"character\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"number\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"0.05\" data-max=\"0.99\" data-scale=\"2\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n<\/tr>","data":[["Accessibility","Accessibility","Accessibility","Accessibility","Accessibility","Mobility","Mobility","Mobility","Mobility","Mobility","Safety","Safety","Safety","Safety","Safety","Accessibility","Accessibility","Accessibility","Accessibility","Accessibility","Accessibility","Accessibility","Accessibility","Accessibility","Accessibility","Accessibility","Accessibility","Accessibility","Accessibility","Accessibility","Accessibility","Accessibility","Accessibility","Accessibility","Accessibility","Mobility","Mobility","Mobility","Mobility","Mobility","Mobility","Mobility","Mobility","Mobility","Mobility","Mobility","Mobility","Mobility"],["All","All","All","All","All","All","All","All","All","All","All","All","All","All","All","Car","Car","Car","Car","Car","PT","PT","PT","PT","PT","Bike","Bike","Bike","Bike","Bike","Walk","Walk","Walk","Walk","Walk","PT","PT","PT","PT","PT","Bike","Bike","Bike","Bike","Bike","Walk","Walk","Walk"],[60.2,60.2,60.2,60.2,60.2,45.4,45.4,45.4,45.4,45.4,52.6,52.6,52.6,52.6,52.6,63.9,63.9,63.9,63.9,63.9,62.7,62.7,62.7,62.7,62.7,61.5,61.5,61.5,61.5,61.5,60.6,60.6,60.6,60.6,60.6,59.6,59.6,59.6,59.6,59.6,60,60,60,60,60,50.4,50.4,50.4],["mobility_cost_groceries_walk_n3_residents","mobility_cost_groceries_car_n3_residents","mobility_cost_groceries_transit_2t_n3_residents","mobility_cost_health_bike_n1_residents","mobility_cost_health_transit_2t_n1_residents","mobility_commuting_avg_tt_transit_2t_120m_15w","mobility_transit_weighted_waiting_time_peak","PT_Waitingtime","mobility_commuting_avg_tt_bike","PT_Weight_frequency_peak","total_vitimas30","total_acidentes","feridos_ligeiros30","total_veiculos","feridos_graves30","mobility_cost_groceries_car_n3_residents","access_schools_primary_car_30min_kids","mobility_cost_greenspaces_car_n1_residents","access_health_car_30min_residents","mobility_cost_recreation_car_n3_residents","mobility_cost_groceries_transit_2t_n3_residents","access_schools_primary_transit_2t_30min_kids","mobility_cost_health_transit_2t_n1_residents","access_health_transit_2t_30min_residents","mobility_cost_greenspaces_transit_2t_n1_residents","mobility_cost_health_bike_n1_residents","access_schools_primary_bike_15min_kids","access_health_bike_15min_residents","mobility_cost_groceries_bike_n3_residents","mobility_cost_schools_primary_bike_n1_kids","mobility_cost_groceries_walk_n3_residents","mobility_cost_health_walk_n1_residents","access_schools_primary_walk_15min_kids","mobility_cost_schools_primary_walk_n1_kids","mobility_cost_greenspaces_walk_n1_residents","PT_Waitingtime","mobility_transit_weighted_waiting_time_peak","mobility_commuting_avg_tt_transit_2t_120m_15w","PT_Weight_frequency_peak","pct_pt_all","segregated_cycleway_length","cycleway_length","cycleway_to_road_ratio","cycling_quality_ratio","mobility_commuting_avg_tt_bike","pedpath_to_road_ratio","mobility_commuting_avg_tt_walk","pedpath_length"],[0.91,0.9,0.9,0.88,0.87,0.9399999999999999,0.88,0.88,0.85,0.84,0.99,0.99,0.99,0.98,0.8,0.91,0.88,0.87,0.87,0.86,0.91,0.89,0.89,0.86,0.85,0.88,0.87,0.85,0.85,0.82,0.89,0.87,0.84,0.84,0.83,0.9399999999999999,0.9399999999999999,0.92,0.89,0.86,0.93,0.92,0.89,0.53,0.48,0.88,0.86,0.05]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>Dimension<\/th>\n      <th>Mode<\/th>\n      <th>PC1 Var (%)<\/th>\n      <th>Variable<\/th>\n      <th>r with PC1<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"paging":false,"dom":"tif","autoWidth":true,"columnDefs":[{"className":"dt-center","targets":"_all"},{"name":"Dimension","targets":0},{"name":"Mode","targets":1},{"name":"PC1 Var (%)","targets":2},{"name":"Variable","targets":3},{"name":"r with PC1","targets":4}],"order":[],"orderClasses":false,"orderCellsTop":true}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-d8f961b0ce5132901dbc" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-d8f961b0ce5132901dbc">{"x":{"filter":"top","vertical":false,"filterHTML":"<tr>\n  <td data-type=\"factor\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"width: 100%; display: none;\">\n      <select multiple=\"multiple\" style=\"width: 100%;\" data-options=\"[&quot;Accessibility&quot;,&quot;Mobility&quot;,&quot;Safety&quot;]\"><\/select>\n    <\/div>\n  <\/td>\n  <td data-type=\"factor\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"width: 100%; display: none;\">\n      <select multiple=\"multiple\" style=\"width: 100%;\" data-options=\"[&quot;All&quot;,&quot;Bike&quot;,&quot;Car&quot;,&quot;PT&quot;,&quot;Walk&quot;]\"><\/select>\n    <\/div>\n  <\/td>\n  <td data-type=\"number\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"47.5\" data-max=\"63.9\" data-scale=\"1\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"character\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"number\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"-0.95\" data-max=\"0.99\" data-scale=\"2\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n<\/tr>","data":[["Accessibility","Accessibility","Accessibility","Accessibility","Accessibility","Mobility","Mobility","Mobility","Mobility","Mobility","Safety","Safety","Safety","Safety","Safety","Accessibility","Accessibility","Accessibility","Accessibility","Accessibility","Accessibility","Accessibility","Accessibility","Accessibility","Accessibility","Accessibility","Accessibility","Accessibility","Accessibility","Accessibility","Accessibility","Accessibility","Accessibility","Accessibility","Accessibility","Mobility","Mobility","Mobility","Mobility","Mobility","Mobility","Mobility","Mobility","Mobility","Mobility","Mobility","Mobility","Mobility"],["All","All","All","All","All","All","All","All","All","All","All","All","All","All","All","Car","Car","Car","Car","Car","PT","PT","PT","PT","PT","Bike","Bike","Bike","Bike","Bike","Walk","Walk","Walk","Walk","Walk","PT","PT","PT","PT","PT","Bike","Bike","Bike","Bike","Bike","Walk","Walk","Walk"],[60.2,60.2,60.2,60.2,60.2,47.5,47.5,47.5,47.5,47.5,52.6,52.6,52.6,52.6,52.6,63.9,63.9,63.9,63.9,63.9,62.7,62.7,62.7,62.7,62.7,61.5,61.5,61.5,61.5,61.5,60.6,60.6,60.6,60.6,60.6,60.5,60.5,60.5,60.5,60.5,60,60,60,60,60,50.4,50.4,50.4],["mobility_cost_groceries_walk_n3_residents","mobility_cost_groceries_car_n3_residents","mobility_cost_groceries_transit_2t_n3_residents","mobility_cost_health_bike_n1_residents","mobility_cost_health_transit_2t_n1_residents","mobility_commuting_avg_tt_transit_2t_120m_15w","mobility_transit_weighted_frequency_weekend","mobility_transit_weighted_waiting_time_peak","mobility_transit_weighted_waiting_time_weekend","mobility_transit_weighted_frequency_peak","total_vitimas30","total_acidentes","feridos_ligeiros30","total_veiculos","feridos_graves30","mobility_cost_groceries_car_n3_residents","access_schools_primary_car_30min_kids","mobility_cost_greenspaces_car_n1_residents","access_health_car_30min_residents","mobility_cost_recreation_car_n3_residents","mobility_cost_groceries_transit_2t_n3_residents","access_schools_primary_transit_2t_30min_kids","mobility_cost_health_transit_2t_n1_residents","access_health_transit_2t_30min_residents","mobility_cost_greenspaces_transit_2t_n1_residents","mobility_cost_health_bike_n1_residents","access_schools_primary_bike_15min_kids","access_health_bike_15min_residents","mobility_cost_groceries_bike_n3_residents","mobility_cost_schools_primary_bike_n1_kids","mobility_cost_groceries_walk_n3_residents","mobility_cost_health_walk_n1_residents","access_schools_primary_walk_15min_kids","mobility_cost_schools_primary_walk_n1_kids","mobility_cost_greenspaces_walk_n1_residents","mobility_transit_weighted_frequency_weekend","mobility_commuting_avg_tt_transit_2t_120m_15w","mobility_transit_weighted_waiting_time_peak","mobility_transit_weighted_frequency_peak","mobility_transit_weighted_waiting_time_weekend","segregated_cycleway_length","cycleway_length","cycleway_to_road_ratio","cycling_quality_ratio","mobility_commuting_avg_tt_bike","pedpath_to_road_ratio","mobility_commuting_avg_tt_walk","pedpath_length"],[0.91,0.9,0.9,0.88,0.87,0.93,-0.91,0.87,0.86,-0.86,0.99,0.99,0.99,0.98,0.8,0.91,0.88,0.87,0.87,0.86,0.91,0.89,0.89,0.86,0.85,0.88,0.87,0.85,0.85,0.82,0.89,0.87,0.84,0.84,0.83,-0.95,0.91,0.9,-0.89,0.86,0.93,0.92,0.89,0.53,0.48,0.88,0.86,0.05]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>Dimension<\/th>\n      <th>Mode<\/th>\n      <th>PC1 Var (%)<\/th>\n      <th>Variable<\/th>\n      <th>r with PC1<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"paging":false,"dom":"tif","autoWidth":true,"columnDefs":[{"className":"dt-center","targets":"_all"},{"name":"Dimension","targets":0},{"name":"Mode","targets":1},{"name":"PC1 Var (%)","targets":2},{"name":"Variable","targets":3},{"name":"r with PC1","targets":4}],"order":[],"orderClasses":false,"orderCellsTop":true}},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>
 </figure>
@@ -339,6 +533,19 @@ Tip
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
     const icon = "";
     const anchorJS = new window.AnchorJS();
     anchorJS.options = {
@@ -747,6 +954,19 @@ Tip
   </div>
 </nav>
 </div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>U-Shift Lab, Instituto Superior Técnico</p>
+</div>   
+    <div class="nav-footer-center">
+<p>© 2026, U-Shift, CERIS, Instituto Superior Técnico, University of Lisbon</p>
+</div>
+    <div class="nav-footer-right">
+<p>April 2026</p>
+</div>
+  </div>
+</footer>
 
 
 
