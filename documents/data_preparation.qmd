@@ -14,7 +14,16 @@ To run for different study areas, this script must be updated to reflect the des
 
 **Source:** CAOP 2024.1 [@caop_2024]
 
-The full continental Portugal polygon file is filtered to the **Grande Lisboa** and **Península de Setúbal** NUTS-II sub-regions. For the municipality of Lisboa, parish boundaries with the Tagus estuary are replaced by clipped geometries (`FREGUESIASgeo.gpkg` - using CAOP 2016 parish limits) to remove the water area in Lisbon municipality.
+The full continental Portugal polygon file is filtered to the **Grande Lisboa** and **Península de Setúbal** NUTS-II sub-regions. For the municipality of Lisboa, parish boundaries with the Tagus estuary are replaced by clipped geometries (`FREGUESIASgeo.gpkg` - using CAOP 2016 parish limits) to remove the water area in Lisbon municipality (@fig-administrative-boundaries).
+
+::: {#fig-administrative-boundaries layout-ncol=2}
+
+![CAOP 2024.1 original geometry](images/maps/administrative_boundaries_before.png)
+
+![Lisbon geomerty adjusted](images/maps/administrative_boundaries_after.png)
+
+Lisbon geometry administrative boundaries adjustment
+:::
 
 For parishes with multiple polygon features (due to small islands), only the polygon with the largest area is retained.
 
