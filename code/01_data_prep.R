@@ -42,6 +42,21 @@ CAOP_GLPS_UNIQUE_dtmnfr <- CAOP_GLPS |>
 
 freguesias <- CAOP_GLPS_UNIQUE_dtmnfr
 
+mapview(
+  CAOP_GLPS,
+  # Hide elements, for printscreen
+  homebutton = FALSE, legend = FALSE, layer.control.show = FALSE,
+  # Color
+  col.regions = "#015160"
+) + mapview(
+  freguesias,
+  # Hide elements, for printscreen
+  homebutton = FALSE, legend = FALSE, layer.control.show = FALSE,
+  # Color
+  col.regions = "#015160"
+)
+
+
 # mapview(CAOP_GLPS)
 # View(CAOP_GLPS)
 
@@ -449,8 +464,8 @@ census21_fregmun <- Census21_BGRI |>
     buildings = sum(buildings),
     buildings_pre1945 = sum(buildings_pre1945)
   ) |>
-  ungroup() |> 
-  mutate(adults = adults1 + adults2) |> 
+  ungroup() |>
+  mutate(adults = adults1 + adults2) |>
   select(-adults1, adults2)
 
 
