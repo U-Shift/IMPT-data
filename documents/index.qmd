@@ -1,6 +1,11 @@
+---
+format:
+  html:
+    css: "styles/index.css"
+---
 # Introduction {#sec-introduction}
 
-This document describes the methodology behind the **Índice Multimodal de Pobreza nos Transportes** (IMPT) — a composite, multimodal transport poverty index developed for the **Lisbon Metropolitan Area** (Área Metropolitana de Lisboa, AML) by the U-Shift Lab at Instituto Superior Técnico. This research id funded by [**PLANAPP**](https://www.planapp.gov.pt/) -  Centro de Planeamento e de Avaliação de Políticas Públicas, in collaboration with the Fundação para a Ciência e Tecnologia, under the [*Science4Policy*](https://www.planapp.gov.pt/science4policy-2025/) (S4P): Concurso de Estudos de Ciência para as Políticas Públicas call.
+This document describes the methodology behind the **Índice Multimodal de Pobreza nos Transportes** (IMPT) — a composite, multimodal transport poverty index developed for the **Lisbon Metropolitan Area** (Área Metropolitana de Lisboa, AML) by the U-Shift Lab at Instituto Superior Técnico. This research is funded by [**PLANAPP**](https://www.planapp.gov.pt/) -  Centro de Planeamento e de Avaliação de Políticas Públicas, in collaboration with the Fundação para a Ciência e Tecnologia, under the [*Science4Policy*](https://www.planapp.gov.pt/science4policy-2025/) (S4P): Concurso de Estudos de Ciência para as Políticas Públicas call (PLANAPP-S4P/8042/2025).
 
 The IMPT is designed to quantify the degree to which residents in different locations across the AML are disadvantaged in terms of access, mobility, affordability, and safety across multiple transport modes (car, public transit, cycling, walking). It is intended to be **reproducible and replicable** for other metropolitan areas in Portugal.
 
@@ -39,3 +44,6 @@ The IMPT is structured around **four dimensions**, assessed across **four transp
 Each dimension is computed as a composite of multiple indicators, normalised to a [1–100] scale, and then aggregated using **Principal Component Analysis (PCA)** to produce a single dimensional score. An overall IMPT score is derived as the geometric mean (or entropy-weighted product) of the four dimension scores.
 
 The next sections describe the data preparation, the calculation of each indicator, the PCA-based dimensional scores, and the final index construction.
+
+Add styles
+:::
