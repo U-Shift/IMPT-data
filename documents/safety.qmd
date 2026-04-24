@@ -1,7 +1,7 @@
 # Safety {#sec-safety}
 
 **Script:** [`04_safety.R`](https://github.com/U-Shift/IMPT-data/blob/main/code/04_safety.R)  
-**Source:** ANSR — Autoridade Nacional de Segurança Rodoviária, road accident georeferenced point data (2019–2023) - _via PMUS TML 2025_.
+**Source:** ANSR — Autoridade Nacional de Segurança Rodoviária, road accident georeferenced point data (2019–2023) - _via PMUS TML 2025 [@pmmus]_.
 
 ```{mermaid}
 %%| label: fig-safety-flow

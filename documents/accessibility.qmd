@@ -42,9 +42,10 @@ flowchart TB
 ## Cumulative accessibility
 
 **Script:** [`04_access_opportunities.R`](https://github.com/U-Shift/IMPT-data/blob/main/code/04_access_opportunities.R)  
-**Function:** `accessibility::cumulative_cutoff()` [@Pereira_accessibility_2022]
 
-Cumulative accessibility measures the number of opportunities of each category reachable within a given travel time. It is computed considering different time cut-offs, to evaluate how the number of opportunities reachable increase with a progressively higher time budget. 
+**Package:** `accessibility` [@Pereira_accessibility_2022]
+
+Cumulative accessibility, computed with `accessibility::cumulative_cutoff()`, measures the number of opportunities of each category reachable within a given travel time. It is computed considering different time cut-offs, to evaluate how the number of opportunities reachable increase with a progressively higher time budget. 
 
 The resulting values are then aggregated to parishes and municipalities using a **population-weighted mean**, separately for each demographic group (residents, kids, active, elderly). 
 
@@ -60,9 +61,10 @@ For example: `access_health_pt_30min_residents` is the number of health faciliti
 ## Time to closest opportunity (mobility costs)
 
 **Script:** [`04_mobility_costs_time.R`](https://github.com/U-Shift/IMPT-data/blob/main/code/04_mobility_costs_time.R)  
-**Function:** `accessibility::cost_to_closest()` [@Pereira_accessibility_2022]
 
-To determine the time to closest opportunities, different number of closest opportunities (1, 2, and 3) are considered, to determine how the travel time to the closest opportunity change with a stricter criteria of opportunities considered.
+**Package:** `accessibility` [@Pereira_accessibility_2022]
+
+The time to closest opportunities is computed with `accessibility::cost_to_closest()` considering different number of closest opportunities (1, 2, and 3). This variations aims to determine how the travel time to the closest opportunity changes with a stricter criteria of opportunities considered.
 
 The resulting values are then aggregated to parishes and municipalities using a **population-weighted mean**, separately for each demographic group (residents, kids, active, elderly). 
 

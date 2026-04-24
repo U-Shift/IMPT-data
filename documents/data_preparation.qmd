@@ -12,7 +12,7 @@ To run for different study areas, this script must be updated to reflect the des
 
 ## Administrative Boundaries {#sec-data-prep-boundaries}
 
-**Source:** CAOP 2024.1 (DGT — Direção-Geral do Território)
+**Source:** CAOP 2024.1 [@caop_2024]
 
 The full continental Portugal polygon file is filtered to the **Grande Lisboa** and **Península de Setúbal** NUTS-II sub-regions. For the municipality of Lisboa, parish boundaries with the Tagus estuary are replaced by clipped geometries (`FREGUESIASgeo.gpkg` - using CAOP 2016 parish limits) to remove the water area in Lisbon municipality.
 
@@ -45,14 +45,14 @@ flowchart LR
     Cells --> G["Grid index table<br/>mapping levels"]
 ```
 
-The H3 hexagonal grid is generated at **Resolution 8** using the `h3jsr` package [@Uber_H3_2018]. Resolution 8 provides a spatial unit with an average edge length of ~531 m and average area of ~0.74 km², which offers a good balance between spatial detail and computational tractability for routing-based accessibility measures.
+The H3 hexagonal grid [@Uber_H3_2018] is generated at **Resolution 8** using the `h3jsr` package [@h3jsr]. Resolution 8 provides a spatial unit with an average edge length of ~531 m and average area of ~0.74 km², which offers a good balance between spatial detail and computational tractability for routing-based accessibility measures.
 
 The H3 grid covers the AML with **3,686 active hexagons** (those intersecting the administrative boundaries). At the limits, if a hexagon covers less than 50% of the administrative area, it is excluded from the analysis.
 Each hexagon is assigned to a parish and municipality via a cross-reference table (`grid_nuts.csv`).
 
 ## Census Data Processing {#sec-census}
 
-**Source:** INE Census 2021, BGRI 2021 at the base statistical unit level (BGRI — Base Geográfica de Referenciação de Informação), NUTS-3 Área Metropolitana de Lisboa (code 170).
+**Source:** INE Census 2021, BGRI 2021 at the base statistical unit level [@INE_Census2021], NUTS-3 Área Metropolitana de Lisboa (code 170).
 
 Census BGRI polygons are converted to **centroids**. The following variables are extracted:
 
@@ -73,7 +73,7 @@ For parish- and municipality-level aggregation, census data from 2016-era parish
 
 ## Dasymetric Grid Population Redistribution (COS 2023) {#sec-cos}
 
-**Source:** COS 2023 v1 (Direção-Geral do Território), residential land use classes
+**Source:** COS 2023 v1 [@COS_2023], residential land use classes
 
 To achieve a more accurate population distribution within the H3 grid, a **dasymetric mapping** approach is applied using the Carta de Ocupação do Solo (COS) 2023.
 This is a relevan method, in particular when dealing with BGRI polygons that cover large areas, accross multiple hexagons cells - preventing that one single hexagon is assigned the entire population of the BGRI polygon with it's centroid.
@@ -104,7 +104,7 @@ The land use and census data from the dasymetric method is only used at the grid
 
 ## Points of Interest (POIs) {#sec-pois}
 
-POIs are collected from three sources: OpenStreetMap, Carris Metropolitana open datasets, and GTFS feeds. The following categories are used:
+POIs are collected from three sources: OpenStreetMap [@OpenStreetMap], Carris Metropolitana open datasets [@carrismetropolitana_datasets_2026], and GTFS feeds. The following categories are used:
 
 ```{r}
 #| label: setup-pois
@@ -159,7 +159,7 @@ kable(pois,
 
 ## Travel Survey Data and OD Jittering {#sec-jittering}
 
-**Source:** IMOB 2017/18 — Inquérito à Mobilidade nas Áreas Metropolitanas do Porto e de Lisboa (INE / AMT). `https://www.ine.pt/xurl/pub/349495406`
+**Source:** IMOB 2017/18 [@INE_IMOB2017]
 
 The IMOB survey served as base to produce the OD matrix at parish level with modal split (walk, bike, car, public transit, other), available at [biclaR project](https://github.com/U-Shift/biclar/releases/download/0.0.1/TRIPSmode_freguesias.Rds).
 
@@ -184,20 +184,20 @@ The process generates approximately **18,500 jittered OD pairs** representing th
 
 ## Road Network and DEM {#sec-network}
 
-**Road network:** Exported from [HOT Export Tool](https://export.hotosm.org/exports/4782f0b8-6778-4c0e-8e4f-97fc62e7f240) in `.pbf` format for use with `r5r`. The network includes all OSM road types and GTFS transit feeds.
+**Road network:** Exported from [HOT Export Tool](https://export.hotosm.org/) [@hot_osm] in `.pbf` format for use with `r5r` [@Pereira_r5r_2021]. The network includes all OSM road types and GTFS transit feeds.
 
-**Elevation:** Digital Elevation Model at 30 m resolution downloaded from [Copernicus ESA](https://browser.dataspace.copernicus.eu/) (Copernicus DEM GLO-30). Used to account for topographic effects on walking and cycling travel times via the Minetti metabolic-equivalent cost function.
+**Elevation:** Digital Elevation Model at 30 m resolution downloaded from Copernicus ESA [@copernicus_browser]. Used to account for topographic effects on walking and cycling travel times via the Minetti metabolic-equivalent cost function.
 
 The `r5r` network is built using `r5r::build_network()` with the `elevation = "MINETTI"` option.
 
 ## Modal Share from Census {#sec-modal-share}
 
-**Source:** Census 2021 — question on mode used for the daily commute.
+**Source:** Census 2021 [@census_2021_modal_share]
 
 Script [`02_census_modalShare.R`](https://github.com/U-Shift/IMPT-data/blob/main/code/02_census_modalShare.R) extracts and computes modal shares (private vehicle, public transit, active modes) at parish and municipality level. These are used to compute **modal-share-weighted affordability** metrics (see @sec-affordability).
 
 ## Vehicle Ownership {#sec-veh-ownership}
 
-**Source:** IMOB 2017 data ([`02_veh_ownership.R`](https://github.com/U-Shift/IMPT-data/blob/main/code/02_veh_ownership.R)).
+**Source:** IMOB 2017 data [@INE_IMOB2017] 
 
-Vehicle ownership variables include average motorised vehicles per household and percentage of households without a vehicle, aggregated at parish and municipality level.
+Vehicle ownership variables include average motorised vehicles per household and percentage of households without a vehicle, aggregated at parish and municipality level. Calculations performed in [`02_veh_ownership.R`](https://github.com/U-Shift/IMPT-data/blob/main/code/02_veh_ownership.R).

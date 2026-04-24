@@ -43,7 +43,7 @@ For instance, different naming for the same mode are replaced by a single naming
 
 ## Web Dashboard
 
-The IMPT results are visualised in an interactive web dashboard built with **React + TypeScript + Vite**, using **Leaflet/MapLibre** for map rendering. The dashboard is available at:
+The IMPT results are visualised in an interactive web dashboard built with **React [@react_2026] + Vite [@vite_2026]**, using **Leaflet [@leaflet_2026]** for map rendering and **Tailwind CSS [@tailwindcss_2026]** for styling. The dashboard is available at:
 
 <div style="font-size: 1.5em; text-align: center; margin: 1em 0;">
 [ushift.pt/apps/impt](https://ushift.pt/apps/impt)

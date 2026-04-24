@@ -79,7 +79,7 @@ Where "segregated cycleway length" corresponds to the **Cycle track or lane** ca
 ## PT stop coverage
 
 **Scripts:** [`04_isochrones_PTstops.R`](https://github.com/U-Shift/IMPT-data/blob/main/code/04_isochrones_PTstops.R), [`04_mobility_transit_population.R`](https://github.com/U-Shift/IMPT-data/blob/main/code/04_mobility_transit_population.R)  
-**Package:** `r5r`
+**Package:** `r5r` [@Pereira_r5r_2021]
 
 Population coverage by public transport is estimated using **walking isochrones** around PT stops, differentiated by transport mode and their typical service area. Isochrones are computed with `r5r::isochrone()` using the `WALK` mode and the AML street network.
 
@@ -143,7 +143,7 @@ The centroid of each fragment is used to assign it to the administrative unit, a
 ## PT headways and waiting times
 
 **Script:** [`04_mobility_transit.R`](https://github.com/U-Shift/IMPT-data/blob/main/code/04_mobility_transit.R)  
-**Package:** `tidytransit`
+**Package:** `tidytransit` [@tidytransit]
 
 Stop-level service frequencies are computed with `tidytransit::get_stop_frequency()` for four time windows:
 
@@ -163,6 +163,6 @@ Additionally, frequency reduction factors are computed to characterise night and
 ## Shared mobility
 
 **Script:** [`04_mobility.R`](https://github.com/U-Shift/IMPT-data/blob/main/code/04_mobility.R)  
-**Source:** TML PMUS (Shared mobility dock locations). `https://pmmus.tmlmobilidade.pt/`
+**Source:** TML PMUS (Shared mobility dock locations) [@pmmus]
 
 The number of shared mobility points (physical and virtual docks) is counted per parish and per grid cell.

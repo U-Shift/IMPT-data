@@ -2,6 +2,8 @@
 
 **Script:** [`04_affordability.R`](https://github.com/U-Shift/IMPT-data/blob/main/code/04_affordability.R), [`04_mobility_costs_money_car.R`](https://github.com/U-Shift/IMPT-data/blob/main/code/04_mobility_costs_money_car.R), [`04_mobility_costs_money_pt.R`](https://github.com/U-Shift/IMPT-data/blob/main/code/04_mobility_costs_money_pt.R), [`04_mobility_costs_money_pt_cost_structure.R`](https://github.com/U-Shift/IMPT-data/blob/main/code/04_mobility_costs_money_pt_cost_structure.R)
 
+**Package:** `r5r` [@Pereira_r5r_2021]
+
 Affordability is assessed by comparing annual transport and housing costs against household income. Commuting costs are computed for both car and public transport using `r5r::detailed_itineraries()` on the full set of IMOB OD commuting pairs. 
 The costs are estimated for one-way trips (home - workplace) during the morning peak.
 
@@ -13,9 +15,9 @@ Car commuting cost per trip = distance cost + tolls:
 
 $$C_{car} = d \times 0.40\text{ €/km} + C_{toll}$$
 
-The fixed cost of **0.40 €/km** is based on [Portaria n.º 1553-D/2008 de 31 de dezembro](https://diariodarepublica.pt/dr/detalhe/portaria/1553-d-2008-243733), which sets mileage allowance covering fuel and car maintenance.
+The fixed cost of **0.40 €/km** is based on Portaria n.º 1553-D/2008 de 31 de dezembro [@portaria_1553_2008], which sets mileage allowance covering fuel and car maintenance.
 
-Tolls are computed via the [Infraestruturas de Portugal toll calculator](https://portagens.infraestruturasdeportugal.pt/) using the route geometry returned by `r5r::detailed_itineraries()`.
+Tolls are computed via the Infraestruturas de Portugal toll calculator [@ip_portagens] using the route geometry returned by `r5r::detailed_itineraries()`.
 
 ## Public transport costs — Two scenarios
 
@@ -24,13 +26,13 @@ Tolls are computed via the [Infraestruturas de Portugal toll calculator](https:/
 To account for uncertainty in PT fare payment practices, two cost scenarios are defined:
 
 **Scenario A — Single fare (pre-Navegante baseline):**  
-Based on [Carris Lisboa revenue data](https://www.carris.pt/media/ikvdezmc/relat%C3%B3rio-e-contas-carris-2024.pdf):
+Based on Carris Lisboa revenue data [@carris_contas_2024]:
 
 - Total single ticket validations: 17,424,000
 - Total single ticket revenue: 33,278,000 €
 - Average cost per single ticket: **~1.91 €**
 
-For Metropolitano de Lisboa, the [cost per single ticket](https://www.metrolisboa.pt/wp-content/uploads/2025/12/Tarifas_site_2026_PT.pdf) is **1.72 to 1.90 €** depending on the line and whether it crosses the river.
+For Metropolitano de Lisboa, the cost per single ticket [@metro_tarifas_2025] is **1.72 to 1.90 €** depending on the line and whether it crosses the river.
 
 We assumed a single ticket cost of **1.91 €** for all modes in Scenario A.
 Free transfers within the same mode for 60 minutes are assumed. Different-mode transfers incur an additional charge.
@@ -86,9 +88,9 @@ Where:
 
 For the variant including housing costs ($\text{h\_transp\_inc\_comp}$), the annualised housing cost $C_{\text{housing,year}}$ is added to the numerator.
 
-**Income data:** household income per parish from INE (*Rendimento agregado 2023*). `https://www.ine.pt/xurl/pub/66303599`  (See  @sec-income))
+**Income data:** household income per parish from INE (*Rendimento agregado 2023*). [@ine_renda_2023]  (See  @sec-income))
 
-**Housing costs:** median monthly housing cost per parish from INE (*Habitação custos 2021*). `https://www.ine.pt/xurl/pub/65586079` (See @sec-housing))
+**Housing costs:** median monthly housing cost per parish from INE (*Habitação custos 2021*). [@census_2021_housing] (See @sec-housing))
 
 ::: {.callout-note}
 ## Canha parish
@@ -98,7 +100,7 @@ The parish of Canha (dtmnfr = 150701) is not served by any GTFS operator, result
 ## Income, Gini Coefficient and Palma Ratio {#sec-income}
 
 **Script:** [`02_land_use_export.R`](https://github.com/U-Shift/IMPT-data/blob/main/code/02_land_use_export.R)  
-**Source:** INE — *Rendimento Agregado Local 2023* (`ERendimentoNLocal2023.xlsx`). `https://www.ine.pt/xurl/pub/66303599`
+**Source:** INE — *Rendimento Agregado Local 2023* (`ERendimentoNLocal2023.xlsx`). [@ine_renda_2023]
 
 **Income** — total median annual income, by household, liquid, is sourced from Statistics Portugal (INE), at municipality and parish levels. 
 
@@ -117,7 +119,7 @@ Both indicators are sourced directly from the INE publication for each municipal
 ## Housing costs {#sec-housing}
 
 **Script:** [`02_land_use_export.R`](https://github.com/U-Shift/IMPT-data/blob/main/code/02_land_use_export.R)  
-**Source:** INE — *Habitação custos 2021* (`Habitaccao_Custos_2021.xlsx`). `https://www.ine.pt/xurl/pub/65586079`
+**Source:** INE — *Habitação custos 2021* (`Habitaccao_Custos_2021.xlsx`). [@census_2021_housing]
 
 Median monthly housing cost and rent, by parish, is sourced from Statistics Portugal (INE), Census 2021, at municipality and parish levels. 
 Grid cells are assigned the values of their corresponding parish via the `grid_nuts.csv` cross-reference table.

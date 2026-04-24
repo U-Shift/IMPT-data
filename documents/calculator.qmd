@@ -1,7 +1,7 @@
 # Index Computation — IMPT Calculator {#sec-calculator}
 
 **Script:** [`05_IMPTcalculator.R`](https://github.com/U-Shift/IMPT-data/blob/main/code/05_IMPTcalculator.R)  
-**Package:** `FactoMineR` (PCA)
+**Package:** `FactoMineR` (PCA) [@factominer_2026]
 
 ```{mermaid}
 %%| label: fig-calculator-flow
