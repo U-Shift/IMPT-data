@@ -3,7 +3,8 @@ project:
   output-dir: _book
 
 book:
-  title: "IMPT — Índice Multidimensional e Multimodal de Pobreza nos Transportes"
+  title: "<img src='images/logo.png' width='100%' height='auto' /><br/> IMPT — Índice Multidimensional e Multimodal de Pobreza nos Transportes<br/>"
+  favicon: "images/icon.ico"
   subtitle: "Methodological Report"
   author: "U-Shift Lab, Instituto Superior Técnico"
   date: today
@@ -32,12 +33,29 @@ book:
   appendices:
     - metadata.qmd
     - pca_results.qmd
+  sidebar:
+    tools:
+    - icon: github
+      href: https://github.com/U-Shift/IMPT-data/
+      text: "GitHub Repository"
+      target: _blank
+    - icon: map-fill
+      href: https://ushift.pt/apps/impt
+      text: "Interactive Dashboard"
+      target: _blank
+  page-footer:
+    left: "U-Shift Lab, Instituto Superior Técnico "
+    center: "&copy; 2026, U-Shift, CERIS, Instituto Superior Técnico, University of Lisbon"
+    right: "April 2026"
+    
 
 bibliography: references.bib
 
 format:
   html:
-    theme: cosmo
+    theme:
+      light: cosmo
+      dark: superhero
     toc: true
     number-sections: true
     echo: false
