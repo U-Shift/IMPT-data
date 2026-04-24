@@ -44,6 +44,3 @@ The IMPT is structured around **four dimensions**, assessed across **four transp
 Each dimension is computed as a composite of multiple indicators, normalised to a [1–100] scale, and then aggregated using **Principal Component Analysis (PCA)** to produce a single dimensional score. An overall IMPT score is derived as the geometric mean (or entropy-weighted product) of the four dimension scores.
 
 The next sections describe the data preparation, the calculation of each indicator, the PCA-based dimensional scores, and the final index construction.
-
-Add styles
-:::
