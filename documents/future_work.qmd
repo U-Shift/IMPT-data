@@ -1,0 +1,22 @@
+# Future Work {#sec-future-work}
+
+This section outlines the planned developments and potential indicators to be integrated into future versions of the IMPT. These additions aim to provide a more comprehensive understanding of transport poverty by incorporating economic, environmental, and higher-resolution socio-economic data.
+
+## Accessibility
+
+*   **Access to opportunities based on monetary travel cost:** Beyond temporal accessibility, integrating the financial cost of travel is crucial for identifying populations that are "accessibility poor" due to budget constraints. This indicator is intended to be calculated at the **grid level** to maintain high spatial resolution.
+
+## Externalities
+
+The inclusion of environmental externalities is a key step towards a more holistic index:
+
+*   **CO2 emissions from road transportation:** Leveraging data from INE (Instituto Nacional de Estatística) to estimate the carbon footprint of mobility patterns at the **freguesia level**.
+*   **Air Quality (PM2.5):** Integrating data from APA (Agência Portuguesa do Ambiente) to monitor exposure to fine particulate matter (PM2.5) resulting from transport activities, at the **freguesia or município level**.
+
+## Mobility
+
+*   **Improved Jobs Location data:** To refine the "Access to Jobs" indicators, we aim to incorporate more precise employment location data from:
+    *   **Ministério do Trabalho:** Through specific data requests for anonymized microdata.
+    *   **TML (Transportes Metropolitanos de Lisboa):** Utilizing datasets from the PMUS (Plano de Mobilidade Urbana Sustentável).
+
+These developments will allow for a more detailed analysis of the trade-offs between different dimensions of transport poverty and support more targeted policy interventions.
