@@ -9,16 +9,16 @@ This research was conducted by the U-Shift Lab at Instituto Superior Técnico - 
 ### U-Shift Lab, Instituto Superior Técnico {.unnumbered}
 
 -   **Filipe Moura** – Principal Investigator\
-    [fmoura\@tecnico.pt](mailto:fmoura@tecnico.pt){.email} \| [Website](https://ushift.tecnico.ulisboa.pt/team-filipe-moura/) \| [ORCID: 0000-0001-7749-8490](https://orcid.org/0000-0001-7749-8490)
+    [fmoura\@tecnico.pt](mailto:fmoura@tecnico.pt){.email} \| [🌐](https://ushift.tecnico.ulisboa.pt/team-filipe-moura/) \| [![](images/orcid.svg){.orcid-icon}](https://orcid.org/0000-0001-7749-8490)
 
 -   **Rosa Félix** – Co-Principal Investigator\
-    [rosamfelix\@tecnico.pt](mailto:rosamfelix@tecnico.pt){.email} \| [Website](https://www.rosafelix.bike) \| [ORCID: 0000-0002-5642-6006](https://orcid.org/0000-0002-5642-6006)
+    [rosamfelix\@tecnico.pt](mailto:rosamfelix@tecnico.pt){.email} \| [🌐](https://www.rosafelix.bike) \| [![](images/orcid.svg){.orcid-icon}](https://orcid.org/0000-0002-5642-6006)
 
 -   **Mauricio Orozco-Fontalvo**\
-    [mauricio.orozco\@tecnico.pt](mailto:mauricio.orozco@tecnico.pt){.email} \| [Website](https://ushift.tecnico.ulisboa.pt/team-mauricio-fontalvo/) \| [ORCID: 0000-0003-0514-4647](https://orcid.org/0000-0003-0514-4647)
+    [mauricio.orozco\@tecnico.pt](mailto:mauricio.orozco@tecnico.pt){.email} \| [🌐](https://ushift.tecnico.ulisboa.pt/team-mauricio-fontalvo/) \| [![](images/orcid.svg){.orcid-icon}](https://orcid.org/0000-0003-0514-4647)
 
 -   **Gonçalo F. Matos**\
-    [goncaloafmatos\@tecnico.pt](mailto:goncaloafmatos@tecnico.pt){.email} \| [Website](http://gmatos.pt/) \| [ORCID: 0009-0001-3489-1732](https://orcid.org/0009-0001-3489-1732)
+    [goncaloafmatos\@tecnico.pt](mailto:goncaloafmatos@tecnico.pt){.email} \| [🌐](https://gmatos.pt/) \| [![](images/orcid.svg){.orcid-icon}](https://orcid.org/0009-0001-3489-1732)
 
 -   **Miguel Alvelos** – Project Collaborator
 
@@ -27,7 +27,7 @@ This research was conducted by the U-Shift Lab at Instituto Superior Técnico - 
 ### Transportes Metropolitanos de Lisboa (TML) {.unnumbered}
 
 -   **Camila Garcia** – Departamento de Estudos e Planeamento\
-    [camila.garcia\@tmlmobilidade.pt](mailto:camila.garcia@tmlmobilidade.pt){.email} \| [ORCID: 0000-0002-1114-0979](https://orcid.org/0000-0002-1114-0979)
+    [camila.garcia\@tmlmobilidade.pt](mailto:camila.garcia@tmlmobilidade.pt){.email} \| [![](images/orcid.svg){.orcid-icon}](https://orcid.org/0000-0002-1114-0979)
 
 -   **Catarina Marcelino** – Departamento de Estudos e Planeamento\
     [catarina.marcelino\@tmlmobilidade.pt](mailto:catarina.marcelino@tmlmobilidade.pt){.email}
@@ -35,12 +35,12 @@ This research was conducted by the U-Shift Lab at Instituto Superior Técnico - 
 ## Cite as
 
 ``` bibtex
-@book{impt_report_2026,
+@techreport{impt_report_2026,
   author    = {Orozco-Fontalvo, Mauricio and Félix, Rosa and Matos, Gonçalo and Moura, Filipe and Garcia, Camila},
-  title     = {IMPT — Índice Multidimensional e Multimodal de Pobreza nos Transportes: methodological report},
+  title     = {IMPT — Índice Multidimensional e Multimodal de Pobreza nos Transportes: Methodological Report},
   year      = {2026},
   month     = {April},
-  publisher = {CERIS, Instituto Superior Técnico - University of Lisbon, Lisbon},
+  institution = {CERIS, Instituto Superior Técnico - University of Lisbon, Lisbon},
   url       = {https://u-shift.github.io/IMPT-data},
   doi       = {10.5281/zenodo.XXXXX}
 }
@@ -48,6 +48,6 @@ This research was conducted by the U-Shift Lab at Instituto Superior Técnico - 
 
 ## Funding
 
-This research was funded by Science4Policy, a PLANAPP - Centre for Planning and Evaluation of Public Policies iniciative to support the definition and implementation of public policies based on scientific evidence.
+This research was funded by Science4Policy, a PLANAPP - Centre for Planning and Evaluation of Public Policies iniciative to support the definition and implementation of public policies based on scientific evidence, under the [Science4Policy (S4P)](https://www.planapp.gov.pt/science4policy-2025/): Concurso de Estudos de Ciência para as Políticas Públicas call (PLANAPP-S4P/8042/2025).
 
-![](images/logo_planapp.png){width="100%"}
+![](images/logo_planapp.png){width="300%" align="center"}
