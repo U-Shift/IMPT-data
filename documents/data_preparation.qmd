@@ -182,6 +182,14 @@ Specifically, trips with the purpose **"Ir para o trabalho"** (Commute to work) 
 
 Since accessibility and cost computations require disaggregated spatial locations, **jittering** is applied to generate point-level OD pairs.
 
+:::{.callout-note collapse="true"}
+## Alternative data source: Ministério do Trabalho
+
+TML has reported to use Ministério do Trabalho dataset on jobs for the Metropolitan Sustainable Urban Mobility Plan. However, they only kept them aggregated at the grid level, using a custom grid that is not compatible with the H3 grid used in this project. For future versions of IMPT, a request can be made to Ministério do Trabalho for the original data. 
+
+:::
+
+
 ### Jittering Algorithm
 
 Jittering is performed using the `odjitter` R package [@Lovelace_odjitter_2022], following the approach described in @Lovelace_2022.
