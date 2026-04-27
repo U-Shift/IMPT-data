@@ -3,9 +3,9 @@ project:
   output-dir: _book
 
 book:
-  title: "<img src='images/logo.png' width='100%' height='auto' /><br/> IMPT — Índice Multidimensional e Multimodal de Pobreza nos Transportes<br/>"
+  title: "<span id=\"impt-text\">IMPT - </span><img src='images/logo.png' width='100%' height='auto' /><br/>Methodological Report<br/>"
   favicon: "images/icon.ico"
-  subtitle: "Methodological Report"
+  subtitle: "IMPT — Índice Multidimensional e Multimodal de Pobreza nos Transportes"
   author: "U-Shift Lab, Instituto Superior Técnico"
   date: today
   date-format: "MMMM YYYY"
@@ -44,8 +44,7 @@ book:
       text: "Interactive Dashboard"
       target: _blank
   page-footer:
-    left: "U-Shift Lab, Instituto Superior Técnico "
-    center: "&copy; 2026, U-Shift, CERIS, Instituto Superior Técnico, University of Lisbon"
+    left: "&copy; 2026, U-Shift, CERIS, Instituto Superior Técnico, University of Lisbon"
     right: "April 2026"
     
 
@@ -61,5 +60,6 @@ format:
     echo: false
     code-fold: true
     lightbox: true # abrir imagens popup
+    css: "styles/global.css"
 
 google-scholar: true
