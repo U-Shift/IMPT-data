@@ -1,10 +1,26 @@
 # Data Access
 
-Despite being reproducible and replicable, the high amount of data generated makes it difficult to distribute the full dataset. Thus, before running any of the scripts in the pipeline, primary data sources should be downloaded manually to the `data/` folder.
+The collaborative nature of the IMPT project lead to the development of methods to handle data management, aiming to abstract team members from the complexities of the data pipeline and enabling data to be centralized at a single source of truth. 
 
-**[`00a_impt_data_handle.R`](https://github.com/U-Shift/IMPT-data/blob/main/code/00a_impt_data_handle.R)** defines two core helper functions:
+However and despite being reproducible and replicable, the high amount of data generated makes it difficult to distribute the full dataset. Therefore, primary data sources should be downloaded manually to the `data/` folder before running any of the scripts in the pipeline.
+ 
 
-- `impt_read(path)`: reads CSV, GeoPackage, GeoJSON, or RDS files. When running on the `ushift-alfa` server, it reads from the local `/data/IMPT/` directory; on any other machine, it fetches via HTTPS from `https://impt.server.ushift.pt` using an API key.
-- `impt_write(content, path)`: writes to the same location logic (server vs. local `data/` folder).
+Once the data sources are set up, use the centralized methods implemented in [`00a_impt_data_handle_external.R`](https://github.com/U-Shift/IMPT-data/blob/main/code/00a_impt_data_handle_external.R) to handle data access. These methods are tailored to work with the `data/` folder, but can be refactored to use any different location that best suits your needs. It implements two core helper functions:
 
-These functions abstract away the data storage location, making the pipeline portable.
+- `impt_read(path)`: reads CSV, GeoPackage, GeoJSON, or RDS files;
+- `impt_write(content, path)`: writes to the same location logic.
+
+
+:::{.callout-note}
+## Want to access the results?
+
+Despite not sharing the original data sources, the final results dataset is fully available! Refer to @sec-output for more information on the data structure and how to access it. 
+
+:::
+
+:::{.callout-note collapse="true"}
+## What about 00a_impt_data_handle_internal.R?
+
+ [`00a_impt_data_handle_internal.R`](https://github.com/U-Shift/IMPT-data/blob/main/code/00a_impt_data_handle_internal.R) was created for internal use of the project members during the development of the project. It reads and writes data to the ushift@alfa server, but it is not intended for general use. Any attempt to use it will fail, as data access requires authentication.
+
+:::
