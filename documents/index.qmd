@@ -11,13 +11,24 @@ This research is funded by [**PLANAPP**](https://www.planapp.gov.pt/) -  Centro 
 
 The IMPT is designed to quantify the degree to which residents in different locations across the AML are disadvantaged in terms of access, mobility, affordability, and safety across multiple transport modes (car, public transit, cycling, walking). It is intended to be **reproducible and replicable** for other metropolitan areas in Portugal.
 
-The index covers **124 parishes** (*freguesias*, or *districts*) and **18 municipalities** (*municípios*) in the Grande Lisboa and Península de Setúbal NUTS-II sub-regions, corresponding to approximately **2.87 million inhabitants** [@INE_Census2021].
+The index (@fig-imt-results) covers **124 parishes** (*freguesias*, or *districts*) and **18 municipalities** (*municípios*) in the Grande Lisboa and Península de Setúbal NUTS-II sub-regions, corresponding to approximately **2.87 million inhabitants** [@INE_Census2021].
+
+:::{#fig-imt-results layout="[[1], [1,1]]"}
+
+![Municipalities](images/maps/impt_mun.png)
+
+![Parishes](images/maps/impt_parish.png)
+
+![Grid](images/maps/impt_grid.png)
+
+IMPT critical results for different scales
+:::
 
 ## Study Area {#sec-area}
 
 The study area corresponds to the Lisbon Metropolitan Area (AML), defined as the combination of the NUTS-III sub-regions **Grande Lisboa** and **Península de Setúbal**, using administrative boundaries from **CAOP 2024.1** [@caop_2024].
 
-The geographic areas used throughout the pipeline include three nested levels:
+The geographic areas (@fig-pipeline-areas) used throughout the pipeline include three nested levels:
 
 - **Municipalities** (*municípios*): 18 units
 - **Parishes** (*freguesias*): 124 units (post-2013 and 2024 reform boundaries, updated to CAOP 2024)  
@@ -27,6 +38,18 @@ The geographic areas used throughout the pipeline include three nested levels:
 ## Administrative boundary update
 Several parishes changed between the 2016 IMOB travel survey, the Census 2021, and the CAOP 2024 boundaries. A conversion table and area-weighted redistribution procedure was applied to ensure consistency (see @sec-data-prep-boundaries).
 :::
+
+:::{#fig-pipeline-areas layout="[[1,1,1]]"}
+
+![Municipalities](images/maps/mun.png)
+
+![Parishes](images/maps/parish.png)
+
+![Grid](images/maps/grid.png)
+
+Geographic areas used for the pipeline
+:::
+
 
 ## Conceptual Framework {#sec-framework}
 
