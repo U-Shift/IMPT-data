@@ -42,6 +42,15 @@ The Census 2021 and IMOB 2017 travel survey use 2016 parish codes (*DICOFRE*). S
 
 Trips associated with split parishes were redistributed proportionally to the area of the new parishes. Conservation of total trip counts was validated using `assertthat`.
 
+::: {#fig-parish-conversion layout-ncol=2}
+
+![Original 2016 parish boundaries](images/maps/parish_conversion_before.png)
+
+![2024 parish boundaries](images/maps/parish_conversion_after.png)
+
+Example of Seixal parish split
+:::
+
 ## H3 Hexagonal Grid {#sec-grid}
 
 ```{mermaid}
@@ -54,16 +63,20 @@ flowchart LR
     Cells --> G["Grid index table<br/>mapping levels"]
 ```
 
-The H3 hexagonal grid [@Uber_H3_2018] is generated at **Resolution 8** using the `h3jsr` package [@h3jsr]. Resolution 8 provides a spatial unit with an average edge length of ~531 m and average area of ~0.74 km², which offers a good balance between spatial detail and computational tractability for routing-based accessibility measures.
+The H3 hexagonal grid [@Uber_H3_2018] is generated at **Resolution 8** using the `h3jsr` package [@h3jsr]. Resolution 8 (example at @fig-h3-example) provides a spatial unit with an average edge length of ~531 m and average area of ~0.74 km², which offers a good balance between spatial detail and computational tractability for routing-based accessibility measures.
 
-The H3 grid covers the AML with **3,686 active hexagons** (those intersecting the administrative boundaries). At the limits, if a hexagon covers less than 50% of the administrative area, it is excluded from the analysis.
+![Example of h3_grid at resolution 8 at Lisbon, from [h3geo.org](https://h3geo.org)](images/maps/h3_grid_example.png){#fig-h3-example}
+
+The H3 grid covers the AML with **3,686 active hexagons** (those intersecting the administrative boundaries, see @fig-grid-aml). At the limits, if a hexagon covers less than 50% of the administrative area, it is excluded from the analysis.
 Each hexagon is assigned to a parish and municipality via a cross-reference table (`grid_nuts.csv`).
+
+![H3 grid at resolution 8 intersecting the administrative boundaries of the Lisbon Metropolitan Area](images/maps/grid.png){#fig-grid-aml}
 
 ## Census Data Processing {#sec-census}
 
 **Source:** INE Census 2021, BGRI 2021 at the base statistical unit level [@INE_Census2021], NUTS-3 Área Metropolitana de Lisboa (code 170).
 
-Census BGRI polygons are converted to **centroids**. The following variables are extracted:
+Census BGRI polygons are converted to **centroids** (@fig-census-bgri). The following variables are extracted:
 
 | Variable | INE field | Description |
 |----------|-----------|-------------|
@@ -80,12 +93,14 @@ Census BGRI polygons are converted to **centroids**. The following variables are
 
 For parish- and municipality-level aggregation, census data from 2016-era parishes are redistributed to 2024 parishes using the area-weighted conversion table described in @sec-dicofre.
 
+![Example of census BGRI polygons and centroids in a neighborhood of Lisbon](images/maps/census_bgri.png){#fig-census-bgri}
+
 ## Dasymetric Grid Population Redistribution (COS 2023) {#sec-cos}
 
 **Source:** COS 2023 v1 [@COS_2023], residential land use classes
 
-To achieve a more accurate population distribution within the H3 grid, a **dasymetric mapping** approach is applied using the Carta de Ocupação do Solo (COS) 2023.
-This is a relevan method, in particular when dealing with BGRI polygons that cover large areas, accross multiple hexagons cells - preventing that one single hexagon is assigned the entire population of the BGRI polygon with it's centroid.
+To achieve a more accurate population distribution within the H3 grid, a **dasymetric mapping** approach is applied using the Carta de Ocupação do Solo (COS) 2023 (example in @fig-cos-buildings).
+This is a relevant method, in particular when dealing with BGRI polygons that cover large areas, across multiple hexagons cells - preventing that one single hexagon is assigned the entire population of the BGRI polygon with it's centroid.
 
 Residential areas are extracted with the following classes and assigned weighting factors:
 
@@ -97,6 +112,8 @@ Residential areas are extracted with the following classes and assigned weightin
 | Descontínuas esparsas | 0.3 |
 
 : COS 2023 residential classes and dasymetric weights {#tbl-cos-weights}
+
+![Example of COS 2023 residential classes at Almada](images/maps/cos_buildings.png){#fig-cos-buildings}
 
 The procedure ([`02_census_grid_with_cos.R`](https://github.com/U-Shift/IMPT-data/blob/main/code/02_census_grid_with_cos.R)):
 
@@ -170,6 +187,8 @@ kable(pois,
 ```
 
 
+![Health POIs distribution](images/maps/pois_health.png){#fig-pois-health}
+
 ## Travel Survey Data and OD Jittering {#sec-jittering}
 
 **Source:** IMOB 2017/18 [@INE_IMOB2017]
@@ -201,21 +220,50 @@ The algorithm disaggregates parish-level trip counts into point-to-point flows. 
 - **Threshold**: A **disaggregation threshold of 50 trips** is applied, meaning any OD flow with more than 50 trips is split into multiple point-to-point pairs to provide higher spatial resolution.
 - **Deterministic Randomization**: A fixed seed (`rng_seed = 42`) is used to ensure the generated points are consistent across pipeline runs.
 
-The process generates approximately **18,500 jittered OD pairs** representing the daily commuting pattern in the AML. This is then expanded to the real number of trips using the `PESOFIN` weights.
+The process, illustrated in @fig-jittering, generates approximately **18,500 jittered OD pairs** representing the daily commuting pattern in the AML. This is then expanded to the real number of trips using the `PESOFIN` weights.
+
+:::{#fig-jittering layout="[[1,1]]"}
+
+![Residential buildings](images/maps/jittering_buildings.png)
+
+![Jittered jobs](images/maps/jittering_jobs.png)
+
+Jittering algorithm for the Areeiro parish, in Lisbon
+::: 
 
 ## Road Network and DEM {#sec-network}
 
-**Road network:** Exported from [HOT Export Tool](https://export.hotosm.org/) [@hot_osm] in `.pbf` format for use with `r5r` [@Pereira_r5r_2021]. The network includes all OSM road types and GTFS transit feeds.
+**Road network:** Exported from [HOT Export Tool](https://export.hotosm.org/) [@hot_osm] in `.pbf` format for use with `r5r` [@Pereira_r5r_2021]. Main network shown in @fig-network-road. The network includes all OSM road types and GTFS transit feeds.
 
-**Elevation:** Digital Elevation Model at 30 m resolution downloaded from Copernicus ESA [@copernicus_browser]. Used to account for topographic effects on walking and cycling travel times via the Minetti metabolic-equivalent cost function.
+**Elevation:** Digital Elevation Model at 30 m resolution (@fig-network-dem) downloaded from Copernicus ESA [@copernicus_browser]. Used to account for topographic effects on walking and cycling travel times via the Minetti metabolic-equivalent cost function.
 
 The `r5r` network is built using `r5r::build_network()` with the `elevation = "MINETTI"` option.
+
+:::{layout="[[53,47]]"}
+
+![Main road network](images/maps/main_road_network.png){#fig-network-road}
+
+![Digital Elevation Model](images/maps/dem.png){#fig-network-dem}
+
+::: 
 
 ## Modal Share from Census {#sec-modal-share}
 
 **Source:** Census 2021 [@census_2021_modal_share]
 
-Script [`02_census_modalShare.R`](https://github.com/U-Shift/IMPT-data/blob/main/code/02_census_modalShare.R) extracts and computes modal shares (private vehicle, public transit, active modes) at parish and municipality level. These are used to compute **modal-share-weighted affordability** metrics (see @sec-affordability).
+Script [`02_census_modalShare.R`](https://github.com/U-Shift/IMPT-data/blob/main/code/02_census_modalShare.R) extracts and computes modal shares (private vehicle, public transport, active modes) at parish (@fig-modal-share) and municipality level. These are used to compute **modal-share-weighted affordability** metrics (see @sec-affordability).
+
+:::{#fig-modal-share layout="[[1,1],[1,1]]"}
+![Public transport](images/maps/modal_share_census_pt.png)
+
+![Car](images/maps/modal_share_census_car.png)
+
+![Walk](images/maps/modal_share_census_walk.png)
+
+![Bike](images/maps/modal_share_census_bike.png)
+
+Census modal share for different modes 
+:::
 
 ## Vehicle Ownership {#sec-veh-ownership}
 
