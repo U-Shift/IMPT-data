@@ -149,17 +149,21 @@ pois <- data.frame(
         "name contains 'Centro de Saúde'",
         "`type %in% c('supermarket','convenience')`",
         "`group == 'leisure' & type %in% c('park','garden')`",
-        "`type %in% c('library','theatre','cinema','restaurant','cafe','bar','pub','pitch','fitness_station','swimming_pool','sports_centre','fitness_center')`",
-        "All school types", "pre_school==1 | basic_1==1 | basic_2==1 | basic_3==1",
+        "`type %in% c('library','theatre','cinema','restaurant','cafe',<br>'bar','pub','pitch','fitness_station',<br>'swimming_pool','sports_centre','fitness_center')`",
+        "All school types", "`pre_school==1 | basic_1==1 | basic_2==1 | basic_3==1`",
         "All stops from all operators",
         "Bus operators only",
         "Rail, metro, ferry operators",
         "Jittered OD destinations (see [#sec-jittering])"
     )
 )
+
+pois$Filter <- gsub("`([^`]+)`", "<code>\\1</code>", pois$Filter)
+pois$Filter <- gsub("\\[#([^]]+)\\]", "<a href='#\\1'>#\\1</a>", pois$Filter)
+
 kable(pois,
     col.names = c("Category", "Identifier", "Source", "Filter / Description"),
-    booktabs = TRUE, longtable = TRUE, escape = FALSE
+    booktabs = TRUE, longtable = TRUE, escape = FALSE, format = "html"
 ) |>
     kable_styling(font_size = 9, full_width = FALSE) |>
     column_spec(4, width = "7cm")
