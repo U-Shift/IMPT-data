@@ -39,6 +39,10 @@ To replicate the IMPT for another Portuguese metropolitan area:
 
 The H3 grid generation, routing engine, and scoring methodology are entirely generic and require no structural changes.
 
+::: {.callout-warning}
+If IMOB is not available for the target area, other (recent) travel survey should be used. 
+:::
+
 ## Dashboard
 
 The code to build the IMPT dashboard is not included in this repository. You can find it in the [IMPT-web](https://github.com/U-Shift/IMPT) repository.
