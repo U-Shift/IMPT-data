@@ -7,7 +7,7 @@ library(ggrepel)
 library(readxl)
 
 # 1. Carregar os dados (StringsAsFactors garante que tratamos texto como texto)
-respostas_raw <- read_xlsx("data/IMPTworkshop.xlsx")
+respostas_raw <- read_xlsx("data/workshop/IMPTworkshop.xlsx")
 respostas_raw <- respostas_raw[-c(1:2), ]
 
 # 2. Identificar as colunas que contêm os nomes das freguesias
@@ -178,7 +178,7 @@ print(top_gaps_mob)
 
 ####### Graph results
 
-ggplot(comparison_final, aes(x = IMPT_model, y = IMPT_survey)) +
+plot_all = ggplot(comparison_final, aes(x = IMPT_model, y = IMPT_survey)) +
   # 1. The "Perfect Agreement" Line
   geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "grey60", size = 1) +
 
@@ -204,13 +204,13 @@ ggplot(comparison_final, aes(x = IMPT_model, y = IMPT_survey)) +
     size = "Magnitude do Erro"
   ) +
   theme(legend.position = "bottom")
-
+ggsave("data/workshop/all_comparison.png", plot= plot_all, width = 10, height = 6, dpi = 300)
 
 ################## COMPARE DIMENSIONS ##################
 
 
 #### Accessibility
-ggplot(comparison_final, aes(x = Accessibility_Index_model, y = Accessibility_Index_survey)) +
+plot_accessibility = ggplot(comparison_final, aes(x = Accessibility_Index_model, y = Accessibility_Index_survey)) +
   geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "grey60", size = 1) +
   geom_point(aes(size = abs_gap_acc, color = gap_acc), alpha = 0.7) +
   scale_color_gradient2(low = "#FF8A65", mid = "#E0E0E0", high = "#1E88E5", midpoint = 0) +
@@ -227,11 +227,11 @@ ggplot(comparison_final, aes(x = Accessibility_Index_model, y = Accessibility_In
     size = "Magnitude do Erro"
   ) +
   theme(legend.position = "bottom")
-
+ggsave("data/workshop/accessibility_comparison.png", plot= plot_accessibility, width = 10, height = 6, dpi = 300)
 
 ### Mobility
 
-ggplot(comparison_final, aes(x = Mobility_Index_model, y = Mobility_Index_survey)) +
+plot_mobility = ggplot(comparison_final, aes(x = Mobility_Index_model, y = Mobility_Index_survey)) +
   geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "grey60", size = 1) +
   geom_point(aes(size = abs_gap_mob, color = gap_mob), alpha = 0.7) +
   scale_color_gradient2(low = "#FF8A65", mid = "#E0E0E0", high = "#1E88E5", midpoint = 0) +
@@ -248,11 +248,11 @@ ggplot(comparison_final, aes(x = Mobility_Index_model, y = Mobility_Index_survey
     size = "Magnitude do Erro"
   ) +
   theme(legend.position = "bottom")
-
+ggsave("data/workshop/mobility_comparison.png", plot= plot_mobility, width = 10, height = 6, dpi = 300)
 
 #### Affordability
 
-ggplot(comparison_final, aes(x = Affordability_Index_model, y = Affordability_Index_survey)) +
+plot_affordability= ggplot(comparison_final, aes(x = Affordability_Index_model, y = Affordability_Index_survey)) +
   geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "grey60", size = 1) +
   geom_point(aes(size = abs_gap_aff, color = gap_aff), alpha = 0.7) +
   scale_color_gradient2(low = "#FF8A65", mid = "#E0E0E0", high = "#1E88E5", midpoint = 0) +
@@ -269,11 +269,11 @@ ggplot(comparison_final, aes(x = Affordability_Index_model, y = Affordability_In
     size = "Magnitude do Erro"
   ) +
   theme(legend.position = "bottom")
-
+ggsave("data/workshop/affordability_comparison.png", plot= plot_affordability, width = 10, height = 6, dpi = 300)
 
 ##### Safety
 
-ggplot(comparison_final, aes(x = Safety_Index_model, y = Safety_Index_survey)) +
+plot_safety = ggplot(comparison_final, aes(x = Safety_Index_model, y = Safety_Index_survey)) +
   geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "grey60", size = 1) +
   geom_point(aes(size = abs_gap_saf, color = gap_saf), alpha = 0.7) +
   scale_color_gradient2(low = "#FF8A65", mid = "#E0E0E0", high = "#1E88E5", midpoint = 0) +
@@ -291,6 +291,7 @@ ggplot(comparison_final, aes(x = Safety_Index_model, y = Safety_Index_survey)) +
   ) +
   theme(legend.position = "bottom")
 
+ggsave("data/workshop/safety_comparison.png", plot= plot_safety, width = 10, height = 6, dpi = 300)
 
 # mapview side by side -----------------------------------------------------
 
@@ -307,4 +308,5 @@ map_survey <- mapview(dados_mapa, zcol = "IMPT", na.color = "transparent") +
   mapview(dados_mapa, zcol = "Mobility_Index", hide = TRUE, na.color = "transparent")
 
 map_together <- leafsync::sync(map_impt, map_survey)
+
 map_together
