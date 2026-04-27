@@ -4,8 +4,12 @@ library(tidyr)
 
 
 # IMPORTANT! Methods to handle IMPT data  ----------------------------------------------------------
+# **They should be used only by the project team**. If you are external to the project, refer to [00a_impt_data_handle_external.R](https://raw.githubusercontent.com/U-Shift/IMPT-data/main/code/00a_impt_data_handle_external.R).
+
 # This methods handle the logic to load/store IMPT data. They should be used to handle all files
 # They handle internally all the logic to decide where to gather/store the data, deppending on the machine you are running the code at :)
+
+# Always use these functions instead of base R read/write functions, to improve maintainability of file management
 
 # How does it work?
 # When working at ushift@alfa, reads and writes at /data/IMPT folder
