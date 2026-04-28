@@ -2,13 +2,16 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.8.25">
+<meta name="generator" content="quarto-1.9.37">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>4&nbsp; Data Preparation – &lt;img src='images/logo.png' width='100%' height='auto' /&gt;&lt;br/&gt; IMPT — Índice Multidimensional e Multimodal de Pobreza nos Transportes&lt;br/&gt;</title>
+<title>4&nbsp; Data Preparation – &lt;span id="impt-text"&gt;IMPT - &lt;/span&gt;&lt;img src='images/logo.png' width='100%' height='auto' /&gt;&lt;br/&gt;Methodological Report&lt;br/&gt;</title>
 <style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
 div.columns{display: flex; gap: min(4vw, 1.5em);}
@@ -24,7 +27,6 @@ ul.task-list li input[type="checkbox"] {
 div.csl-bib-body { }
 div.csl-entry {
   clear: both;
-  margin-bottom: 0em;
 }
 .hanging-indent div.csl-entry {
   margin-left:2em;
@@ -55,19 +57,18 @@ div.csl-indent {
 <link href="./images/icon.ico" rel="icon">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
-<script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="site_libs/quarto-html/anchor.min.js"></script>
 <link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-7b89279ff1a6dce999919e0e67d4d9ec.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark-707d8167ce6003fca903bfe2be84ab7f.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-7b89279ff1a6dce999919e0e67d4d9ec.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark-d0ae9245876894da5ac7e18953ecc5cc.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-f301bfec8aa1688484056fecac87ffb6.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="site_libs/bootstrap/bootstrap-dark-8da15c8200cabd653792465749d5391a.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="site_libs/bootstrap/bootstrap-f301bfec8aa1688484056fecac87ffb6.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-1639bb64a19928aae5da347f8145b16e.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark-fb756cd849a2431fe15fcc9ff42bf5e9.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="site_libs/bootstrap/bootstrap-1639bb64a19928aae5da347f8145b16e.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script src="site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
 <link href="site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
 <link href="site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
@@ -105,38 +106,39 @@ div.csl-indent {
 <link href="site_libs/lightable-0.0.1/lightable.css" rel="stylesheet">
 
 
+<link rel="stylesheet" href="styles/global.css">
 <meta name="citation_title" content="[[4]{.chapter-number}&nbsp; [Data Preparation]{.chapter-title}]{#sec-data-prep .quarto-section-identifier}">
 <meta name="citation_language" content="en">
-<meta name="citation_reference" content="citation_title=Jittering: A Computationally Efficient Method for Generating Realistic Route Networks from Origin-Destination Data;,citation_author=Robin Lovelace;,citation_author=Rosa Félix;,citation_author=Dustin Carlino;,citation_publication_date=2022;,citation_cover_date=2022;,citation_year=2022;,citation_fulltext_html_url=https://doi.org/10.32866/001c.33873;,citation_doi=10.32866/001c.33873;,citation_journal_title=Findings;">
-<meta name="citation_reference" content="citation_title=r5r: Rapid Realistic Routing on Multimodal Transport Networks with R5 in R;,citation_author=Rafael H. M. Pereira;,citation_author=Marcus Saraiva;,citation_author=Daniel Herszenhut;,citation_author=Carlos K. V. Braga;,citation_author=Matthew Wigginton Conway;,citation_publication_date=2021;,citation_cover_date=2021;,citation_year=2021;,citation_fulltext_html_url=https://doi.org/10.32866/001c.21262;,citation_doi=10.32866/001c.21262;,citation_journal_title=Findings;">
-<meta name="citation_reference" content="citation_title=accessibility: Transport Accessibility Measures;,citation_author=Rafael H. M. Pereira;,citation_author=Daniel Herszenhut;,citation_publication_date=2022;,citation_cover_date=2022;,citation_year=2022;,citation_fulltext_html_url=https://ipeagit.github.io/accessibility/;">
-<meta name="citation_reference" content="citation_title=odjitter: Jitter Origin-Destination Data;,citation_author=Robin Lovelace;,citation_author=Rosa Félix;,citation_publication_date=2022;,citation_cover_date=2022;,citation_year=2022;,citation_fulltext_html_url=https://github.com/itsleeds/odjitter;">
-<meta name="citation_reference" content="citation_title=H3: A Hexagonal Hierarchical Spatial Index;,citation_author=Uber Technologies;,citation_publication_date=2018;,citation_cover_date=2018;,citation_year=2018;,citation_fulltext_html_url=https://h3geo.org;">
-<meta name="citation_reference" content="citation_title=Censos 2021 — Base Geográfica de Referenciação de Informação, NUTS 3 Lisboa;,citation_author=Instituto Nacional de Estatística INE;,citation_publication_date=2021;,citation_cover_date=2021;,citation_year=2021;,citation_fulltext_html_url=https://mapas.ine.pt/download/filesGPG/2021/nuts3/BGRI21_170.zip;">
-<meta name="citation_reference" content="citation_title=Inquérito à Mobilidade nas Áreas Metropolitanas do Porto e de Lisboa — IMOB 2017;,citation_author=Instituto Nacional de Estatística INE;,citation_publication_date=2018;,citation_cover_date=2018;,citation_year=2018;,citation_fulltext_html_url=https://www.ine.pt/xurl/pub/349495406;">
-<meta name="citation_reference" content="citation_title=Carta Administrativa Oficial de Portugal, CAOP 2024.1;,citation_author=DGT — Direção-Geral do Território;,citation_publication_date=2024;,citation_cover_date=2024;,citation_year=2024;,citation_fulltext_html_url=https://geo2.dgterritorio.gov.pt/caop;">
-<meta name="citation_reference" content="citation_title=Portaria n.º 1553-D/2008, de 31 de dezembro — Ajudas de custo e transportes em automóvel próprio;,citation_author=República Portuguesa;,citation_publication_date=2008;,citation_cover_date=2008;,citation_year=2008;,citation_fulltext_html_url=https://diariodarepublica.pt/dr/detalhe/portaria/1553-d-2008-243733;">
-<meta name="citation_reference" content="citation_title=Carta Administrativa Oficial de Portugal 2024.1;,citation_author=Direção-Geral do Território DGT;,citation_publication_date=2024;,citation_cover_date=2024;,citation_year=2024;,citation_fulltext_html_url=https://www.dgterritorio.gov.pt/atividades/cartografia/cartografia-tematica/caop;">
-<meta name="citation_reference" content="citation_title=COSc2023 - Carta de Ocupação do Solo Conjuntural de 2023;,citation_author=Direção-Geral do Território DGT;,citation_publication_date=2023;,citation_cover_date=2023;,citation_year=2023;,citation_fulltext_html_url=https://www.dgterritorio.gov.pt/COSc2023-Carta-de-Ocupacao-do-Solo-Conjuntural-de-2023;">
-<meta name="citation_reference" content="citation_title=h3jsr: Access Uber’s H3 Library;,citation_author=Lauren O’Brien;,citation_publication_date=2023-01;,citation_cover_date=2023-01;,citation_year=2023;,citation_fulltext_html_url=https://cran.r-project.org/web/packages/h3jsr/index.html;">
-<meta name="citation_reference" content="citation_title=OpenStreetMap: Map data available under the Open Database License (ODbL);,citation_author=undefined OpenStreetMap;,citation_publication_date=2026;,citation_cover_date=2026;,citation_year=2026;,citation_fulltext_html_url=https://www.openstreetmap.org/;">
-<meta name="citation_reference" content="citation_title=datasets;,citation_author=Carris Metropolitana;,citation_publication_date=2026-04;,citation_cover_date=2026-04;,citation_year=2026;,citation_fulltext_html_url=https://github.com/carrismetropolitana/datasets;,citation_publisher=Carris Metropolitana;">
-<meta name="citation_reference" content="citation_title=HOT Export Tool;,citation_author=Humanitarian OpenStreetMap Team HOT;,citation_publication_date=2026;,citation_cover_date=2026;,citation_year=2026;,citation_fulltext_html_url=https://export.hotosm.org/;">
-<meta name="citation_reference" content="citation_title=Copernicus Browser;,citation_author=Copernicus EU;,citation_publication_date=2026;,citation_cover_date=2026;,citation_year=2026;,citation_fulltext_html_url=https://browser.dataspace.copernicus.eu/;">
-<meta name="citation_reference" content="citation_title=População residente que vive no alojamento a maior parte do ano (N.º) por Local de residência à data dos Censos [2021] (NUTS - 2013), Sexo, Condição perante o trabalho, Principal meio de transporte e Local de trabalho ou estudo;,citation_author=Instituto Nacional de Estatística INE;,citation_publication_date=2021;,citation_cover_date=2021;,citation_year=2021;,citation_fulltext_html_url=https://tabulador.ine.pt/indicador/?id=0011704;">
-<meta name="citation_reference" content="citation_title=tidytransit: Read, Validate, Analyze, and Map GTFS Feeds;,citation_author=Flavio Poletti;,citation_author=Daniel Herszenhut;,citation_author=Mark Padgham;,citation_author=Tom Buckley;,citation_author=Danton Noriega-Goodwin;,citation_author=Angela Li;,citation_author=Elaine McVey;,citation_author=Charles Hans Thompson;,citation_author=Michael Sumner;,citation_author=Patrick Hausmann;,citation_author=Bob Rudis;,citation_author=James Lamb;,citation_author=Alexandra Kapp;,citation_author=Kearey Smith;,citation_author=Dave Vautin;,citation_author=Kyle Walker;,citation_author=Davis Vaughan;,citation_author=Ryan Rymarczyk;,citation_author=Kirill Müller;,citation_publication_date=2026-01;,citation_cover_date=2026-01;,citation_year=2026;,citation_fulltext_html_url=https://cran.r-project.org/web/packages/tidytransit/index.html;">
-<meta name="citation_reference" content="citation_title=PMMUS – Plano Metropolitano de Mobilidade Urbana Sustentável da amL;,citation_author=Transportes Metropolitanos de Lisboa TML;,citation_author=Consultores Associados Lda. Way2Go;,citation_publication_date=2025;,citation_cover_date=2025;,citation_year=2025;,citation_fulltext_html_url=https://pmmus.tmlmobilidade.pt/;">
-<meta name="citation_reference" content="citation_title=Portaria n.º 1553-D/2008, de 31 de dezembro;,citation_author=Ministério das Finanças e da Administração Pública;,citation_publication_date=2008;,citation_cover_date=2008;,citation_year=2008;,citation_fulltext_html_url=https://diariodarepublica.pt/dr/detalhe/portaria/1553-d-2008-243733;,citation_volume=n.º 252/2008, 4º Suplemento, Série I de 2008-12-31;,citation_journal_title=Diário da República;">
+<meta name="citation_reference" content="citation_title=Jittering: A computationally efficient method for generating realistic route networks from origin-destination data;,citation_author=Robin Lovelace;,citation_author=Rosa Félix;,citation_author=Dustin Carlino;,citation_publication_date=2022;,citation_cover_date=2022;,citation_year=2022;,citation_fulltext_html_url=https://doi.org/10.32866/001c.33873;,citation_doi=10.32866/001c.33873;,citation_journal_title=Findings;">
+<meta name="citation_reference" content="citation_title=r5r: Rapid realistic routing on multimodal transport networks with R5 in R;,citation_author=Rafael H. M. Pereira;,citation_author=Marcus Saraiva;,citation_author=Daniel Herszenhut;,citation_author=Carlos K. V. Braga;,citation_author=Matthew Wigginton Conway;,citation_publication_date=2021;,citation_cover_date=2021;,citation_year=2021;,citation_fulltext_html_url=https://doi.org/10.32866/001c.21262;,citation_doi=10.32866/001c.21262;,citation_journal_title=Findings;">
+<meta name="citation_reference" content="citation_title=Accessibility: Transport accessibility measures;,citation_author=Rafael H. M. Pereira;,citation_author=Daniel Herszenhut;,citation_publication_date=2022;,citation_cover_date=2022;,citation_year=2022;,citation_fulltext_html_url=https://ipeagit.github.io/accessibility/;">
+<meta name="citation_reference" content="citation_title=Odjitter: Jitter origin-destination data;,citation_author=Dustin Carlino;,citation_author=Robin Lovelace;,citation_publication_date=2022;,citation_cover_date=2022;,citation_year=2022;,citation_fulltext_html_url=https://github.com/itsleeds/odjitter;">
+<meta name="citation_reference" content="citation_title=H3: A hexagonal hierarchical spatial index;,citation_author=Uber Technologies;,citation_publication_date=2018;,citation_cover_date=2018;,citation_year=2018;,citation_fulltext_html_url=https://h3geo.org;">
+<meta name="citation_reference" content="citation_title=Censos 2021 — base geográfica de referenciação de informação, NUTS 3 lisboa;,citation_author=Instituto Nacional de Estatística INE;,citation_publication_date=2021;,citation_cover_date=2021;,citation_year=2021;,citation_fulltext_html_url=https://mapas.ine.pt/download/filesGPG/2021/nuts3/BGRI21_170.zip;">
+<meta name="citation_reference" content="citation_title=Inquérito à mobilidade nas áreas metropolitanas do porto e de lisboa — IMOB 2017;,citation_author=Instituto Nacional de Estatística INE;,citation_publication_date=2018;,citation_cover_date=2018;,citation_year=2018;,citation_fulltext_html_url=https://www.ine.pt/xurl/pub/349495406;">
+<meta name="citation_reference" content="citation_title=Carta administrativa oficial de portugal, CAOP 2024.1;,citation_author=DGT — Direção-Geral do Território;,citation_publication_date=2024;,citation_cover_date=2024;,citation_year=2024;,citation_fulltext_html_url=https://geo2.dgterritorio.gov.pt/caop;">
+<meta name="citation_reference" content="citation_title=Portaria n.º 1553-d/2008, de 31 de dezembro — ajudas de custo e transportes em automóvel próprio;,citation_author=República Portuguesa;,citation_publication_date=2008;,citation_cover_date=2008;,citation_year=2008;,citation_fulltext_html_url=https://diariodarepublica.pt/dr/detalhe/portaria/1553-d-2008-243733;">
+<meta name="citation_reference" content="citation_title=Carta administrativa oficial de portugal 2024.1;,citation_author=Direção-Geral do Território DGT;,citation_publication_date=2024;,citation_cover_date=2024;,citation_year=2024;,citation_fulltext_html_url=https://www.dgterritorio.gov.pt/atividades/cartografia/cartografia-tematica/caop;">
+<meta name="citation_reference" content="citation_title=COSc2023 - carta de ocupação do solo conjuntural de 2023;,citation_author=Direção-Geral do Território DGT;,citation_publication_date=2023;,citation_cover_date=2023;,citation_year=2023;,citation_fulltext_html_url=https://www.dgterritorio.gov.pt/COSc2023-Carta-de-Ocupacao-do-Solo-Conjuntural-de-2023;">
+<meta name="citation_reference" content="citation_title=h3jsr: Access uber’s H3 library;,citation_author=Lauren O’Brien;,citation_publication_date=2023-01;,citation_cover_date=2023-01;,citation_year=2023;,citation_fulltext_html_url=https://cran.r-project.org/web/packages/h3jsr/index.html;">
+<meta name="citation_reference" content="citation_title=OpenStreetMap: Map data available under the open database license (ODbL);,citation_author=undefined OpenStreetMap;,citation_publication_date=2026;,citation_cover_date=2026;,citation_year=2026;,citation_fulltext_html_url=https://www.openstreetmap.org/;">
+<meta name="citation_reference" content="citation_title=Datasets;,citation_author=Carris Metropolitana;,citation_publication_date=2026-04;,citation_cover_date=2026-04;,citation_year=2026;,citation_fulltext_html_url=https://github.com/carrismetropolitana/datasets;,citation_publisher=Carris Metropolitana;">
+<meta name="citation_reference" content="citation_title=HOT export tool;,citation_author=Humanitarian OpenStreetMap Team HOT;,citation_publication_date=2026;,citation_cover_date=2026;,citation_year=2026;,citation_fulltext_html_url=https://export.hotosm.org/;">
+<meta name="citation_reference" content="citation_title=Copernicus browser;,citation_author=Copernicus EU;,citation_publication_date=2026;,citation_cover_date=2026;,citation_year=2026;,citation_fulltext_html_url=https://browser.dataspace.copernicus.eu/;">
+<meta name="citation_reference" content="citation_title=População residente que vive no alojamento a maior parte do ano (n.º) por local de residência à data dos censos [2021] (NUTS - 2013), sexo, condição perante o trabalho, principal meio de transporte e local de trabalho ou estudo;,citation_author=Instituto Nacional de Estatística INE;,citation_publication_date=2021;,citation_cover_date=2021;,citation_year=2021;,citation_fulltext_html_url=https://tabulador.ine.pt/indicador/?id=0011704;">
+<meta name="citation_reference" content="citation_title=Tidytransit: Read, validate, analyze, and map GTFS feeds;,citation_author=Flavio Poletti;,citation_author=Daniel Herszenhut;,citation_author=Mark Padgham;,citation_author=Tom Buckley;,citation_author=Danton Noriega-Goodwin;,citation_author=Angela Li;,citation_author=Elaine McVey;,citation_author=Charles Hans Thompson;,citation_author=Michael Sumner;,citation_author=Patrick Hausmann;,citation_author=Bob Rudis;,citation_author=James Lamb;,citation_author=Alexandra Kapp;,citation_author=Kearey Smith;,citation_author=Dave Vautin;,citation_author=Kyle Walker;,citation_author=Davis Vaughan;,citation_author=Ryan Rymarczyk;,citation_author=Kirill Müller;,citation_publication_date=2026-01;,citation_cover_date=2026-01;,citation_year=2026;,citation_fulltext_html_url=https://cran.r-project.org/web/packages/tidytransit/index.html;">
+<meta name="citation_reference" content="citation_title=PMMUS – plano metropolitano de mobilidade urbana sustentável da amL;,citation_author=Transportes Metropolitanos de Lisboa TML;,citation_author=Consultores Associados Lda. Way2Go;,citation_publication_date=2025;,citation_cover_date=2025;,citation_year=2025;,citation_fulltext_html_url=https://pmmus.tmlmobilidade.pt/;">
+<meta name="citation_reference" content="citation_title=Portaria n.º 1553-d/2008, de 31 de dezembro;,citation_author=Ministério das Finanças e da Administração Pública;,citation_publication_date=2008;,citation_cover_date=2008;,citation_year=2008;,citation_fulltext_html_url=https://diariodarepublica.pt/dr/detalhe/portaria/1553-d-2008-243733;,citation_volume=n.º 252/2008, 4º Suplemento, Série I de 2008-12-31;,citation_journal_title=Diário da República;">
 <meta name="citation_reference" content="citation_title=Cálculo de percursos com portagens;,citation_author=Infraestruturas de Portugal IP;,citation_publication_date=2026;,citation_cover_date=2026;,citation_year=2026;,citation_fulltext_html_url=https://portagens.infraestruturasdeportugal.pt/;">
-<meta name="citation_reference" content="citation_title=Relatório e Contas 2024;,citation_author=undefined Carris;,citation_publication_date=2024-04;,citation_cover_date=2024-04;,citation_year=2024;,citation_fulltext_html_url=https://www.carris.pt/media/ikvdezmc/relat%C3%B3rio-e-contas-carris-2024.pdf;">
+<meta name="citation_reference" content="citation_title=Relatório e contas 2024;,citation_author=undefined Carris;,citation_publication_date=2024-04;,citation_cover_date=2024-04;,citation_year=2024;,citation_fulltext_html_url=https://www.carris.pt/media/ikvdezmc/relat%C3%B3rio-e-contas-carris-2024.pdf;">
 <meta name="citation_reference" content="citation_title=Tarifas;,citation_author=Metro de Lisboa;,citation_publication_date=2025;,citation_cover_date=2025;,citation_year=2025;,citation_fulltext_html_url=https://www.metrolisboa.pt/wp-content/uploads/2025/12/Tarifas_site_2026_PT.pdf;">
-<meta name="citation_reference" content="citation_title=Estatísticas do rendimento ao nível local - Indicadores de rendimento declarado no IRS - 2023;,citation_author=Instituto Nacional de Estatística INE;,citation_publication_date=2025;,citation_cover_date=2025;,citation_year=2025;,citation_fulltext_html_url=https://www.ine.pt/xurl/pub/66303599;">
-<meta name="citation_reference" content="citation_title=Censos - Resultados definitivos - 2021;,citation_author=Instituto Nacional de Estatística INE;,citation_publication_date=2022;,citation_cover_date=2022;,citation_year=2022;,citation_fulltext_html_url=https://www.ine.pt/xurl/pub/65586079;">
-<meta name="citation_reference" content="citation_title=FactoMineR: Multivariate Exploratory Data Analysis and Data Mining;,citation_author=Francois Husson;,citation_author=Julie Josse;,citation_author=Sebastien Le;,citation_author=Jeremy Mazet;,citation_publication_date=2026-04;,citation_cover_date=2026-04;,citation_year=2026;,citation_fulltext_html_url=https://cran.r-project.org/web/packages/FactoMineR/index.html;">
+<meta name="citation_reference" content="citation_title=Estatísticas do rendimento ao nível local - indicadores de rendimento declarado no IRS - 2023;,citation_author=Instituto Nacional de Estatística INE;,citation_publication_date=2025;,citation_cover_date=2025;,citation_year=2025;,citation_fulltext_html_url=https://www.ine.pt/xurl/pub/66303599;">
+<meta name="citation_reference" content="citation_title=Censos - resultados definitivos - 2021;,citation_author=Instituto Nacional de Estatística INE;,citation_publication_date=2022;,citation_cover_date=2022;,citation_year=2022;,citation_fulltext_html_url=https://www.ine.pt/xurl/pub/65586079;">
+<meta name="citation_reference" content="citation_title=FactoMineR: Multivariate exploratory data analysis and data mining;,citation_author=Francois Husson;,citation_author=Julie Josse;,citation_author=Sebastien Le;,citation_author=Jeremy Mazet;,citation_publication_date=2026-04;,citation_cover_date=2026-04;,citation_year=2026;,citation_fulltext_html_url=https://cran.r-project.org/web/packages/FactoMineR/index.html;">
 <meta name="citation_reference" content="citation_title=React;,citation_author=undefined Meta;,citation_publication_date=2026;,citation_cover_date=2026;,citation_year=2026;,citation_fulltext_html_url=https://react.dev/;">
 <meta name="citation_reference" content="citation_title=Vite;,citation_author=VoidZero Inc.;,citation_publication_date=2026;,citation_cover_date=2026;,citation_year=2026;,citation_fulltext_html_url=https://vite.dev;,citation_journal_title=vitejs;">
 <meta name="citation_reference" content="citation_title=Leaflet — an open-source JavaScript library for interactive maps;,citation_author=Volodymyr Agafonkin;,citation_publication_date=2026;,citation_cover_date=2026;,citation_year=2026;,citation_fulltext_html_url=https://leafletjs.com/;">
-<meta name="citation_reference" content="citation_title=Tailwind CSS - Rapidly build modern websites without ever leaving your HTML.;,citation_author=Tailwind Labs Inc.;,citation_publication_date=2026;,citation_cover_date=2026;,citation_year=2026;,citation_fulltext_html_url=https://tailwindcss.com/;">
+<meta name="citation_reference" content="citation_title=Tailwind CSS - rapidly build modern websites without ever leaving your HTML.;,citation_author=Tailwind Labs Inc.;,citation_publication_date=2026;,citation_cover_date=2026;,citation_year=2026;,citation_fulltext_html_url=https://tailwindcss.com/;">
 </head>
 
 <body class="nav-sidebar floating quarto-light"><script id="quarto-html-before-body" type="application/javascript">
@@ -323,11 +325,9 @@ div.csl-indent {
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
 <!-- sidebar -->
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
-    <div class="pt-lg-2 mt-2 text-left sidebar-header sidebar-header-stacked">
-      <a href="./index.html" class="sidebar-logo-link">
-      </a>
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
     <div class="sidebar-title mb-0 py-0">
-      <a href="./"><img src="images/logo.png" width="100%" height="auto"><br> IMPT — Índice Multidimensional e Multimodal de Pobreza nos Transportes<br></a> 
+      <a href="./"><span id="impt-text">IMPT - </span><img src="images/logo.png" width="100%" height="auto"><br>Methodological Report<br></a> 
         <div class="sidebar-tools-main tools-wide">
     <a href="https://github.com/U-Shift/IMPT-data/" title="GitHub Repository" class="quarto-navigation-tool px-1" aria-label="GitHub Repository" target="_blank"><i class="bi bi-github"></i></a>
     <a href="https://ushift.pt/apps/impt" title="Interactive Dashboard" class="quarto-navigation-tool px-1" aria-label="Interactive Dashboard" target="_blank"><i class="bi bi-map-fill"></i></a>
@@ -443,6 +443,12 @@ div.csl-indent {
   <div class="sidebar-item-container"> 
   <a href="./reproducibility.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Reproducibility</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./future_work.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Future Work</span></span></a>
   </div>
 </li>
       </ul>
@@ -624,6 +630,33 @@ Table&nbsp;4.1: Parish code conversions from 2016 to 2024
 </figure>
 </div>
 <p>Trips associated with split parishes were redistributed proportionally to the area of the new parishes. Conservation of total trip counts was validated using <code>assertthat</code>.</p>
+<div id="fig-parish-conversion" class="quarto-layout-panel">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-parish-conversion-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="images/maps/parish_conversion_before.png" class="lightbox" data-gallery="quarto-lightbox-gallery-3" title="Original 2016 parish boundaries"><img src="images/maps/parish_conversion_before.png" class="img-fluid figure-img"></a></p>
+<figcaption>Original 2016 parish boundaries</figcaption>
+</figure>
+</div>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="images/maps/parish_conversion_after.png" class="lightbox" data-gallery="quarto-lightbox-gallery-4" title="2024 parish boundaries"><img src="images/maps/parish_conversion_after.png" class="img-fluid figure-img"></a></p>
+<figcaption>2024 parish boundaries</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-parish-conversion-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;4.2: Example of Seixal parish split
+</figcaption>
+</figure>
+</div>
 </section>
 </section>
 <section id="sec-grid" class="level2" data-number="4.3">
@@ -643,19 +676,39 @@ Table&nbsp;4.1: Parish code conversions from 2016 to 2024
 </div>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-grid-overview-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;4.2: H3 grid generation and spatial assignment
+Figure&nbsp;4.3: H3 grid generation and spatial assignment
 </figcaption>
 </figure>
 </div>
 </div>
 </div>
-<p>The H3 hexagonal grid <span class="citation" data-cites="Uber_H3_2018">(<a href="references.html#ref-Uber_H3_2018" role="doc-biblioref">Uber Technologies 2018</a>)</span> is generated at <strong>Resolution 8</strong> using the <code>h3jsr</code> package <span class="citation" data-cites="h3jsr">(<a href="references.html#ref-h3jsr" role="doc-biblioref">O’Brien 2023</a>)</span>. Resolution 8 provides a spatial unit with an average edge length of ~531 m and average area of ~0.74 km², which offers a good balance between spatial detail and computational tractability for routing-based accessibility measures.</p>
-<p>The H3 grid covers the AML with <strong>3,686 active hexagons</strong> (those intersecting the administrative boundaries). At the limits, if a hexagon covers less than 50% of the administrative area, it is excluded from the analysis. Each hexagon is assigned to a parish and municipality via a cross-reference table (<code>grid_nuts.csv</code>).</p>
+<p>The H3 hexagonal grid <span class="citation" data-cites="Uber_H3_2018">(<a href="references.html#ref-Uber_H3_2018" role="doc-biblioref">Uber Technologies 2018</a>)</span> is generated at <strong>Resolution 8</strong> using the <code>h3jsr</code> package <span class="citation" data-cites="h3jsr">(<a href="references.html#ref-h3jsr" role="doc-biblioref">O’Brien 2023</a>)</span>. Resolution 8 (example at <a href="#fig-h3-example" class="quarto-xref">Figure&nbsp;<span>4.4</span></a>) provides a spatial unit with an average edge length of ~531 m and average area of ~0.74 km², which offers a good balance between spatial detail and computational tractability for routing-based accessibility measures.</p>
+<div id="fig-h3-example" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-h3-example-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="images/maps/h3_grid_example.png" class="lightbox" data-gallery="quarto-lightbox-gallery-5" title="Figure&nbsp;4.4: Example of h3_grid at resolution 8 at Lisbon, from h3geo.org"><img src="images/maps/h3_grid_example.png" class="img-fluid figure-img"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-h3-example-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;4.4: Example of h3_grid at resolution 8 at Lisbon, from <a href="https://h3geo.org">h3geo.org</a>
+</figcaption>
+</figure>
+</div>
+<p>The H3 grid covers the AML with <strong>3,686 active hexagons</strong> (those intersecting the administrative boundaries, see <a href="#fig-grid-aml" class="quarto-xref">Figure&nbsp;<span>4.5</span></a>). At the limits, if a hexagon covers less than 50% of the administrative area, it is excluded from the analysis. Each hexagon is assigned to a parish and municipality via a cross-reference table (<code>grid_nuts.csv</code>).</p>
+<div id="fig-grid-aml" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-grid-aml-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="images/maps/grid.png" class="lightbox" data-gallery="quarto-lightbox-gallery-6" title="Figure&nbsp;4.5: H3 grid at resolution 8 intersecting the administrative boundaries of the Lisbon Metropolitan Area"><img src="images/maps/grid.png" class="img-fluid figure-img"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-grid-aml-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;4.5: H3 grid at resolution 8 intersecting the administrative boundaries of the Lisbon Metropolitan Area
+</figcaption>
+</figure>
+</div>
 </section>
 <section id="sec-census" class="level2" data-number="4.4">
 <h2 data-number="4.4" class="anchored" data-anchor-id="sec-census"><span class="header-section-number">4.4</span> Census Data Processing</h2>
 <p><strong>Source:</strong> INE Census 2021, BGRI 2021 at the base statistical unit level <span class="citation" data-cites="INE_Census2021">(<a href="references.html#ref-INE_Census2021" role="doc-biblioref">INE 2021a</a>)</span>, NUTS-3 Área Metropolitana de Lisboa (code 170).</p>
-<p>Census BGRI polygons are converted to <strong>centroids</strong>. The following variables are extracted:</p>
+<p>Census BGRI polygons are converted to <strong>centroids</strong> (<a href="#fig-census-bgri" class="quarto-xref">Figure&nbsp;<span>4.6</span></a>). The following variables are extracted:</p>
 <div id="tbl-census-vars" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-census-vars-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -722,11 +775,21 @@ Table&nbsp;4.2: Census variables used in IMPT
 </figure>
 </div>
 <p>For parish- and municipality-level aggregation, census data from 2016-era parishes are redistributed to 2024 parishes using the area-weighted conversion table described in <a href="#sec-dicofre" class="quarto-xref"><span>Section 4.2.1</span></a>.</p>
+<div id="fig-census-bgri" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-census-bgri-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="images/maps/census_bgri.png" class="lightbox" data-gallery="quarto-lightbox-gallery-7" title="Figure&nbsp;4.6: Example of census BGRI polygons and centroids in a neighborhood of Lisbon"><img src="images/maps/census_bgri.png" class="img-fluid figure-img"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-census-bgri-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;4.6: Example of census BGRI polygons and centroids in a neighborhood of Lisbon
+</figcaption>
+</figure>
+</div>
 </section>
 <section id="sec-cos" class="level2" data-number="4.5">
 <h2 data-number="4.5" class="anchored" data-anchor-id="sec-cos"><span class="header-section-number">4.5</span> Dasymetric Grid Population Redistribution (COS 2023)</h2>
 <p><strong>Source:</strong> COS 2023 v1 <span class="citation" data-cites="COS_2023">(<a href="references.html#ref-COS_2023" role="doc-biblioref">DGT 2023</a>)</span>, residential land use classes</p>
-<p>To achieve a more accurate population distribution within the H3 grid, a <strong>dasymetric mapping</strong> approach is applied using the Carta de Ocupação do Solo (COS) 2023. This is a relevan method, in particular when dealing with BGRI polygons that cover large areas, accross multiple hexagons cells - preventing that one single hexagon is assigned the entire population of the BGRI polygon with it’s centroid.</p>
+<p>To achieve a more accurate population distribution within the H3 grid, a <strong>dasymetric mapping</strong> approach is applied using the Carta de Ocupação do Solo (COS) 2023 (example in <a href="#fig-cos-buildings" class="quarto-xref">Figure&nbsp;<span>4.7</span></a>). This is a relevant method, in particular when dealing with BGRI polygons that cover large areas, across multiple hexagons cells - preventing that one single hexagon is assigned the entire population of the BGRI polygon with it’s centroid.</p>
 <p>Residential areas are extracted with the following classes and assigned weighting factors:</p>
 <div id="tbl-cos-weights" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
@@ -763,6 +826,16 @@ Table&nbsp;4.3: COS 2023 residential classes and dasymetric weights
 </div>
 </figure>
 </div>
+<div id="fig-cos-buildings" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-cos-buildings-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="images/maps/cos_buildings.png" class="lightbox" data-gallery="quarto-lightbox-gallery-8" title="Figure&nbsp;4.7: Example of COS 2023 residential classes at Almada"><img src="images/maps/cos_buildings.png" class="img-fluid figure-img"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-cos-buildings-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;4.7: Example of COS 2023 residential classes at Almada
+</figcaption>
+</figure>
+</div>
 <p>The procedure (<a href="https://github.com/U-Shift/IMPT-data/blob/main/code/02_census_grid_with_cos.R"><code>02_census_grid_with_cos.R</code></a>):</p>
 <ol type="1">
 <li>Census BGRI polygons are intersected with COS residential patches and H3 grid cells.</li>
@@ -796,7 +869,13 @@ Table&nbsp;4.4: POI categories, sources, and filters
 </figcaption>
 <div aria-describedby="tbl-pois-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
-<table class="table do-not-create-environment cell caption-top table-sm table-striped small">
+<table class="table cell caption-top table-sm table-striped small">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
 <thead>
 <tr class="header">
 <th style="text-align: left;" data-quarto-table-cell-role="th">Category</th>
@@ -828,19 +907,21 @@ Table&nbsp;4.4: POI categories, sources, and filters
 <td style="text-align: left;">Supermarkets/grocery</td>
 <td style="text-align: left;">groceries</td>
 <td style="text-align: left;">OSM</td>
-<td style="text-align: left; width: 7cm;">`type %in% c('supermarket','convenience')`</td>
+<td style="text-align: left; width: 7cm;"><code>type %in% c('supermarket','convenience')</code></td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Green spaces</td>
 <td style="text-align: left;">greenspaces</td>
 <td style="text-align: left;">OSM</td>
-<td style="text-align: left; width: 7cm;">`group == 'leisure' &amp; type %in% c('park','garden')`</td>
+<td style="text-align: left; width: 7cm;"><code>group == 'leisure' &amp; type %in% c('park','garden')</code></td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Recreation</td>
 <td style="text-align: left;">recreation</td>
 <td style="text-align: left;">OSM</td>
-<td style="text-align: left; width: 7cm;">`type %in% c('library','theatre','cinema','restaurant','cafe','bar','pub','pitch','fitness_station','swimming_pool','sports_centre','fitness_center')`</td>
+<td style="text-align: left; width: 7cm;"><code>type %in% c('library','theatre','cinema','restaurant','cafe',</code><br>
+<code>'bar','pub','pitch','fitness_station',</code><br>
+<code>'swimming_pool','sports_centre','fitness_center')</code></td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Schools (all)</td>
@@ -852,7 +933,7 @@ Table&nbsp;4.4: POI categories, sources, and filters
 <td style="text-align: left;">Primary schools</td>
 <td style="text-align: left;">schools_primary</td>
 <td style="text-align: left;">CM</td>
-<td style="text-align: left; width: 7cm;">pre_school==1 &amp;#124; basic_1==1 &amp;#124; basic_2==1 &amp;#124; basic_3==1</td>
+<td style="text-align: left; width: 7cm;"><code>pre_school==1 | basic_1==1 | basic_2==1 | basic_3==1</code></td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Transit stops (all)</td>
@@ -876,7 +957,7 @@ Table&nbsp;4.4: POI categories, sources, and filters
 <td style="text-align: left;">Jobs</td>
 <td style="text-align: left;">jobs</td>
 <td style="text-align: left;">IMOB 2018</td>
-<td style="text-align: left; width: 7cm;">Jittered OD destinations (see [#sec-jittering])</td>
+<td style="text-align: left; width: 7cm;">Jittered OD destinations (see <a href="#sec-jittering">#sec-jittering</a>)</td>
 </tr>
 </tbody>
 </table>
@@ -884,6 +965,16 @@ Table&nbsp;4.4: POI categories, sources, and filters
 </div>
 </figure>
 </div>
+</div>
+<div id="fig-pois-health" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-pois-health-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="images/maps/pois_health.png" class="lightbox" data-gallery="quarto-lightbox-gallery-9" title="Figure&nbsp;4.8: Health POIs distribution"><img src="images/maps/pois_health.png" class="img-fluid figure-img"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-pois-health-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;4.8: Health POIs distribution
+</figcaption>
+</figure>
 </div>
 </section>
 <section id="sec-jittering" class="level2" data-number="4.7">
@@ -894,10 +985,26 @@ Table&nbsp;4.4: POI categories, sources, and filters
 <h3 data-number="4.7.1" class="anchored" data-anchor-id="jobs-as-a-proxy"><span class="header-section-number">4.7.1</span> Jobs as a proxy</h3>
 <p>Since high-resolution employment data was not available (or open) for the AML during the report development, <strong>employment locations</strong> were proxied using the jittered destinations of trips from the IMOB 2017 travel survey. Specifically, trips with the purpose <strong>“Ir para o trabalho”</strong> (Commute to work) and <strong>“Tratar de assuntos profissionais”</strong> (Work-related business) were extracted, and their jittered destination points were used as POIs representing the spatial distribution of jobs.</p>
 <p>Since accessibility and cost computations require disaggregated spatial locations, <strong>jittering</strong> is applied to generate point-level OD pairs.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-3-contents" aria-controls="callout-3" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Alternative data source: Ministério do Trabalho
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-3" class="callout-3-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>TML has reported to use Ministério do Trabalho dataset on jobs for the Metropolitan Sustainable Urban Mobility Plan. However, they only kept them aggregated at the grid level, using a custom grid that is not compatible with the H3 grid used in this project. For future versions of IMPT, a request can be made to Ministério do Trabalho for the original data.</p>
+</div>
+</div>
+</div>
 </section>
 <section id="jittering-algorithm" class="level3" data-number="4.7.2">
 <h3 data-number="4.7.2" class="anchored" data-anchor-id="jittering-algorithm"><span class="header-section-number">4.7.2</span> Jittering Algorithm</h3>
-<p>Jittering is performed using the <code>odjitter</code> R package <span class="citation" data-cites="Lovelace_odjitter_2022">(<a href="references.html#ref-Lovelace_odjitter_2022" role="doc-biblioref">Lovelace and Félix 2022</a>)</span>, following the approach described in <span class="citation" data-cites="Lovelace_2022">Lovelace, Félix, and Carlino (<a href="references.html#ref-Lovelace_2022" role="doc-biblioref">2022</a>)</span>.</p>
+<p>Jittering is performed using the <code>odjitter</code> R package <span class="citation" data-cites="Lovelace_odjitter_2022">(<a href="references.html#ref-Lovelace_odjitter_2022" role="doc-biblioref">Carlino and Lovelace 2022</a>)</span>, following the approach described in <span class="citation" data-cites="Lovelace_2022">Lovelace et al. (<a href="references.html#ref-Lovelace_2022" role="doc-biblioref">2022</a>)</span>.</p>
 <p>The algorithm disaggregates parish-level trip counts into point-to-point flows. The following layers and weights are used:</p>
 <ul>
 <li><strong>Origins</strong>: Randomly sampled points within residential buildings.</li>
@@ -905,68 +1012,196 @@ Table&nbsp;4.4: POI categories, sources, and filters
 <li><strong>Threshold</strong>: A <strong>disaggregation threshold of 50 trips</strong> is applied, meaning any OD flow with more than 50 trips is split into multiple point-to-point pairs to provide higher spatial resolution.</li>
 <li><strong>Deterministic Randomization</strong>: A fixed seed (<code>rng_seed = 42</code>) is used to ensure the generated points are consistent across pipeline runs.</li>
 </ul>
-<p>The process generates approximately <strong>18,500 jittered OD pairs</strong> representing the daily commuting pattern in the AML. This is then expanded to the real number of trips using the <code>PESOFIN</code> weights.</p>
+<p>The process, illustrated in <a href="#fig-jittering" class="quarto-xref">Figure&nbsp;<span>4.9</span></a>, generates approximately <strong>18,500 jittered OD pairs</strong> representing the daily commuting pattern in the AML. This is then expanded to the real number of trips using the <code>PESOFIN</code> weights.</p>
+<div id="fig-jittering" class="quarto-layout-panel">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-jittering-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="images/maps/jittering_buildings.png" class="lightbox" data-gallery="quarto-lightbox-gallery-10" title="Residential buildings"><img src="images/maps/jittering_buildings.png" class="img-fluid figure-img"></a></p>
+<figcaption>Residential buildings</figcaption>
+</figure>
+</div>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="images/maps/jittering_jobs.png" class="lightbox" data-gallery="quarto-lightbox-gallery-11" title="Jittered jobs"><img src="images/maps/jittering_jobs.png" class="img-fluid figure-img"></a></p>
+<figcaption>Jittered jobs</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-jittering-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;4.9: Jittering algorithm for the Areeiro parish, in Lisbon
+</figcaption>
+</figure>
+</div>
 </section>
 </section>
 <section id="sec-network" class="level2" data-number="4.8">
 <h2 data-number="4.8" class="anchored" data-anchor-id="sec-network"><span class="header-section-number">4.8</span> Road Network and DEM</h2>
-<p><strong>Road network:</strong> Exported from <a href="https://export.hotosm.org/">HOT Export Tool</a> <span class="citation" data-cites="hot_osm">(<a href="references.html#ref-hot_osm" role="doc-biblioref">HOT 2026</a>)</span> in <code>.pbf</code> format for use with <code>r5r</code> <span class="citation" data-cites="Pereira_r5r_2021">(<a href="references.html#ref-Pereira_r5r_2021" role="doc-biblioref">Pereira et al. 2021</a>)</span>. The network includes all OSM road types and GTFS transit feeds.</p>
-<p><strong>Elevation:</strong> Digital Elevation Model at 30 m resolution downloaded from Copernicus ESA <span class="citation" data-cites="copernicus_browser">(<a href="references.html#ref-copernicus_browser" role="doc-biblioref">EU 2026</a>)</span>. Used to account for topographic effects on walking and cycling travel times via the Minetti metabolic-equivalent cost function.</p>
+<p><strong>Road network:</strong> Exported from <a href="https://export.hotosm.org/">HOT Export Tool</a> <span class="citation" data-cites="hot_osm">(<a href="references.html#ref-hot_osm" role="doc-biblioref">HOT 2026</a>)</span> in <code>.pbf</code> format for use with <code>r5r</code> <span class="citation" data-cites="Pereira_r5r_2021">(<a href="references.html#ref-Pereira_r5r_2021" role="doc-biblioref">Pereira et al. 2021</a>)</span>. Main network shown in <a href="#fig-network-road" class="quarto-xref">Figure&nbsp;<span>4.10</span></a>. The network includes all OSM road types and GTFS transit feeds.</p>
+<p><strong>Elevation:</strong> Digital Elevation Model at 30 m resolution (<a href="#fig-network-dem" class="quarto-xref">Figure&nbsp;<span>4.11</span></a>) downloaded from Copernicus ESA <span class="citation" data-cites="copernicus_browser">(<a href="references.html#ref-copernicus_browser" role="doc-biblioref">EU 2026</a>)</span>. Used to account for topographic effects on walking and cycling travel times via the Minetti metabolic-equivalent cost function.</p>
 <p>The <code>r5r</code> network is built using <code>r5r::build_network()</code> with the <code>elevation = "MINETTI"</code> option.</p>
+<div class="quarto-layout-panel" data-layout="[[53,47]]">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 53.0%;justify-content: flex-start;">
+<div id="fig-network-road" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-network-road-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="images/maps/main_road_network.png" class="lightbox" data-gallery="quarto-lightbox-gallery-12" title="Figure&nbsp;4.10: Main road network"><img src="images/maps/main_road_network.png" class="img-fluid figure-img"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-network-road-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;4.10: Main road network
+</figcaption>
+</figure>
+</div>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 47.0%;justify-content: flex-start;">
+<div id="fig-network-dem" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-network-dem-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="images/maps/dem.png" class="lightbox" data-gallery="quarto-lightbox-gallery-13" title="Figure&nbsp;4.11: Digital Elevation Model"><img src="images/maps/dem.png" class="img-fluid figure-img"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-network-dem-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;4.11: Digital Elevation Model
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</div>
 </section>
 <section id="sec-modal-share" class="level2" data-number="4.9">
 <h2 data-number="4.9" class="anchored" data-anchor-id="sec-modal-share"><span class="header-section-number">4.9</span> Modal Share from Census</h2>
 <p><strong>Source:</strong> Census 2021 <span class="citation" data-cites="census_2021_modal_share">(<a href="references.html#ref-census_2021_modal_share" role="doc-biblioref">INE 2021b</a>)</span></p>
-<p>Script <a href="https://github.com/U-Shift/IMPT-data/blob/main/code/02_census_modalShare.R"><code>02_census_modalShare.R</code></a> extracts and computes modal shares (private vehicle, public transit, active modes) at parish and municipality level. These are used to compute <strong>modal-share-weighted affordability</strong> metrics (see <a href="affordability.html" class="quarto-xref"><span>Chapter 8</span></a>).</p>
+<p>Script <a href="https://github.com/U-Shift/IMPT-data/blob/main/code/02_census_modalShare.R"><code>02_census_modalShare.R</code></a> extracts and computes modal shares (private vehicle, public transport, active modes) at parish (<a href="#fig-modal-share" class="quarto-xref">Figure&nbsp;<span>4.12</span></a>) and municipality level. These are used to compute <strong>modal-share-weighted affordability</strong> metrics (see <a href="affordability.html" class="quarto-xref"><span>Chapter 8</span></a>).</p>
+<div id="fig-modal-share" class="quarto-layout-panel">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-modal-share-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="images/maps/modal_share_census_pt.png" class="lightbox" data-gallery="quarto-lightbox-gallery-14" title="Public transport"><img src="images/maps/modal_share_census_pt.png" class="img-fluid figure-img"></a></p>
+<figcaption>Public transport</figcaption>
+</figure>
+</div>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="images/maps/modal_share_census_car.png" class="lightbox" data-gallery="quarto-lightbox-gallery-15" title="Car"><img src="images/maps/modal_share_census_car.png" class="img-fluid figure-img"></a></p>
+<figcaption>Car</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="images/maps/modal_share_census_walk.png" class="lightbox" data-gallery="quarto-lightbox-gallery-16" title="Walk"><img src="images/maps/modal_share_census_walk.png" class="img-fluid figure-img"></a></p>
+<figcaption>Walk</figcaption>
+</figure>
+</div>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="images/maps/modal_share_census_bike.png" class="lightbox" data-gallery="quarto-lightbox-gallery-17" title="Bike"><img src="images/maps/modal_share_census_bike.png" class="img-fluid figure-img"></a></p>
+<figcaption>Bike</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-modal-share-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;4.12: Census modal share for different modes
+</figcaption>
+</figure>
+</div>
 </section>
 <section id="sec-veh-ownership" class="level2" data-number="4.10">
 <h2 data-number="4.10" class="anchored" data-anchor-id="sec-veh-ownership"><span class="header-section-number">4.10</span> Vehicle Ownership</h2>
 <p><strong>Source:</strong> IMOB 2017 data <span class="citation" data-cites="INE_IMOB2017">(<a href="references.html#ref-INE_IMOB2017" role="doc-biblioref">INE 2018</a>)</span></p>
-<p>Vehicle ownership variables include average motorised vehicles per household and percentage of households without a vehicle, aggregated at parish and municipality level. Calculations performed in <a href="https://github.com/U-Shift/IMPT-data/blob/main/code/02_veh_ownership.R"><code>02_veh_ownership.R</code></a>.</p>
+<p>Vehicle ownership variables include average motorised vehicles per household (<a href="#fig-vehicles-n-hh" class="quarto-xref">Figure&nbsp;<span>4.13</span></a>) and percentage of households without a vehicle (<a href="#fig-vehicles-pct-no" class="quarto-xref">Figure&nbsp;<span>4.14</span></a>), aggregated at parish and municipality level. Calculations performed in <a href="https://github.com/U-Shift/IMPT-data/blob/main/code/02_veh_ownership.R"><code>02_veh_ownership.R</code></a>.</p>
+<div class="quarto-layout-panel" data-layout="[[1,1]]">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div id="fig-vehicles-n-hh" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-vehicles-n-hh-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="images/maps/vehicles_n_hh.png" class="lightbox" data-gallery="quarto-lightbox-gallery-18" title="Figure&nbsp;4.13: Average motorised vehicles per household"><img src="images/maps/vehicles_n_hh.png" class="img-fluid figure-img"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-vehicles-n-hh-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;4.13: Average motorised vehicles per household
+</figcaption>
+</figure>
+</div>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div id="fig-vehicles-pct-no" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-vehicles-pct-no-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="images/maps/vehicles_pct_no.png" class="lightbox" data-gallery="quarto-lightbox-gallery-19" title="Figure&nbsp;4.14: Percentage of households without a vehicle"><img src="images/maps/vehicles_pct_no.png" class="img-fluid figure-img"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-vehicles-pct-no-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;4.14: Percentage of households without a vehicle
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</div>
 
 
-<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list" style="display: none">
+<div id="refs" class="references csl-bib-body hanging-indent" role="list" style="display: none">
+<div id="ref-Lovelace_odjitter_2022" class="csl-entry" role="listitem">
+Carlino, Dustin, and Robin Lovelace. 2022. <em>Odjitter: Jitter Origin-Destination Data</em>. <a href="https://github.com/itsleeds/odjitter">https://github.com/itsleeds/odjitter</a>.
+</div>
 <div id="ref-carrismetropolitana_datasets_2026" class="csl-entry" role="listitem">
-Carris Metropolitana. 2026. <span>“Datasets.”</span> Carris Metropolitana. <a href="https://github.com/carrismetropolitana/datasets">https://github.com/carrismetropolitana/datasets</a>.
+Carris Metropolitana. 2026. <em>Datasets</em>. Carris Metropolitana. <a href="https://github.com/carrismetropolitana/datasets">https://github.com/carrismetropolitana/datasets</a>.
 </div>
 <div id="ref-COS_2023" class="csl-entry" role="listitem">
-DGT, Direção-Geral do Território. 2023. <span>“COSc2023 - Carta de Ocupação Do Solo Conjuntural de 2023.”</span> <a href="https://www.dgterritorio.gov.pt/COSc2023-Carta-de-Ocupacao-do-Solo-Conjuntural-de-2023">https://www.dgterritorio.gov.pt/COSc2023-Carta-de-Ocupacao-do-Solo-Conjuntural-de-2023</a>.
+DGT, Direção-Geral do Território. 2023. <em>COSc2023 - Carta de Ocupação Do Solo Conjuntural de 2023</em>. <a href="https://www.dgterritorio.gov.pt/COSc2023-Carta-de-Ocupacao-do-Solo-Conjuntural-de-2023">https://www.dgterritorio.gov.pt/COSc2023-Carta-de-Ocupacao-do-Solo-Conjuntural-de-2023</a>.
 </div>
 <div id="ref-caop_2024" class="csl-entry" role="listitem">
-———. 2024. <span>“Carta Administrativa Oficial de Portugal 2024.1.”</span> <a href="https://www.dgterritorio.gov.pt/atividades/cartografia/cartografia-tematica/caop">https://www.dgterritorio.gov.pt/atividades/cartografia/cartografia-tematica/caop</a>.
+DGT, Direção-Geral do Território. 2024. <em>Carta Administrativa Oficial de Portugal 2024.1</em>. <a href="https://www.dgterritorio.gov.pt/atividades/cartografia/cartografia-tematica/caop">https://www.dgterritorio.gov.pt/atividades/cartografia/cartografia-tematica/caop</a>.
 </div>
 <div id="ref-copernicus_browser" class="csl-entry" role="listitem">
-EU, Copernicus. 2026. <span>“Copernicus Browser.”</span> <a href="https://browser.dataspace.copernicus.eu/">https://browser.dataspace.copernicus.eu/</a>.
+EU, Copernicus. 2026. <em>Copernicus Browser</em>. <a href="https://browser.dataspace.copernicus.eu/">https://browser.dataspace.copernicus.eu/</a>.
 </div>
 <div id="ref-hot_osm" class="csl-entry" role="listitem">
-HOT, Humanitarian OpenStreetMap Team. 2026. <span>“HOT Export Tool.”</span> <a href="https://export.hotosm.org/">https://export.hotosm.org/</a>.
+HOT, Humanitarian OpenStreetMap Team. 2026. <em>HOT Export Tool</em>. <a href="https://export.hotosm.org/">https://export.hotosm.org/</a>.
 </div>
 <div id="ref-INE_IMOB2017" class="csl-entry" role="listitem">
-INE, Instituto Nacional de Estatística. 2018. <span>“Inquérito à Mobilidade Nas Áreas Metropolitanas Do Porto e de Lisboa — IMOB 2017.”</span> <a href="https://www.ine.pt/xurl/pub/349495406">https://www.ine.pt/xurl/pub/349495406</a>.
+INE, Instituto Nacional de Estatística. 2018. <em>Inquérito à Mobilidade Nas Áreas Metropolitanas Do Porto e de Lisboa — IMOB 2017</em>. <a href="https://www.ine.pt/xurl/pub/349495406">https://www.ine.pt/xurl/pub/349495406</a>.
 </div>
 <div id="ref-INE_Census2021" class="csl-entry" role="listitem">
-———. 2021a. <span>“Censos 2021 — Base Geográfica de Referenciação de Informação, NUTS 3 Lisboa.”</span> <a href="https://mapas.ine.pt/download/filesGPG/2021/nuts3/BGRI21_170.zip">https://mapas.ine.pt/download/filesGPG/2021/nuts3/BGRI21_170.zip</a>.
+INE, Instituto Nacional de Estatística. 2021a. <em>Censos 2021 — Base Geográfica de Referenciação de Informação, NUTS 3 Lisboa</em>. <a href="https://mapas.ine.pt/download/filesGPG/2021/nuts3/BGRI21_170.zip">https://mapas.ine.pt/download/filesGPG/2021/nuts3/BGRI21_170.zip</a>.
 </div>
 <div id="ref-census_2021_modal_share" class="csl-entry" role="listitem">
-———. 2021b. <span>“População Residente Que Vive No Alojamento a Maior Parte Do Ano (n.º) Por Local de Residência à Data Dos Censos [2021] (NUTS - 2013), Sexo, Condição Perante o Trabalho, Principal Meio de Transporte e Local de Trabalho Ou Estudo.”</span> <a href="https://tabulador.ine.pt/indicador/?id=0011704">https://tabulador.ine.pt/indicador/?id=0011704</a>.
-</div>
-<div id="ref-Lovelace_odjitter_2022" class="csl-entry" role="listitem">
-Lovelace, Robin, and Rosa Félix. 2022. <span>“Odjitter: Jitter Origin-Destination Data.”</span> <a href="https://github.com/itsleeds/odjitter">https://github.com/itsleeds/odjitter</a>.
+INE, Instituto Nacional de Estatística. 2021b. <em>População Residente Que Vive No Alojamento a Maior Parte Do Ano (n.º) Por Local de Residência à Data Dos Censos [2021] (NUTS - 2013), Sexo, Condição Perante o Trabalho, Principal Meio de Transporte e Local de Trabalho Ou Estudo</em>. <a href="https://tabulador.ine.pt/indicador/?id=0011704">https://tabulador.ine.pt/indicador/?id=0011704</a>.
 </div>
 <div id="ref-Lovelace_2022" class="csl-entry" role="listitem">
-Lovelace, Robin, Rosa Félix, and Dustin Carlino. 2022. <span>“Jittering: A Computationally Efficient Method for Generating Realistic Route Networks from Origin-Destination Data.”</span> <em>Findings</em>. <a href="https://doi.org/10.32866/001c.33873">https://doi.org/10.32866/001c.33873</a>.
+Lovelace, Robin, Rosa Félix, and Dustin Carlino. 2022. <span>“Jittering: A Computationally Efficient Method for Generating Realistic Route Networks from Origin-Destination Data.”</span> <em>Findings</em>, ahead of print. <a href="https://doi.org/10.32866/001c.33873">https://doi.org/10.32866/001c.33873</a>.
 </div>
 <div id="ref-h3jsr" class="csl-entry" role="listitem">
-O’Brien, Lauren. 2023. <span>“H3jsr: Access Uber’s H3 Library.”</span> <a href="https://cran.r-project.org/web/packages/h3jsr/index.html">https://cran.r-project.org/web/packages/h3jsr/index.html</a>.
+O’Brien, Lauren. 2023. <em>H3jsr: Access Uber’s H3 Library</em>. <a href="https://cran.r-project.org/web/packages/h3jsr/index.html">https://cran.r-project.org/web/packages/h3jsr/index.html</a>.
 </div>
 <div id="ref-OpenStreetMap" class="csl-entry" role="listitem">
-OpenStreetMap. 2026. <span>“OpenStreetMap: Map Data Available Under the Open Database License (ODbL).”</span> <a href="https://www.openstreetmap.org/">https://www.openstreetmap.org/</a>.
+OpenStreetMap. 2026. <em>OpenStreetMap: Map Data Available Under the Open Database License (ODbL)</em>. <a href="https://www.openstreetmap.org/">https://www.openstreetmap.org/</a>.
 </div>
 <div id="ref-Pereira_r5r_2021" class="csl-entry" role="listitem">
-Pereira, Rafael H. M., Marcus Saraiva, Daniel Herszenhut, Carlos K. V. Braga, and Matthew Wigginton Conway. 2021. <span>“R5r: Rapid Realistic Routing on Multimodal Transport Networks with <span>R5</span> in <span>R</span>.”</span> <em>Findings</em>. <a href="https://doi.org/10.32866/001c.21262">https://doi.org/10.32866/001c.21262</a>.
+Pereira, Rafael H. M., Marcus Saraiva, Daniel Herszenhut, Carlos K. V. Braga, and Matthew Wigginton Conway. 2021. <span>“R5r: Rapid Realistic Routing on Multimodal Transport Networks with <span>R5</span> in <span>R</span>.”</span> <em>Findings</em>, ahead of print. <a href="https://doi.org/10.32866/001c.21262">https://doi.org/10.32866/001c.21262</a>.
 </div>
 <div id="ref-Uber_H3_2018" class="csl-entry" role="listitem">
-Uber Technologies. 2018. <span>“H3: A Hexagonal Hierarchical Spatial Index.”</span> <a href="https://h3geo.org">https://h3geo.org</a>.
+Uber Technologies. 2018. <em>H3: A Hexagonal Hierarchical Spatial Index</em>. <a href="https://h3geo.org">https://h3geo.org</a>.
 </div>
 </div>
 </section>
@@ -1401,11 +1636,11 @@ Uber Technologies. 2018. <span>“H3: A Hexagonal Hierarchical Spatial Index.”
 <footer class="footer">
   <div class="nav-footer">
     <div class="nav-footer-left">
-<p>U-Shift Lab, Instituto Superior Técnico</p>
+<p>© 2026, U-Shift, CERIS, Instituto Superior Técnico, University of Lisbon</p>
 </div>   
     <div class="nav-footer-center">
-<p>© 2026, U-Shift, CERIS, Instituto Superior Técnico, University of Lisbon</p>
-</div>
+      &nbsp;
+    </div>
     <div class="nav-footer-right">
 <p>April 2026</p>
 </div>
