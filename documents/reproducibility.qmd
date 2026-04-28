@@ -10,7 +10,7 @@ Scripts are organised with a numeric prefix indicating execution order:
 
 | Prefix | Phase | Script(s) |
 |--------|-------|-----------|
-| 00 | Setup | [`00a_impt_data_handle.R`](https://github.com/U-Shift/IMPT-data/blob/main/code/00a_impt_data_handle.R), [`00b_data_load.R`](https://github.com/U-Shift/IMPT-data/blob/main/code/00b_data_load.R) |
+| 00 | Setup | [`00a_impt_data_handle_external.R`](https://github.com/U-Shift/IMPT-data/blob/main/code/00a_impt_data_handle_external.R), [`00b_data_load.R`](https://github.com/U-Shift/IMPT-data/blob/main/code/00b_data_load.R) |
 | 01 | Geometry & base data preparation | [`01_data_prep.R`](https://github.com/U-Shift/IMPT-data/blob/main/code/01_data_prep.R) |
 | 02 | Socio-demographics & land use | [`02_*.R`](https://github.com/U-Shift/IMPT-data/tree/main/code/) (5 scripts) |
 | 03 | Routing & travel time matrices | [`03_ttm_gridh3.R`](https://github.com/U-Shift/IMPT-data/blob/main/code/03_ttm_gridh3.R) |
