@@ -45,7 +45,7 @@ flowchart TB
 
 **Package:** `accessibility` [@Pereira_accessibility_2022]
 
-Cumulative accessibility, computed with `accessibility::cumulative_cutoff()`, measures the number of opportunities of each category reachable within a given travel time. It is computed considering different time cut-offs, to evaluate how the number of opportunities reachable increase with a progressively higher time budget. 
+Cumulative accessibility, computed with `accessibility::cumulative_cutoff()`, measures the number of opportunities of each category reachable within a given travel time (example in @fig-access-example). It is computed considering different time cut-offs, to evaluate how the number of opportunities reachable increase with a progressively higher time budget. 
 
 The resulting values are then aggregated to parishes and municipalities using a **population-weighted mean**, separately for each demographic group (residents, kids, active, elderly). 
 
@@ -58,13 +58,26 @@ Accessibility metrics follow the pattern:
 
 For example: `access_health_pt_30min_residents` is the number of health facilities reachable by public transit within 30 minutes, for the total resident population for the parish and municipality levels. At the grid level, it is called `access_health_pt_30min_residents`.
 
+:::{#fig-access-example layout="[[1,1],[1,1]]"}
+
+![](images/maps/access_health_walk.png)
+
+![](images/maps/access_health_bike.png)
+
+![](images/maps/access_health_car.png)
+
+![](images/maps/access_health_pt.png)
+
+Example of cumulative accessibility by mode for health facilities
+:::
+
 ## Time to closest opportunity (mobility costs)
 
 **Script:** [`04_mobility_costs_time.R`](https://github.com/U-Shift/IMPT-data/blob/main/code/04_mobility_costs_time.R)  
 
 **Package:** `accessibility` [@Pereira_accessibility_2022]
 
-The time to closest opportunities is computed with `accessibility::cost_to_closest()` considering different number of closest opportunities (1, 2, and 3). This variations aims to determine how the travel time to the closest opportunity changes with a stricter criteria of opportunities considered.
+The time to closest opportunities is computed with `accessibility::cost_to_closest()` considering different number of closest opportunities (1, 2, and 3). This variations aims to determine how the travel time to the closest opportunity changes with a stricter criteria of opportunities considered (example in @fig-mobility-cost-example).
 
 The resulting values are then aggregated to parishes and municipalities using a **population-weighted mean**, separately for each demographic group (residents, kids, active, elderly). 
 
@@ -74,3 +87,14 @@ Accessibility metrics follow the pattern:
 `mobility_cost_{poi_type}_{mode}_{n}_{census_group¹}`
 
 > ¹ Accessibility is computed at grid level, so metrics for this scale are not aggregated by census group.
+
+:::{#fig-mobility-cost-example layout="[[1,1,1]]"}
+
+![Nearest opportunity](images/maps/mobility_tt_n1.png)
+
+![Nearest 2 opportunities](images/maps/mobility_tt_n2.png)
+
+![Nearest 3 opportunities](images/maps/mobility_tt_n3.png)
+
+Example of time to closest grocery facility for walk
+:::
