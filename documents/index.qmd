@@ -21,7 +21,7 @@ The index (@fig-imt-results) covers **124 parishes** (*freguesias*, or *district
 
 ![Grid](images/maps/impt_grid.png)
 
-IMPT critical results for different scales
+IMPT critical results for all modes (with Navegante) for different scales
 :::
 
 ## Study Area {#sec-area}
