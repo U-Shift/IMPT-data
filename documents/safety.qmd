@@ -68,3 +68,13 @@ For each geographical unit and transport mode:
 | Severity index (pedestrian) | `fatalities / pedestrians_involved` |
 
 : Safety indicators {#tbl-safety-indicators}
+
+
+:::{#fig-accident-locations layout="[[1,1]]"}
+
+![Total accidents per 1000 inhabitants](images/maps/saf_accidents.png)
+
+![Severity index (total)](images/maps/saf_severity.png)
+
+Examples of safety indicators computed
+:::
