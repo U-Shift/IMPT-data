@@ -19,6 +19,13 @@ The fixed cost of **0.40 €/km** is based on Portaria n.º 1553-D/2008 de 31 de
 
 Tolls are computed via the Infraestruturas de Portugal toll calculator [@ip_portagens] using the route geometry returned by `r5r::detailed_itineraries()`.
 
+:::{#fig-commuting-cost-car}
+
+![](images/maps/commuting_cost_car.png)
+
+Car commuting cost at grid level
+:::
+
 ## Public transport costs — Two scenarios
 
 **Scripts:** [`04_mobility_costs_money_pt.R`](https://github.com/U-Shift/IMPT-data/blob/main/code/04_mobility_costs_money_pt.R), [`04_mobility_costs_money_pt_cost_structure.R`](https://github.com/U-Shift/IMPT-data/blob/main/code/04_mobility_costs_money_pt_cost_structure.R)
@@ -50,6 +57,15 @@ Based on operator revenue data for monthly passes:
 
 Average monthly cost paid per pass holder: **~25.25 €**  
 Assuming 44 journeys/month (2 trips × 22 working days): **~0.57 €/trip**
+
+:::{#fig-pt-costs layout="[[1,1]]"}
+
+![Scenario A: Single fare](images/maps/commuting_cost_fare.png)
+
+![Scenario B: Monthly pass](images/maps/commuting_cost_pass.png)
+
+Public transport commuting cost at grid level
+:::
 
 ## Composite affordability indicators
 
@@ -88,6 +104,15 @@ Where:
 
 For the variant including housing costs ($\text{h\_transp\_inc\_comp}$), the annualised housing cost $C_{\text{housing,year}}$ is added to the numerator.
 
+:::{#fig-affordability-pt layout="[[1,1]]"}
+
+![Transport burden](images/maps/aff_tp.png)
+
+![Transport + housing burden](images/maps/aff_tp_house.png)
+
+Affordability by public transport at grid level
+:::
+
 **Income data:** household income per parish from INE (*Rendimento agregado 2023*). [@ine_renda_2023]  (See  @sec-income))
 
 **Housing costs:** median monthly housing cost per parish from INE (*Habitação custos 2021*). [@census_2021_housing] (See @sec-housing))
@@ -106,20 +131,35 @@ The parish of Canha (dtmnfr = 150701) is not served by any GTFS operator, result
 
 Income inequality is characterised by two indicators computed at municipality level and assigned to parishes and grid cells:
 
-**Gini coefficient** — measures overall income inequality on a scale from 0 (perfect equality) to 1 (maximum inequality).
+**Gini coefficient** (@fig-gini) — measures overall income inequality on a scale from 0 (perfect equality) to 1 (maximum inequality).
 Data is computed directly from the INE publication for each municipality.
 Income is considered by mean household income, liquid.
 
-**Palma ratio** — measures the ratio of the income share of the top 10% to the bottom 40% of the population, a measure more sensitive to inequality at the extremes:
+**Palma ratio** (@fig-palma) — measures the ratio of the income share of the top 10% to the bottom 40% of the population, a measure more sensitive to inequality at the extremes:
 
 $$\text{Palma} = \frac{\text{income share of top 10\%}}{\text{income share of bottom 40\%}}$$
 
 Both indicators are sourced directly from the INE publication for each municipality and parish. Grid cells are assigned the values of their corresponding parish via the `grid_nuts.csv` cross-reference table.
+
+:::{layout="[[1,1]]"}
+
+![Gini Coefficient](images/maps/aff_gini.png){#fig-gini}
+
+![Palma Ratio](images/maps/aff_palma.png){#fig-palma}
+
+:::
 
 ## Housing costs {#sec-housing}
 
 **Script:** [`02_land_use_export.R`](https://github.com/U-Shift/IMPT-data/blob/main/code/02_land_use_export.R)  
 **Source:** INE — *Habitação custos 2021* (`Habitaccao_Custos_2021.xlsx`). [@census_2021_housing]
 
-Median monthly housing cost and rent, by parish, is sourced from Statistics Portugal (INE), Census 2021, at municipality and parish levels. 
+Median monthly housing cost and rent, by parish, is sourced from Statistics Portugal (INE), Census 2021, at municipality and parish levels (@fig-housing). 
 Grid cells are assigned the values of their corresponding parish via the `grid_nuts.csv` cross-reference table.
+
+:::{#fig-housing}
+
+![](images/maps/aff_housing.png)
+
+Housing costs
+:::
