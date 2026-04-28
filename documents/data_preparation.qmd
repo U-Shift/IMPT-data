@@ -269,4 +269,11 @@ Census modal share for different modes
 
 **Source:** IMOB 2017 data [@INE_IMOB2017] 
 
-Vehicle ownership variables include average motorised vehicles per household and percentage of households without a vehicle, aggregated at parish and municipality level. Calculations performed in [`02_veh_ownership.R`](https://github.com/U-Shift/IMPT-data/blob/main/code/02_veh_ownership.R).
+Vehicle ownership variables include average motorised vehicles per household (@fig-vehicles-n-hh) and percentage of households without a vehicle (@fig-vehicles-pct-no), aggregated at parish and municipality level. Calculations performed in [`02_veh_ownership.R`](https://github.com/U-Shift/IMPT-data/blob/main/code/02_veh_ownership.R).
+
+:::{layout="[[1,1]]"}
+![Average motorised vehicles per household](images/maps/vehicles_n_hh.png){#fig-vehicles-n-hh}
+
+![Percentage of households without a vehicle](images/maps/vehicles_pct_no.png){#fig-vehicles-pct-no}
+
+::: 
