@@ -2,12 +2,6 @@
 
 Accessibility indicators measure the spatial accessibility of opportunities for different population groups using two metrics: cumulative accessibility and travel time to the closest opportunities.
 
-::: {.callout-note}
-## POIs only inside Lisbon Metropolitan Area
-
-Mind that the POIs considered to compute accessibility are limited to the Lisbon Metropolitan Area boundaries, so the values of accessibility in the border of the region might underestimate the reality.
-:::
-
 ```{mermaid}
 %%| label: fig-accessibility-flow
 %%| fig-cap: "Accessibility computation flowchart"
@@ -97,4 +91,10 @@ Accessibility metrics follow the pattern:
 ![Nearest 3 opportunities](images/maps/mobility_tt_n3.png)
 
 Example of time to closest grocery facility for walk
+:::
+
+::: {.callout-note}
+## POIs only inside Lisbon Metropolitan Area
+
+Mind that the POIs considered to compute accessibility are limited to the Lisbon Metropolitan Area boundaries, so the values of accessibility in the border of the region might underestimate the reality.
 :::
