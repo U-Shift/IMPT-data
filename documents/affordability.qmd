@@ -51,9 +51,9 @@ Based on operator revenue data for monthly passes:
 |-----------|----------------|-------|
 | Navegante Metropolitano | 5,063,510 | 40 € |
 | Navegante Municipal | 887,190 | 30 € |
-| Sub-23 | 1,103,782 | 20 € |
-| Senior (65+) | 243,784 | 80 € |
-| Free (youth) | 3,425,013 | 0 € |
+| Senior (65+) | 1,103,782 | 20 € |
+| Family | 243,784 | 80 € |
+| Youth (Sub-23) | 3,425,013 | 0 € |
 
 Average monthly cost paid per pass holder: **~25.25 €**  
 Assuming 44 journeys/month (2 trips × 22 working days): **~0.57 €/trip**
