@@ -7,7 +7,7 @@ Mobility indicators cover infrastructure availability and quality, public transp
 
 **Script:** [`04_mobility_commuting.R`](https://github.com/U-Shift/IMPT-data/blob/main/code/04_mobility_commuting.R)
 
-Using the jittered IMOB OD pairs (**for commuting**) and the travel time matrices, average commuting travel times are computed for each geographical unit and mode, weighted by number of trips. Trips with no feasible route within the constraints are assigned the maximum travel time (120 min) and counted separately as "not accomplishable" trips (PNA — *Percentagem Não Alcançáveis*).
+Using the jittered IMOB OD pairs (**for commuting**) and the travel time matrices, average commuting travel times are computed for each geographical unit and mode, weighted by number of trips (example at @fig-commuting-ttm). Trips with no feasible route within the constraints are assigned the maximum travel time (120 min) and counted separately as "not accomplishable" trips (PNA — *Percentagem Não Alcançáveis*).
 
 ```{mermaid}
 %%| label: fig-commuting-flow
@@ -27,12 +27,22 @@ flowchart TB
     AggMode --> Output["avg_tt_{mode}<br/>trips, trips_na_{mode}<br/>PNA_{mode}"]
 ```
 
+:::{#fig-commuting-ttm layout="[[1,1]]"}
+![Public transport, up to 2 transfers](images/maps/mobility_commuting_pt.png)
+
+![Car](images/maps/mobility_commuting_car.png)
+
+Commuting travel time at grid level
+:::
+
 ## Number of PT transfers
 
 **Script:** [`04_mobility_commuting.R`](https://github.com/U-Shift/IMPT-data/blob/main/code/04_mobility_commuting.R)
 
 For each commuting OD pair, the **minimum** number of transfers required for each PTransit route (for 0, 1, 2, and 3 transfers) is assigned to each OD pair, and population-weighted mean transfers are computed per geographical unit.
-The result is the average minimum number of transfers to commute to work, using PTransit.
+The result is the average minimum number of transfers to commute to work, using PTransit (@fig-commuting-transfers).
+
+![Average number of minimum transfers required for commuting with Public Transport](images/maps/commuting_avg_transfers.png){#fig-commuting-transfers}
 
 
 ## Walking and Cycling infrastructure ratio
@@ -41,13 +51,15 @@ The result is the average minimum number of transfers to commute to work, using 
 
 ### Walking infrastructure ratio
 
-The pedestrian infrastructure ratio is the proportion of road length that includes pedestrian infrastructure, computed using OSM data:
+The pedestrian infrastructure (@fig-walking-infra-ratio) ratio is the proportion of road length that includes pedestrian infrastructure, computed using OSM data:
 
 $$R_{ped} = \frac{\text{pedestrian path length}}{\text{road length}}$$
 
 Road classification uses highway tags: `motorway`, `trunk`, `primary`, `secondary`, `tertiary`, `unclassified`, `residential`, `living_street`, plus link variants.
 
 Pedestrian infrastructure uses tags: `highway = footway | pedestrian | steps | residential` and `footway = sidewalk | crossing | path | platform | corridor | alley | track`, and `sidewalk = both | left | right`.
+
+![Walking infrastructure ratio at grid level](images/maps/mobility_infra_ped_ratio.png){#fig-walking-infra-ratio}
 
 ### Cycling infrastructure ratio and type
 
@@ -68,13 +80,20 @@ The cycling infrastructure ratio is computed analogously to the pedestrian ratio
 
 The primary indicators are:
 
-**Cycling infrastructure ratio**:
+**Cycling infrastructure ratio** (@fig-cycling-infra-ratio):
 $$R_{cyc} = \frac{\text{total cycleway length}}{\text{road length}}$$
 
-**Cycling quality ratio**:
+**Cycling quality ratio** (@fig-cycling-infra-ratio-quality):
 $$R_{cyc,q} = \frac{\text{segregated cycleway length}}{\text{total cycleway length}}$$
 
 Where "segregated cycleway length" corresponds to the **Cycle track or lane** category.
+
+
+:::{layout="[[1,1]]"}
+![Cycling infrastructure ratio at grid level](images/maps/mobility_infra_cycle_ratio.png){#fig-cycling-infra-ratio}
+
+![Cycling quality ratio at grid level](images/maps/mobility_infra_cycle_quality.png){#fig-cycling-infra-ratio-quality}
+:::
 
 ## PT stop coverage
 
@@ -97,7 +116,15 @@ Three mode groups are defined based on stop type (identified from GTFS `stop_id`
 
 Bus stops are first consolidated by merging stops within 30 m of each other into a single representative centroid (using a 15 m buffer union), reducing the dataset from ~16 000 to ~10 700 origins before routing. Isochrones are computed in batches and dissolved into a single polygon per mode group. Stops that could not be routed are replaced with 300 m Euclidean buffers.
 
-A **union isochrone** is computed from all three layers to estimate coverage by *any* PT mode, avoiding double-counting of population in overlapping catchment areas.
+A **union isochrone** is computed from all three layers (@fig-pt-coverage-iso) to estimate coverage by *any* PT mode, avoiding double-counting of population in overlapping catchment areas.
+
+:::{#fig-pt-coverage-iso layout="[[1],[1,1]]"}
+![Bus isochrones](images/maps/pt_coverage_iso_bus.png)
+
+![Subway & light rail	 isochrones](images/maps/pt_coverage_iso_metro.png)
+
+![Train & ferry	 isochrones](images/maps/pt_coverage_iso_train.png)
+:::
 
 ### Population estimation (dasymetric method)
 
@@ -138,7 +165,20 @@ The centroid of each fragment is used to assign it to the administrative unit, a
 **Metrics produced per mode group and scale:**
 
 - `pop_pt_{mode}` — population within walking distance of each mode (or all modes)
-- `pct_pt_{mode}` — percentage of population within walking distance of each mode (or all modes)
+- `pct_pt_{mode}` — percentage of population within walking distance of each mode (or all modes) (@fig-pt-coverage)
+
+:::{#fig-pt-coverage layout="[[1,1],[1,1]]"}
+
+![All PT modes](images/maps/pt_coverage_all.png)
+
+![Bus](images/maps/pt_coverage_bus.png)
+
+![Subway & light rail	](images/maps/pt_coverage_metro.png)
+
+![Train & ferry	](images/maps/pt_coverage_train.png)
+
+Percentage of population within walking distance of each mode (or all modes)
+:::
 
 ## PT headways and waiting times
 
@@ -156,13 +196,23 @@ Stop-level service frequencies are computed with `tidytransit::get_stop_frequenc
 
 : PT service frequency periods {#tbl-periods}
 
-A 500 m buffer per stop is used to allocate stops to census population centroids. Results are aggregated to parishes and municipalities as **population-weighted mean headway and waiting time**.
+A 500 m buffer per stop is used to allocate stops to census population centroids. Results are aggregated to parishes and municipalities as **population-weighted mean headway and waiting time** (example in @fig-pt-waiting-time).
 
-Additionally, frequency reduction factors are computed to characterise night and weekend service reduction.
+Additionally, frequency reduction factors are computed to characterise night and weekend service reduction (example in @fig-pt-night-reduction).
+
+:::{layout="[[1,1]]"}
+
+![Average waiting time at peak](images/maps/pt_waiting_time.png){#fig-pt-waiting-time}
+
+![Frequency ratio peak/night](images/maps/pt_night_reduction.png){#fig-pt-night-reduction}
+
+:::
 
 ## Shared mobility
 
 **Script:** [`04_mobility.R`](https://github.com/U-Shift/IMPT-data/blob/main/code/04_mobility.R)  
 **Source:** TML PMUS (Shared mobility dock locations) [@pmmus]
 
-The number of shared mobility points (physical and virtual docks) is counted per parish and per grid cell.
+The number of shared mobility points (physical and virtual docks) is counted per parish and per grid cell (@fig-shared-mobility).
+
+![Shared mobility points](images/maps/shared_mobility.png){#fig-shared-mobility}

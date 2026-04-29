@@ -28,6 +28,7 @@ book:
       chapters:
         - output_dashboard.qmd
         - reproducibility.qmd
+        - future_work.qmd
     - references.qmd
     - about.qmd
   appendices:

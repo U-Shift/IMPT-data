@@ -95,19 +95,19 @@ For **Mobility - Car** PCA is not applied (too few indicators); instead, we assu
 
 Three aggregation methods are computed for the global IMPT and each per-mode IMPT:
 
-1. **Geometric mean** (equal weights):
+1. **Geometric mean** (equal weights, @fig-imt-geometric):
 $$IMPT_{geom} = \left(\prod_{d} (S_d + 1)\right)^{1/n} - 1$$
 
 Partially compensatory: penalizes dimensions with very low values non-linearly. Highlights the most critical situations, where at least one dimension is severely deficient.
 
 
-2. **Arithmetic mean** (equal weights):
+2. **Arithmetic mean** (equal weights, @fig-imt-arithmetic):
 $$IMPT_{avg} = \frac{1}{n} \sum_d S_d$$
 
 Compensatory: high vulnerability in one dimension can be offset by good performance in others. Suitable for setting aggregate policy targets and communicating to non-specialist audiences.
 
 
-3. **Entropy-weighted geometric mean**:
+3. **Entropy-weighted geometric mean** (@fig-imt-entropy):
 $$IMPT_{entropy} = \prod_d (S_d + 1)^{w_d} - 1$$
 
 where weights $w_d$ are derived from the **entropy weighting method**:
@@ -119,9 +119,31 @@ $$w_d = \frac{d_d}{\sum_j d_j}, \quad d_d = 1 - e_d, \quad e_d = -k \sum_i p_{id
 
 with $k = 1/\ln(n)$ and $p_{id}$ being the proportion of the dimension score for area $i$.
 
+:::{#fig-imt-methods layout="[[1,1,1]]"}
+
+![Geometric mean](images/maps/impt_geometric.png){#fig-imt-geometric}
+
+![Arithmetic mean](images/maps/impt_arithmetic.png){#fig-imt-arithmetic}
+
+![Entropy-weighted mean](images/maps/impt_entropy.png){#fig-imt-entropy}
+
+IMPT results for different aggregation methods for all modes (with Navegante)
+
+:::
+
 ## Spatial Aggregation {#sec-aggregation}
 
 Once scores are computed at parish level, they are aggregated to higher and lower levels:
 
-- **Municipality level:** population-weighted mean of parish scores.
-- **Grid level:** parishes are assigned to grid cells via the `grid_nuts.csv` cross-reference table; scores are assigned from the host parish (no further averaging at this stage).
+- **Municipality level:** population-weighted mean of parish scores (example in @fig-imt-aggregation-mun).
+- **Grid level:** parishes are assigned to grid cells via the `grid_nuts.csv` cross-reference table; scores are assigned from the host parish (no further averaging at this stage) (example in @fig-imt-aggregation-grid).
+
+:::{#fig-imt-aggregation layout="[[1,1]]"}
+
+![Municipality level](images/maps/impt_geometric_mun.png){#fig-imt-aggregation-mun}
+
+![Grid level](images/maps/impt_geometric_grid.png){#fig-imt-aggregation-grid}
+
+IMPT (geometric mean for all modes, with Navegante) aggregated at municipality and grid levels
+
+:::

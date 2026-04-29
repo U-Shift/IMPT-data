@@ -13,7 +13,7 @@ library(readr)
 library(tidyr)
 library(DT)
 
-source("../code/00a_impt_data_handle.R")
+source("../code/00a_impt_data_handle_internal.R")
 
 pca_var <- impt_read("impt/pca_scores/PCA_Variance_Table.csv")
 

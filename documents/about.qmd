@@ -36,13 +36,13 @@ This research was conducted by the U-Shift Lab at Instituto Superior Técnico - 
 
 ``` bibtex
 @techreport{impt_report_2026,
-  author    = {Orozco-Fontalvo, Mauricio and Félix, Rosa and Matos, Gonçalo and Moura, Filipe and Garcia, Camila},
-  title     = {IMPT — Índice Multidimensional e Multimodal de Pobreza nos Transportes: Methodological Report},
+  author    = {Félix, Rosa and Matos, Gonçalo F. and Orozco-Fontalvo, Mauricio and Alvelos, Miguel and  Garcia, Camila and Moura, Filipe},
+  title     = {U-Shift/IMPT-data: Data treatment, processing steps, and methodological report for multimodal transport poverty index},
   year      = {2026},
   month     = {April},
   institution = {CERIS, Instituto Superior Técnico - University of Lisbon, Lisbon},
   url       = {https://u-shift.github.io/IMPT-data},
-  doi       = {10.5281/zenodo.XXXXX}
+  doi       = {10.5281/zenodo.19887968}
 }
 ```
 

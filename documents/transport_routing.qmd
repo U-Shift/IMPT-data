@@ -55,3 +55,5 @@ The 50th percentile travel time is used so that results represent typical (media
 This process is long and computationally expensive. It is recommended to run it in a powerful machine. The `travel_time_matrix()` function does not compute the **geometry** of the routes, only the **travel times**. The geometry of the routes is computed in the accessibility section.
 
 The results are stored so we have a OD matrix of travel time between all H3 cells for each transport mode and scenario.
+
+![Car travel time for a random sample of 5000 ODs](images/maps/ttm.png)
