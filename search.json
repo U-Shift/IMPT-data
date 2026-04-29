@@ -624,7 +624,7 @@
     "href": "about.html#cite-as",
     "title": "About",
     "section": "Cite as",
-    "text": "Cite as\n@techreport{impt_report_2026,\n  author    = {Orozco-Fontalvo, Mauricio and Félix, Rosa and Matos, Gonçalo and Moura, Filipe and Garcia, Camila},\n  title     = {IMPT — Índice Multidimensional e Multimodal de Pobreza nos Transportes: Methodological Report},\n  year      = {2026},\n  month     = {April},\n  institution = {CERIS, Instituto Superior Técnico - University of Lisbon, Lisbon},\n  url       = {https://u-shift.github.io/IMPT-data},\n  doi       = {10.5281/zenodo.XXXXX}\n}",
+    "text": "Cite as\n@techreport{impt_report_2026,\n  author    = {Félix, Rosa and Matos, Gonçalo F. and Orozco-Fontalvo, Mauricio and Alvelos, Miguel and  Garcia, Camila and Moura, Filipe},\n  title     = {U-Shift/IMPT-data: Data treatment, processing steps, and methodological report for multimodal transport poverty index},\n  year      = {2026},\n  month     = {April},\n  institution = {CERIS, Instituto Superior Técnico - University of Lisbon, Lisbon},\n  url       = {https://u-shift.github.io/IMPT-data},\n  doi       = {10.5281/zenodo.19887968}\n}",
     "crumbs": [
       "About"
     ]
