@@ -14,4 +14,7 @@ authors:
   given-names: Miguel
 title: U-Shift/IMPT-data: Data treatment, processing steps, and methodological report for multimodal transport poverty index
 version: 3.0
+identifiers:
+  - type: doi
+    value: 10.5281/zenodo.19887968
 date-released: 2026-04-29
