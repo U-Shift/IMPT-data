@@ -19,4 +19,8 @@ The inclusion of environmental externalities is a key step towards a more holist
     *   **Ministério do Trabalho:** Through specific data requests for anonymized microdata.
     *   **TML (Transportes Metropolitanos de Lisboa):** Utilizing datasets from the PMUS (Plano de Mobilidade Urbana Sustentável).
 
+## Affordability
+
+*   **Consider more realistic PT fares:** Use TML data by PT line for a percentage of use of monthly pass and single fare, instead of two scenarios of PT use. 
+
 These developments will allow for a more detailed analysis of the trade-offs between different dimensions of transport poverty and support more targeted policy interventions.
