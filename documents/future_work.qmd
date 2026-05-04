@@ -12,6 +12,7 @@ The inclusion of environmental externalities is a key step towards a more holist
 
 *   **CO2 emissions from road transportation:** Leveraging data from INE (Instituto Nacional de Estatística) to estimate the carbon footprint of mobility patterns at the **freguesia level**.
 *   **Air Quality (PM2.5):** Integrating data from APA (Agência Portuguesa do Ambiente) to monitor exposure to fine particulate matter (PM2.5) resulting from transport activities, at the **freguesia or município level**.
+*   **Environmental Noise:** At the moment, this data is only available for [Lisbon municipality](https://app.powerbi.com/view?r=eyJrIjoiMTRjN2Y5NzAtMTIwOS00NTBmLWFhYzgtNTI1YzQxMGI3OGE4IiwidCI6ImEyNmRlZWJjLTgzN2QtNGU5OS04N2EyLThmZDAwMjQ2NzE3MiIsImMiOjl9). 
 
 ## Mobility
 
