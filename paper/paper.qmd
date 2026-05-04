@@ -60,17 +60,74 @@ Here are two sample references: @Pereira_r5r_2021 @INE_IMOB2017. If citing the o
 If `cite-method` is set to `citeproc` in `elsevier_article()`, then pandoc is used for citations instead of `natbib`. In this case, the `csl` option is used to format the references. By default, this template will provide an appropriate style, but alternative `csl` files are available from <https://www.zotero.org/styles?q=elsevier>. These can be downloaded
 and stored locally, or the url can be used as in the example header.
 
-# Equations
+# Methods
 
-Here is an equation in latex:
-$$ 
-  f_{X}(x) = \left(\frac{\alpha}{\beta}\right)
-  \left(\frac{x}{\beta}\right)^{\alpha-1}
-  e^{-\left(\frac{x}{\beta}\right)^{\alpha}}; 
-  \alpha,\beta,x > 0 .
-$$
+## Normalisation {#sec-normalisation}
 
-Inline equations work as well: $\sum_{i = 2}^\infty\{\alpha_i^\beta\}$
+All indicators are normalised to the range [1, 100] using min-max scaling:
+
+**Benefit indicators** (higher raw value → better):
+$$X_{norm} = 1 + \frac{X - X_{min}}{X_{max} - X_{min}} \times 99$$
+
+**Cost indicators** (lower raw value → better):
+$$X_{norm} = 1 + \frac{X_{max} - X}{X_{max} - X_{min}} \times 99$$
+
+-   **Accessibility** metrics (`access_*`) are _benefit_ indicators.
+-   **Mobility** cost metrics (`mobility_cost_*`), PT waiting times, all **affordability** indicators, and all **safety** indicators are _cost_ indicators.
+
+Missing values in accessibility indicators (arising from infeasible PT routes) are imputed with the mean of the respective variable prior to PCA.
+
+## PCA-Based Dimension Scores {#sec-pca}
+
+For each dimension (Accessibility, Mobility, Safety) and at the global (all-mode) and per-mode levels, a PCA is run using `FactoMineR::PCA()` at parish level.
+
+The **first principal component (PC1)** score is used as the dimension index, after rescaling to [1, 100]. PC1 captures the dominant axis of variation among the normalised indicators.
+
+For **Affordability**, PCA is not applied (too few indicators); instead, the normalised composite `h_transp_inc_comp` (housing + transport cost as share of income, modal-share weighted) is used directly as the Affordability Index.
+
+For **Safety per mode**, an equal-weight average of the severity index (per mode) and total vehicles involved (per mode) is used instead of PCA.
+
+For **Mobility - Car** PCA is not applied (too few indicators); instead, we assumed an equal-weight average of the normalized composite `mobility_commuting_avg_tt_car` and `road_length`.
+
+## Composite IMPT Scores {#sec-composite}
+
+Three aggregation methods are computed for the global IMPT and each per-mode IMPT:
+
+1. **Geometric mean** (equal weights, @fig-imt-geometric):
+$$IMPT_{geom} = \left(\prod_{d} (S_d + 1)\right)^{1/n} - 1$$
+
+Partially compensatory: penalizes dimensions with very low values non-linearly. Highlights the most critical situations, where at least one dimension is severely deficient.
+
+
+2. **Arithmetic mean** (equal weights, @fig-imt-arithmetic):
+$$IMPT_{avg} = \frac{1}{n} \sum_d S_d$$
+
+Compensatory: high vulnerability in one dimension can be offset by good performance in others. Suitable for setting aggregate policy targets and communicating to non-specialist audiences.
+
+
+3. **Entropy-weighted geometric mean** (@fig-imt-entropy):
+$$IMPT_{entropy} = \prod_d (S_d + 1)^{w_d} - 1$$
+
+where weights $w_d$ are derived from the **entropy weighting method**:
+
+Weights are determined by the empirical dispersion of the dimensions across parishes: the dimension that varies most among territories receives greater weight. Maximises territorial contrast and is useful for competitive prioritisation of interventions.
+
+
+$$w_d = \frac{d_d}{\sum_j d_j}, \quad d_d = 1 - e_d, \quad e_d = -k \sum_i p_{id} \ln(p_{id})$$
+
+with $k = 1/\ln(n)$ and $p_{id}$ being the proportion of the dimension score for area $i$.
+
+:::{#fig-imt-methods layout="[[1,1,1]]"}
+
+![Geometric mean](../documents/images/maps/impt_geometric.png){#fig-imt-geometric}
+
+![Arithmetic mean](../documents/images/maps/impt_arithmetic.png){#fig-imt-arithmetic}
+
+![Entropy-weighted mean](../documents/images/maps/impt_entropy.png){#fig-imt-entropy}
+
+IMPT results for different aggregation methods for all modes (with Navegante)
+
+:::
 
 # Figures and tables
 

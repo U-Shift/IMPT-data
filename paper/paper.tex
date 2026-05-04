@@ -285,16 +285,154 @@ appropriate style, but alternative \texttt{csl} files are available from
 \url{https://www.zotero.org/styles?q=elsevier}. These can be downloaded
 and stored locally, or the url can be used as in the example header.
 
-\section{Equations}\label{equations}
+\section{Methods}\label{methods}
 
-Here is an equation in latex: \[ 
-  f_{X}(x) = \left(\frac{\alpha}{\beta}\right)
-  \left(\frac{x}{\beta}\right)^{\alpha-1}
-  e^{-\left(\frac{x}{\beta}\right)^{\alpha}}; 
-  \alpha,\beta,x > 0 .
-\]
+\subsection{Normalisation}\label{sec-normalisation}
 
-Inline equations work as well: \(\sum_{i = 2}^\infty\{\alpha_i^\beta\}\)
+All indicators are normalised to the range {[}1, 100{]} using min-max
+scaling:
+
+\textbf{Benefit indicators} (higher raw value → better):
+\[X_{norm} = 1 + \frac{X - X_{min}}{X_{max} - X_{min}} \times 99\]
+
+\textbf{Cost indicators} (lower raw value → better):
+\[X_{norm} = 1 + \frac{X_{max} - X}{X_{max} - X_{min}} \times 99\]
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Accessibility} metrics (\texttt{access\_*}) are \emph{benefit}
+  indicators.
+\item
+  \textbf{Mobility} cost metrics (\texttt{mobility\_cost\_*}), PT
+  waiting times, all \textbf{affordability} indicators, and all
+  \textbf{safety} indicators are \emph{cost} indicators.
+\end{itemize}
+
+Missing values in accessibility indicators (arising from infeasible PT
+routes) are imputed with the mean of the respective variable prior to
+PCA.
+
+\subsection{PCA-Based Dimension Scores}\label{sec-pca}
+
+For each dimension (Accessibility, Mobility, Safety) and at the global
+(all-mode) and per-mode levels, a PCA is run using
+\texttt{FactoMineR::PCA()} at parish level.
+
+The \textbf{first principal component (PC1)} score is used as the
+dimension index, after rescaling to {[}1, 100{]}. PC1 captures the
+dominant axis of variation among the normalised indicators.
+
+For \textbf{Affordability}, PCA is not applied (too few indicators);
+instead, the normalised composite \texttt{h\_transp\_inc\_comp} (housing
++ transport cost as share of income, modal-share weighted) is used
+directly as the Affordability Index.
+
+For \textbf{Safety per mode}, an equal-weight average of the severity
+index (per mode) and total vehicles involved (per mode) is used instead
+of PCA.
+
+For \textbf{Mobility - Car} PCA is not applied (too few indicators);
+instead, we assumed an equal-weight average of the normalized composite
+\texttt{mobility\_commuting\_avg\_tt\_car} and \texttt{road\_length}.
+
+\subsection{Composite IMPT Scores}\label{sec-composite}
+
+Three aggregation methods are computed for the global IMPT and each
+per-mode IMPT:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  \textbf{Geometric mean} (equal weights,
+  Figure~\ref{fig-imt-geometric}):
+  \[IMPT_{geom} = \left(\prod_{d} (S_d + 1)\right)^{1/n} - 1\]
+\end{enumerate}
+
+Partially compensatory: penalizes dimensions with very low values
+non-linearly. Highlights the most critical situations, where at least
+one dimension is severely deficient.
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{1}
+\tightlist
+\item
+  \textbf{Arithmetic mean} (equal weights,
+  Figure~\ref{fig-imt-arithmetic}):
+  \[IMPT_{avg} = \frac{1}{n} \sum_d S_d\]
+\end{enumerate}
+
+Compensatory: high vulnerability in one dimension can be offset by good
+performance in others. Suitable for setting aggregate policy targets and
+communicating to non-specialist audiences.
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{2}
+\tightlist
+\item
+  \textbf{Entropy-weighted geometric mean}
+  (Figure~\ref{fig-imt-entropy}):
+  \[IMPT_{entropy} = \prod_d (S_d + 1)^{w_d} - 1\]
+\end{enumerate}
+
+where weights \(w_d\) are derived from the \textbf{entropy weighting
+method}:
+
+Weights are determined by the empirical dispersion of the dimensions
+across parishes: the dimension that varies most among territories
+receives greater weight. Maximises territorial contrast and is useful
+for competitive prioritisation of interventions.
+
+\[w_d = \frac{d_d}{\sum_j d_j}, \quad d_d = 1 - e_d, \quad e_d = -k \sum_i p_{id} \ln(p_{id})\]
+
+with \(k = 1/\ln(n)\) and \(p_{id}\) being the proportion of the
+dimension score for area \(i\).
+
+\begin{figure}
+
+\begin{minipage}[t]{0.33\linewidth}
+
+\centering{
+
+\pandocbounded{\includegraphics[keepaspectratio]{../documents/images/maps/impt_geometric.png}}
+
+}
+
+\subcaption{\label{fig-imt-geometric}Geometric mean}
+
+\end{minipage}%
+%
+\begin{minipage}[t]{0.33\linewidth}
+
+\centering{
+
+\pandocbounded{\includegraphics[keepaspectratio]{../documents/images/maps/impt_arithmetic.png}}
+
+}
+
+\subcaption{\label{fig-imt-arithmetic}Arithmetic mean}
+
+\end{minipage}%
+%
+\begin{minipage}[t]{0.33\linewidth}
+
+\centering{
+
+\pandocbounded{\includegraphics[keepaspectratio]{../documents/images/maps/impt_entropy.png}}
+
+}
+
+\subcaption{\label{fig-imt-entropy}Entropy-weighted mean}
+
+\end{minipage}%
+
+\caption{\label{fig-imt-methods}IMPT results for different aggregation
+methods for all modes (with Navegante)}
+
+\end{figure}%
 
 \section{Figures and tables}\label{figures-and-tables}
 
