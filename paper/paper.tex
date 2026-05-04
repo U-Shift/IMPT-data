@@ -262,20 +262,7 @@ tempus elit.
 \end{frontmatter}
     
 
-Please make sure that your manuscript follows the guidelines in the
-Guide for Authors of the relevant journal. It is not necessary to
-typeset your manuscript in exactly the same way as an article, unless
-you are submitting to a camera-ready copy (CRC) journal.
-
-For detailed instructions regarding the elsevier article class, see
-\url{https://www.elsevier.com/authors/policies-and-guidelines/latex-instructions}
-
-\section{Heading 1}\label{heading-1}
-
-Here are two sample references: \citet{Pereira_r5r_2021}
-\citet{INE_IMOB2017}. If citing the other way \citep{Lovelace_2022}.
-
-\subsection{Heading 2}\label{heading-2}
+\section{Introduction}\label{introduction}
 
 If \texttt{cite-method} is set to \texttt{citeproc} in
 \texttt{elsevier\_article()}, then pandoc is used for citations instead
@@ -285,7 +272,30 @@ appropriate style, but alternative \texttt{csl} files are available from
 \url{https://www.zotero.org/styles?q=elsevier}. These can be downloaded
 and stored locally, or the url can be used as in the example header.
 
+\section{Literature review}\label{literature-review}
+
+Loren ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum
+augue turpis, dictum non malesuada a, volutpat eget velit. Nam placerat
+turpis purus, eu tristique ex tincidunt et. Mauris sed augue eget turpis
+ultrices tincidunt. Sed et mi in leo porta egestas. Aliquam non laoreet
+velit. Nunc quis ex vitae eros aliquet auctor nec ac libero. Duis
+laoreet sapien eu mi luctus, in bibendum leo molestie. Sed hendrerit
+diam diam, ac dapibus nisl volutpat vitae. Aliquam bibendum varius
+libero, eu efficitur justo rutrum at. Sed at tempus elit.
+
+Here are two sample references: \citet{Pereira_r5r_2021}
+\citet{INE_IMOB2017}. If citing the other way \citep{Lovelace_2022}.
+
 \section{Methods}\label{methods}
+
+Add a flowchart
+
+\subsection{Each Dimensin's Indicators}\label{sec-indicators}
+
+\subsubsection{Accessibility and so
+on\ldots{}}\label{accessibility-and-so-on}
+
+hiuhfjhfhjd
 
 \subsection{Normalisation}\label{sec-normalisation}
 
@@ -434,7 +444,7 @@ methods for all modes (with Navegante)}
 
 \end{figure}%
 
-\section{Figures and tables}\label{figures-and-tables}
+\section{Results}\label{results}
 
 Figure~\ref{fig-meaningless} is generated using an R chunk.
 
@@ -450,7 +460,7 @@ Figure~\ref{fig-meaningless} is generated using an R chunk.
 
 \end{figure}%
 
-\section{Tables coming from R}\label{tables-coming-from-r}
+\section{Discussion}\label{discussion}
 
 Tables can also be generated using R chunks, as shown in
 Table~\ref{tbl-simple} example.
@@ -485,6 +495,10 @@ Valiant & 18.1 & 6 & 225 & 105 \\
 \end{longtable}
 
 }
+
+\section{Conclusions}\label{conclusions}
+
+This is the best paper ever.
 
 
 \renewcommand\refname{References}
