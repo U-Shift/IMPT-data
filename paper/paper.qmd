@@ -2,8 +2,8 @@
 title: Multidimensional Transport Poverty Index
 subtitle: A replicable multi-dimensional and multi-modal measure of transport poverty
 author:
-  - name: Alice Anonymous
-    email: alice@example.com
+  - name: Miguel Alvelos
+    email: miguel.alvelos@tecnico.ulisboa.pt
     affiliations: 
         - id: ceris
           name: CERIS
@@ -13,16 +13,28 @@ author:
           postal-code:  Portugal
     attributes:
         corresponding: true
-  - name: Bob Security
-    email: bob@example.com
+  - name: Mauricio Orozco-Fontalvo
+    email: mauricio.orozco@tecnico.ulisboa.pt
     affiliations:
         - ref: ceris
-  - name: Cat Memes
-    email: cat@example.com
+  - name: Gonçalo F. Matos
+    email: goncaloafmatos@tecnico.ulisboa.pt
     affiliations:
         - ref: ceris
+  - name: Rosa Félix
+    email: rosamfelix@tecnico.ulisboa.pt
+    affiliations:
+        - ref: ceris
+  - name: Camila Garcia
+    email: camila.garcia@tmlmobilidade.pt
+    affiliations: 
+        - id: tml
+          name: Transportes Metropolitanos de Lisboa
+          address: Rua da Cruz de Santa Apolónia 23
+          city: 1100-187 Lisbon
+          postal-code:  Portugal
   - name: Filipe Moura
-    email: fmoura@tecnico.pt
+    email: fmoura@tecnico.ulisboa.pt
     affilations:
         - ref: ceris
 abstract: |
