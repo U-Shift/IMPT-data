@@ -1,5 +1,5 @@
 ---
-title: Transport Poverty Index
+title: Multidimensional Transport Poverty Index
 subtitle: A replicable multi-dimensional and multi-modal measure of transport poverty
 author:
   - name: Alice Anonymous
@@ -46,12 +46,17 @@ format:
 
 # Introduction
 
-If `cite-method` is set to `citeproc` in `elsevier_article()`, then pandoc is used for citations instead of `natbib`. In this case, the `csl` option is used to format the references. By default, this template will provide an appropriate style, but alternative `csl` files are available from <https://www.zotero.org/styles?q=elsevier>. These can be downloaded
-and stored locally, or the url can be used as in the example header.
+Transportation is an essential service which can condition access to almost all human activities, be them work, education, health or social life. When this access is limited by insufficient supply, high costs, or elevated exposure to systemic risks and externalities, the term Transport Poverty is used [@Lucas_2016]. This phenomenon has direct consequences in social exclusion and territorial cohesion [@MejiaDorantes_MurauskaiteBull_2022].
+
+In the European context, this problem has increased its political relevance over the last decade. The European Pillar of Social Rights, in its 20th Principle, enshrines the right to access essential services, including transportation. Regulation (EU) 2023/955 of 10 May 2023, which established the Social Climate Fund (SCF), enshrined the first legally bounding definition of transport poverty at an European scale, defining it as "individuals’ and households’ inability or difficulty to meet the costs of private or public transport, or their lack of or limited access to transport needed for their access to essential socioeconomic services and activities, taking into account the national and spatial context" [@EU_2023955] <!--# não tenho a certeza se esta citação está bem feita no .bib -->.
+
+Despite the clear empirical relevance of this phenomenon, there is difficulty in quantifying it in a systematic way. Specifically in Portugal, previous research has focused on punctual case studies [@Pritchard_2014] or on costly mobility surveys [@INE_IMOB2017], which can hardly be renewed at the cadence required by public policy cycles.
+
+This project was thus developed in an attempt to bridge the existing methodological gap with the creation of a composite tool - the Multidimensional Transport Poverty Index (IMPT) - that is systematic, replicable and scalable, as well as wholly based in public data, intended to assist and support public policy instruments, such as the European Union's Social Climate Fund (SCF) or Sustainable Urban Mobility Plans (SUMPs). The Lisbon Metropolitan Area (LMA) was employed as a case study for the tool's validation.
 
 # Literature review
 
-Loren ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum augue turpis, dictum non malesuada a, volutpat eget velit. Nam placerat turpis purus, eu tristique ex tincidunt et. Mauris sed augue eget turpis ultrices tincidunt. Sed et mi in leo porta egestas. Aliquam non laoreet velit. Nunc quis ex vitae eros aliquet auctor nec ac libero. Duis laoreet sapien eu mi luctus, in bibendum leo molestie. Sed hendrerit diam diam, ac dapibus nisl volutpat vitae. Aliquam bibendum varius libero, eu efficitur justo rutrum at. Sed at tempus elit.
+If `cite-method` is set to `citeproc` in `elsevier_article()`, then pandoc is used for citations instead of `natbib`. In this case, the `csl` option is used to format the references. By default, this template will provide an appropriate style, but alternative `csl` files are available from <https://www.zotero.org/styles?q=elsevier>. These can be downloaded and stored locally, or the url can be used as in the example header.
 
 Here are two sample references: @Pereira_r5r_2021 @INE_IMOB2017. If citing the other way [@Lovelace_2022].
 
@@ -63,21 +68,18 @@ Add a flowchart
 
 ### Accessibility and so on...
 
-hiuhfjhfhjd 
-    
+hiuhfjhfhjd
 
 ## Normalisation {#sec-normalisation}
 
-All indicators are normalised to the range [1, 100] using min-max scaling:
+All indicators are normalised to the range \[1, 100\] using min-max scaling:
 
-**Benefit indicators** (higher raw value → better):
-$$X_{norm} = 1 + \frac{X - X_{min}}{X_{max} - X_{min}} \times 99$$
+**Benefit indicators** (higher raw value → better): $$X_{norm} = 1 + \frac{X - X_{min}}{X_{max} - X_{min}} \times 99$$
 
-**Cost indicators** (lower raw value → better):
-$$X_{norm} = 1 + \frac{X_{max} - X}{X_{max} - X_{min}} \times 99$$
+**Cost indicators** (lower raw value → better): $$X_{norm} = 1 + \frac{X_{max} - X}{X_{max} - X_{min}} \times 99$$
 
--   **Accessibility** metrics (`access_*`) are _benefit_ indicators.
--   **Mobility** cost metrics (`mobility_cost_*`), PT waiting times, all **affordability** indicators, and all **safety** indicators are _cost_ indicators.
+-   **Accessibility** metrics (`access_*`) are *benefit* indicators.
+-   **Mobility** cost metrics (`mobility_cost_*`), PT waiting times, all **affordability** indicators, and all **safety** indicators are *cost* indicators.
 
 Missing values in accessibility indicators (arising from infeasible PT routes) are imputed with the mean of the respective variable prior to PCA.
 
@@ -85,7 +87,7 @@ Missing values in accessibility indicators (arising from infeasible PT routes) a
 
 For each dimension (Accessibility, Mobility, Safety) and at the global (all-mode) and per-mode levels, a PCA is run using `FactoMineR::PCA()` at parish level.
 
-The **first principal component (PC1)** score is used as the dimension index, after rescaling to [1, 100]. PC1 captures the dominant axis of variation among the normalised indicators.
+The **first principal component (PC1)** score is used as the dimension index, after rescaling to \[1, 100\]. PC1 captures the dominant axis of variation among the normalised indicators.
 
 For **Affordability**, PCA is not applied (too few indicators); instead, the normalised composite `h_transp_inc_comp` (housing + transport cost as share of income, modal-share weighted) is used directly as the Affordability Index.
 
@@ -97,32 +99,25 @@ For **Mobility - Car** PCA is not applied (too few indicators); instead, we assu
 
 Three aggregation methods are computed for the global IMPT and each per-mode IMPT:
 
-1. **Geometric mean** (equal weights, @fig-imt-geometric):
-$$IMPT_{geom} = \left(\prod_{d} (S_d + 1)\right)^{1/n} - 1$$
+1.  **Geometric mean** (equal weights, @fig-imt-geometric): $$IMPT_{geom} = \left(\prod_{d} (S_d + 1)\right)^{1/n} - 1$$
 
 Partially compensatory: penalizes dimensions with very low values non-linearly. Highlights the most critical situations, where at least one dimension is severely deficient.
 
-
-2. **Arithmetic mean** (equal weights, @fig-imt-arithmetic):
-$$IMPT_{avg} = \frac{1}{n} \sum_d S_d$$
+2.  **Arithmetic mean** (equal weights, @fig-imt-arithmetic): $$IMPT_{avg} = \frac{1}{n} \sum_d S_d$$
 
 Compensatory: high vulnerability in one dimension can be offset by good performance in others. Suitable for setting aggregate policy targets and communicating to non-specialist audiences.
 
-
-3. **Entropy-weighted geometric mean** (@fig-imt-entropy):
-$$IMPT_{entropy} = \prod_d (S_d + 1)^{w_d} - 1$$
+3.  **Entropy-weighted geometric mean** (@fig-imt-entropy): $$IMPT_{entropy} = \prod_d (S_d + 1)^{w_d} - 1$$
 
 where weights $w_d$ are derived from the **entropy weighting method**:
 
 Weights are determined by the empirical dispersion of the dimensions across parishes: the dimension that varies most among territories receives greater weight. Maximises territorial contrast and is useful for competitive prioritisation of interventions.
 
-
 $$w_d = \frac{d_d}{\sum_j d_j}, \quad d_d = 1 - e_d, \quad e_d = -k \sum_i p_{id} \ln(p_{id})$$
 
 with $k = 1/\ln(n)$ and $p_{id}$ being the proportion of the dimension score for area $i$.
 
-:::{#fig-imt-methods layout="[[1,1,1]]"}
-
+::: {#fig-imt-methods layout="[[1,1,1]]"}
 ![Geometric mean](../documents/images/maps/impt_geometric.png){#fig-imt-geometric}
 
 ![Arithmetic mean](../documents/images/maps/impt_arithmetic.png){#fig-imt-arithmetic}
@@ -130,7 +125,6 @@ with $k = 1/\ln(n)$ and $p_{id}$ being the proportion of the dimension score for
 ![Entropy-weighted mean](../documents/images/maps/impt_entropy.png){#fig-imt-entropy}
 
 IMPT results for different aggregation methods for all modes (with Navegante)
-
 :::
 
 # Results
@@ -163,4 +157,4 @@ knitr::kable(head(mtcars)[,1:4])
 
 This is the best paper ever.
 
-# References {-}
+# References {.unnumbered}
