@@ -64,9 +64,29 @@ In the European context, this problem has increased its political relevance over
 
 Despite the clear empirical relevance of this phenomenon, there is difficulty in quantifying it in a systematic way. Specifically in Portugal, previous research has focused on punctual case studies [@Pritchard_2014] or on costly mobility surveys [@INE_IMOB2017], which can hardly be renewed at the cadence required by public policy cycles.
 
-This project was thus developed in an attempt to bridge the existing methodological gap with the creation of a composite tool - the Multidimensional Transport Poverty Index (IMPT) - that is systematic, replicable and scalable, as well as wholly based in public data, intended to assist and support public policy instruments, such as the European Union's Social Climate Fund (SCF) or Sustainable Urban Mobility Plans (SUMPs). The Lisbon Metropolitan Area (LMA) was employed as a case study for the tool's validation.
+This project was thus developed in an attempt to bridge the existing methodological gap with the creation of a composite and intermodal tool - the Multidimensional Transport Poverty Index (IMPT) - that is replicable and scalable, as well as wholly based in public data, intended to assist and support public policy instruments, such as the European Union's Social Climate Fund (SCF) or Sustainable Urban Mobility Plans (SUMPs). The Lisbon Metropolitan Area (LMA) was employed as a case study for the tool's validation.
 
 # Literature review
+
+## Definitions of Transport Poverty
+
+The concept of transport poverty lacks a single universally accepted definition in scientific literature. This expression has been used to broadly describe inequities related with transportation access, but also in a more restricted way, to refer to the economic inability to support transportation costs [@Mattioli_2018]. <!--# (...) -->
+
+## Dimensions of Transport Poverty
+
+### Accessibility
+
+### Mobility
+
+### Affordability
+
+### Safety
+
+## IMPT's Contribution
+
+Literature gap: dependency on primary data (surveys) -\> difficulty to evaluate over time
+
+National policy: lack of an index combining all dimensions and replicable at the lowest administrative level; lack of tools that are able to transform literature into instruments supporting political decision-making.
 
 If `cite-method` is set to `citeproc` in `elsevier_article()`, then pandoc is used for citations instead of `natbib`. In this case, the `csl` option is used to format the references. By default, this template will provide an appropriate style, but alternative `csl` files are available from <https://www.zotero.org/styles?q=elsevier>. These can be downloaded and stored locally, or the url can be used as in the example header.
 
@@ -76,7 +96,7 @@ Here are two sample references: @Pereira_r5r_2021 @INE_IMOB2017. If citing the o
 
 Add a flowchart
 
-## Each Dimensin's Indicators {#sec-indicators}
+## Each Dimension's Indicators {#sec-indicators}
 
 ### Accessibility and so on...
 
