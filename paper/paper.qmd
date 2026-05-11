@@ -70,17 +70,27 @@ This project was thus developed in an attempt to bridge the existing methodologi
 
 ## Definitions of Transport Poverty
 
-The concept of transport poverty lacks a single universally accepted definition in scientific literature. This expression has been used to broadly describe inequities related with transportation access, but also in a more restricted way, to refer to the economic inability to support transportation costs [@Mattioli_2018]. <!--# (...) -->
+<!--# (falta uma parte inicial) -->
+
+The concept of transport poverty lacks a single universally accepted definition in scientific literature. This expression has been used to broadly describe inequities related with transportation access, but also in a more restricted way, to refer to the economic inability to support transportation costs [@Mattioli_2018]. However, due to the lack of a universal definition and the multidimensional nature of transport poverty, its measurement and quantification poses a challenge [@Levinson_King_2020].
+
+<!--# (porquê utilizar a definição de Lucas e não apenas acessibilidade ou affordability) -->
 
 ## Dimensions of Transport Poverty
 
-### Accessibility
+The dimensions proposed by @Lucas_2016 continue to be the reference for composite indexes of transport poverty [@AlonsoEpelde_2023][@MejiaDorantes_MurauskaiteBull_2022]. IMPT adopts these dimensions, implementing them through secondary data available in Portugal.
 
 ### Mobility
+
+Mobility refers to the systemic deficits of the transport system, be them lack of infrastructure, lack of service frequency or long trip duration [@Levinson_King_2020] [@Lucas_2016] [@MejiaDorantes_MurauskaiteBull_2022]. This dimension captures different aspects of transport supply that accessibility is not able to, their core difference being that, while accessibility asks which places are reachable, mobility focuses on how easy it is to reach them.
+
+### Accessibility
 
 ### Affordability
 
 ### Safety
+
+This dimension is commonly not included in transport poverty indexes [@Kelly_2023], being considered only in the most wide-ranging definitions of transport poverty [@Lucas_2016] [@UNHabitat_2013]. It refers to the externalities of the transport system, such as road crash rates and pollution, which have disproportionate effects on the territory. For the IMPT, this dimension's inputs only included those related to road safety indicators. This was due to the inability to get open and granular data regarding environmental externalities.
 
 ## IMPT's Contribution
 
