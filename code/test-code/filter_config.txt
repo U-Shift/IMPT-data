@@ -1,0 +1,33 @@
+# --- HIGHWAYS & RAIL ---
+w/highway
+w/highway=footway
+w/railway
+
+# --- TRANSPORT HUBS ---
+n/amenity=ferry_terminal
+w/amenity=ferry_terminal
+n/building=ferry_terminal
+w/building=ferry_terminal
+n/amenity=bus_station
+w/amenity=bus_station
+w/building=train_station
+
+# --- BIKE INFRASTRUCTURE ---
+# Dedicated cycle paths
+w/highway=cycleway
+# Lanes physically on the road
+w/cycleway=*
+w/cycleway:left=*
+w/cycleway:right=*
+w/cycleway:both=*
+# Bike parking and sharing (GTFS/GBFS related)
+n/amenity=bicycle_parking
+n/amenity=bicycle_rental
+n/ref:gbfs=*
+
+# --- GTFS DATA  ---
+n/gtfs:*
+w/gtfs:*
+r/gtfs:*
+n/ref:google_transit
+
