@@ -70,25 +70,25 @@ This project was thus developed in an attempt to bridge the existing methodologi
 
 ## Definitions of Transport Poverty
 
-Transport systems are a fundamental part of modern society, and their absence contributes to social exclusion - a state where an individual or a societal group is left out of participating in regular social activities in a given society [@Pritchard_2014] - and socio-territorial inequality [@Hidayati_2021]. Despite the relation between poverty and transport conditions, these are also related to a wide range of social issues [@Gossling_2016].
+Transport systems are a fundamental part of modern society, and their absence contributes to social exclusion - a state where an individual or a societal group is left out of participating in regular social activities in a given society [@Pritchard_2014] - and socio-territorial inequality [@Hidayati_2021]. Despite the relation between poverty and transport conditions, these are also related to a wide range of social issues, with motorized vehicle users disproportionately contributing to externalities, but with vulnerable road users being disproportionately affected by them in health, space allocation and time consumption [@Gossling_2016].
 
-The concept of transport poverty lacks a single universally accepted definition in scientific literature. This expression has been used to broadly describe inequities related with transportation access, but also in a more restricted way, to refer to the economic inability to support transportation costs [@Mattioli_2018]. However, due to the lack of a universal definition and the multidimensional nature of transport poverty, its measurement and quantification poses a challenge [@Levinson_King_2020].
+The concept of transport poverty lacks a single universally accepted definition in scientific literature. This expression has been used to broadly describe inequities related with transportation access, but also in a more restricted way to refer to the economic inability to support transportation costs [@Mattioli_2018]. However, as @Lucas_2016 states, different terminologies relating to transport poverty (terms such as "mobility poverty", "accessibility poverty" or "transport disadvantage") are "used with often very different, although also overlapping definitions". Due to this lack of a universal definition and the multidimensional nature of transport poverty, its measurement and quantification poses a challenge [@Levinson_King_2020].
 
-The necessity to comprenhend and quantify these transport conditions thus becomes more urgent. It is essential to define reliable indicators of transport vulnerability to map "public transport deserts" [@Jiao_Dillivan_2013] and low-accessibility areas in order to inform public intervention and to monitor the implementation of measures to improve these situations. <!--# (mais uma frase sobre replicabilidade) -->
+This way, the necessity to comprehend this concept and quantify it becomes more urgent. It is essential to define reliable indicators of transport vulnerability to map "public transport deserts" [@Jiao_Dillivan_2013] and low-accessibility areas in order to inform public intervention and to monitor the implementation of measures to improve these situations. A reliable and replicable index to measure transport poverty is thus fundamental to support public policy instruments.
 
 @Lucas_2016 proposes the most comprehensive conceptual systematization of transport poverty, clearly defining previously different but overlapping terminology. They identify four dimensions that make up transport poverty:
 
--   Affordability - the ability to meet the cost of transportation.
+- Affordability - the ability to meet the cost of transportation.
 
--   Mobility - the systemic lack of transportation that impacts trips.
+- Mobility - the systemic lack of transportation that impacts trips.
 
--   Accessibility - the capacity to reach usual destinations and activities (work, education, health and so on).
+- Accessibility - the capacity to reach usual destinations and activities (work, education, health and so on).
 
--   Exposure to externalities (Safety) - the negative exposure to the transport system itself, such as disproportional rates of pollution or road crashes.
+- Exposure to externalities (Safety) - the negative exposure to the transport system itself, such as disproportional rates of pollution or road crashes.
 
-Recently, @MejiaDorantes_MurauskaiteBull_2022 have proposed a definition that has been widely adopted: transport poverty is the inability of an individual or household to access essential services or opportunities due to a transportation service that is inaccessible, inadequate, unaffordable, time-consuming or unsafe. This definition has been adapted and applied at the European scale, through @EU_2023955 and the recent European Commission Report \[@EuropeanCommission_2024\].
+Recently, @MejiaDorantes_MurauskaiteBull_2022 have proposed a definition that has been widely adopted: transport poverty is the inability of an individual or household to access essential services or opportunities due to a transportation service that is inaccessible, inadequate, unaffordable, time-consuming or unsafe. This definition has been adapted and applied at the European scale, through @EU_2023955 and the recent European Commission Report [@EuropeanCommission_2024].
 
-In summary, the concept of transport poverty has evolved from a one-dimensional look at accessibility or affordability, to a composite approach that attempts to capture the multi-dimensional nature of this phenomenon.
+In summary, the concept of transport poverty has evolved from a one-dimensional look at accessibility or affordability, to a composite approach that attempts to capture the multidimensional nature of this phenomenon.
 
 ## Dimensions of Transport Poverty
 
@@ -108,9 +108,13 @@ This dimension is commonly not included in transport poverty indexes [@Kelly_202
 
 ## IMPT's Contribution
 
-Literature gap: dependency on primary data (surveys) -\> difficulty to evaluate over time
+IMPT emerges in an attempt to create an index synthesizing these dimensions and providing a reliable measurement of transport poverty, bridging three gaps in the literature and in national public policy.
 
-National policy: lack of an index combining all dimensions and replicable at the lowest administrative level; lack of tools that are able to transform literature into instruments supporting political decision-making.
+1.  There is, in Portugal, the lack of an index that integrates accessibility, mobility, affordability and safety and is replicable at the lowest administrative level.
+2.  Existing indexes excessively depend on costly primary data that is difficult to monitor continuously. IMPT relies exclusively on secondary and open data, easily allowing for updates and monitoring over time.
+3.  There is a lack of operational tools that allow to translate academic literature on transport poverty into decision-support instruments for local governments, transport authorities, and generally public policy makers.
+
+<!--# falar da acessibilidade percepcionada e das quatro variantes metodológicas-->
 
 If `cite-method` is set to `citeproc` in `elsevier_article()`, then pandoc is used for citations instead of `natbib`. In this case, the `csl` option is used to format the references. By default, this template will provide an appropriate style, but alternative `csl` files are available from <https://www.zotero.org/styles?q=elsevier>. These can be downloaded and stored locally, or the url can be used as in the example header.
 
@@ -134,8 +138,8 @@ All indicators are normalised to the range \[1, 100\] using min-max scaling:
 
 **Cost indicators** (lower raw value → better): $$X_{norm} = 1 + \frac{X_{max} - X}{X_{max} - X_{min}} \times 99$$
 
--   **Accessibility** metrics (`access_*`) are *benefit* indicators.
--   **Mobility** cost metrics (`mobility_cost_*`), PT waiting times, all **affordability** indicators, and all **safety** indicators are *cost* indicators.
+- **Accessibility** metrics (`access_*`) are *benefit* indicators.
+- **Mobility** cost metrics (`mobility_cost_*`), PT waiting times, all **affordability** indicators, and all **safety** indicators are *cost* indicators.
 
 Missing values in accessibility indicators (arising from infeasible PT routes) are imputed with the mean of the respective variable prior to PCA.
 
