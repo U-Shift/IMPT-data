@@ -86,19 +86,23 @@ This way, the necessity to comprehend this concept and quantify it becomes more 
 
 - Exposure to externalities (Safety) - the negative exposure to the transport system itself, such as disproportional rates of pollution or road crashes.
 
-Recently, @MejiaDorantes_MurauskaiteBull_2022 have proposed a definition that has been widely adopted: transport poverty is the inability of an individual or household to access essential services or opportunities due to a transportation service that is inaccessible, inadequate, unaffordable, time-consuming or unsafe. This definition has been adapted and applied at the European scale, through @EU_2023955 and the recent European Commission Report [@EuropeanCommission_2024].
+Recently, @MejiaDorantes_MurauskaiteBull_2022 have proposed a definition that has been widely adopted: transport poverty is the inability of an individual or household to access essential services or opportunities due to transportation services that are inaccessible, inadequate, unaffordable, time-consuming or unsafe. This definition has been adapted and applied at the European scale, through @EU_2023955 and a recent European Commission Report [@EuropeanCommission_2024].
 
 In summary, the concept of transport poverty has evolved from a one-dimensional look at accessibility or affordability, to a composite approach that attempts to capture the multidimensional nature of this phenomenon.
 
+<!--# é preciso justificar mais porquê usar a definição da Lucas? -->
+
 ## Dimensions of Transport Poverty
 
-The dimensions proposed by @Lucas_2016 continue to be the reference for composite indexes of transport poverty [@AlonsoEpelde_2023][@MejiaDorantes_MurauskaiteBull_2022]. IMPT adopts these dimensions, implementing them through secondary data available in Portugal.
+The dimensions proposed by @Lucas_2016 continue to be the reference for composite indexes of transport poverty [@AlonsoEpelde_2023][@MejiaDorantes_MurauskaiteBull_2022]. IMPT adopts these dimensions, implementing them through secondary data available in Portugal. Each of them is further explained thoroughly.
+
+### Accessibility
+
+Accessibility refers to the ability to reach regular destinations such as employment, education, health and other essential services [@Allen_Farber_2019][@SocialExclusionUnit_2003].
 
 ### Mobility
 
 Mobility refers to the systemic deficits of the transport system, be them lack of infrastructure, lack of service frequency or long trip duration [@Levinson_King_2020] [@Lucas_2016] [@MejiaDorantes_MurauskaiteBull_2022]. This dimension captures different aspects of transport supply that accessibility is not able to, their core difference being that, while accessibility asks which places are reachable, mobility focuses on how easy it is to reach them.
-
-### Accessibility
 
 ### Affordability
 
@@ -110,11 +114,23 @@ This dimension is commonly not included in transport poverty indexes [@Kelly_202
 
 IMPT emerges in an attempt to create an index synthesizing these dimensions and providing a reliable measurement of transport poverty, bridging three gaps in the literature and in national public policy.
 
-1.  There is, in Portugal, the lack of an index that integrates accessibility, mobility, affordability and safety and is replicable at the lowest administrative level.
+1.  There is, in Portugal, the absence of an index that integrates the four aforementioned dimensions across multiple transport modes and is replicable at the lowest administrative level.
 2.  Existing indexes excessively depend on costly primary data that is difficult to monitor continuously. IMPT relies exclusively on secondary and open data, easily allowing for updates and monitoring over time.
 3.  There is a lack of operational tools that allow to translate academic literature on transport poverty into decision-support instruments for local governments, transport authorities, and generally public policy makers.
 
-<!--# falar da acessibilidade percepcionada e das quatro variantes metodológicas-->
+<!--# falar das quatro variantes metodológicas-->
+
+Furthermore, the IMPT incorporates four methodological variants, corresponding to different analytical positions:
+
+- Contrasting IMPT: based on entropy, highlights the variables with the highest variation, better capturing territorial contrasts.
+
+<!-- -->
+
+- Critical IMPT: based on the geometric mean, it penalizes the dimension with the worst performance.
+
+- Balanced IMPT: based on the arithmetic mean, allows for compensation between dimensions.
+
+- Political IMPT: allowing for a personalized AHP weighting, it can be tailored to the decision-maker's preferences.
 
 If `cite-method` is set to `citeproc` in `elsevier_article()`, then pandoc is used for citations instead of `natbib`. In this case, the `csl` option is used to format the references. By default, this template will provide an appropriate style, but alternative `csl` files are available from <https://www.zotero.org/styles?q=elsevier>. These can be downloaded and stored locally, or the url can be used as in the example header.
 
@@ -126,9 +142,15 @@ Add a flowchart
 
 ## Each Dimension's Indicators {#sec-indicators}
 
-### Accessibility and so on...
+### Accessibility
 
 hiuhfjhfhjd
+
+### Mobility
+
+### Affordability
+
+### Safety
 
 ## Normalisation {#sec-normalisation}
 
@@ -203,6 +225,16 @@ plot(runif(25), runif(25))
 ```
 
 # Discussion
+
+## Limitations
+
+<!--# dimensão da literacia digital -->
+
+<!--# acessibilidade percepcionada -->
+
+<!--# affordability -> não havia indicadores suficientes para pca -->
+
+<!--# indicadores que não conseguimos incluir (eg poluição atmosférica) -->
 
 Tables can also be generated using R chunks, as shown in @tbl-simple example.
 
