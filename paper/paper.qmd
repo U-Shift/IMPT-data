@@ -70,23 +70,22 @@ This project was thus developed in an attempt to bridge the existing methodologi
 
 ## Definitions of Transport Poverty
 
-Transport systems are a fundamental part of modern society, and their absence contributes to social exclusion - a state where an individual or a societal group is left out of participating in regular social activities in a given society [@Pritchard_2014] - and socio-territorial inequality [@Hidayati_2021]. Despite the relation between poverty and transport conditions, these are also related to a wide range of social issues, with motorized vehicle users disproportionately contributing to externalities, but with vulnerable road users being disproportionately affected by them in health, space allocation and time consumption [@Gossling_2016].
+Transport systems are a fundamental part of modern society, and their absence is related to social exclusion - a state where an individual or a societal group is left out of participating in regular social activities in a given society [@Pritchard_2014] -, socio-territorial inequality and transport inequality - the differences in transport conditions for different groups of people [@Hidayati_2021]. Despite the relation between poverty and transport conditions, these are also related to a wide range of social issues, with motorized vehicle users most contributing to externalities, but with vulnerable road users being disproportionately affected by them in health, space allocation and time consumption [@Gossling_2016]. Moreover, lower-income households tend to not have financial conditions to have motorized transport or to reside in central areas, relegating them to live in areas distant from the city center, often poorly served by public transportation. [@Fedorowicz_2020] [@Lopes_2023].
 
-The concept of transport poverty lacks a single universally accepted definition in scientific literature. This expression has been used to broadly describe inequities related with transportation access, but also in a more restricted way to refer to the economic inability to support transportation costs [@Mattioli_2018]. However, as @Lucas_2016 states, different terminologies relating to transport poverty (terms such as "mobility poverty", "accessibility poverty" or "transport disadvantage") are "used with often very different, although also overlapping definitions". Due to this lack of a universal definition and the multidimensional nature of transport poverty, its measurement and quantification poses a challenge [@Levinson_King_2020].
+These differences in transport conditions can lead to transport poverty, a concept which lacks a single universally accepted definition in scientific literature. This expression has been used to broadly describe inequities related with transportation access, but also in a more restricted way to refer to the economic inability to support transportation costs [@Mattioli_2018]. However, as @Lucas_2016 states, different terminologies relating to transport poverty - terms such as "mobility poverty", "accessibility poverty" or "transport disadvantage" - are used with "often very different, although also overlapping definitions". Due to this lack of a universal definition and the multidimensional nature of transport poverty, its measurement and quantification poses a challenge [@Levinson_King_2020].
 
 This way, the necessity to comprehend this concept and quantify it becomes more urgent. It is essential to define reliable indicators of transport vulnerability to map "public transport deserts" [@Jiao_Dillivan_2013] and low-accessibility areas in order to inform public intervention and to monitor the implementation of measures to improve these situations. A reliable and replicable index to measure transport poverty is thus fundamental to support public policy instruments.
 
-@Lucas_2016 proposes the most comprehensive conceptual systematization of transport poverty, clearly defining previously different but overlapping terminology. They identify four dimensions that make up transport poverty:
-
-- Affordability - the ability to meet the cost of transportation.
-
-- Mobility - the systemic lack of transportation that impacts trips.
+@Lucas_2016 proposes the most comprehensive conceptual systematization of transport poverty, clearly defining previously different but overlapping terminology. They define transport poverty as a combination of the following four dimensions:
 
 - Accessibility - the capacity to reach usual destinations and activities (work, education, health and so on).
-
+- Mobility - the systemic lack of transportation that impacts trips.
+- Affordability - the ability to meet the cost of transportation.
 - Exposure to externalities (Safety) - the negative exposure to the transport system itself, such as disproportional rates of pollution or road crashes.
 
-Recently, @MejiaDorantes_MurauskaiteBull_2022 have proposed a definition that has been widely adopted: transport poverty is the inability of an individual or household to access essential services or opportunities due to transportation services that are inaccessible, inadequate, unaffordable, time-consuming or unsafe. This definition has been adapted and applied at the European scale, through @EU_2023955 and a recent European Commission Report [@EuropeanCommission_2024].
+Recently, and based on the aforementioned concepts, @MejiaDorantes_MurauskaiteBull_2022 have proposed a definition that has been widely adopted: transport poverty is the inability of an individual or household to access essential services or opportunities due to transportation services that are inaccessible, inadequate, unaffordable, time-consuming or unsafe. This definition has been adapted and applied at the European scale, through @EU_2023955 and a recent European Commission Report [@EuropeanCommission_2024]. The key dimensions in the EC Report are synthesized as *Availability* (corresponding to Lucas' Mobility), *Accessibility* and *Affordability*, with exposure to externalities being included in the overarching concept of *Adequacy*.
+
+<!--# adicionar imagem university of manchester -->
 
 In summary, the concept of transport poverty has evolved from a one-dimensional look at accessibility or affordability, to a composite approach that attempts to capture the multidimensional nature of this phenomenon.
 
@@ -94,11 +93,11 @@ In summary, the concept of transport poverty has evolved from a one-dimensional 
 
 ## Dimensions of Transport Poverty
 
-The dimensions proposed by @Lucas_2016 continue to be the reference for composite indexes of transport poverty [@AlonsoEpelde_2023][@MejiaDorantes_MurauskaiteBull_2022]. IMPT adopts these dimensions, implementing them through secondary data available in Portugal. Each of them is further explained thoroughly.
+The dimensions proposed by @Lucas_2016 continue to be the reference for composite indexes of transport poverty [@AlonsoEpelde_2023] [@MejiaDorantes_MurauskaiteBull_2022]. IMPT adopts these dimensions, implementing them through secondary data available in Portugal. Each of them is further explained thoroughly.
 
 ### Accessibility
 
-Accessibility refers to the ability to reach regular destinations such as employment, education, health and other essential services [@Allen_Farber_2019][@SocialExclusionUnit_2003].
+Accessibility refers to the ability to reach regular destinations such as employment, education, health and other essential services [@Allen_Farber_2019] [@SocialExclusionUnit_2003].
 
 ### Mobility
 
@@ -123,7 +122,7 @@ IMPT emerges in an attempt to create an index synthesizing these dimensions and 
 Furthermore, the IMPT incorporates four methodological variants, corresponding to different analytical positions:
 
 - Contrasting IMPT: based on entropy, highlights the variables with the highest variation, better capturing territorial contrasts.
-- Critical IMPT: based on the geometric mean, it penalizes the dimension with the worst performance.
+- Critical IMPT: based on the geometric mean, it non-linearly penalizes the dimensions with the worst performance in each area.
 - Balanced IMPT: based on the arithmetic mean, allows for compensation between dimensions.
 - Political IMPT: allowing for a personalized AHP weighting, it can be tailored to the decision-maker's preferences.
 
