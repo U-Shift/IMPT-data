@@ -89,7 +89,9 @@ Recently, and based on the aforementioned concepts, @MejiaDorantes_MurauskaiteBu
 
 In summary, the concept of transport poverty has evolved from a one-dimensional look at accessibility or affordability, to a composite approach that attempts to capture the multidimensional nature of this phenomenon.
 
-<!--# é preciso justificar mais porquê usar a definição da Lucas? -->
+During the last decade various interactive spatial tools based on indicators of accessibility and inequality have been created and made publicly available. Two of these are here highlighted, due to their conceptual or methodological influence and their proximity to the IMPT's objective.
+
+<!--# acrescentar a parte de Pereira (r5r) e do MIT Atlas of Inequality-->
 
 ## Dimensions of Transport Poverty
 
