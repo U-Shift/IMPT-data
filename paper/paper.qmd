@@ -168,7 +168,7 @@ accessibility_n_opportunities <- data.frame(
   
   check.names = FALSE
 )
-knitr::kable(accessibility_indicators, caption = "Travel time threshold (minutes) to compute cumulative number of opportunities", align = c("l", "c", "c", "c", "c", "c"))
+knitr::kable(accessibility_n_opportunities, caption = "Travel time threshold (minutes) to compute cumulative number of opportunities", align = c("l", "c", "c", "c", "c", "c"))
 ```
 
 ### Mobility
