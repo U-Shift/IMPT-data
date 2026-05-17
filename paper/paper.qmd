@@ -111,6 +111,8 @@ Mobility refers to the systemic deficits of the transport system, be them lack o
 
 This dimension is commonly not included in transport poverty indexes [@Kelly_2023], being considered only in the most wide-ranging definitions of transport poverty [@Lucas_2016] [@UNHabitat_2013]. It refers to the exposure to externalities of the transport system, such as road crashes and pollution, which have disproportionate effects on the territory. For the IMPT, this dimension's inputs only included those related to road safety indicators, due to the inability to get open and granular data regarding environmental externalities.
 
+A fifth dimension, digital literacy, was initially considered as a proxy for access to information and mobility services [@Durand_2022] [@OrozcoFontalvo_2025] [@Velaga_2012]. However, it was excluded from the final implementation of the index due to unavailability of data compatible with the scale of the lowest administrative division.
+
 ## IMPT's Contribution
 
 IMPT emerges in an attempt to create an index synthesizing these dimensions and providing a reliable measurement of transport poverty, bridging three gaps in the literature and in national public policy.
@@ -132,15 +134,42 @@ If `cite-method` is set to `citeproc` in `elsevier_article()`, then pandoc is us
 
 Here are two sample references: @Pereira_r5r_2021 @INE_IMOB2017. If citing the other way [@Lovelace_2022].
 
-# Methods
+# Methodology
 
-Add a flowchart
+## Case Study
+
+The Lisbon Metropolitan Area (LMA) was applied as the case study for the IMPT. The LMA is comprised of two NUTS II regions (Grande Lisboa and Península de Setúbal), which encompasses 18 Municipalities and approximately 2,8 million inhabitants. This region presents territorial characteristics which make it particularly suitable for this analysis: a polycentric structure with a strong employment center in Lisbon, significant discrepancies between the public transport offer in the urban core and in the periphery, and a high modal share of private vehicles in a large part of the metropolitan area.
+
+The analysis is focused on the lowest administrative division, the *freguesia* (parish), which is the most disaggregated geographical level that guarantees data coverage for all utilized sources. For the indicators that had a higher level of granularity, an analysis by grid level was also assembled. The LMA includes 124 parishes, which constitute the observation units of the IMPT.
 
 ## Each Dimension's Indicators {#sec-indicators}
 
 ### Accessibility
 
-hiuhfjhfhjd
+The Accessibility dimension quantifies the capacity to reach key destinations within a given travel time threshold. This dimension incorporates two metrics:
+
+1.  Cumulative number of opportunities: number of points of interest of a given category reachable within a certain amount of time. @tbl-accessibility_n_opportunities shows the travel time threshold taken into account given the different points of interest and modes.
+2.  Travel time to reach closest opportunities: time required to reach the first *n* opportunities of a given category (1st opportunity for healthcare, basic education and green spaces; 3rd opportunity for recreation, groceries and jobs).
+
+```{r}
+#| label: tbl-accessibility_n_opportunities
+#| tbl-cap: Caption centered above table
+#| echo: true
+accessibility_n_opportunities <- data.frame(
+  "Point of Interest/Mode" = c("Healthcare Facilities",
+                               "Basic Education",
+                               "Green Spaces",
+                               "Recreation",
+                               "Groceries",
+                               "Jobs"
+                               ),
+  "Driving or Public Transport" = c("30","30","5-10","5-10","15","30-45"),
+  "Walking or Cycling" = c("15","15","15-30","15-30","15","30-45"),
+  
+  check.names = FALSE
+)
+knitr::kable(accessibility_indicators, caption = "Travel time threshold (minutes) to compute cumulative number of opportunities", align = c("l", "c", "c", "c", "c", "c"))
+```
 
 ### Mobility
 
