@@ -107,7 +107,6 @@
 \newcommand{\WarningTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{\textit{#1}}}
 
 \usepackage{longtable,booktabs,array}
-\newcounter{none} % for unnumbered tables
 \usepackage{calc} % for calculating minipage widths
 % Correct order of tables after \paragraph or \subparagraph
 \usepackage{etoolbox}
@@ -195,8 +194,8 @@
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
 \urlstyle{same}
 \hypersetup{
-  pdftitle={Transport Poverty Index},
-  pdfauthor={Alice Anonymous; Bob Security; Cat Memes; Filipe Moura},
+  pdftitle={Multidimensional Transport Poverty Index},
+  pdfauthor={Miguel Alvelos; Mauricio Orozco-Fontalvo; Gonçalo F. Matos; Rosa Félix; Camila Garcia; Filipe Moura},
   pdfkeywords={keyword1, keyword2},
   colorlinks=true,
   linkcolor={blue},
@@ -210,30 +209,43 @@
 \begin{document}
 
 \begin{frontmatter}
-\title{Transport Poverty Index \\\large{A replicable multi-dimensional
-and multi-modal measure of transport poverty} }
-\author[1]{Alice Anonymous%
+\title{Multidimensional Transport Poverty Index \\\large{A replicable
+multi-dimensional and multi-modal measure of transport poverty} }
+\author[1]{Miguel Alvelos%
 \corref{cor1}%
 }
- \ead{alice@example.com} 
-\author[1]{Bob Security%
+ \ead{miguel.alvelos@tecnico.ulisboa.pt} 
+\author[1]{Mauricio Orozco-Fontalvo%
 %
 }
- \ead{bob@example.com} 
-\author[1]{Cat Memes%
+ \ead{mauricio.orozco@tecnico.ulisboa.pt} 
+\author[1]{Gonçalo F. Matos%
 %
 }
- \ead{cat@example.com} 
+ \ead{goncaloafmatos@tecnico.ulisboa.pt} 
+\author[1]{Rosa Félix%
+%
+}
+ \ead{rosamfelix@tecnico.ulisboa.pt} 
+\author[2]{Camila Garcia%
+%
+}
+ \ead{camila.garcia@tmlmobilidade.pt} 
 \author[]{Filipe Moura%
 %
 }
- \ead{fmoura@tecnico.pt} 
+ \ead{fmoura@tecnico.ulisboa.pt} 
 
 \affiliation[1]{organization={CERIS, Instituto Superior Técnico -
 Universidade de Lisboa},addressline={Av Rovisco Pais 1},city={1049-001
 Lisbon},postcode={Portugal},postcodesep={}}
+\affiliation[2]{organization={Transportes Metropolitanos de
+Lisboa},addressline={Rua da Cruz de Santa Apolónia 23},city={1100-187
+Lisbon},postcode={Portugal},postcodesep={}}
 
 \cortext[cor1]{Corresponding author}
+
+
 
 
 
@@ -264,6 +276,220 @@ tempus elit.
 
 \section{Introduction}\label{introduction}
 
+Transportation is an essential service which can condition access to
+almost all human activities, be them work, education, health or social
+life. When this access is limited by insufficient supply, high costs, or
+elevated exposure to systemic risks and externalities, the term
+Transport Poverty is used \citep{Lucas_2016}. This phenomenon has direct
+consequences in social exclusion and territorial cohesion
+\citep{MejiaDorantes_MurauskaiteBull_2022}.
+
+In the European context, this problem has increased its political
+relevance over the last decade. The European Pillar of Social Rights, in
+its 20th Principle, enshrines the right to access essential services,
+including transportation. Regulation (EU) 2023/955 of 10 May 2023, which
+established the Social Climate Fund (SCF), enshrined the first legally
+bounding definition of transport poverty at an European scale, defining
+it as ``individuals' and households' inability or difficulty to meet the
+costs of private or public transport, or their lack of or limited access
+to transport needed for their access to essential socioeconomic services
+and activities, taking into account the national and spatial context''
+\citep{EU_2023955} .
+
+Despite the clear empirical relevance of this phenomenon, there is
+difficulty in quantifying it in a systematic way. Specifically in
+Portugal, previous research has focused on punctual case studies
+\citep{Pritchard_2014} or on costly mobility surveys
+\citep{INE_IMOB2017}, which can hardly be renewed at the cadence
+required by public policy cycles.
+
+This project was thus developed in an attempt to bridge the existing
+methodological gap with the creation of a composite and intermodal tool
+- the Multidimensional Transport Poverty Index (IMPT) - that is
+replicable and scalable, as well as wholly based in public data,
+intended to assist and support public policy instruments, such as the
+European Union's Social Climate Fund (SCF) or Sustainable Urban Mobility
+Plans (SUMPs). The Lisbon Metropolitan Area (LMA) was employed as a case
+study for the tool's validation.
+
+\section{Literature review}\label{literature-review}
+
+\subsection{Definitions of Transport
+Poverty}\label{definitions-of-transport-poverty}
+
+Transport systems are a fundamental part of modern society, and their
+absence is related to social exclusion - a state where an individual or
+a societal group is left out of participating in regular social
+activities in a given society \citep{Pritchard_2014} -,
+socio-territorial inequality and transport inequality - the differences
+in transport conditions for different groups of people
+\citep{Hidayati_2021}. Despite the relation between poverty and
+transport conditions, these are also related to a wide range of social
+issues, with motorized vehicle users most contributing to externalities,
+but with vulnerable road users being disproportionately affected by them
+in health, space allocation and time consumption \citep{Gossling_2016}.
+Moreover, lower-income households tend to not have financial conditions
+to have motorized transport or to reside in central areas, relegating
+them to live in areas distant from the city center, often poorly served
+by public transportation. \citep{Fedorowicz_2020} \citep{Lopes_2023}.
+
+These differences in transport conditions can lead to transport poverty,
+a concept which lacks a single universally accepted definition in
+scientific literature. This expression has been used to broadly describe
+inequities related with transportation access, but also in a more
+restricted way to refer to the economic inability to support
+transportation costs \citep{Mattioli_2018}. However, as
+\citet{Lucas_2016} states, different terminologies relating to transport
+poverty - terms such as ``mobility poverty'', ``accessibility poverty''
+or ``transport disadvantage'' - are used with ``often very different,
+although also overlapping definitions''. Due to this lack of a universal
+definition and the multidimensional nature of transport poverty, its
+measurement and quantification poses a challenge
+\citep{Levinson_King_2020}.
+
+This way, the necessity to comprehend this concept and quantify it
+becomes more urgent. It is essential to define reliable indicators of
+transport vulnerability to map ``public transport deserts''
+\citep{Jiao_Dillivan_2013} and low-accessibility areas in order to
+inform public intervention and to monitor the implementation of measures
+to improve these situations. A reliable and replicable index to measure
+transport poverty is thus fundamental to support public policy
+instruments.
+
+\citet{Lucas_2016} proposes the most comprehensive conceptual
+systematization of transport poverty, clearly defining previously
+different but overlapping terminology. They define transport poverty as
+a combination of the following four dimensions:
+
+\begin{itemize}
+\tightlist
+\item
+  Accessibility - the capacity to reach usual destinations and
+  activities (work, education, health and so on).
+\item
+  Mobility - the systemic lack of transportation that impacts trips.
+\item
+  Affordability - the ability to meet the cost of transportation.
+\item
+  Exposure to externalities (Safety) - the negative exposure to the
+  transport system itself, such as disproportional rates of pollution or
+  road crashes.
+\end{itemize}
+
+Recently, and based on the aforementioned concepts,
+\citet{MejiaDorantes_MurauskaiteBull_2022} have proposed a definition
+that has been widely adopted: transport poverty is the inability of an
+individual or household to access essential services or opportunities
+due to transportation services that are inaccessible, inadequate,
+unaffordable, time-consuming or unsafe. This definition has been adapted
+and applied at the European scale, through \citet{EU_2023955} and a
+recent European Commission Report \citep{EuropeanCommission_2024}. The
+key dimensions in the EC Report are synthesized as \emph{Availability}
+(corresponding to Lucas' Mobility), \emph{Accessibility} and
+\emph{Affordability}, with exposure to externalities being included in
+the overarching concept of \emph{Adequacy}.
+
+In summary, the concept of transport poverty has evolved from a
+one-dimensional look at accessibility or affordability, to a composite
+approach that attempts to capture the multidimensional nature of this
+phenomenon.
+
+During the last decade various interactive spatial tools based on
+indicators of accessibility and inequality have been created and made
+publicly available. Two of these are here highlighted, due to their
+conceptual or methodological influence and their proximity to the IMPT's
+objective.
+
+\subsection{Dimensions of Transport
+Poverty}\label{dimensions-of-transport-poverty}
+
+The dimensions proposed by \citet{Lucas_2016} continue to be the
+reference for composite indexes of transport poverty
+\citep{AlonsoEpelde_2023} \citep{MejiaDorantes_MurauskaiteBull_2022}.
+IMPT adopts these dimensions, implementing them through secondary data
+available in Portugal. Each of them is further explained thoroughly.
+
+\subsubsection{Accessibility}\label{accessibility}
+
+Accessibility refers to the ability to reach regular destinations such
+as employment, education, health and other essential services
+\citep{Allen_Farber_2019} \citep{SocialExclusionUnit_2003}.
+
+\subsubsection{Mobility}\label{mobility}
+
+Mobility refers to the systemic deficits of the transport system, be
+them lack of infrastructure, lack of service frequency or long trip
+duration \citep{Levinson_King_2020} \citep{Lucas_2016}
+\citep{MejiaDorantes_MurauskaiteBull_2022}. This dimension captures
+different aspects of transport supply that accessibility is not able to,
+their core difference being that, while accessibility asks which places
+are reachable, mobility focuses on how easy it is to reach them.
+
+\subsubsection{Affordability}\label{affordability}
+
+\subsubsection{Safety}\label{safety}
+
+This dimension is commonly not included in transport poverty indexes
+\citep{Kelly_2023}, being considered only in the most wide-ranging
+definitions of transport poverty \citep{Lucas_2016}
+\citep{UNHabitat_2013}. It refers to the exposure to externalities of
+the transport system, such as road crashes and pollution, which have
+disproportionate effects on the territory. For the IMPT, this
+dimension's inputs only included those related to road safety
+indicators, due to the inability to get open and granular data regarding
+environmental externalities.
+
+A fifth dimension, digital literacy, was initially considered as a proxy
+for access to information and mobility services \citep{Durand_2022}
+\citep{OrozcoFontalvo_2025} \citep{Velaga_2012}. However, it was
+excluded from the final implementation of the index due to
+unavailability of data compatible with the scale of the lowest
+administrative division.
+
+\subsection{IMPT's Contribution}\label{impts-contribution}
+
+IMPT emerges in an attempt to create an index synthesizing these
+dimensions and providing a reliable measurement of transport poverty,
+bridging three gaps in the literature and in national public policy.
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  There is, in Portugal, the absence of an index that integrates the
+  four aforementioned dimensions across multiple transport modes and is
+  replicable at the lowest administrative level.
+\item
+  Existing indexes excessively depend on costly primary data that is
+  difficult to monitor continuously. IMPT relies exclusively on
+  secondary and open data, easily allowing for updates and monitoring
+  over time.
+\item
+  There is a lack of operational tools that allow to translate academic
+  literature on transport poverty into decision-support instruments for
+  local governments, transport authorities, and generally public policy
+  makers.
+\end{enumerate}
+
+Furthermore, the IMPT incorporates four methodological variants,
+corresponding to different analytical positions:
+
+\begin{itemize}
+\tightlist
+\item
+  Contrasting IMPT: based on entropy, highlights the variables with the
+  highest variation, better capturing territorial contrasts.
+\item
+  Critical IMPT: based on the geometric mean, it non-linearly penalizes
+  the dimensions with the worst performance in each area.
+\item
+  Balanced IMPT: based on the arithmetic mean, allows for compensation
+  between dimensions.
+\item
+  Political IMPT: allowing for a personalized AHP weighting, it can be
+  tailored to the decision-maker's preferences.
+\end{itemize}
+
 If \texttt{cite-method} is set to \texttt{citeproc} in
 \texttt{elsevier\_article()}, then pandoc is used for citations instead
 of \texttt{natbib}. In this case, the \texttt{csl} option is used to
@@ -272,32 +498,358 @@ appropriate style, but alternative \texttt{csl} files are available from
 \url{https://www.zotero.org/styles?q=elsevier}. These can be downloaded
 and stored locally, or the url can be used as in the example header.
 
-\section{Literature review}\label{literature-review}
-
-Loren ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum
-augue turpis, dictum non malesuada a, volutpat eget velit. Nam placerat
-turpis purus, eu tristique ex tincidunt et. Mauris sed augue eget turpis
-ultrices tincidunt. Sed et mi in leo porta egestas. Aliquam non laoreet
-velit. Nunc quis ex vitae eros aliquet auctor nec ac libero. Duis
-laoreet sapien eu mi luctus, in bibendum leo molestie. Sed hendrerit
-diam diam, ac dapibus nisl volutpat vitae. Aliquam bibendum varius
-libero, eu efficitur justo rutrum at. Sed at tempus elit.
-
 Here are two sample references: \citet{Pereira_r5r_2021}
 \citet{INE_IMOB2017}. If citing the other way \citep{Lovelace_2022}.
 
-\section{Methods}\label{methods}
+\section{Methodology}\label{methodology}
 
-Add a flowchart
+\subsection{Case Study}\label{case-study}
 
-\subsection{Each Dimensin's Indicators}\label{sec-indicators}
+The Lisbon Metropolitan Area (LMA) was applied as the case study for the
+IMPT. The LMA is comprised of two NUTS II regions (Grande Lisboa and
+Península de Setúbal), which encompasses 18 Municipalities and
+approximately 2,8 million inhabitants. This region presents territorial
+characteristics which make it particularly suitable for this analysis: a
+polycentric structure with a strong employment center in Lisbon,
+significant discrepancies between the public transport offer in the
+urban core and in the periphery, and a high modal share of private
+vehicles in a large part of the metropolitan area.
 
-\subsubsection{Accessibility and so
-on\ldots{}}\label{accessibility-and-so-on}
+The analysis is focused on the lowest administrative division, the
+\emph{freguesia} (parish), which is the most disaggregated geographical
+level that guarantees data coverage for all utilized sources. For the
+indicators that had a higher level of granularity, an analysis by grid
+level was also assembled. The LMA includes 124 parishes, which
+constitute the observation units of the IMPT.
 
-hiuhfjhfhjd
+\subsubsection{Data Sources}\label{data-sources}
 
-\subsection{Normalisation}\label{sec-normalisation}
+Lastly, the following R packages were utilized in the data processing
+and creation of both the index and its interactive dashboard: readr,
+readxl, openxlsx, lubridate, dplyr, tidyr, stringr, tidyverse, sf,
+terra, mapview, stplanr, h3jsr, r5r, accessibility, odjitter,
+tidytransit, GTFShift, FactoMineR, assertthat, piggyback.
+
+\subsection{Each Dimension's Indicators}\label{sec-indicators}
+
+The IMPT is not only multidimensional, but also intermodal. In
+Table~\ref{tbl-modes_per_dimension}, the dimensions used to compute the
+index for each mode are specified.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{modes\_per\_dimension }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{(}
+  \AttributeTok{Dimension =} \FunctionTok{c}\NormalTok{(}\StringTok{"Accessibility"}\NormalTok{,}
+                \StringTok{"Mobility"}\NormalTok{,}
+                \StringTok{"Affordability"}\NormalTok{,}
+                \StringTok{"Safety"}
+\NormalTok{                ),}
+  \AttributeTok{Mode =} \FunctionTok{c}\NormalTok{(}\StringTok{"Driving, Public Transport, Walking, Cycling"}\NormalTok{,}
+           \StringTok{"Driving, Public Transport, Walking, Cycling"}\NormalTok{,}
+           \StringTok{"Driving, Public Transport"}\NormalTok{,}
+           \StringTok{"Driving, Walking, Cycling"}
+\NormalTok{           )}
+\NormalTok{)}
+\NormalTok{knitr}\SpecialCharTok{::}\FunctionTok{kable}\NormalTok{(modes\_per\_dimension)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+Warning in attr(x, "align"): 'xfun::attr()' is deprecated.
+Use 'xfun::attr2()' instead.
+See help("Deprecated")
+\end{verbatim}
+
+\begin{verbatim}
+Warning in attr(x, "format"): 'xfun::attr()' is deprecated.
+Use 'xfun::attr2()' instead.
+See help("Deprecated")
+\end{verbatim}
+
+\begin{longtable}[]{@{}ll@{}}
+
+\caption{\label{tbl-modes_per_dimension}Modes evaluated in each
+dimension}
+
+\tabularnewline
+
+\toprule\noalign{}
+Dimension & Mode \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Accessibility & Driving, Public Transport, Walking, Cycling \\
+Mobility & Driving, Public Transport, Walking, Cycling \\
+Affordability & Driving, Public Transport \\
+Safety & Driving, Walking, Cycling \\
+
+\end{longtable}
+
+\subsubsection{Accessibility}\label{accessibility-1}
+
+The Accessibility dimension quantifies the capacity to reach key
+destinations within a given travel time threshold. The key destination
+categories, as well as their data sources, are summarized in table
+(\ldots)
+
+This dimension incorporates two metrics:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Cumulative number of opportunities: number of points of interest of a
+  given category reachable within a certain amount of time.
+\item
+  Travel time to reach nearest opportunities: time required to reach the
+  first \emph{n} opportunities of a given category.
+\end{enumerate}
+
+Indicators for this dimension were computed using the H3 grid
+\citep{Uber_H3_2018} of resolution 8 \citep{Pereira_accessibility_2022},
+which corresponds to 3686 hexagons in the LMA, with an edge length of
+531 meters and an average hexagon area of approximately 737,327m².
+
+\paragraph{Jittering}\label{jittering}
+
+Due to a lack of open access to fine data regarding job location, the
+most granular data obtained was an OD matrix at the parish level
+\citep{INE_IMOB2017} with centroid to centroid representations, ``a
+common approach involving the simplifying assumption that all trip
+destinations and origins can be represented by (sometimes population
+weighted or aggregated) zone centroids'' \citep{Lovelace_2022}. However,
+in order to accurately compute accessibility and mobility measures,
+there was the need to have more disaggregated data regarding job
+locations, beyond the parish unit.
+
+This way, jittering \citep{Lovelace_2022} was used as a proxy for this
+purpose, using building volumes as trip attractors, and this way
+weighting origins and destinations. This allowed for the disaggregation
+of trips between parishes to ODs with up to 50 trips.
+
+\paragraph{Travel time matrix}\label{travel-time-matrix}
+
+A travel time matrix was used as the basis for all accessibility
+measures. It was computed between each grid cell, over a network
+\citep{Pereira_r5r_2021} that was built considering:
+
+\begin{itemize}
+\item
+  OpenStreetMap road network, exported from \citet{hot_osm}.
+\item
+  General Transit Feed Specification (GTFS) for all operators in the LMA
+  (valid at 04/02/2026).
+\item
+  Terrain elevation profile \citep{copernicus_browser}.
+\end{itemize}
+
+The matrix was computed using ()
+
+\paragraph{Cumulative number of
+opportunities}\label{cumulative-number-of-opportunities}
+
+The cumulative number of opportunities was calculated () considering the
+travel time matrices for each grid cell combination, the number of
+opportunities per grid cell, and the travel time cut-offs.
+
+This measure was computed for all combinations of POIs and modes for
+time cut-offs of 5, 10, 15, 30, 45, 60, 75 and 90 minutes. However, as
+can be seen in Table~\ref{tbl-accessibility_n_opportunities}, only
+selected combinations of modes/points of interest were included in
+IMPT's operationalization.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{accessibility\_n\_opportunities }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{(}
+  \StringTok{"Point of Interest/Mode"} \OtherTok{=} \FunctionTok{c}\NormalTok{(}\StringTok{"Healthcare Facilities"}\NormalTok{,}
+                               \StringTok{"Basic Education"}\NormalTok{,}
+                               \StringTok{"Green Spaces"}\NormalTok{,}
+                               \StringTok{"Recreation"}\NormalTok{,}
+                               \StringTok{"Groceries"}\NormalTok{,}
+                               \StringTok{"Jobs"}
+\NormalTok{                               ),}
+  \StringTok{"Driving or Public Transport"} \OtherTok{=} \FunctionTok{c}\NormalTok{(}\StringTok{"30"}\NormalTok{,}\StringTok{"30"}\NormalTok{,}\StringTok{"5{-}10"}\NormalTok{,}\StringTok{"5{-}10"}\NormalTok{,}\StringTok{"15"}\NormalTok{,}\StringTok{"30{-}45"}\NormalTok{),}
+  \StringTok{"Walking or Cycling"} \OtherTok{=} \FunctionTok{c}\NormalTok{(}\StringTok{"15"}\NormalTok{,}\StringTok{"15"}\NormalTok{,}\StringTok{"15{-}30"}\NormalTok{,}\StringTok{"15{-}30"}\NormalTok{,}\StringTok{"15"}\NormalTok{,}\StringTok{"30{-}45"}\NormalTok{),}
+  \AttributeTok{check.names =} \ConstantTok{FALSE}
+\NormalTok{)}
+\NormalTok{knitr}\SpecialCharTok{::}\FunctionTok{kable}\NormalTok{(accessibility\_n\_opportunities, }\AttributeTok{align =} \FunctionTok{c}\NormalTok{(}\StringTok{"l"}\NormalTok{, }\StringTok{"c"}\NormalTok{, }\StringTok{"c"}\NormalTok{, }\StringTok{"c"}\NormalTok{, }\StringTok{"c"}\NormalTok{, }\StringTok{"c"}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+Warning in attr(x, "align"): 'xfun::attr()' is deprecated.
+Use 'xfun::attr2()' instead.
+See help("Deprecated")
+\end{verbatim}
+
+\begin{verbatim}
+Warning in attr(x, "format"): 'xfun::attr()' is deprecated.
+Use 'xfun::attr2()' instead.
+See help("Deprecated")
+\end{verbatim}
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3194}}
+  >{\centering\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.4028}}
+  >{\centering\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.2778}}@{}}
+
+\caption{\label{tbl-accessibility_n_opportunities}Travel time threshold
+(minutes) to compute cumulative number of opportunities}
+
+\tabularnewline
+
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Point of Interest/Mode
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+Driving or Public Transport
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+Walking or Cycling
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Healthcare Facilities & 30 & 15 \\
+Basic Education & 30 & 15 \\
+Green Spaces & 5-10 & 15-30 \\
+Recreation & 5-10 & 15-30 \\
+Groceries & 15 & 15 \\
+Jobs & 30-45 & 30-45 \\
+
+\end{longtable}
+
+The value computed represents the number of opportunities reachable
+within the defined travel time threshold. Values at parish and
+municipality level are aggregated considering a weighted mean of the
+number of opportunities reachable in each grid cell within that
+geographical unit, weighted by the population of those cells.
+
+\paragraph{Travel time to reach closest
+opportunities}\label{travel-time-to-reach-closest-opportunities}
+
+This measure was computed () considering the travel time matrices for
+each grid cell combination and the number of opportunities in each grid
+cell. Its output corresponds to the travel cost, in minutes, to reach
+\emph{n} opportunities of a certain category. Although calculations were
+performed for 1, 2 and 3 opportunities, only some of these were included
+in IMPT's operationalization, depending on the POI category:
+
+\begin{itemize}
+\item
+  Healthcare, basic education and green spaces: 1 opportunity.
+\item
+  Recreation, groceries and jobs: 3 opportunities.
+\end{itemize}
+
+\subsubsection{Mobility}\label{mobility-1}
+
+Mobility evaluates the quality of the transportation system as a
+service, independently of the accessibility of the destinations. Its
+principal indicators are (\ldots)
+
+\subsubsection{Affordability}\label{affordability-1}
+
+Affordability evaluates the capacity of households to support the
+monetary costs of transportation to access essential activities. IMPT
+uses a weighted cost by mode, in which the monetary cost of
+automobile/public transport travel is multiplied by each parish's modal
+share, and expressed as a proportion of median household income. The
+travel costs are estimated for one-way trips from home to the workplace
+during the morning peak.
+
+\paragraph{Cost of driving}\label{cost-of-driving}
+
+\paragraph{Cost of public
+transportation}\label{cost-of-public-transportation}
+
+\paragraph{Composite measures}\label{composite-measures}
+
+\subsubsection{Safety}\label{safety-1}
+
+This dimension encompasses the disproportional exposure to externalities
+of the transportation system. It is entirely based on road safety data
+provided by Autoridade Nacional de Segurança Rodoviária (ASNR) through
+Transportes Metropolitanos de Lisboa (TML) \citep{pmmus}. It is
+important to note that only road crashes occuring \emph{inside
+localities} (dentro das localidades), a category specified by the ASNR
+itself, are included in the index. In particular, this excludes crashes
+on motorways and on the two bridges crossing the Tagus river, while
+maintaining IMPT's spatial scope.
+
+The indicators calculated for each geographical unit and transport mode
+are systematized in Table~\ref{tbl-safety_indicators}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{safety\_indicators }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{(}
+  \StringTok{"Indicator"} \OtherTok{=} \FunctionTok{c}\NormalTok{(}\StringTok{"Total accidents (5 years)"}\NormalTok{,}
+                  \StringTok{"Fatalities (30{-}day)"}\NormalTok{,}
+                  \StringTok{"Serious injuries (30{-}day)"}\NormalTok{,}
+                  \StringTok{"Slight injuries (30{-}day)"}\NormalTok{,}
+                  \StringTok{"Accident rate"}\NormalTok{,}
+                  \StringTok{"Fatality rate"}\NormalTok{,}
+                  \StringTok{"Severity index (total)"}\NormalTok{,}
+                  \StringTok{"Severity index (motorized)"}\NormalTok{,}
+                  \StringTok{"Severity index (cycling)"}\NormalTok{,}
+                  \StringTok{"Severity index (walking)"}
+\NormalTok{                  ),}
+  \StringTok{"Formula"} \OtherTok{=} \FunctionTok{c}\NormalTok{(}\StringTok{"Count"}\NormalTok{,}
+                \StringTok{"sum(VM\_30d)"}\NormalTok{,}
+                \StringTok{"sum(FG\_30d)"}\NormalTok{,}
+                \StringTok{"sum(FL\_30d)"}\NormalTok{,}
+                \StringTok{"total\_accidents/population × 1000"}\NormalTok{,}
+                \StringTok{"fatalities/population × 1000"}\NormalTok{,}
+                \StringTok{"fatalities/total\_victims"}\NormalTok{,}
+                \StringTok{"fatalities/motorized\_vehicles\_involved"}\NormalTok{,}
+                \StringTok{"fatalities/cycling\_involved"}\NormalTok{,}
+                \StringTok{"fatalities/pedestrians\_involved"}\NormalTok{),}
+  \AttributeTok{check.names =} \ConstantTok{FALSE}
+\NormalTok{)}
+\NormalTok{knitr}\SpecialCharTok{::}\FunctionTok{kable}\NormalTok{(safety\_indicators)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+Warning in attr(x, "align"): 'xfun::attr()' is deprecated.
+Use 'xfun::attr2()' instead.
+See help("Deprecated")
+\end{verbatim}
+
+\begin{verbatim}
+Warning in attr(x, "format"): 'xfun::attr()' is deprecated.
+Use 'xfun::attr2()' instead.
+See help("Deprecated")
+\end{verbatim}
+
+\begin{longtable}[]{@{}ll@{}}
+
+\caption{\label{tbl-safety_indicators}Travel time threshold (minutes) to
+compute cumulative number of opportunities}
+
+\tabularnewline
+
+\toprule\noalign{}
+Indicator & Formula \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Total accidents (5 years) & Count \\
+Fatalities (30-day) & sum(VM\_30d) \\
+Serious injuries (30-day) & sum(FG\_30d) \\
+Slight injuries (30-day) & sum(FL\_30d) \\
+Accident rate & total\_accidents/population × 1000 \\
+Fatality rate & fatalities/population × 1000 \\
+Severity index (total) & fatalities/total\_victims \\
+Severity index (motorized) & fatalities/motorized\_vehicles\_involved \\
+Severity index (cycling) & fatalities/cycling\_involved \\
+Severity index (walking) & fatalities/pedestrians\_involved \\
+
+\end{longtable}
+
+\subsection{Normalisation and Aggregation}\label{sec-normalisation}
 
 All indicators are normalised to the range {[}1, 100{]} using min-max
 scaling:
@@ -403,7 +955,7 @@ dimension score for area \(i\).
 
 \begin{figure}
 
-\begin{minipage}[t]{0.33\linewidth}
+\begin{minipage}{0.33\linewidth}
 
 \centering{
 
@@ -415,7 +967,7 @@ dimension score for area \(i\).
 
 \end{minipage}%
 %
-\begin{minipage}[t]{0.33\linewidth}
+\begin{minipage}{0.33\linewidth}
 
 \centering{
 
@@ -427,7 +979,7 @@ dimension score for area \(i\).
 
 \end{minipage}%
 %
-\begin{minipage}[t]{0.33\linewidth}
+\begin{minipage}{0.33\linewidth}
 
 \centering{
 
@@ -462,6 +1014,8 @@ Figure~\ref{fig-meaningless} is generated using an R chunk.
 
 \section{Discussion}\label{discussion}
 
+\subsection{Limitations}\label{limitations}
+
 Tables can also be generated using R chunks, as shown in
 Table~\ref{tbl-simple} example.
 
@@ -471,7 +1025,17 @@ Table~\ref{tbl-simple} example.
 \end{Highlighting}
 \end{Shaded}
 
-{
+\begin{verbatim}
+Warning in attr(x, "align"): 'xfun::attr()' is deprecated.
+Use 'xfun::attr2()' instead.
+See help("Deprecated")
+\end{verbatim}
+
+\begin{verbatim}
+Warning in attr(x, "format"): 'xfun::attr()' is deprecated.
+Use 'xfun::attr2()' instead.
+See help("Deprecated")
+\end{verbatim}
 
 \begin{longtable}[]{@{}lrrrr@{}}
 
@@ -493,8 +1057,6 @@ Hornet Sportabout & 18.7 & 8 & 360 & 175 \\
 Valiant & 18.1 & 6 & 225 & 105 \\
 
 \end{longtable}
-
-}
 
 \section{Conclusions}\label{conclusions}
 

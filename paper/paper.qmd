@@ -101,11 +101,15 @@ The dimensions proposed by @Lucas_2016 continue to be the reference for composit
 
 Accessibility refers to the ability to reach regular destinations such as employment, education, health and other essential services [@Allen_Farber_2019] [@SocialExclusionUnit_2003].
 
+<!--# acabar -->
+
 ### Mobility
 
 Mobility refers to the systemic deficits of the transport system, be them lack of infrastructure, lack of service frequency or long trip duration [@Levinson_King_2020] [@Lucas_2016] [@MejiaDorantes_MurauskaiteBull_2022]. This dimension captures different aspects of transport supply that accessibility is not able to, their core difference being that, while accessibility asks which places are reachable, mobility focuses on how easy it is to reach them.
 
 ### Affordability
+
+<!--# falta -->
 
 ### Safety
 
@@ -142,18 +146,79 @@ The Lisbon Metropolitan Area (LMA) was applied as the case study for the IMPT. T
 
 The analysis is focused on the lowest administrative division, the *freguesia* (parish), which is the most disaggregated geographical level that guarantees data coverage for all utilized sources. For the indicators that had a higher level of granularity, an analysis by grid level was also assembled. The LMA includes 124 parishes, which constitute the observation units of the IMPT.
 
+### Data Sources
+
+<!--# ponho as tabelas que estão no relatório das fontes dos dados com os links? -->
+
+Lastly, the following R packages were utilized in the data processing and creation of both the index and its interactive dashboard: readr, readxl, openxlsx, lubridate, dplyr, tidyr, stringr, tidyverse, sf, terra, mapview, stplanr, h3jsr, r5r, accessibility, odjitter, tidytransit, GTFShift, FactoMineR, assertthat, piggyback.
+
 ## Each Dimension's Indicators {#sec-indicators}
+
+The IMPT is not only multidimensional, but also intermodal. In @tbl-modes_per_dimension, the dimensions used to compute the index for each mode are specified.
+
+```{r}
+#| label: tbl-modes_per_dimension
+#| tbl-cap: Modes evaluated in each dimension
+#| echo: true
+modes_per_dimension <- data.frame(
+  Dimension = c("Accessibility",
+                "Mobility",
+                "Affordability",
+                "Safety"
+                ),
+  Mode = c("Driving, Public Transport, Walking, Cycling",
+           "Driving, Public Transport, Walking, Cycling",
+           "Driving, Public Transport",
+           "Driving, Walking, Cycling"
+           )
+)
+knitr::kable(modes_per_dimension)
+```
 
 ### Accessibility
 
-The Accessibility dimension quantifies the capacity to reach key destinations within a given travel time threshold. This dimension incorporates two metrics:
+<!--# mencionar pereira e herszenhut 2022 -->
 
-1.  Cumulative number of opportunities: number of points of interest of a given category reachable within a certain amount of time. @tbl-accessibility_n_opportunities shows the travel time threshold taken into account given the different points of interest and modes.
-2.  Travel time to reach closest opportunities: time required to reach the first *n* opportunities of a given category (1st opportunity for healthcare, basic education and green spaces; 3rd opportunity for recreation, groceries and jobs).
+The Accessibility dimension quantifies the capacity to reach key destinations within a given travel time threshold. The key destination categories, as well as their data sources, are summarized in table (...)
+
+<!--# adicionar tabela com fontes de dados para cada POI -->
+
+This dimension incorporates two metrics:
+
+1.  Cumulative number of opportunities: number of points of interest of a given category reachable within a certain amount of time.
+2.  Travel time to reach nearest opportunities: time required to reach the first *n* opportunities of a given category.
+
+Indicators for this dimension were computed using the H3 grid [@Uber_H3_2018] of resolution 8 [@Pereira_accessibility_2022], which corresponds to 3686 hexagons in the LMA, with an edge length of 531 meters and an average hexagon area of approximately 737,327m².
+
+#### Jittering
+
+Due to a lack of open access to fine data regarding job location, the most granular data obtained was an OD matrix at the parish level [@INE_IMOB2017] with centroid to centroid representations, "a common approach involving the simplifying assumption that all trip destinations and origins can be represented by (sometimes population weighted or aggregated) zone centroids" [@Lovelace_2022]. However, in order to accurately compute accessibility and mobility measures, there was the need to have more disaggregated data regarding job locations, beyond the parish unit.
+
+This way, jittering [@Lovelace_2022] was used as a proxy for this purpose, using building volumes as trip attractors, and this way weighting origins and destinations. This allowed for the disaggregation of trips between parishes to ODs with up to 50 trips.
+
+#### Travel time matrix
+
+A travel time matrix was used as the basis for all accessibility measures. It was computed between each grid cell, over a network [@Pereira_r5r_2021] that was built considering:
+
+- OpenStreetMap road network, exported from @hot_osm.
+
+- General Transit Feed Specification (GTFS) for all operators in the LMA (valid at 04/02/2026).
+
+- Terrain elevation profile [@copernicus_browser].
+
+The matrix was computed using (<!--# é preciso especificar os parâmetros da função? -->)
+
+<!--# acabar -->
+
+#### Cumulative number of opportunities
+
+The cumulative number of opportunities was calculated (<!--# ponho a função usada? -->) considering the travel time matrices for each grid cell combination, the number of opportunities per grid cell, and the travel time cut-offs.
+
+This measure was computed for all combinations of POIs and modes for time cut-offs of 5, 10, 15, 30, 45, 60, 75 and 90 minutes. However, as can be seen in @tbl-accessibility_n_opportunities, only selected combinations of modes/points of interest were included in IMPT's operationalization.
 
 ```{r}
 #| label: tbl-accessibility_n_opportunities
-#| tbl-cap: Caption centered above table
+#| tbl-cap: Travel time threshold (minutes) to compute cumulative number of opportunities
 #| echo: true
 accessibility_n_opportunities <- data.frame(
   "Point of Interest/Mode" = c("Healthcare Facilities",
@@ -165,19 +230,79 @@ accessibility_n_opportunities <- data.frame(
                                ),
   "Driving or Public Transport" = c("30","30","5-10","5-10","15","30-45"),
   "Walking or Cycling" = c("15","15","15-30","15-30","15","30-45"),
-  
   check.names = FALSE
 )
-knitr::kable(accessibility_n_opportunities, caption = "Travel time threshold (minutes) to compute cumulative number of opportunities", align = c("l", "c", "c", "c", "c", "c"))
+knitr::kable(accessibility_n_opportunities, align = c("l", "c", "c", "c", "c", "c"))
 ```
+
+The value computed represents the number of opportunities reachable within the defined travel time threshold. Values at parish and municipality level are aggregated considering a weighted mean of the number of opportunities reachable in each grid cell within that geographical unit, weighted by the population of those cells.
+
+#### Travel time to reach closest opportunities
+
+This measure was computed (<!--# ponho a função usada? -->) considering the travel time matrices for each grid cell combination and the number of opportunities in each grid cell. Its output corresponds to the travel cost, in minutes, to reach *n* opportunities of a certain category. Although calculations were performed for 1, 2 and 3 opportunities, only some of these were included in IMPT's operationalization, depending on the POI category:
+
+- Healthcare, basic education and green spaces: 1 opportunity.
+
+- Recreation, groceries and jobs: 3 opportunities.
 
 ### Mobility
 
+Mobility evaluates the quality of the transportation system as a service, independently of the accessibility of the destinations. Its principal indicators are (...)
+
+<!--# acabar -->
+
 ### Affordability
+
+Affordability evaluates the capacity of households to support the monetary costs of transportation to access essential activities. IMPT uses a weighted cost by mode, in which the monetary cost of automobile/public transport travel is multiplied by each parish's modal share, and expressed as a proportion of median household income. The travel costs are estimated for one-way trips from home to the workplace during the morning peak.
+
+#### Cost of driving
+
+#### Cost of public transportation
+
+#### Composite measures
+
+<!--# acabar -->
 
 ### Safety
 
-## Normalisation {#sec-normalisation}
+This dimension encompasses the disproportional exposure to externalities of the transportation system. It is entirely based on road safety data provided by Autoridade Nacional de Segurança Rodoviária (ASNR) through Transportes Metropolitanos de Lisboa (TML) [@pmmus]. It is important to note that only road crashes occuring *inside localities* (dentro das localidades), a category specified by the ASNR itself, are included in the index. In particular, this excludes crashes on motorways and on the two bridges crossing the Tagus river, while maintaining IMPT's spatial scope.
+
+The indicators calculated for each geographical unit and transport mode are systematized in @tbl-safety_indicators.
+
+<!--# fazer melhor esta tabela (como escrever em latex dentro da tabela...?) -->
+
+```{r}
+#| label: tbl-safety_indicators
+#| tbl-cap: Travel time threshold (minutes) to compute cumulative number of opportunities
+#| echo: true
+safety_indicators <- data.frame(
+  "Indicator" = c("Total accidents (5 years)",
+                  "Fatalities (30-day)",
+                  "Serious injuries (30-day)",
+                  "Slight injuries (30-day)",
+                  "Accident rate",
+                  "Fatality rate",
+                  "Severity index (total)",
+                  "Severity index (motorized)",
+                  "Severity index (cycling)",
+                  "Severity index (walking)"
+                  ),
+  "Formula" = c("Count",
+                "sum(VM_30d)",
+                "sum(FG_30d)",
+                "sum(FL_30d)",
+                "total_accidents/population × 1000",
+                "fatalities/population × 1000",
+                "fatalities/total_victims",
+                "fatalities/motorized_vehicles_involved",
+                "fatalities/cycling_involved",
+                "fatalities/pedestrians_involved"),
+  check.names = FALSE
+)
+knitr::kable(safety_indicators)
+```
+
+## Normalisation and Aggregation {#sec-normalisation}
 
 All indicators are normalised to the range \[1, 100\] using min-max scaling:
 
