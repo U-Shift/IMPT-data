@@ -274,7 +274,7 @@ tempus elit.
 \end{frontmatter}
     
 
-\section{Introduction}\label{introduction}
+\section{Introduction}\label{sec-introduction}
 
 Transportation is an essential service which can condition access to
 almost all human activities, be them work, education, health or social
@@ -312,10 +312,9 @@ European Union's Social Climate Fund (SCF) or Sustainable Urban Mobility
 Plans (SUMPs). The Lisbon Metropolitan Area (LMA) was employed as a case
 study for the tool's validation.
 
-\section{Literature review}\label{literature-review}
+\section{Literature review}\label{sec-literature_review}
 
-\subsection{Definitions of Transport
-Poverty}\label{definitions-of-transport-poverty}
+\subsection{Definitions of Transport Poverty}\label{sec-LR_definitions}
 
 Transport systems are a fundamental part of modern society, and their
 absence is related to social exclusion - a state where an individual or
@@ -400,8 +399,7 @@ publicly available. Two of these are here highlighted, due to their
 conceptual or methodological influence and their proximity to the IMPT's
 objective.
 
-\subsection{Dimensions of Transport
-Poverty}\label{dimensions-of-transport-poverty}
+\subsection{Dimensions of Transport Poverty}\label{sec-LR_dimensions}
 
 The dimensions proposed by \citet{Lucas_2016} continue to be the
 reference for composite indexes of transport poverty
@@ -409,13 +407,13 @@ reference for composite indexes of transport poverty
 IMPT adopts these dimensions, implementing them through secondary data
 available in Portugal. Each of them is further explained thoroughly.
 
-\subsubsection{Accessibility}\label{accessibility}
+\subsubsection{Accessibility}\label{sec-LR_accessibility}
 
 Accessibility refers to the ability to reach regular destinations such
 as employment, education, health and other essential services
 \citep{Allen_Farber_2019} \citep{SocialExclusionUnit_2003}.
 
-\subsubsection{Mobility}\label{mobility}
+\subsubsection{Mobility}\label{sec-LR_mobility}
 
 Mobility refers to the systemic deficits of the transport system, be
 them lack of infrastructure, lack of service frequency or long trip
@@ -425,9 +423,9 @@ different aspects of transport supply that accessibility is not able to,
 their core difference being that, while accessibility asks which places
 are reachable, mobility focuses on how easy it is to reach them.
 
-\subsubsection{Affordability}\label{affordability}
+\subsubsection{Affordability}\label{sec-LR_affordability}
 
-\subsubsection{Safety}\label{safety}
+\subsubsection{Safety}\label{sec-LR_safety}
 
 This dimension is commonly not included in transport poverty indexes
 \citep{Kelly_2023}, being considered only in the most wide-ranging
@@ -446,7 +444,7 @@ excluded from the final implementation of the index due to
 unavailability of data compatible with the scale of the lowest
 administrative division.
 
-\subsection{IMPT's Contribution}\label{impts-contribution}
+\subsection{IMPT's Contribution}\label{sec-LR_contribution}
 
 IMPT emerges in an attempt to create an index synthesizing these
 dimensions and providing a reliable measurement of transport poverty,
@@ -501,9 +499,9 @@ and stored locally, or the url can be used as in the example header.
 Here are two sample references: \citet{Pereira_r5r_2021}
 \citet{INE_IMOB2017}. If citing the other way \citep{Lovelace_2022}.
 
-\section{Methodology}\label{methodology}
+\section{Methodology}\label{sec-methodology}
 
-\subsection{Case Study}\label{case-study}
+\subsection{Case Study}\label{sec-MET_case_study}
 
 The Lisbon Metropolitan Area (LMA) was applied as the case study for the
 IMPT. The LMA is comprised of two NUTS II regions (Grande Lisboa and
@@ -522,15 +520,13 @@ indicators that had a higher level of granularity, an analysis by grid
 level was also assembled. The LMA includes 124 parishes, which
 constitute the observation units of the IMPT.
 
-\subsubsection{Data Sources}\label{data-sources}
+\subsubsection{Data Sources}\label{sec-MET_data_sources}
 
 Lastly, the following R packages were utilized in the data processing
-and creation of both the index and its interactive dashboard: readr,
-readxl, openxlsx, lubridate, dplyr, tidyr, stringr, tidyverse, sf,
-terra, mapview, stplanr, h3jsr, r5r, accessibility, odjitter,
-tidytransit, GTFShift, FactoMineR, assertthat, piggyback.
+and creation of both the index and its interactive dashboard:
+\texttt{readr,\ readxl,\ openxlsx,\ lubridate,\ dplyr,\ tidyr,\ stringr,\ tidyverse,\ sf,\ terra,\ mapview,\ stplanr,\ h3jsr,\ r5r,\ accessibility,\ odjitter,\ tidytransit,\ GTFShift,\ FactoMineR,\ assertthat,\ piggyback}.
 
-\subsection{Each Dimension's Indicators}\label{sec-indicators}
+\subsection{Each Dimension's Indicators}\label{sec-MET_indicators}
 
 The IMPT is not only multidimensional, but also intermodal. In
 Table~\ref{tbl-modes_per_dimension}, the dimensions used to compute the
@@ -586,7 +582,7 @@ Safety & Driving, Walking, Cycling \\
 
 \end{longtable}
 
-\subsubsection{Accessibility}\label{accessibility-1}
+\subsubsection{Accessibility}\label{sec-MET_accessibility}
 
 The Accessibility dimension quantifies the capacity to reach key
 destinations within a given travel time threshold. The key destination
@@ -611,7 +607,7 @@ Indicators for this dimension were computed using the H3 grid
 which corresponds to 3686 hexagons in the LMA, with an edge length of
 531 meters and an average hexagon area of approximately 737,327m².
 
-\paragraph{Jittering}\label{jittering}
+\paragraph{Jittering}\label{sec-MET_jittering}
 
 Due to a lack of open access to fine data regarding job location, the
 most granular data obtained was an OD matrix at the parish level
@@ -628,7 +624,7 @@ purpose, using building volumes as trip attractors, and this way
 weighting origins and destinations. This allowed for the disaggregation
 of trips between parishes to ODs with up to 50 trips.
 
-\paragraph{Travel time matrix}\label{travel-time-matrix}
+\paragraph{Travel time matrix}\label{sec-MET_TTmatrix}
 
 A travel time matrix was used as the basis for all accessibility
 measures. It was computed between each grid cell, over a network
@@ -644,14 +640,16 @@ measures. It was computed between each grid cell, over a network
   Terrain elevation profile \citep{copernicus_browser}.
 \end{itemize}
 
-The matrix was computed using ()
+The matrix was computed using the function
+\texttt{r5r::travel\_time\_matrix()} with the following parameters: ()
 
 \paragraph{Cumulative number of
-opportunities}\label{cumulative-number-of-opportunities}
+opportunities}\label{sec-MET_Nopportunities}
 
-The cumulative number of opportunities was calculated () considering the
-travel time matrices for each grid cell combination, the number of
-opportunities per grid cell, and the travel time cut-offs.
+The cumulative number of opportunities was calculated using the function
+\texttt{accessibility::cumulative\_cutoff()} considering the travel time
+matrices for each grid cell combination, the number of opportunities per
+grid cell, and the travel time cut-offs.
 
 This measure was computed for all combinations of POIs and modes for
 time cut-offs of 5, 10, 15, 30, 45, 60, 75 and 90 minutes. However, as
@@ -673,7 +671,7 @@ IMPT's operationalization.
   \StringTok{"Walking or Cycling"} \OtherTok{=} \FunctionTok{c}\NormalTok{(}\StringTok{"15"}\NormalTok{,}\StringTok{"15"}\NormalTok{,}\StringTok{"15{-}30"}\NormalTok{,}\StringTok{"15{-}30"}\NormalTok{,}\StringTok{"15"}\NormalTok{,}\StringTok{"30{-}45"}\NormalTok{),}
   \AttributeTok{check.names =} \ConstantTok{FALSE}
 \NormalTok{)}
-\NormalTok{knitr}\SpecialCharTok{::}\FunctionTok{kable}\NormalTok{(accessibility\_n\_opportunities, }\AttributeTok{align =} \FunctionTok{c}\NormalTok{(}\StringTok{"l"}\NormalTok{, }\StringTok{"c"}\NormalTok{, }\StringTok{"c"}\NormalTok{, }\StringTok{"c"}\NormalTok{, }\StringTok{"c"}\NormalTok{, }\StringTok{"c"}\NormalTok{))}
+\NormalTok{knitr}\SpecialCharTok{::}\FunctionTok{kable}\NormalTok{(accessibility\_n\_opportunities)}
 \end{Highlighting}
 \end{Shaded}
 
@@ -690,9 +688,9 @@ See help("Deprecated")
 \end{verbatim}
 
 \begin{longtable}[]{@{}
-  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3194}}
-  >{\centering\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.4028}}
-  >{\centering\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.2778}}@{}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3286}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.4000}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.2714}}@{}}
 
 \caption{\label{tbl-accessibility_n_opportunities}Travel time threshold
 (minutes) to compute cumulative number of opportunities}
@@ -702,9 +700,9 @@ See help("Deprecated")
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
 Point of Interest/Mode
-\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
 Driving or Public Transport
-\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
 Walking or Cycling
 \end{minipage} \\
 \midrule\noalign{}
@@ -727,14 +725,16 @@ number of opportunities reachable in each grid cell within that
 geographical unit, weighted by the population of those cells.
 
 \paragraph{Travel time to reach closest
-opportunities}\label{travel-time-to-reach-closest-opportunities}
+opportunities}\label{sec-MET_TTopportunities}
 
-This measure was computed () considering the travel time matrices for
-each grid cell combination and the number of opportunities in each grid
-cell. Its output corresponds to the travel cost, in minutes, to reach
-\emph{n} opportunities of a certain category. Although calculations were
-performed for 1, 2 and 3 opportunities, only some of these were included
-in IMPT's operationalization, depending on the POI category:
+This measure was computed using the function
+\texttt{accessibility::cost\_to\_closest()}, considering the travel time
+matrices for each grid cell combination and the number of opportunities
+in each grid cell. Its output corresponds to the travel cost, in
+minutes, to reach \emph{n} opportunities of a certain category. Although
+calculations were performed for 1, 2 and 3 opportunities, only some of
+these were included in IMPT's operationalization, depending on the POI
+category:
 
 \begin{itemize}
 \item
@@ -743,13 +743,28 @@ in IMPT's operationalization, depending on the POI category:
   Recreation, groceries and jobs: 3 opportunities.
 \end{itemize}
 
-\subsubsection{Mobility}\label{mobility-1}
+\subsubsection{Mobility}\label{sec-MET_mobility}
 
 Mobility evaluates the quality of the transportation system as a
 service, independently of the accessibility of the destinations. Its
-principal indicators are (\ldots)
+principal indicators are individually explained and detailed below.
 
-\subsubsection{Affordability}\label{affordability-1}
+\paragraph{Average commuting time}\label{average-commuting-time}
+
+\paragraph{Average number of commuting
+transfers}\label{average-number-of-commuting-transfers}
+
+\paragraph{Public transport headways and waiting
+times}\label{public-transport-headways-and-waiting-times}
+
+\paragraph{Public transport population
+coverage}\label{public-transport-population-coverage}
+
+\paragraph{Ratio of Infrastructure}\label{ratio-of-infrastructure}
+
+\paragraph{Shared Mobility}\label{shared-mobility}
+
+\subsubsection{Affordability}\label{sec-MET_affordability}
 
 Affordability evaluates the capacity of households to support the
 monetary costs of transportation to access essential activities. IMPT
@@ -759,14 +774,13 @@ share, and expressed as a proportion of median household income. The
 travel costs are estimated for one-way trips from home to the workplace
 during the morning peak.
 
-\paragraph{Cost of driving}\label{cost-of-driving}
+\paragraph{Cost of driving}\label{sec-MET_cost_driving}
 
-\paragraph{Cost of public
-transportation}\label{cost-of-public-transportation}
+\paragraph{Cost of public transportation}\label{sec-MET_cost_PT}
 
-\paragraph{Composite measures}\label{composite-measures}
+\paragraph{Composite measures}\label{sec-MET_aff_composite}
 
-\subsubsection{Safety}\label{safety-1}
+\subsubsection{Safety}\label{sec-MET_safety}
 
 This dimension encompasses the disproportional exposure to externalities
 of the transportation system. It is entirely based on road safety data
@@ -849,15 +863,16 @@ Severity index (walking) & fatalities/pedestrians\_involved \\
 
 \end{longtable}
 
-\subsection{Normalisation and Aggregation}\label{sec-normalisation}
+\subsection{Normalization and
+Aggregation}\label{sec-MET_normalisation_aggregation}
 
-All indicators are normalised to the range {[}1, 100{]} using min-max
+All indicators are normalized to the range {[}1, 100{]} using min-max
 scaling:
 
-\textbf{Benefit indicators} (higher raw value → better):
+\textbf{For benefit indicators} (higher raw value → better):
 \[X_{norm} = 1 + \frac{X - X_{min}}{X_{max} - X_{min}} \times 99\]
 
-\textbf{Cost indicators} (lower raw value → better):
+\textbf{For cost indicators} (lower raw value → better):
 \[X_{norm} = 1 + \frac{X_{max} - X}{X_{max} - X_{min}} \times 99\]
 
 \begin{itemize}
@@ -866,16 +881,16 @@ scaling:
   \textbf{Accessibility} metrics (\texttt{access\_*}) are \emph{benefit}
   indicators.
 \item
-  \textbf{Mobility} cost metrics (\texttt{mobility\_cost\_*}), PT
-  waiting times, all \textbf{affordability} indicators, and all
-  \textbf{safety} indicators are \emph{cost} indicators.
+  \textbf{Mobility} cost metrics (\texttt{mobility\_cost\_*}), public
+  transport waiting times, all \textbf{affordability} indicators, and
+  all \textbf{safety} indicators are \emph{cost} indicators.
 \end{itemize}
 
-Missing values in accessibility indicators (arising from infeasible PT
-routes) are imputed with the mean of the respective variable prior to
-PCA.
+Missing values in accessibility indicators (arising from unfeasible
+public transportation routes) are imputed with the mean of the
+respective variable prior to PCA.
 
-\subsection{PCA-Based Dimension Scores}\label{sec-pca}
+\subsection{PCA-Based Dimension Scores}\label{sec-MET_pca}
 
 For each dimension (Accessibility, Mobility, Safety) and at the global
 (all-mode) and per-mode levels, a PCA is run using
@@ -898,7 +913,7 @@ For \textbf{Mobility - Car} PCA is not applied (too few indicators);
 instead, we assumed an equal-weight average of the normalized composite
 \texttt{mobility\_commuting\_avg\_tt\_car} and \texttt{road\_length}.
 
-\subsection{Composite IMPT Scores}\label{sec-composite}
+\subsection{Composite IMPT Scores}\label{sec-MET_composite_impt}
 
 Three aggregation methods are computed for the global IMPT and each
 per-mode IMPT:
@@ -996,7 +1011,7 @@ methods for all modes (with Navegante)}
 
 \end{figure}%
 
-\section{Results}\label{results}
+\section{Results}\label{sec-results}
 
 Figure~\ref{fig-meaningless} is generated using an R chunk.
 
@@ -1012,9 +1027,9 @@ Figure~\ref{fig-meaningless} is generated using an R chunk.
 
 \end{figure}%
 
-\section{Discussion}\label{discussion}
+\section{Discussion}\label{sec-discussion}
 
-\subsection{Limitations}\label{limitations}
+\subsection{Limitations}\label{sec-limitations}
 
 Tables can also be generated using R chunks, as shown in
 Table~\ref{tbl-simple} example.
@@ -1058,7 +1073,7 @@ Valiant & 18.1 & 6 & 225 & 105 \\
 
 \end{longtable}
 
-\section{Conclusions}\label{conclusions}
+\section{Conclusions}\label{sec-conclusions}
 
 This is the best paper ever.
 
