@@ -610,14 +610,14 @@ which corresponds to 3686 hexagons in the LMA, with an edge length of
 \paragraph{Jittering}\label{sec-MET_jittering}
 
 Due to a lack of open access to fine data regarding job location, the
-most granular data obtained was an OD matrix at the parish level
-\citep{INE_IMOB2017} with centroid to centroid representations, ``a
-common approach involving the simplifying assumption that all trip
-destinations and origins can be represented by (sometimes population
-weighted or aggregated) zone centroids'' \citep{Lovelace_2022}. However,
-in order to accurately compute accessibility and mobility measures,
-there was the need to have more disaggregated data regarding job
-locations, beyond the parish unit.
+most granular data obtained was an OD matrix at the parish level,
+provided by \citet{INE_IMOB2017}, with centroid to centroid
+representations, ``a common approach involving the simplifying
+assumption that all trip destinations and origins can be represented by
+(sometimes population weighted or aggregated) zone centroids''
+\citep{Lovelace_2022}. However, in order to accurately compute
+accessibility and mobility measures, there was the need to have more
+disaggregated data regarding job locations, beyond the parish unit.
 
 This way, jittering \citep{Lovelace_2022} was used as a proxy for this
 purpose, using building volumes as trip attractors, and this way
@@ -746,13 +746,27 @@ category:
 \subsubsection{Mobility}\label{sec-MET_mobility}
 
 Mobility evaluates the quality of the transportation system as a
-service, independently of the accessibility of the destinations. Its
-principal indicators are individually explained and detailed below.
+service, independently of the accessibility of the destinations. The
+methodology to calculate its principal indicators is explained and
+detailed below.
 
 \paragraph{Average commuting time}\label{average-commuting-time}
 
+Using the jittered OD pairs from \citet{INE_IMOB2017} (for commuting)
+and the travel time matrices, average commuting travel times are
+computed for each geographical unit and mode, weighted by number of
+trips. Trips with no feasible route within the constraints are assigned
+the maximum travel time (120 min) and counted separately as ``not
+accomplishable'' trips (PNA - Percentagem Não Alcançáveis).
+
 \paragraph{Average number of commuting
 transfers}\label{average-number-of-commuting-transfers}
+
+For each commuting OD pair, the minimum number of transfers required for
+each public transport route (for 0, 1, 2, and 3 transfers) is assigned
+to each OD pair, and population-weighted mean transfers are computed per
+geographical unit. The result is the average minimum amount of transfers
+to commute to work using public transport.
 
 \paragraph{Public transport headways and waiting
 times}\label{public-transport-headways-and-waiting-times}
@@ -760,9 +774,11 @@ times}\label{public-transport-headways-and-waiting-times}
 \paragraph{Public transport population
 coverage}\label{public-transport-population-coverage}
 
-\paragraph{Ratio of Infrastructure}\label{ratio-of-infrastructure}
+\paragraph{Ratio of pedestrian and cycling
+infrastructure}\label{ratio-of-pedestrian-and-cycling-infrastructure}
 
-\paragraph{Shared Mobility}\label{shared-mobility}
+\paragraph{Shared mobility
+availability}\label{shared-mobility-availability}
 
 \subsubsection{Affordability}\label{sec-MET_affordability}
 
@@ -793,75 +809,34 @@ on motorways and on the two bridges crossing the Tagus river, while
 maintaining IMPT's spatial scope.
 
 The indicators calculated for each geographical unit and transport mode
-are systematized in Table~\ref{tbl-safety_indicators}.
+are systematized below:
 
-\begin{Shaded}
-\begin{Highlighting}[]
-\NormalTok{safety\_indicators }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{(}
-  \StringTok{"Indicator"} \OtherTok{=} \FunctionTok{c}\NormalTok{(}\StringTok{"Total accidents (5 years)"}\NormalTok{,}
-                  \StringTok{"Fatalities (30{-}day)"}\NormalTok{,}
-                  \StringTok{"Serious injuries (30{-}day)"}\NormalTok{,}
-                  \StringTok{"Slight injuries (30{-}day)"}\NormalTok{,}
-                  \StringTok{"Accident rate"}\NormalTok{,}
-                  \StringTok{"Fatality rate"}\NormalTok{,}
-                  \StringTok{"Severity index (total)"}\NormalTok{,}
-                  \StringTok{"Severity index (motorized)"}\NormalTok{,}
-                  \StringTok{"Severity index (cycling)"}\NormalTok{,}
-                  \StringTok{"Severity index (walking)"}
-\NormalTok{                  ),}
-  \StringTok{"Formula"} \OtherTok{=} \FunctionTok{c}\NormalTok{(}\StringTok{"Count"}\NormalTok{,}
-                \StringTok{"sum(VM\_30d)"}\NormalTok{,}
-                \StringTok{"sum(FG\_30d)"}\NormalTok{,}
-                \StringTok{"sum(FL\_30d)"}\NormalTok{,}
-                \StringTok{"total\_accidents/population × 1000"}\NormalTok{,}
-                \StringTok{"fatalities/population × 1000"}\NormalTok{,}
-                \StringTok{"fatalities/total\_victims"}\NormalTok{,}
-                \StringTok{"fatalities/motorized\_vehicles\_involved"}\NormalTok{,}
-                \StringTok{"fatalities/cycling\_involved"}\NormalTok{,}
-                \StringTok{"fatalities/pedestrians\_involved"}\NormalTok{),}
-  \AttributeTok{check.names =} \ConstantTok{FALSE}
-\NormalTok{)}
-\NormalTok{knitr}\SpecialCharTok{::}\FunctionTok{kable}\NormalTok{(safety\_indicators)}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{verbatim}
-Warning in attr(x, "align"): 'xfun::attr()' is deprecated.
-Use 'xfun::attr2()' instead.
-See help("Deprecated")
-\end{verbatim}
-
-\begin{verbatim}
-Warning in attr(x, "format"): 'xfun::attr()' is deprecated.
-Use 'xfun::attr2()' instead.
-See help("Deprecated")
-\end{verbatim}
-
-\begin{longtable}[]{@{}ll@{}}
-
-\caption{\label{tbl-safety_indicators}Travel time threshold (minutes) to
-compute cumulative number of opportunities}
-
-\tabularnewline
-
-\toprule\noalign{}
-Indicator & Formula \\
-\midrule\noalign{}
-\endhead
-\bottomrule\noalign{}
-\endlastfoot
-Total accidents (5 years) & Count \\
-Fatalities (30-day) & sum(VM\_30d) \\
-Serious injuries (30-day) & sum(FG\_30d) \\
-Slight injuries (30-day) & sum(FL\_30d) \\
-Accident rate & total\_accidents/population × 1000 \\
-Fatality rate & fatalities/population × 1000 \\
-Severity index (total) & fatalities/total\_victims \\
-Severity index (motorized) & fatalities/motorized\_vehicles\_involved \\
-Severity index (cycling) & fatalities/cycling\_involved \\
-Severity index (walking) & fatalities/pedestrians\_involved \\
-
-\end{longtable}
+\begin{itemize}
+\tightlist
+\item
+  Total accidents (5 years): \[\sum(Acc_{5y})\]
+\item
+  Fatalities (30-day): \[\sum(VM_{30d})\]
+\item
+  Serious injuries (30-day): \[\sum(FG_{30d})\]
+\item
+  Slight injuries (30-day): \[\sum(FL_{30d})\]
+\item
+  Accident rate: \[\frac{\sum(Acc_{5y})}{Population} \times 1000\]
+\item
+  Fatality rate: \[\frac{\sum(VM_{30d})}{Population} \times 1000\]
+\item
+  Severity index (total): \[\frac{\sum(VM_{30d})}{\sum(Acc_{5y})}\]
+\item
+  Severity index (motorized):
+  \[\frac{\sum(VM_{30d})}{Motorized\; vehicles\; involved}\]
+\item
+  Severity index (cycling):
+  \[\frac{\sum(VM_{30d})}{Cyclists\; involved}\]
+\item
+  Severity index (pedestrian):
+  \[\frac{\sum(VM_{30d})}{Pedestrians\; involved}\]
+\end{itemize}
 
 \subsection{Normalization and
 Aggregation}\label{sec-MET_normalisation_aggregation}

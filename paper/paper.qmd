@@ -194,7 +194,7 @@ Indicators for this dimension were computed using the H3 grid [@Uber_H3_2018] of
 
 #### Jittering {#sec-MET_jittering}
 
-Due to a lack of open access to fine data regarding job location, the most granular data obtained was an OD matrix at the parish level [@INE_IMOB2017] with centroid to centroid representations, "a common approach involving the simplifying assumption that all trip destinations and origins can be represented by (sometimes population weighted or aggregated) zone centroids" [@Lovelace_2022]. However, in order to accurately compute accessibility and mobility measures, there was the need to have more disaggregated data regarding job locations, beyond the parish unit.
+Due to a lack of open access to fine data regarding job location, the most granular data obtained was an OD matrix at the parish level, provided by @INE_IMOB2017, with centroid to centroid representations, "a common approach involving the simplifying assumption that all trip destinations and origins can be represented by (sometimes population weighted or aggregated) zone centroids" [@Lovelace_2022]. However, in order to accurately compute accessibility and mobility measures, there was the need to have more disaggregated data regarding job locations, beyond the parish unit.
 
 This way, jittering [@Lovelace_2022] was used as a proxy for this purpose, using building volumes as trip attractors, and this way weighting origins and destinations. This allowed for the disaggregation of trips between parishes to ODs with up to 50 trips.
 
@@ -249,19 +249,23 @@ This measure was computed using the function `accessibility::cost_to_closest()`,
 
 ### Mobility {#sec-MET_mobility}
 
-Mobility evaluates the quality of the transportation system as a service, independently of the accessibility of the destinations. Its principal indicators are individually explained and detailed below.
+Mobility evaluates the quality of the transportation system as a service, independently of the accessibility of the destinations. The methodology to calculate its principal indicators is explained and detailed below.
 
 #### Average commuting time
 
+Using the jittered OD pairs from @INE_IMOB2017 (for commuting) and the travel time matrices, average commuting travel times are computed for each geographical unit and mode, weighted by number of trips. Trips with no feasible route within the constraints are assigned the maximum travel time (120 min) and counted separately as “not accomplishable” trips (PNA - Percentagem Não Alcançáveis).
+
 #### Average number of commuting transfers
+
+For each commuting OD pair, the minimum number of transfers required for each public transport route (for 0, 1, 2, and 3 transfers) is assigned to each OD pair, and population-weighted mean transfers are computed per geographical unit. The result is the average minimum amount of transfers to commute to work using public transport.
 
 #### Public transport headways and waiting times
 
 #### Public transport population coverage
 
-#### Ratio of Infrastructure
+#### Ratio of pedestrian and cycling infrastructure
 
-#### Shared Mobility
+#### Shared mobility availability
 
 <!--# acabar -->
 
@@ -281,40 +285,18 @@ Affordability evaluates the capacity of households to support the monetary costs
 
 This dimension encompasses the disproportional exposure to externalities of the transportation system. It is entirely based on road safety data provided by Autoridade Nacional de Segurança Rodoviária (ASNR) through Transportes Metropolitanos de Lisboa (TML) [@pmmus]. It is important to note that only road crashes occuring *inside localities* (dentro das localidades), a category specified by the ASNR itself, are included in the index. In particular, this excludes crashes on motorways and on the two bridges crossing the Tagus river, while maintaining IMPT's spatial scope.
 
-The indicators calculated for each geographical unit and transport mode are systematized in @tbl-safety_indicators.
+The indicators calculated for each geographical unit and transport mode are systematized below:
 
-<!--# fazer melhor esta tabela (como escrever em latex dentro da tabela...?) -->
-
-```{r}
-#| label: tbl-safety_indicators
-#| tbl-cap: Travel time threshold (minutes) to compute cumulative number of opportunities
-#| echo: true
-safety_indicators <- data.frame(
-  "Indicator" = c("Total accidents (5 years)",
-                  "Fatalities (30-day)",
-                  "Serious injuries (30-day)",
-                  "Slight injuries (30-day)",
-                  "Accident rate",
-                  "Fatality rate",
-                  "Severity index (total)",
-                  "Severity index (motorized)",
-                  "Severity index (cycling)",
-                  "Severity index (walking)"
-                  ),
-  "Formula" = c("Count",
-                "sum(VM_30d)",
-                "sum(FG_30d)",
-                "sum(FL_30d)",
-                "total_accidents/population × 1000",
-                "fatalities/population × 1000",
-                "fatalities/total_victims",
-                "fatalities/motorized_vehicles_involved",
-                "fatalities/cycling_involved",
-                "fatalities/pedestrians_involved"),
-  check.names = FALSE
-)
-knitr::kable(safety_indicators)
-```
+- Total accidents (5 years): $$\sum(Acc_{5y})$$
+- Fatalities (30-day): $$\sum(VM_{30d})$$
+- Serious injuries (30-day): $$\sum(FG_{30d})$$
+- Slight injuries (30-day): $$\sum(FL_{30d})$$
+- Accident rate: $$\frac{\sum(Acc_{5y})}{Population} \times 1000$$
+- Fatality rate: $$\frac{\sum(VM_{30d})}{Population} \times 1000$$
+- Severity index (total): $$\frac{\sum(VM_{30d})}{\sum(Acc_{5y})}$$
+- Severity index (motorized): $$\frac{\sum(VM_{30d})}{Motorized\; vehicles\; involved}$$
+- Severity index (cycling): $$\frac{\sum(VM_{30d})}{Cyclists\; involved}$$
+- Severity index (pedestrian): $$\frac{\sum(VM_{30d})}{Pedestrians\; involved}$$
 
 ## Normalization and Aggregation {#sec-MET_normalisation_aggregation}
 
@@ -399,6 +381,8 @@ plot(runif(25), runif(25))
 <!--# affordability -> não havia indicadores suficientes para pca -->
 
 <!--# indicadores que não conseguimos incluir (eg poluição atmosférica) -->
+
+<!--# dados abertos de emprego -->
 
 Tables can also be generated using R chunks, as shown in @tbl-simple example.
 
