@@ -752,12 +752,13 @@ detailed below.
 
 \paragraph{Average commuting time}\label{average-commuting-time}
 
-Using the jittered OD pairs from \citet{INE_IMOB2017} (for commuting)
-and the travel time matrices, average commuting travel times are
-computed for each geographical unit and mode, weighted by number of
-trips. Trips with no feasible route within the constraints are assigned
-the maximum travel time (120 min) and counted separately as ``not
-accomplishable'' trips (PNA - Percentagem Não Alcançáveis).
+Using the jittered (Section~\ref{sec-MET_jittering}) OD pairs from
+\citet{INE_IMOB2017} (for commuting) and the travel time matrices,
+average commuting travel times are computed for each geographical unit
+and mode, weighted by number of trips. Trips with no feasible route
+within the constraints are assigned the maximum travel time (120 min)
+and counted separately as ``not accomplishable'' trips (PNA -
+Percentagem Não Alcançáveis).
 
 \paragraph{Average number of commuting
 transfers}\label{average-number-of-commuting-transfers}
@@ -771,14 +772,95 @@ to commute to work using public transport.
 \paragraph{Public transport headways and waiting
 times}\label{public-transport-headways-and-waiting-times}
 
+Stop-level service frequencies were computed using
+\texttt{tidytransit::get\_stop\_frequency()} for four different time
+windows, as can be seen in
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{headway\_periods }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{(}
+  \AttributeTok{Period =} \FunctionTok{c}\NormalTok{(}\StringTok{"Weekday peak"}\NormalTok{,}
+             \StringTok{"Weekday full day"}\NormalTok{,}
+             \StringTok{"Weekday night"}\NormalTok{,}
+             \StringTok{"Weekend"}
+\NormalTok{             ),}
+  \AttributeTok{Day =} \FunctionTok{c}\NormalTok{(}\StringTok{"Wednesday 04/02/2026"}\NormalTok{,}\StringTok{"Wednesday 04/02/2026"}\NormalTok{,}\StringTok{"Wednesday 04/02/2026"}\NormalTok{,}\StringTok{"Sunday 08/02/2026"}\NormalTok{),}
+  \StringTok{"Time window"} \OtherTok{=} \FunctionTok{c}\NormalTok{(}\StringTok{"08:00{-}09:00"}\NormalTok{,}\StringTok{"00:00{-}48:00"}\NormalTok{,}\StringTok{"22:00{-}23:00"}\NormalTok{,}\StringTok{"10:00{-}11:00"}\NormalTok{),}
+  \AttributeTok{check.names =} \ConstantTok{FALSE}
+\NormalTok{)}
+\NormalTok{knitr}\SpecialCharTok{::}\FunctionTok{kable}\NormalTok{(headway\_periods)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+Warning in attr(x, "align"): 'xfun::attr()' is deprecated.
+Use 'xfun::attr2()' instead.
+See help("Deprecated")
+\end{verbatim}
+
+\begin{verbatim}
+Warning in attr(x, "format"): 'xfun::attr()' is deprecated.
+Use 'xfun::attr2()' instead.
+See help("Deprecated")
+\end{verbatim}
+
+\begin{longtable}[]{@{}lll@{}}
+
+\caption{\label{tbl-headway_periods}Public transport service frequency
+periods observed}
+
+\tabularnewline
+
+\toprule\noalign{}
+Period & Day & Time window \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Weekday peak & Wednesday 04/02/2026 & 08:00-09:00 \\
+Weekday full day & Wednesday 04/02/2026 & 00:00-48:00 \\
+Weekday night & Wednesday 04/02/2026 & 22:00-23:00 \\
+Weekend & Sunday 08/02/2026 & 10:00-11:00 \\
+
+\end{longtable}
+
+A 500-meter buffer per stop is used to allocate stops to BGRI
+\citep{INE_Census2021} population centroids. Results are aggregated to
+geographical units as population-weighted mean headway and waiting time.
+Additionally, frequency reduction factors were computed to quantify the
+reduction in service during night and weekend periods.
+
 \paragraph{Public transport population
 coverage}\label{public-transport-population-coverage}
 
 \paragraph{Ratio of pedestrian and cycling
 infrastructure}\label{ratio-of-pedestrian-and-cycling-infrastructure}
 
+The pedestrian infrastructure ratio is the proportion of road length
+that includes pedestrian infrastructure, computed using OpenStreetMap
+data:
+
+\[R_{ped}=\frac{pedestrian\; path\; length}{road\; length}\]
+
+Road classification uses the highway tags:
+\texttt{motorway,\ trunk,\ primary,\ secondary,\ tertiary,\ unclassified,\ residential,\ living\_street},
+as well as linked variants.
+
+Pedestrian infrastructure classification uses the tags:
+\texttt{highway\ =\ footway\ \textbar{}\ pedestrian\ \textbar{}\ steps\ \textbar{}\ residential}
+and
+\texttt{footway\ =\ sidewalk\ \textbar{}\ crossing\ \textbar{}\ path\ \textbar{}\ platform\ \textbar{}\ corridor\ \textbar{}\ alley\ \textbar{}\ track,\ and\ sidewalk\ =\ both\ \textbar{}\ left\ \textbar{}\ right}.
+
+The calculation of cycling infrastructure ratio is analogous to the
+pedestrian ratio. However, cycling infrastructure is further classified
+according to its level of segregation:
+
 \paragraph{Shared mobility
 availability}\label{shared-mobility-availability}
+
+The number of shared mobility points (physical and virtual docks from
+all operators in the LMA \citep{pmmus}) was counted and aggregated per
+parish and per grid cell.
 
 \subsubsection{Affordability}\label{sec-MET_affordability}
 

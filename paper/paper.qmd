@@ -253,7 +253,7 @@ Mobility evaluates the quality of the transportation system as a service, indepe
 
 #### Average commuting time
 
-Using the jittered OD pairs from @INE_IMOB2017 (for commuting) and the travel time matrices, average commuting travel times are computed for each geographical unit and mode, weighted by number of trips. Trips with no feasible route within the constraints are assigned the maximum travel time (120 min) and counted separately as “not accomplishable” trips (PNA - Percentagem Não Alcançáveis).
+Using the jittered (@sec-MET_jittering) OD pairs from @INE_IMOB2017 (for commuting) and the travel time matrices, average commuting travel times are computed for each geographical unit and mode, weighted by number of trips. Trips with no feasible route within the constraints are assigned the maximum travel time (120 min) and counted separately as “not accomplishable” trips (PNA - Percentagem Não Alcançáveis).
 
 #### Average number of commuting transfers
 
@@ -261,13 +261,47 @@ For each commuting OD pair, the minimum number of transfers required for each pu
 
 #### Public transport headways and waiting times
 
+Stop-level service frequencies were computed using `tidytransit::get_stop_frequency()` for four different time windows, as can be seen in <!--# tabela -->
+
+```{r}
+#| label: tbl-headway_periods
+#| tbl-cap: Public transport service frequency periods observed
+#| echo: true
+headway_periods <- data.frame(
+  Period = c("Weekday peak",
+             "Weekday full day",
+             "Weekday night",
+             "Weekend"
+             ),
+  Day = c("Wednesday 04/02/2026","Wednesday 04/02/2026","Wednesday 04/02/2026","Sunday 08/02/2026"),
+  "Time window" = c("08:00-09:00","00:00-48:00","22:00-23:00","10:00-11:00"),
+  check.names = FALSE
+)
+knitr::kable(headway_periods)
+```
+
+A 500-meter buffer per stop is used to allocate stops to BGRI [@INE_Census2021] population centroids. Results are aggregated to geographical units as population-weighted mean headway and waiting time. Additionally, frequency reduction factors were computed to quantify the reduction in service during night and weekend periods.
+
 #### Public transport population coverage
 
 #### Ratio of pedestrian and cycling infrastructure
 
+The pedestrian infrastructure ratio is the proportion of road length that includes pedestrian infrastructure, computed using OpenStreetMap <!--# how to cite? --> data:
+
+$$R_{ped}=\frac{pedestrian\; path\; length}{road\; length}$$
+
+Road classification uses the highway tags: `motorway, trunk, primary, secondary, tertiary, unclassified, residential, living_street`, as well as linked variants.
+
+Pedestrian infrastructure classification uses the tags: `highway = footway | pedestrian | steps | residential` and `footway = sidewalk | crossing | path | platform | corridor | alley | track, and sidewalk = both | left | right`.
+
+The calculation of cycling infrastructure ratio is analogous to the pedestrian ratio. However, cycling infrastructure is further classified according to its level of segregation:
+
+<!--# ACABAR - 4 classificações; ratio infrastructure e ratio quality-->
+
+
 #### Shared mobility availability
 
-<!--# acabar -->
+The number of shared mobility points (physical and virtual docks from all operators in the LMA [@pmmus]) was counted and aggregated per parish and per grid cell.
 
 ### Affordability {#sec-MET_affordability}
 
