@@ -873,9 +873,6 @@ segregation, according to the following description and OSM tags:
     \texttt{buffered\_lane}, \texttt{segregated}, \texttt{lane}, or
     \texttt{track}.
   \end{itemize}
-\end{itemize}
-
-\begin{itemize}
 \item
   Advisory lane (\emph{Via partilhada com veículos motorizados / zonas
   30}): Marked cycle lanes shared with motor vehicles, such as
@@ -935,6 +932,16 @@ travel costs are estimated for one-way trips from home to the workplace
 during the morning peak.
 
 \paragraph{Cost of driving}\label{sec-MET_cost_driving}
+
+The cost of car travel is computed through:
+
+\[ Cost_{car} = d \times 0.40€/km + Cost_{toll}\]
+
+Where a fixed cost of 0.40€/km is used, based on
+\citet{Portaria1553D2008}, which sets mileage allowance to cover fuel
+and car maintenance. Tolls are computed through the toll calculator of
+Infraestruturas de Portugal \citep{ip_portagens}, using the route
+geometry returned by \texttt{r5r::detailed\_itineraries()}.
 
 \paragraph{Cost of public transportation}\label{sec-MET_cost_PT}
 
@@ -1132,6 +1139,8 @@ dimension score for area \(i\).
 methods for all modes (with Navegante)}
 
 \end{figure}%
+
+\subsection{Validation}\label{validation}
 
 \section{Results}\label{sec-results}
 

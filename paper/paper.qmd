@@ -308,8 +308,6 @@ The calculation of cycling infrastructure ratio is analogous to the pedestrian r
 
   - `cycleway` tags containing: `separate`, `buffered_lane`, `segregated`, `lane`, or `track`.
 
-<!-- -->
-
 - Advisory lane (*Via partilhada com veículos motorizados / zonas 30*): Marked cycle lanes shared with motor vehicles, such as "sharrows" or advisory lanes.
 
   - `cycleway` tags containing: `shared_lane`.
@@ -342,11 +340,17 @@ Affordability evaluates the capacity of households to support the monetary costs
 
 #### Cost of driving {#sec-MET_cost_driving}
 
+The cost of car travel is computed through:
+
+$$ Cost_{car} = d \times 0.40€/km + Cost_{toll}$$
+
+Where a fixed cost of 0.40€/km is used, based on @Portaria1553D2008, which sets mileage allowance to cover fuel and car maintenance. Tolls are computed through the toll calculator of Infraestruturas de Portugal [@ip_portagens], using the route geometry returned by `r5r::detailed_itineraries()`.
+
 #### Cost of public transportation {#sec-MET_cost_PT}
 
 #### Composite measures {#sec-MET_aff_composite}
 
-<!--# ACABAR-->
+<!--# ACABAR -->
 
 ### Safety {#sec-MET_safety}
 
@@ -421,6 +425,8 @@ with $k = 1/\ln(n)$ and $p_{id}$ being the proportion of the dimension score for
 
 IMPT results for different aggregation methods for all modes (with Navegante)
 :::
+
+## Validation
 
 # Results {#sec-results}
 
