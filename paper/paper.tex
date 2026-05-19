@@ -728,13 +728,13 @@ geographical unit, weighted by the population of those cells.
 opportunities}\label{sec-MET_TTopportunities}
 
 This measure was computed using the function
-\texttt{accessibility::cost\_to\_closest()}, considering the travel time
-matrices for each grid cell combination and the number of opportunities
-in each grid cell. Its output corresponds to the travel cost, in
-minutes, to reach \emph{n} opportunities of a certain category. Although
-calculations were performed for 1, 2 and 3 opportunities, only some of
-these were included in IMPT's operationalization, depending on the POI
-category:
+\texttt{accessibility::cost\_to\_closest()} , considering the travel
+time matrices for each grid cell combination and the number of
+opportunities in each grid cell. Its output corresponds to the travel
+cost, in minutes, to reach \emph{n} opportunities of a certain category.
+Although calculations were performed for 1, 2 and 3 opportunities, only
+some of these were included in IMPT's operationalization, depending on
+the POI category:
 
 \begin{itemize}
 \item
@@ -773,8 +773,8 @@ to commute to work using public transport.
 times}\label{public-transport-headways-and-waiting-times}
 
 Stop-level service frequencies were computed using
-\texttt{tidytransit::get\_stop\_frequency()} for four different time
-windows, as can be seen in
+\texttt{tidytransit::get\_stop\_frequency()} \citep{tidytransit} for
+four different time windows, as can be seen in
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -852,8 +852,70 @@ and
 \texttt{footway\ =\ sidewalk\ \textbar{}\ crossing\ \textbar{}\ path\ \textbar{}\ platform\ \textbar{}\ corridor\ \textbar{}\ alley\ \textbar{}\ track,\ and\ sidewalk\ =\ both\ \textbar{}\ left\ \textbar{}\ right}.
 
 The calculation of cycling infrastructure ratio is analogous to the
-pedestrian ratio. However, cycling infrastructure is further classified
-according to its level of segregation:
+pedestrian ratio, and also extracted from OpenStreetMap . Cycling
+infrastructure is further classified according to its type and level of
+segregation, according to the following description and OSM tags:
+
+\begin{itemize}
+\item
+  Cycle track or lane (\emph{Ciclovia segregada}): Segregated or
+  light-separated tracks exclusive for cycling.
+
+  \begin{itemize}
+  \item
+    \texttt{highway\ =\ cycleway}
+  \item
+    \texttt{highway\ =\ path} \& \texttt{bicycle\ =\ designated}
+  \item
+    \texttt{segregated\ =\ yes\ \textbar{}\ no}
+  \item
+    \texttt{cycleway} tags containing: \texttt{separate},
+    \texttt{buffered\_lane}, \texttt{segregated}, \texttt{lane}, or
+    \texttt{track}.
+  \end{itemize}
+\end{itemize}
+
+\begin{itemize}
+\item
+  Advisory lane (\emph{Via partilhada com veículos motorizados / zonas
+  30}): Marked cycle lanes shared with motor vehicles, such as
+  ``sharrows'' or advisory lanes.
+
+  \begin{itemize}
+  \tightlist
+  \item
+    \texttt{cycleway} tags containing: \texttt{shared\_lane}.
+  \end{itemize}
+\item
+  Protected Active (\emph{Via partilhada com peões}): Infrastructure
+  shared with pedestrians but protected from motor vehicles.
+
+  \begin{itemize}
+  \item
+    \texttt{highway\ =\ pedestrian} \& \texttt{bicycle\ =\ designated}.
+  \item
+    Refinement of
+    \texttt{highway\ =\ path\ \textbar{}\ footway\ \textbar{}\ pedestrian}
+    when \texttt{foot} access is explicitly allowed on cycling paths
+    without physical segregation.
+  \end{itemize}
+\end{itemize}
+
+The primary indicators are thus:
+
+\begin{itemize}
+\item
+  \textbf{Cycling infrastructure ratio:}
+
+  \[R_{cyc}=\frac{total\; cycleway\; length}{road\; length}\]
+\item
+  \textbf{Cycling quality ratio:}
+
+  \[R_{ped}=\frac{segregated\; cycleway\; length}{total\; cycleway\; length}\]
+\end{itemize}
+
+Where ``segregated cycleway length'' corresponds to the ``cycle track or
+lane'' category.
 
 \paragraph{Shared mobility
 availability}\label{shared-mobility-availability}
@@ -896,34 +958,37 @@ are systematized below:
 \begin{itemize}
 \tightlist
 \item
-  Total accidents (5 years): \[\sum(Acc_{5y})\]
+  \textbf{Total accidents (5 years):} \[\sum(Acc_{5y})\]
 \item
-  Fatalities (30-day): \[\sum(VM_{30d})\]
+  \textbf{Fatalities (30-day):} \[\sum(VM_{30d})\]
 \item
-  Serious injuries (30-day): \[\sum(FG_{30d})\]
+  \textbf{Serious injuries (30-day):} \[\sum(FG_{30d})\]
 \item
-  Slight injuries (30-day): \[\sum(FL_{30d})\]
+  \textbf{Slight injuries (30-day):} \[\sum(FL_{30d})\]
 \item
-  Accident rate: \[\frac{\sum(Acc_{5y})}{Population} \times 1000\]
+  \textbf{Accident rate:}
+  \[\frac{\sum(Acc_{5y})}{Population} \times 1000\]
 \item
-  Fatality rate: \[\frac{\sum(VM_{30d})}{Population} \times 1000\]
+  \textbf{Fatality rate:}
+  \[\frac{\sum(VM_{30d})}{Population} \times 1000\]
 \item
-  Severity index (total): \[\frac{\sum(VM_{30d})}{\sum(Acc_{5y})}\]
+  \textbf{Severity index (total):}
+  \[\frac{\sum(VM_{30d})}{\sum(Acc_{5y})}\]
 \item
-  Severity index (motorized):
+  \textbf{Severity index (motorized):}
   \[\frac{\sum(VM_{30d})}{Motorized\; vehicles\; involved}\]
 \item
-  Severity index (cycling):
+  \textbf{Severity index (cycling):}
   \[\frac{\sum(VM_{30d})}{Cyclists\; involved}\]
 \item
-  Severity index (pedestrian):
+  \textbf{Severity index (pedestrian):}
   \[\frac{\sum(VM_{30d})}{Pedestrians\; involved}\]
 \end{itemize}
 
 \subsection{Normalization and
 Aggregation}\label{sec-MET_normalisation_aggregation}
 
-All indicators are normalized to the range {[}1, 100{]} using min-max
+All indicators were normalized to the range {[}1, 100{]} using min-max
 scaling:
 
 \textbf{For benefit indicators} (higher raw value → better):

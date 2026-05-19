@@ -109,7 +109,7 @@ Mobility refers to the systemic deficits of the transport system, be them lack o
 
 ### Affordability {#sec-LR_affordability}
 
-<!--# falta -->
+<!--# acabar -->
 
 ### Safety {#sec-LR_safety}
 
@@ -241,7 +241,7 @@ The value computed represents the number of opportunities reachable within the d
 
 #### Travel time to reach closest opportunities {#sec-MET_TTopportunities}
 
-This measure was computed using the function `accessibility::cost_to_closest()`, considering the travel time matrices for each grid cell combination and the number of opportunities in each grid cell. Its output corresponds to the travel cost, in minutes, to reach *n* opportunities of a certain category. Although calculations were performed for 1, 2 and 3 opportunities, only some of these were included in IMPT's operationalization, depending on the POI category:
+This measure was computed using the function `accessibility::cost_to_closest()` <!--# a citação do package de accessibility de Pereira 2022 não funciona (link não leva a lado nenhum) -->, considering the travel time matrices for each grid cell combination and the number of opportunities in each grid cell. Its output corresponds to the travel cost, in minutes, to reach *n* opportunities of a certain category. Although calculations were performed for 1, 2 and 3 opportunities, only some of these were included in IMPT's operationalization, depending on the POI category:
 
 - Healthcare, basic education and green spaces: 1 opportunity.
 
@@ -261,7 +261,7 @@ For each commuting OD pair, the minimum number of transfers required for each pu
 
 #### Public transport headways and waiting times
 
-Stop-level service frequencies were computed using `tidytransit::get_stop_frequency()` for four different time windows, as can be seen in <!--# tabela -->
+Stop-level service frequencies were computed using `tidytransit::get_stop_frequency()` [@tidytransit] for four different time windows, as can be seen in <!--# tabela -->
 
 ```{r}
 #| label: tbl-headway_periods
@@ -284,9 +284,11 @@ A 500-meter buffer per stop is used to allocate stops to BGRI [@INE_Census2021] 
 
 #### Public transport population coverage
 
+<!--# ACABAR -->
+
 #### Ratio of pedestrian and cycling infrastructure
 
-The pedestrian infrastructure ratio is the proportion of road length that includes pedestrian infrastructure, computed using OpenStreetMap <!--# how to cite? --> data:
+The pedestrian infrastructure ratio is the proportion of road length that includes pedestrian infrastructure, computed using OpenStreetMap <!--# como citar? --> data:
 
 $$R_{ped}=\frac{pedestrian\; path\; length}{road\; length}$$
 
@@ -294,10 +296,41 @@ Road classification uses the highway tags: `motorway, trunk, primary, secondary,
 
 Pedestrian infrastructure classification uses the tags: `highway = footway | pedestrian | steps | residential` and `footway = sidewalk | crossing | path | platform | corridor | alley | track, and sidewalk = both | left | right`.
 
-The calculation of cycling infrastructure ratio is analogous to the pedestrian ratio. However, cycling infrastructure is further classified according to its level of segregation:
+The calculation of cycling infrastructure ratio is analogous to the pedestrian ratio, and also extracted from OpenStreetMap <!--# como citar? -->. Cycling infrastructure is further classified according to its type and level of segregation, according to the following description and OSM tags:
 
-<!--# ACABAR - 4 classificações; ratio infrastructure e ratio quality-->
+- Cycle track or lane (*Ciclovia segregada*): Segregated or light-separated tracks exclusive for cycling.
 
+  - `highway = cycleway`
+
+  - `highway = path` & `bicycle = designated`
+
+  - `segregated = yes | no`
+
+  - `cycleway` tags containing: `separate`, `buffered_lane`, `segregated`, `lane`, or `track`.
+
+<!-- -->
+
+- Advisory lane (*Via partilhada com veículos motorizados / zonas 30*): Marked cycle lanes shared with motor vehicles, such as "sharrows" or advisory lanes.
+
+  - `cycleway` tags containing: `shared_lane`.
+
+- Protected Active (*Via partilhada com peões*): Infrastructure shared with pedestrians but protected from motor vehicles.
+
+  - `highway = pedestrian` & `bicycle = designated`.
+
+  - Refinement of `highway = path | footway | pedestrian` when `foot` access is explicitly allowed on cycling paths without physical segregation.
+
+The primary indicators are thus:
+
+- **Cycling infrastructure ratio:**
+
+  $$R_{cyc}=\frac{total\; cycleway\; length}{road\; length}$$
+
+- **Cycling quality ratio:**
+
+  $$R_{ped}=\frac{segregated\; cycleway\; length}{total\; cycleway\; length}$$
+
+Where “segregated cycleway length” corresponds to the "cycle track or lane" category.
 
 #### Shared mobility availability
 
@@ -313,7 +346,7 @@ Affordability evaluates the capacity of households to support the monetary costs
 
 #### Composite measures {#sec-MET_aff_composite}
 
-<!--# acabar -->
+<!--# ACABAR-->
 
 ### Safety {#sec-MET_safety}
 
@@ -321,20 +354,20 @@ This dimension encompasses the disproportional exposure to externalities of the 
 
 The indicators calculated for each geographical unit and transport mode are systematized below:
 
-- Total accidents (5 years): $$\sum(Acc_{5y})$$
-- Fatalities (30-day): $$\sum(VM_{30d})$$
-- Serious injuries (30-day): $$\sum(FG_{30d})$$
-- Slight injuries (30-day): $$\sum(FL_{30d})$$
-- Accident rate: $$\frac{\sum(Acc_{5y})}{Population} \times 1000$$
-- Fatality rate: $$\frac{\sum(VM_{30d})}{Population} \times 1000$$
-- Severity index (total): $$\frac{\sum(VM_{30d})}{\sum(Acc_{5y})}$$
-- Severity index (motorized): $$\frac{\sum(VM_{30d})}{Motorized\; vehicles\; involved}$$
-- Severity index (cycling): $$\frac{\sum(VM_{30d})}{Cyclists\; involved}$$
-- Severity index (pedestrian): $$\frac{\sum(VM_{30d})}{Pedestrians\; involved}$$
+- **Total accidents (5 years):** $$\sum(Acc_{5y})$$
+- **Fatalities (30-day):** $$\sum(VM_{30d})$$
+- **Serious injuries (30-day):** $$\sum(FG_{30d})$$
+- **Slight injuries (30-day):** $$\sum(FL_{30d})$$
+- **Accident rate:** $$\frac{\sum(Acc_{5y})}{Population} \times 1000$$
+- **Fatality rate:** $$\frac{\sum(VM_{30d})}{Population} \times 1000$$
+- **Severity index (total):** $$\frac{\sum(VM_{30d})}{\sum(Acc_{5y})}$$
+- **Severity index (motorized):** $$\frac{\sum(VM_{30d})}{Motorized\; vehicles\; involved}$$
+- **Severity index (cycling):** $$\frac{\sum(VM_{30d})}{Cyclists\; involved}$$
+- **Severity index (pedestrian):** $$\frac{\sum(VM_{30d})}{Pedestrians\; involved}$$
 
 ## Normalization and Aggregation {#sec-MET_normalisation_aggregation}
 
-All indicators are normalized to the range \[1, 100\] using min-max scaling:
+All indicators were normalized to the range \[1, 100\] using min-max scaling:
 
 **For benefit indicators** (higher raw value → better): $$X_{norm} = 1 + \frac{X - X_{min}}{X_{max} - X_{min}} \times 99$$
 
