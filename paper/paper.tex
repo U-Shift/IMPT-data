@@ -520,7 +520,7 @@ indicators that had a higher level of granularity, an analysis by grid
 level was also assembled. The LMA includes 124 parishes, which
 constitute the observation units of the IMPT.
 
-\subsubsection{Data Sources}\label{sec-MET_data_sources}
+\subsection{Data Sources}\label{sec-MET_data_sources}
 
 Lastly, the following R packages were utilized in the data processing
 and creation of both the index and its interactive dashboard:
@@ -945,7 +945,147 @@ geometry returned by \texttt{r5r::detailed\_itineraries()}.
 
 \paragraph{Cost of public transportation}\label{sec-MET_cost_PT}
 
-\paragraph{Composite measures}\label{sec-MET_aff_composite}
+To account for uncertainty in public transport fare payments, two
+scenarios were considered:
+
+\textbf{Scenario A - Single ticket}
+
+The average single ticket cost was calculated based on revenue data from
+Carris \citep{carris_contas_2024}:
+
+\begin{itemize}
+\item
+  Total single ticket validations: 17,424,000
+\item
+  Total single ticket revenue: 33,278,000€
+\item
+  Average cost per single ticket: \textasciitilde1.91€
+\end{itemize}
+
+This way, a single ticket cost of \textbf{1.91€} was assumed for all
+modes. Free transfers within the same mode for 60 minutes are assumed,
+but transfers to different modes incur an additional charge.
+
+\textbf{Scenario B - Monthly pass (Navegante)}
+
+Based on operator revenue data, the average cost of a monthly pass was
+estimated (Table~\ref{tbl-navegante}).
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{navegante }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{(}
+  \StringTok{"Pass type"} \OtherTok{=} \FunctionTok{c}\NormalTok{(}\StringTok{"Navegante Metropolitano"}\NormalTok{,}
+                  \StringTok{"Navegante Municipal"}\NormalTok{,}
+                  \StringTok{"Senior (+65)"}\NormalTok{,}
+                  \StringTok{"Family"}\NormalTok{,}
+                  \StringTok{"Youth (sub{-}23)"}
+\NormalTok{                  ),}
+  \StringTok{"Pass recharges"} \OtherTok{=} \FunctionTok{c}\NormalTok{(}\StringTok{"5,063,510"}\NormalTok{,}\StringTok{"887,190"}\NormalTok{,}\StringTok{"1,103,782"}\NormalTok{,}\StringTok{"243,784"}\NormalTok{,}\StringTok{"3,425,013"}\NormalTok{),}
+  \StringTok{"Pass price"} \OtherTok{=} \FunctionTok{c}\NormalTok{(}\StringTok{"40€"}\NormalTok{,}\StringTok{"30€"}\NormalTok{,}\StringTok{"20€"}\NormalTok{,}\StringTok{"80€"}\NormalTok{,}\StringTok{"0€"}\NormalTok{),}
+  \AttributeTok{check.names =} \ConstantTok{FALSE}
+\NormalTok{)}
+\NormalTok{knitr}\SpecialCharTok{::}\FunctionTok{kable}\NormalTok{(navegante)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+Warning in attr(x, "align"): 'xfun::attr()' is deprecated.
+Use 'xfun::attr2()' instead.
+See help("Deprecated")
+\end{verbatim}
+
+\begin{verbatim}
+Warning in attr(x, "format"): 'xfun::attr()' is deprecated.
+Use 'xfun::attr2()' instead.
+See help("Deprecated")
+\end{verbatim}
+
+\begin{longtable}[]{@{}lll@{}}
+
+\caption{\label{tbl-navegante}Revenue from Navegante monthly pass}
+
+\tabularnewline
+
+\toprule\noalign{}
+Pass type & Pass recharges & Pass price \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Navegante Metropolitano & 5,063,510 & 40€ \\
+Navegante Municipal & 887,190 & 30€ \\
+Senior (+65) & 1,103,782 & 20€ \\
+Family & 243,784 & 80€ \\
+Youth (sub-23) & 3,425,013 & 0€ \\
+
+\end{longtable}
+
+The average cost paid by a monthly pass holder is thus
+\textbf{\textasciitilde25.25€}. Assuming an average of 44 monthly trips
+(2 trips in each of 22 working days), the average cost per trip becomes
+\textbf{\textasciitilde0.57€}.
+
+\paragraph{Composite indicators}\label{sec-MET_aff_composite}
+
+Transport expenditure is expressed as a share of household income, with
+two variants (with and without housing costs). All costs are annualized
+and computed as yearly expenses per household (€/year/household). 250
+days per year were considered, with two trips per day. Tolls are
+considered assymetrically for both directions, since the bridges' tolls
+are only paid one-way.
+
+For driving:
+
+\[ transp\_inc_{car} = \frac{C_{car}}{I_{household}} \]
+
+\[ h\_transp\_inc_{car} = \frac{C_{car} + C_{housing}}{I_{household}} \]
+
+To combine car and public transport costs, a composite indicator based
+on each parish's modal share from \citet{census_2021_modal_share} is
+computed:
+
+\[ transp\_inc_{weighted} = \frac{C_{car} \cdot s_{car} + C_{PT} \cdot s_{PT}}{s_{car} + s_{PT} + s_{active}} \]
+
+Where \(s_m\) is the modal share of mode \(m\). Active modes (walking
+and cycling) are included in the denominator to preserve the real modal
+structure of each parish, but are not included in the numerator, given
+their null direct cost. This option avoids overestimating the financial
+burden in parishes with a high active modal share, while reflecting the
+fact that a part of the population travels without a cost.
+
+Driving costs are further adjusted for vehicle occupancy rate, household
+size and mobile population fraction \citep{INE_IMOB2017}, to convert
+per-trip costs to a household-level annual burden. This way, the final
+average annual transport expenditure, accounting for all adjustments and
+modal shares, is computed as:
+
+\[ transp\_inc\_comp = \frac{HH_{size} \cdot P_{mobile}}{I_{household}} \cdot \left[ \left( \frac{C_{car,day}}{O} \cdot \frac{s_{car}}{s_{car} + s_{PT} + s_{active}} \right) + (C_{PT,day} \cdot \frac{s_{PT}}{s_{car} + s_{PT} + s_{active}}) \right] \cdot N_{days} \]
+
+Where:
+
+\begin{itemize}
+\item
+  \(N_{days}\) = 250 working days per year.
+\item
+  \(HH_{size}\) is the average household size.
+\item
+  \(P_{mobile}\) is the share of mobile population.
+\item
+  \(I_{household}\) is the average annual household income.
+\item
+  \(C_{car,day}\) and \(C_{PT,day}\) are the round-trip costs for car
+  and public transport.
+\item
+  \(O\) is the average vehicle occupancy rate.
+\item
+  \(s_{car}\), \(s_{PT}\) and \(s_{active}\) are the modal shares
+  \citep{census_2021_modal_share}.
+\end{itemize}
+
+For the variant that includes housing costs (\(h\_transp\_inc\_comp\)),
+the annualized housing cost
+\(C_{\text{housing,year}}\)\citep{census_2021_housing} is added to the
+numerator.
 
 \subsubsection{Safety}\label{sec-MET_safety}
 

@@ -148,9 +148,9 @@ The Lisbon Metropolitan Area (LMA) was applied as the case study for the IMPT. T
 
 The analysis is focused on the lowest administrative division, the *freguesia* (parish), which is the most disaggregated geographical level that guarantees data coverage for all utilized sources. For the indicators that had a higher level of granularity, an analysis by grid level was also assembled. The LMA includes 124 parishes, which constitute the observation units of the IMPT.
 
-### Data Sources {#sec-MET_data_sources}
+## Data Sources {#sec-MET_data_sources}
 
-<!--# ponho as tabelas que estão no relatório das fontes dos dados com os links? -->
+<!--# tabela com fontes de dados -->
 
 Lastly, the following R packages were utilized in the data processing and creation of both the index and its interactive dashboard: `readr, readxl, openxlsx, lubridate, dplyr, tidyr, stringr, tidyverse, sf, terra, mapview, stplanr, h3jsr, r5r, accessibility, odjitter, tidytransit, GTFShift, FactoMineR, assertthat, piggyback`.
 
@@ -348,9 +348,85 @@ Where a fixed cost of 0.40€/km is used, based on @Portaria1553D2008, which set
 
 #### Cost of public transportation {#sec-MET_cost_PT}
 
-#### Composite measures {#sec-MET_aff_composite}
+To account for uncertainty in public transport fare payments, two scenarios were considered:
 
-<!--# ACABAR -->
+**Scenario A - Single ticket**
+
+The average single ticket cost was calculated based on revenue data from Carris [@carris_contas_2024]:
+
+- Total single ticket validations: 17,424,000
+
+- Total single ticket revenue: 33,278,000€
+
+- Average cost per single ticket: \~1.91€
+
+This way, a single ticket cost of **1.91€** was assumed for all modes. Free transfers within the same mode for 60 minutes are assumed, but transfers to different modes incur an additional charge.
+
+**Scenario B - Monthly pass (Navegante)**
+
+Based on operator revenue data, the average cost of a monthly pass was estimated (@tbl-navegante).
+
+```{r}
+#| label: tbl-navegante
+#| tbl-cap: Revenue from Navegante monthly pass
+#| echo: true
+navegante <- data.frame(
+  "Pass type" = c("Navegante Metropolitano",
+                  "Navegante Municipal",
+                  "Senior (+65)",
+                  "Family",
+                  "Youth (sub-23)"
+                  ),
+  "Pass recharges" = c("5,063,510","887,190","1,103,782","243,784","3,425,013"),
+  "Pass price" = c("40€","30€","20€","80€","0€"),
+  check.names = FALSE
+)
+knitr::kable(navegante)
+```
+
+The average cost paid by a monthly pass holder is thus **\~25.25€**. Assuming an average of 44 monthly trips (2 trips in each of 22 working days), the average cost per trip becomes **\~0.57€**.
+
+#### Composite indicators {#sec-MET_aff_composite}
+
+Transport expenditure is expressed as a share of household income, with two variants (with and without housing costs). All costs are annualized and computed as yearly expenses per household (€/year/household). 250 days per year were considered, with two trips per day. Tolls are considered assymetrically for both directions, since the bridges' tolls are only paid one-way.
+
+For driving:
+
+$$ transp\_inc_{car} = \frac{C_{car}}{I_{household}} $$
+
+$$ h\_transp\_inc_{car} = \frac{C_{car} + C_{housing}}{I_{household}} $$
+
+To combine car and public transport costs, a composite indicator based on each parish's modal share from @census_2021_modal_share is computed:
+
+$$ transp\_inc_{weighted} = \frac{C_{car} \cdot s_{car} + C_{PT} \cdot s_{PT}}{s_{car} + s_{PT} + s_{active}} $$
+
+Where $s_m$ is the modal share of mode $m$. Active modes (walking and cycling) are included in the denominator to preserve the real modal structure of each parish, but are not included in the numerator, given their null direct cost. This option avoids overestimating the financial burden in parishes with a high active modal share, while reflecting the fact that a part of the population travels without a cost.
+
+Driving costs are further adjusted for vehicle occupancy rate, household size and mobile population fraction [@INE_IMOB2017], to convert per-trip costs to a household-level annual burden. This way, the final average annual transport expenditure, accounting for all adjustments and modal shares, is computed as:
+
+$$ transp\_inc\_comp = \frac{HH_{size} \cdot P_{mobile}}{I_{household}} \cdot \left[ \left( \frac{C_{car,day}}{O} \cdot \frac{s_{car}}{s_{car} + s_{PT} + s_{active}} \right) + (C_{PT,day} \cdot \frac{s_{PT}}{s_{car} + s_{PT} + s_{active}}) \right] \cdot N_{days} $$
+
+<!--# esta equação sai do papel, como é que centro ou mudo de lugar? -->
+
+Where:
+
+- $N_{days}$ = 250 working days per year.
+
+- $HH_{size}$ is the average household size.
+
+- $P_{mobile}$ is the share of mobile population.
+
+- $I_{household}$ is the average annual household income.
+
+- $C_{car,day}$ and $C_{PT,day}$ are the round-trip costs for car and public transport.
+
+- $O$ is the average vehicle occupancy rate.
+
+- $s_{car}$, $s_{PT}$ and $s_{active}$ are the modal shares [@census_2021_modal_share].
+
+For the variant that includes housing costs ($h\_transp\_inc\_comp$), the annualized housing cost $C_{\text{housing,year}}$[@census_2021_housing] is added to the numerator.
+
+<!--# é preciso a parte que está no report metodológico com income, coeficiente gini e ratio de palma? -->
 
 ### Safety {#sec-MET_safety}
 
