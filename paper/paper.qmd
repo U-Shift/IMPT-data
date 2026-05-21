@@ -140,6 +140,10 @@ Here are two sample references: @Pereira_r5r_2021 @INE_IMOB2017. If citing the o
 
 # Methodology {#sec-methodology}
 
+To compute the IMPT, the following procedural steps were taken: (1) data collection, computation and normalization of every indicator; (2) aggregation of indicators per dimension through a Principal Component Analysis (PCA), and normalization of each dimension; (3) multidimensional aggregation of the four dimensions, employing three distinct methods; (4) results validation, through a workshop with representatives of municipalities within the Lisbon Metropolitan Area (LMA).
+
+This methodology is consistent with the guidelines provided by the OECD Handbook [@OECD_EU_2008], and is explained in detail in this section.
+
 <!--# falta adicionar flowcharts-->
 
 ## Case Study {#sec-MET_case_study}
@@ -449,26 +453,26 @@ The indicators calculated for each geographical unit and transport mode are syst
 
 All indicators were normalized to the range \[1, 100\] using min-max scaling:
 
-**For benefit indicators** (higher raw value → better): $$X_{norm} = 1 + \frac{X - X_{min}}{X_{max} - X_{min}} \times 99$$
+For benefit indicators (higher raw value → better): $$X_{norm} = 1 + \frac{X - X_{min}}{X_{max} - X_{min}} \times 99$$
 
-**For cost indicators** (lower raw value → better): $$X_{norm} = 1 + \frac{X_{max} - X}{X_{max} - X_{min}} \times 99$$
+For cost indicators (lower raw value → better): $$X_{norm} = 1 + \frac{X_{max} - X}{X_{max} - X_{min}} \times 99$$
 
 - **Accessibility** metrics (`access_*`) are *benefit* indicators.
-- **Mobility** cost metrics (`mobility_cost_*`), public transport waiting times, all **affordability** indicators, and all **safety** indicators are *cost* indicators.
+- **Mobility** cost metrics (`mobility_cost_*`), public transport waiting times, all **Affordability** indicators, and all **Safety** indicators are *cost* indicators.
 
 Missing values in accessibility indicators (arising from unfeasible public transportation routes) are imputed with the mean of the respective variable prior to PCA.
 
 ## PCA-Based Dimension Scores {#sec-MET_pca}
 
-For each dimension (Accessibility, Mobility, Safety) and at the global (all-mode) and per-mode levels, a PCA is run using `FactoMineR::PCA()` at parish level.
+For every dimension with multiple indicators (Accessibility, Mobility and Safety) and at the global (all-mode) and per-mode levels, a PCA is run using `FactoMineR::PCA()` at parish level.
 
-The **first principal component (PC1)** score is used as the dimension index, after rescaling to \[1, 100\]. PC1 captures the dominant axis of variation among the normalised indicators.
+In line with @OECD_EU_2008, the first principal component (PC1) score is used as the dimension index after rescaling to \[1, 100\]. PC1 captures the dominant axis of variation among the normalised indicators.
 
-For **Affordability**, PCA is not applied (too few indicators); instead, the normalised composite `h_transp_inc_comp` (housing + transport cost as share of income, modal-share weighted) is used directly as the Affordability Index.
+For the Affordability dimension, a PCA is not applied, due to there being too few indicators. Instead, the normalized composite `h_transp_inc_comp` (housing + transport cost as share of income, modal-share weighted) is used directly as the Affordability Index.
 
-For **Safety per mode**, an equal-weight average of the severity index (per mode) and total vehicles involved (per mode) is used instead of PCA.
+For Safety per mode, an equal-weight average of the severity index (per mode) and total vehicles involved (per mode) is used instead of PCA.
 
-For **Mobility - Car** PCA is not applied (too few indicators); instead, we assumed an equal-weight average of the normalized composite `mobility_commuting_avg_tt_car` and `road_length`.
+For Mobility - Car, a PCA is not applied, also due to there being too few indicators. Instead, we assumed an equal-weight average of the normalized composite `mobility_commuting_avg_tt_car` and `road_length`.
 
 ## Composite IMPT Scores {#sec-MET_composite_impt}
 
@@ -486,7 +490,7 @@ Compensatory: high vulnerability in one dimension can be offset by good performa
 
 where weights $w_d$ are derived from the **entropy weighting method**:
 
-Weights are determined by the empirical dispersion of the dimensions across parishes: the dimension that varies most among territories receives greater weight. Maximises territorial contrast and is useful for competitive prioritisation of interventions.
+Weights are determined by the empirical dispersion of the dimensions across parishes: the dimension that varies most among territories receives greater weight. Maximizes territorial contrast and is useful for competitive prioritization of interventions.
 
 $$w_d = \frac{d_d}{\sum_j d_j}, \quad d_d = 1 - e_d, \quad e_d = -k \sum_i p_{id} \ln(p_{id})$$
 
@@ -504,7 +508,15 @@ IMPT results for different aggregation methods for all modes (with Navegante)
 
 ## Validation
 
+Finally, a workshop was carried out with LMA municipalities. It took place on April 9th, 2026 in the offices of Transportes Metropolitanos de Lisboa (TML), with the objectives of not only presenting and validating the results with municipality technicians, but also confronting the computed data with the local perception of the participants, in order to identify relevant divergences. It included representatives from 13 out of the 18 municipaities in the LMA, as well as representatives from transport authorities and operators.
+
+<!--# acabar -->
+
+<!--# falo do workshop aqui ou nos resultados? -->
+
 # Results {#sec-results}
+
+The full results of the IMPT for all LMA parishes are available in the dashboard created in the scope of this project. This dashboard allows for the visualization of the global index, the results of each dimension by transport mode, all indicators that make up the index, as well as key statistics and summaries for various scales (parish, municipality and grid). Beyond results visualization, this tool allows for the calculation of the aggregated index adjusted to user preferences (political IMPT). For this purpose, an Analytic Hierarchical Process (AHP), that compares the user's preferences between dimensions and this way assigns weights to each, is made available to the dashboard's users. This dashboard is available at: <https://ushift.tecnico.ulisboa.pt/apps/impt>.
 
 @fig-meaningless is generated using an R chunk.
 
