@@ -125,18 +125,12 @@ IMPT emerges in an attempt to create an index synthesizing these dimensions and 
 2.  Existing indexes excessively depend on costly primary data that is difficult to monitor continuously. IMPT relies exclusively on secondary and open data, easily allowing for updates and monitoring over time.
 3.  There is a lack of operational tools that allow to translate academic literature on transport poverty into decision-support instruments for local governments, transport authorities, and generally public policy makers.
 
-<!--# falar das quatro variantes metodológicas-->
-
 Furthermore, the IMPT incorporates four methodological variants, corresponding to different analytical positions:
 
 - Contrasting IMPT: based on entropy, highlights the variables with the highest variation, better capturing territorial contrasts.
 - Critical IMPT: based on the geometric mean, it non-linearly penalizes the dimensions with the worst performance in each area.
 - Balanced IMPT: based on the arithmetic mean, allows for compensation between dimensions.
 - Political IMPT: allowing for a personalized AHP weighting, it can be tailored to the decision-maker's preferences.
-
-If `cite-method` is set to `citeproc` in `elsevier_article()`, then pandoc is used for citations instead of `natbib`. In this case, the `csl` option is used to format the references. By default, this template will provide an appropriate style, but alternative `csl` files are available from <https://www.zotero.org/styles?q=elsevier>. These can be downloaded and stored locally, or the url can be used as in the example header.
-
-Here are two sample references: @Pereira_r5r_2021 @INE_IMOB2017. If citing the other way [@Lovelace_2022].
 
 # Methodology {#sec-methodology}
 
