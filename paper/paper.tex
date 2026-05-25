@@ -393,12 +393,6 @@ one-dimensional look at accessibility or affordability, to a composite
 approach that attempts to capture the multidimensional nature of this
 phenomenon.
 
-During the last decade various interactive spatial tools based on
-indicators of accessibility and inequality have been created and made
-publicly available. Two of these are here highlighted, due to their
-conceptual or methodological influence and their proximity to the IMPT's
-objective.
-
 \subsection{Dimensions of Transport Poverty}\label{sec-LR_dimensions}
 
 The dimensions proposed by \citet{Lucas_2016} continue to be the
@@ -443,6 +437,60 @@ for access to information and mobility services \citep{Durand_2022}
 excluded from the final implementation of the index due to
 unavailability of data compatible with the scale of the lowest
 administrative division.
+
+\subsection{Examples of geospatial tools of accessibility and
+equity}\label{examples-of-geospatial-tools-of-accessibility-and-equity}
+
+During the last decade various interactive spatial tools based on
+indicators of accessibility and inequality have been created and made
+publicly available. Two of these are here highlighted, due to their
+conceptual or methodological influence and their proximity to the IMPT's
+objective.
+
+The project \emph{Acesso a Oportunidades} (Access to Opportunities),
+developed by Instituto de Pesquisa Econômica (IPEA) under Rafael H. M.
+Pereira, provides accessibility estimates for the twenty biggest cities
+in Brazil, disaggregated in a hexagonal grid, by transport mode and type
+of opportunity. Its contribution is the creation of open R code, with
+the packages \texttt{r5r} and \texttt{accessibility}, which made the
+computation of multimodal travel time matrices possible
+\citep{Pereira_r5r_2021} \citep{Pereira_accessibility_2022}
+\citep{Pereira_Herszenhut_2023}. An interactive tool to visualize these
+results was also created, and is available at:
+\url{https://www.ipea.gov.br/acessooportunidades/mapa/}. IMPT directly
+incorporates this technical infrastructure in its Accessibility
+dimension, in order to compute the number of reachable opportunities by
+different travel modes and travel time thresholds, for each grid cell in
+the study area. Pereira's work is this way a critial operational pillar
+of the IMPT.
+
+Another example is the \emph{Atlas of Inequality}, developed by MIT
+Media Lab and Northwestern University, under the coordination of Esteban
+Moro. This project is originated from a different problem, and attempts
+to measure \emph{segregation by experience}, i.e.~how people of
+different socioeconomic levels share the same urban spaces in daily
+life, through anonymized cell phone location data. This indicator thus
+captures inequality in the use of the city, and not transport supply or
+access to destinations. It is available at:
+\url{https://inequality.media.mit.edu}.
+
+However, the methodological distinction between \emph{Acesso a
+Oportunidades}, \emph{Atlas of Inequality} and the IMPT is significant.
+\emph{Acesso a Oportunidades} is a tool for the measurement of
+accessibility, i.e.~what is reachable from each location, under
+assumptions on transport supply, but not taking into account the quality
+of the transport service offered, the economic capacity of households or
+exposure to externalities. The \emph{Atlas of Inequality}, is a tool to
+measure segregation, which is often revealed by mobility patterns. It
+captures the social dimension of urban inequality without diagnosing
+transport poverty itself, due to the exclusion of other variables of
+transport supply, exposure to externalities and costs. IMPT, on the
+other hand, is a multidimensional index to measure transport poverty,
+aggregating the dimensions of Accessibility, Mobility, Affordability and
+Safety in a composite index, in line with the operational definition
+provided by the European Union \citep{EU_2023955}
+\citep{EuropeanCommission_2024} and supported by the literature
+\citep{Lucas_2016} \citep{MejiaDorantes_MurauskaiteBull_2022}.
 
 \subsection{IMPT's Contribution}\label{sec-LR_contribution}
 
