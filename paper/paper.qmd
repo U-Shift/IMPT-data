@@ -154,7 +154,70 @@ The analysis is focused on the lowest administrative division, the *freguesia* (
 
 ## Data Sources {#sec-MET_data_sources}
 
-<!--# tabela com fontes de dados -->
+Based on the literature, a preliminary list of indicators for each dimension was compiled, followed by an extensive search for public data to obtain the most possible of these indicators. However, due to some of them not being found or not being publicly accessible, the final list of indicators included is shown in @tbl-all_indicators. This excludes indicators such as exposure to air pollution, overcrowding of public transportation, or walkability, as well as the dimension of digital literacy.
+
+```{r}
+#| label: tbl-all_indicators
+#| tbl-cap: Indicators used in the IMPT
+#| echo: true
+all_indicators <- data.frame(
+  Dimension = c("Accessibility",
+                "Accessibility",
+                "Mobility",
+                "Mobility",
+                "Mobility",
+                "Mobility",
+                "Mobility",
+                "Mobility",
+                "Affordability",
+                "Affordability",
+                "Safety"
+                ),
+  Indicator = c("Number of opportunities within travel time threshold",
+                "Travel time to first n opportunities",
+                "Average commuting time",
+                "Average number of commuting transfers",
+                "Public transport headways and waiting times",
+                "Public transport population coverage",
+                "Ratio of pedestrian and cycling infrastructure",
+                "Shared mobility availability",
+                "Transportation costs",
+                "Housing and transportation costs",
+                "Aggregation of road safety indicators"
+                )
+)
+knitr::kable(all_indicators)
+```
+
+From here,
+
+```{r}
+#| label: tbl-data_sources
+#| tbl-cap: Data sources
+#| echo: true
+data_sources <- data.frame(
+  Code = c("CAOP","BGRI21","IMOB","GTFS","OSM-RN","OSM-POI","CM",
+           "ASNR","INE-Inc","INE-Hous","GBA","PMUS","COS","IP"),
+  Database = c("CAOP 2024.1 - Administrative Boundaries",
+               "Census 2021 - Base Reference Geographical Information",
+               "IMOB 2017/18 - Inquérito à Mobilidade nas Áreas Metropolitanas",
+               "GTFS — General Transit Feed Specification",
+               "OpenStreetMap (OSM) — Road network",
+               "OpenStreetMap (OSM) — Points of interest",
+               "Carris Metropolitana — Health centres and schools datasets",
+               "ANSR — Road accident data (location and type)",
+               "INE — Household income by parish",
+               "INE — Housing costs by parish",
+               "Global Building Atlas - Building heights",
+               "TML PMUS - Shared mobility docks",
+               "COS 2023 v1 — Land use map",
+               "Infraestruturas de Portugal — Toll costs"
+               ),
+  Year = c("2024","2021","2018","2026-02","2026-01","2024-04","2025",
+           "2019-2023","2023","2021","2026","2025","2023","2026")
+)
+knitr::kable(data_sources)
+```
 
 Lastly, the following R packages were utilized in the data processing and creation of both the index and its interactive dashboard: `readr, readxl, openxlsx, lubridate, dplyr, tidyr, stringr, tidyverse, sf, terra, mapview, stplanr, h3jsr, r5r, accessibility, odjitter, tidytransit, GTFShift, FactoMineR, assertthat, piggyback`.
 

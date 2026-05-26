@@ -572,6 +572,167 @@ constitute the observation units of the IMPT.
 
 \subsection{Data Sources}\label{sec-MET_data_sources}
 
+Based on the literature, a preliminary list of indicators for each
+dimension was compiled, followed by an extensive search for public data
+to obtain the most possible of these indicators. However, due to some of
+them not being found or not being publicly accessible, the final list of
+indicators included is shown in Table~\ref{tbl-all_indicators}. This
+excludes indicators such as exposure to air pollution, overcrowding of
+public transportation, or walkability, as well as the dimension of
+digital literacy.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{all\_indicators }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{(}
+  \AttributeTok{Dimension =} \FunctionTok{c}\NormalTok{(}\StringTok{"Accessibility"}\NormalTok{,}
+                \StringTok{"Accessibility"}\NormalTok{,}
+                \StringTok{"Mobility"}\NormalTok{,}
+                \StringTok{"Mobility"}\NormalTok{,}
+                \StringTok{"Mobility"}\NormalTok{,}
+                \StringTok{"Mobility"}\NormalTok{,}
+                \StringTok{"Mobility"}\NormalTok{,}
+                \StringTok{"Mobility"}\NormalTok{,}
+                \StringTok{"Affordability"}\NormalTok{,}
+                \StringTok{"Affordability"}\NormalTok{,}
+                \StringTok{"Safety"}
+\NormalTok{                ),}
+  \AttributeTok{Indicator =} \FunctionTok{c}\NormalTok{(}\StringTok{"Number of opportunities within travel time threshold"}\NormalTok{,}
+                \StringTok{"Travel time to first n opportunities"}\NormalTok{,}
+                \StringTok{"Average commuting time"}\NormalTok{,}
+                \StringTok{"Average number of commuting transfers"}\NormalTok{,}
+                \StringTok{"Public transport headways and waiting times"}\NormalTok{,}
+                \StringTok{"Public transport population coverage"}\NormalTok{,}
+                \StringTok{"Ratio of pedestrian and cycling infrastructure"}\NormalTok{,}
+                \StringTok{"Shared mobility availability"}\NormalTok{,}
+                \StringTok{"Transportation costs"}\NormalTok{,}
+                \StringTok{"Housing and transportation costs"}\NormalTok{,}
+                \StringTok{"Aggregation of road safety indicators"}
+\NormalTok{                )}
+\NormalTok{)}
+\NormalTok{knitr}\SpecialCharTok{::}\FunctionTok{kable}\NormalTok{(all\_indicators)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+Warning in attr(x, "align"): 'xfun::attr()' is deprecated.
+Use 'xfun::attr2()' instead.
+See help("Deprecated")
+\end{verbatim}
+
+\begin{verbatim}
+Warning in attr(x, "format"): 'xfun::attr()' is deprecated.
+Use 'xfun::attr2()' instead.
+See help("Deprecated")
+\end{verbatim}
+
+\begin{longtable}[]{@{}ll@{}}
+
+\caption{\label{tbl-all_indicators}Indicators used in the IMPT}
+
+\tabularnewline
+
+\toprule\noalign{}
+Dimension & Indicator \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Accessibility & Number of opportunities within travel time threshold \\
+Accessibility & Travel time to first n opportunities \\
+Mobility & Average commuting time \\
+Mobility & Average number of commuting transfers \\
+Mobility & Public transport headways and waiting times \\
+Mobility & Public transport population coverage \\
+Mobility & Ratio of pedestrian and cycling infrastructure \\
+Mobility & Shared mobility availability \\
+Affordability & Transportation costs \\
+Affordability & Housing and transportation costs \\
+Safety & Aggregation of road safety indicators \\
+
+\end{longtable}
+
+From here,
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{data\_sources }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{(}
+  \AttributeTok{Code =} \FunctionTok{c}\NormalTok{(}\StringTok{"CAOP"}\NormalTok{,}\StringTok{"BGRI21"}\NormalTok{,}\StringTok{"IMOB"}\NormalTok{,}\StringTok{"GTFS"}\NormalTok{,}\StringTok{"OSM{-}RN"}\NormalTok{,}\StringTok{"OSM{-}POI"}\NormalTok{,}\StringTok{"CM"}\NormalTok{,}
+           \StringTok{"ASNR"}\NormalTok{,}\StringTok{"INE{-}Inc"}\NormalTok{,}\StringTok{"INE{-}Hous"}\NormalTok{,}\StringTok{"GBA"}\NormalTok{,}\StringTok{"PMUS"}\NormalTok{,}\StringTok{"COS"}\NormalTok{,}\StringTok{"IP"}\NormalTok{),}
+  \AttributeTok{Database =} \FunctionTok{c}\NormalTok{(}\StringTok{"CAOP 2024.1 {-} Administrative Boundaries"}\NormalTok{,}
+               \StringTok{"Census 2021 {-} Base Geográfica de Referenciação de Informação"}\NormalTok{,}
+               \StringTok{"IMOB 2017/18 {-} Inquérito à Mobilidade nas Áreas Metropolitanas"}\NormalTok{,}
+               \StringTok{"GTFS — General Transit Feed Specification"}\NormalTok{,}
+               \StringTok{"OpenStreetMap (OSM) — Road network"}\NormalTok{,}
+               \StringTok{"OpenStreetMap (OSM) — Points of interest"}\NormalTok{,}
+               \StringTok{"Carris Metropolitana — Health centres and schools datasets"}\NormalTok{,}
+               \StringTok{"ANSR — Road accident data (location and type)"}\NormalTok{,}
+               \StringTok{"INE — Household income by parish"}\NormalTok{,}
+               \StringTok{"INE — Housing costs by parish"}\NormalTok{,}
+               \StringTok{"Global Building Atlas {-} Building heights"}\NormalTok{,}
+               \StringTok{"TML PMUS {-} Shared mobility docks"}\NormalTok{,}
+               \StringTok{"COS 2023 v1 — Land use map"}\NormalTok{,}
+               \StringTok{"Infraestruturas de Portugal — Toll costs"}
+\NormalTok{               ),}
+  \AttributeTok{Year =} \FunctionTok{c}\NormalTok{(}\StringTok{"2024"}\NormalTok{,}\StringTok{"2021"}\NormalTok{,}\StringTok{"2018"}\NormalTok{,}\StringTok{"2026{-}02"}\NormalTok{,}\StringTok{"2026{-}01"}\NormalTok{,}\StringTok{"2024{-}04"}\NormalTok{,}\StringTok{"2025"}\NormalTok{,}
+           \StringTok{"2019{-}2023"}\NormalTok{,}\StringTok{"2023"}\NormalTok{,}\StringTok{"2021"}\NormalTok{,}\StringTok{"2026"}\NormalTok{,}\StringTok{"2025"}\NormalTok{,}\StringTok{"2023"}\NormalTok{,}\StringTok{"2026"}\NormalTok{)}
+\NormalTok{)}
+\NormalTok{knitr}\SpecialCharTok{::}\FunctionTok{kable}\NormalTok{(data\_sources)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+Warning in attr(x, "align"): 'xfun::attr()' is deprecated.
+Use 'xfun::attr2()' instead.
+See help("Deprecated")
+\end{verbatim}
+
+\begin{verbatim}
+Warning in attr(x, "format"): 'xfun::attr()' is deprecated.
+Use 'xfun::attr2()' instead.
+See help("Deprecated")
+\end{verbatim}
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.1098}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.7683}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.1220}}@{}}
+
+\caption{\label{tbl-data_sources}Data sources}
+
+\tabularnewline
+
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Code
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Database
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Year
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+CAOP & CAOP 2024.1 - Administrative Boundaries & 2024 \\
+BGRI21 & Census 2021 - Base Geográfica de Referenciação de Informação &
+2021 \\
+IMOB & IMOB 2017/18 - Inquérito à Mobilidade nas Áreas Metropolitanas &
+2018 \\
+GTFS & GTFS --- General Transit Feed Specification & 2026-02 \\
+OSM-RN & OpenStreetMap (OSM) --- Road network & 2026-01 \\
+OSM-POI & OpenStreetMap (OSM) --- Points of interest & 2024-04 \\
+CM & Carris Metropolitana --- Health centres and schools datasets &
+2025 \\
+ASNR & ANSR --- Road accident data (location and type) & 2019-2023 \\
+INE-Inc & INE --- Household income by parish & 2023 \\
+INE-Hous & INE --- Housing costs by parish & 2021 \\
+GBA & Global Building Atlas - Building heights & 2026 \\
+PMUS & TML PMUS - Shared mobility docks & 2025 \\
+COS & COS 2023 v1 --- Land use map & 2023 \\
+IP & Infraestruturas de Portugal --- Toll costs & 2026 \\
+
+\end{longtable}
+
 Lastly, the following R packages were utilized in the data processing
 and creation of both the index and its interactive dashboard:
 \texttt{readr,\ readxl,\ openxlsx,\ lubridate,\ dplyr,\ tidyr,\ stringr,\ tidyverse,\ sf,\ terra,\ mapview,\ stplanr,\ h3jsr,\ r5r,\ accessibility,\ odjitter,\ tidytransit,\ GTFShift,\ FactoMineR,\ assertthat,\ piggyback}.
