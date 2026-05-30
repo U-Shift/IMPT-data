@@ -364,15 +364,18 @@ a combination of the following four dimensions:
 \tightlist
 \item
   Accessibility - the capacity to reach usual destinations and
-  activities (work, education, health and so on).
+  activities (such as work, education or health).
 \item
-  Mobility - the systemic lack of transportation that impacts trips.
+  Mobility - the systemic deficiencies of the transportation system
+  itself that impact necessary trips, and which are expressed in
+  parameters such as low service frequency or average commuting time.
 \item
-  Affordability - the ability to meet the cost of transportation.
+  Affordability - the ability of households to meet the cost of
+  transportation.
 \item
   Exposure to externalities (Safety) - the negative exposure to the
-  transport system itself, such as disproportional rates of pollution or
-  road crashes.
+  transport system itself, such as environmental pollution or road crash
+  rates.
 \end{itemize}
 
 Recently, and based on the aforementioned concepts,
@@ -659,7 +662,7 @@ From here,
   \AttributeTok{Code =} \FunctionTok{c}\NormalTok{(}\StringTok{"CAOP"}\NormalTok{,}\StringTok{"BGRI21"}\NormalTok{,}\StringTok{"IMOB"}\NormalTok{,}\StringTok{"GTFS"}\NormalTok{,}\StringTok{"OSM{-}RN"}\NormalTok{,}\StringTok{"OSM{-}POI"}\NormalTok{,}\StringTok{"CM"}\NormalTok{,}
            \StringTok{"ASNR"}\NormalTok{,}\StringTok{"INE{-}Inc"}\NormalTok{,}\StringTok{"INE{-}Hous"}\NormalTok{,}\StringTok{"GBA"}\NormalTok{,}\StringTok{"PMUS"}\NormalTok{,}\StringTok{"COS"}\NormalTok{,}\StringTok{"IP"}\NormalTok{),}
   \AttributeTok{Database =} \FunctionTok{c}\NormalTok{(}\StringTok{"CAOP 2024.1 {-} Administrative Boundaries"}\NormalTok{,}
-               \StringTok{"Census 2021 {-} Base Geográfica de Referenciação de Informação"}\NormalTok{,}
+               \StringTok{"Census 2021 {-} Base Reference Geographical Information"}\NormalTok{,}
                \StringTok{"IMOB 2017/18 {-} Inquérito à Mobilidade nas Áreas Metropolitanas"}\NormalTok{,}
                \StringTok{"GTFS — General Transit Feed Specification"}\NormalTok{,}
                \StringTok{"OpenStreetMap (OSM) — Road network"}\NormalTok{,}
@@ -714,8 +717,7 @@ Year
 \bottomrule\noalign{}
 \endlastfoot
 CAOP & CAOP 2024.1 - Administrative Boundaries & 2024 \\
-BGRI21 & Census 2021 - Base Geográfica de Referenciação de Informação &
-2021 \\
+BGRI21 & Census 2021 - Base Reference Geographical Information & 2021 \\
 IMOB & IMOB 2017/18 - Inquérito à Mobilidade nas Áreas Metropolitanas &
 2018 \\
 GTFS & GTFS --- General Transit Feed Specification & 2026-02 \\
@@ -986,6 +988,7 @@ times}\label{public-transport-headways-and-waiting-times}
 Stop-level service frequencies were computed using
 \texttt{tidytransit::get\_stop\_frequency()} \citep{tidytransit} for
 four different time windows, as can be seen in
+Table~\ref{tbl-headway_periods}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -1404,7 +1407,7 @@ per-mode IMPT:
 \def\labelenumi{\arabic{enumi}.}
 \tightlist
 \item
-  \textbf{Geometric mean} (equal weights,
+  \textbf{Critical IMPT - geometric mean} (equal weights,
   Figure~\ref{fig-imt-geometric}):
   \[IMPT_{geom} = \left(\prod_{d} (S_d + 1)\right)^{1/n} - 1\]
 \end{enumerate}
@@ -1418,7 +1421,7 @@ one dimension is severely deficient.
 \setcounter{enumi}{1}
 \tightlist
 \item
-  \textbf{Arithmetic mean} (equal weights,
+  \textbf{Balanced IMPT - arithmetic mean} (equal weights,
   Figure~\ref{fig-imt-arithmetic}):
   \[IMPT_{avg} = \frac{1}{n} \sum_d S_d\]
 \end{enumerate}
@@ -1432,7 +1435,7 @@ communicating to non-specialist audiences.
 \setcounter{enumi}{2}
 \tightlist
 \item
-  \textbf{Entropy-weighted geometric mean}
+  \textbf{Contrasting IMPT - entropy-weighted geometric mean}
   (Figure~\ref{fig-imt-entropy}):
   \[IMPT_{entropy} = \prod_d (S_d + 1)^{w_d} - 1\]
 \end{enumerate}
@@ -1508,16 +1511,29 @@ transport authorities and operators.
 
 The full results of the IMPT for all LMA parishes are available in the
 dashboard created in the scope of this project. This dashboard allows
-for the visualization of the global index, the results of each dimension
-by transport mode, all indicators that make up the index, as well as key
-statistics and summaries for various scales (parish, municipality and
-grid). Beyond results visualization, this tool allows for the
-calculation of the aggregated index adjusted to user preferences
-(political IMPT). For this purpose, an Analytic Hierarchical Process
-(AHP), that compares the user's preferences between dimensions and this
-way assigns weights to each, is made available to the dashboard's users.
-This dashboard is available at:
-\url{https://ushift.tecnico.ulisboa.pt/apps/impt}.
+for the visualization of the global indices (critical, balanced and
+contrasting), the results of each dimension by transport mode, all
+indicators that make up the index, as well as key statistics and
+summaries for various scales (parish, municipality and grid). Beyond
+results visualization, this tool allows for the calculation of the
+aggregated index adjusted to user preferences (political IMPT). For this
+purpose, an Analytic Hierarchical Process (AHP), that compares the
+user's preferences between dimensions and this way assigns weights to
+each, is made available to the dashboard's users. The dashboard is
+available at: \url{https://ushift.tecnico.ulisboa.pt/apps/impt}.
+
+It is worth noting that the IMPT is a relative index, created with the
+purpose of comparing different areas in the same metropolitan area, not
+of being an absolute index of transport poverty. This way, a global
+score of 100 or 0 should not be interpreted as the ``best'' or ``worst''
+possible outcomes.
+
+\subsection{Methodological comparison}\label{methodological-comparison}
+
+\subsection{Spatial performance and
+outliers}\label{spatial-performance-and-outliers}
+
+\subsection{Takeaways}\label{takeaways}
 
 Figure~\ref{fig-meaningless} is generated using an R chunk.
 
