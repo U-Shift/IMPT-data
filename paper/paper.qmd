@@ -70,7 +70,7 @@ This project was thus developed in an attempt to bridge the existing methodologi
 
 ## Definitions of Transport Poverty {#sec-LR_definitions}
 
-Transport systems are a fundamental part of modern society, and their absence is related to social exclusion - a state where an individual or a societal group is left out of participating in regular social activities in a given society [@Pritchard_2014] -, socio-territorial inequality and transport inequality - the differences in transport conditions for different groups of people [@Hidayati_2021]. Despite the relation between poverty and transport conditions, these are also related to a wide range of social issues, with motorized vehicle users most contributing to externalities, but with vulnerable road users being disproportionately affected by them in health, space allocation and time consumption [@Gossling_2016]. Moreover, lower-income households tend to not have financial conditions to have motorized transport or to reside in central areas, relegating them to live in areas distant from the city center, often poorly served by public transportation. [@Fedorowicz_2020] [@Lopes_2023].
+Transport systems are a fundamental part of modern society, and their absence is related to social exclusion - a state where an individual or a societal group is left out of participating in regular social activities in a given society [@Pritchard_2014] -, socio-territorial inequality and transport inequality - the differences in transport conditions for different groups of people [@Hidayati_2021]. Despite the relation between poverty and transport conditions, these are also related to a wide range of social issues. As an example, motorized vehicle users contribute the most to externalities, but vulnerable road users are disproportionately affected by them in health, space allocation and time consumption [@Gossling_2016]. Moreover, lower-income households tend to not have financial conditions to have motorized transport or to reside in central areas, relegating them to live in areas distant from the city center, often poorly served by public transportation. [@Fedorowicz_2020] [@Lopes_2023].
 
 These differences in transport conditions can lead to transport poverty, a concept which lacks a single universally accepted definition in scientific literature. This expression has been used to broadly describe inequities related with transportation access, but also in a more restricted way to refer to the economic inability to support transportation costs [@Mattioli_2018]. However, as @Lucas_2016 states, different terminologies relating to transport poverty - terms such as "mobility poverty", "accessibility poverty" or "transport disadvantage" - are used with "often very different, although also overlapping definitions". Due to this lack of a universal definition and the multidimensional nature of transport poverty, its measurement and quantification poses a challenge [@Levinson_King_2020].
 
@@ -79,25 +79,23 @@ This way, the necessity to comprehend this concept and quantify it becomes more 
 @Lucas_2016 proposes the most comprehensive conceptual systematization of transport poverty, clearly defining previously different but overlapping terminology. They define transport poverty as a combination of the following four dimensions:
 
 - Accessibility - the capacity to reach usual destinations and activities (such as work, education or health).
-- Mobility - the systemic deficiencies of the transportation system itself that impact necessary trips, and which are expressed in parameters such as low service frequency or average commuting time.
+- Mobility - the systemic aspects of the transportation system itself that impact essential trips, expressed in parameters such as public transport service frequency or average commuting time.
 - Affordability - the ability of households to meet the cost of transportation.
-- Exposure to externalities (Safety) - the negative exposure to the transport system itself, such as environmental pollution or road crash rates.
+- Exposure to externalities (Safety) - the negative effects of exposure to the transport system itself, such as environmental pollution or road crash rates.
 
-Recently, and based on the aforementioned concepts, @MejiaDorantes_MurauskaiteBull_2022 have proposed a definition that has been widely adopted: transport poverty is the inability of an individual or household to access essential services or opportunities due to transportation services that are inaccessible, inadequate, unaffordable, time-consuming or unsafe. This definition has been adapted and applied at the European scale, through @EU_2023955 and a recent European Commission Report [@EuropeanCommission_2024]. The key dimensions in the EC Report are synthesized as *Availability* (corresponding to Lucas' Mobility), *Accessibility* and *Affordability*, with exposure to externalities being included in the overarching concept of *Adequacy*.
+Recently, and based on the aforementioned concepts, @MejiaDorantes_MurauskaiteBull_2022 have proposed a definition that has been widely adopted: transport poverty is the inability of an individual or household to access essential services or opportunities due to transportation services that are inaccessible, inadequate, unaffordable, time-consuming or unsafe. This definition has been adapted and applied at the European scale, through @EU_2023955 and a recent European Commission Report [@EuropeanCommission_2024]. The key dimensions in the EC Report are synthesized as *Availability* (corresponding to Lucas' Mobility), *Accessibility* and *Affordability*, with exposure to externalities being included in the overarching concept of *Adequacy* (@fig-transport_poverty_concept).
 
-<!--# adicionar imagem university of manchester -->
+![Conceptualization of Transport Poverty. Source: Oeko-Institut and University of Manchester](images/transport_poverty_concept-01.png){#fig-transport_poverty_concept fig-align="center"}
 
-In summary, the concept of transport poverty has evolved from a one-dimensional look at accessibility or affordability, to a composite approach that attempts to capture the multidimensional nature of this phenomenon.
+In summary, the concept of transport poverty has evolved from a one-dimensional look at accessibility or affordability, to a composite approach that attempts to fully capture the multidimensional nature of this phenomenon.
 
 ## Dimensions of Transport Poverty {#sec-LR_dimensions}
 
-The dimensions proposed by @Lucas_2016 continue to be the reference for composite indexes of transport poverty [@AlonsoEpelde_2023] [@MejiaDorantes_MurauskaiteBull_2022]. IMPT adopts these dimensions, implementing them through secondary data available in Portugal. Each of them is further explained thoroughly.
+The dimensions proposed by @Lucas_2016 continue to be the reference for composite indexes of transport poverty [@AlonsoEpelde_2023] [@MejiaDorantes_MurauskaiteBull_2022]. IMPT adopts these dimensions, implementing them through secondary data available in Portugal. Each dimension is further explained thoroughly.
 
 ### Accessibility {#sec-LR_accessibility}
 
-Accessibility refers to the ability to reach regular destinations such as employment, education, health and other essential services [@Allen_Farber_2019] [@SocialExclusionUnit_2003].
-
-<!--# acabar -->
+Accessibility refers to the ability to reach regular destinations such as employment, education, health and other essential services [@Allen_Farber_2019] [@SocialExclusionUnit_2003]. The literature distinguishes between approaches based on cumulative opportunities - the number of reachable destinations within a certain travel time threshold -, gravity-based approaches, which continuously weight destinations based on impedance (i.e. the easier a destination is to reach, the more weight it will have) and hybrid approaches [@Geurs_vanWee_2004] [@Klar_2023]. @Pereira_Herszenhut_2023 formalize these methodologies in open-source software *R*, through the library `r5r`, which provides the technical base for the Accessibility dimension of the IMPT [@Pereira_r5r_2021].
 
 ### Mobility {#sec-LR_mobility}
 
@@ -105,7 +103,15 @@ Mobility refers to the systemic deficits of the transport system, be them lack o
 
 ### Affordability {#sec-LR_affordability}
 
-<!--# acabar -->
+This dimension measures the capacity of households to support essential transportation expenses [@Isalou_2014] [@Litman_2026] [@Oviedo_2025]. The literature distinguishes three groups of indicators:
+
+- The *10 percent rule*, which considers the households who spend more than 10% of their income in transportation, having been adopted in the United Kingdom, with its origins in the concept of "fuel poverty" [@Lucas_2016] [@AlonsoEpelde_2023].
+
+- The *2M* approach, adapted from the concept of energy poverty, which considers the households that spend in transportation more than twice the national median [@AlonsoEpelde_2023].
+
+- The combined approach of *housing and transportation affordability*, based on the premise that households make their residential location choice based on both housing and transportation costs. If the combined housing and transport cost doesn't exceed 45% of income, it is considered affordable [@Isalou_2014] [@Litman_2026].
+
+The IMPT was rooted upon this last indicator, combining the costs of housing and transportation in relation to household income.
 
 ### Safety {#sec-LR_safety}
 
@@ -133,16 +139,14 @@ IMPT emerges in an attempt to create an index synthesizing these dimensions and 
 
 Furthermore, the IMPT incorporates four methodological variants, corresponding to different analytical positions:
 
-- Contrasting IMPT: based on entropy, highlights the variables with the highest variation, better capturing territorial contrasts.
-- Critical IMPT: based on the geometric mean, it non-linearly penalizes the dimensions with the worst performance in each area.
-- Balanced IMPT: based on the arithmetic mean, allows for compensation between dimensions.
-- Political IMPT: allowing for a personalized AHP weighting, it can be tailored to the decision-maker's preferences.
+- Contrasting IMPT: based on entropy, it highlights the variables with the highest variation, better capturing territorial contrasts.
+- Critical IMPT: based on the geometric mean, it non-linearly penalizes the dimension with the worst performance in each geographical unit.
+- Balanced IMPT: based on the arithmetic mean, it allows for compensation between dimensions.
+- Political IMPT: allowing for a personalized Analytic Hierarchical Process (AHP) weighting, it can be tailored to the decision-maker's preferences and priorities.
 
 # Methodology {#sec-methodology}
 
-To compute the IMPT, the following procedural steps were taken: (1) data collection, computation and normalization of every indicator; (2) aggregation of indicators per dimension through a Principal Component Analysis (PCA), and normalization of each dimension; (3) multidimensional aggregation of the four dimensions, employing three distinct methods; (4) results validation, through a workshop with representatives of municipalities within the Lisbon Metropolitan Area (LMA).
-
-This methodology is consistent with the guidelines provided by the OECD Handbook [@OECD_EU_2008], and is explained in detail in this section.
+Based on the guidelines provided by the OECD Handbook [@OECD_EU_2008], the IMPT was computed through the following procedural steps: (1) data collection, computation and normalization of every indicator; (2) aggregation of indicators per dimension through a Principal Component Analysis (PCA), and normalization of each dimension; (3) multidimensional aggregation of the four dimensions, employing three distinct methods; (4) results validation, through a workshop with representatives of municipalities within the Lisbon Metropolitan Area (LMA).
 
 <!--# falta adicionar flowcharts-->
 
@@ -150,7 +154,7 @@ This methodology is consistent with the guidelines provided by the OECD Handbook
 
 The Lisbon Metropolitan Area (LMA) was applied as the case study for the IMPT. The LMA is comprised of two NUTS II regions (Grande Lisboa and Península de Setúbal), which encompasses 18 Municipalities and approximately 2,8 million inhabitants. This region presents territorial characteristics which make it particularly suitable for this analysis: a polycentric structure with a strong employment center in Lisbon, significant discrepancies between the public transport offer in the urban core and in the periphery, and a high modal share of private vehicles in a large part of the metropolitan area.
 
-The analysis is focused on the lowest administrative division, the *freguesia* (parish), which is the most disaggregated geographical level that guarantees data coverage for all utilized sources. For the indicators that had a higher level of granularity, an analysis by grid level was also assembled. The LMA includes 124 parishes, which constitute the observation units of the IMPT.
+The analysis is focused on the lowest administrative division, the *freguesia* (parish), which is the most disaggregated geographical level that guarantees data coverage for all utilized sources. For the indicators that had a higher level of granularity, an analysis by grid level was also assembled. The LMA contains 124 parishes, which constitute the observation units of the IMPT.
 
 ## Data Sources {#sec-MET_data_sources}
 

@@ -324,13 +324,14 @@ socio-territorial inequality and transport inequality - the differences
 in transport conditions for different groups of people
 \citep{Hidayati_2021}. Despite the relation between poverty and
 transport conditions, these are also related to a wide range of social
-issues, with motorized vehicle users most contributing to externalities,
-but with vulnerable road users being disproportionately affected by them
-in health, space allocation and time consumption \citep{Gossling_2016}.
-Moreover, lower-income households tend to not have financial conditions
-to have motorized transport or to reside in central areas, relegating
-them to live in areas distant from the city center, often poorly served
-by public transportation. \citep{Fedorowicz_2020} \citep{Lopes_2023}.
+issues. As an example, motorized vehicle users contribute the most to
+externalities, but vulnerable road users are disproportionately affected
+by them in health, space allocation and time consumption
+\citep{Gossling_2016}. Moreover, lower-income households tend to not
+have financial conditions to have motorized transport or to reside in
+central areas, relegating them to live in areas distant from the city
+center, often poorly served by public transportation.
+\citep{Fedorowicz_2020} \citep{Lopes_2023}.
 
 These differences in transport conditions can lead to transport poverty,
 a concept which lacks a single universally accepted definition in
@@ -366,16 +367,16 @@ a combination of the following four dimensions:
   Accessibility - the capacity to reach usual destinations and
   activities (such as work, education or health).
 \item
-  Mobility - the systemic deficiencies of the transportation system
-  itself that impact necessary trips, and which are expressed in
-  parameters such as low service frequency or average commuting time.
+  Mobility - the systemic aspects of the transportation system itself
+  that impact essential trips, expressed in parameters such as public
+  transport service frequency or average commuting time.
 \item
   Affordability - the ability of households to meet the cost of
   transportation.
 \item
-  Exposure to externalities (Safety) - the negative exposure to the
-  transport system itself, such as environmental pollution or road crash
-  rates.
+  Exposure to externalities (Safety) - the negative effects of exposure
+  to the transport system itself, such as environmental pollution or
+  road crash rates.
 \end{itemize}
 
 Recently, and based on the aforementioned concepts,
@@ -389,12 +390,26 @@ recent European Commission Report \citep{EuropeanCommission_2024}. The
 key dimensions in the EC Report are synthesized as \emph{Availability}
 (corresponding to Lucas' Mobility), \emph{Accessibility} and
 \emph{Affordability}, with exposure to externalities being included in
-the overarching concept of \emph{Adequacy}.
+the overarching concept of \emph{Adequacy}
+(Figure~\ref{fig-transport_poverty_concept}).
+
+\begin{figure}
+
+\centering{
+
+\pandocbounded{\includegraphics[keepaspectratio]{images/transport_poverty_concept-01.png}}
+
+}
+
+\caption{\label{fig-transport_poverty_concept}Conceptualization of
+Transport Poverty. Source: Oeko-Institut and University of Manchester}
+
+\end{figure}%
 
 In summary, the concept of transport poverty has evolved from a
 one-dimensional look at accessibility or affordability, to a composite
-approach that attempts to capture the multidimensional nature of this
-phenomenon.
+approach that attempts to fully capture the multidimensional nature of
+this phenomenon.
 
 \subsection{Dimensions of Transport Poverty}\label{sec-LR_dimensions}
 
@@ -402,13 +417,23 @@ The dimensions proposed by \citet{Lucas_2016} continue to be the
 reference for composite indexes of transport poverty
 \citep{AlonsoEpelde_2023} \citep{MejiaDorantes_MurauskaiteBull_2022}.
 IMPT adopts these dimensions, implementing them through secondary data
-available in Portugal. Each of them is further explained thoroughly.
+available in Portugal. Each dimension is further explained thoroughly.
 
 \subsubsection{Accessibility}\label{sec-LR_accessibility}
 
 Accessibility refers to the ability to reach regular destinations such
 as employment, education, health and other essential services
-\citep{Allen_Farber_2019} \citep{SocialExclusionUnit_2003}.
+\citep{Allen_Farber_2019} \citep{SocialExclusionUnit_2003}. The
+literature distinguishes between approaches based on cumulative
+opportunities - the number of reachable destinations within a certain
+travel time threshold -, gravity-based approaches, which continuously
+weight destinations based on impedance (i.e.~the easier a destination is
+to reach, the more weight it will have) and hybrid approaches
+\citep{Geurs_vanWee_2004} \citep{Klar_2023}.
+\citet{Pereira_Herszenhut_2023} formalize these methodologies in
+open-source software \emph{R}, through the library \texttt{r5r}, which
+provides the technical base for the Accessibility dimension of the IMPT
+\citep{Pereira_r5r_2021}.
 
 \subsubsection{Mobility}\label{sec-LR_mobility}
 
@@ -421,6 +446,33 @@ their core difference being that, while accessibility asks which places
 are reachable, mobility focuses on how easy it is to reach them.
 
 \subsubsection{Affordability}\label{sec-LR_affordability}
+
+This dimension measures the capacity of households to support essential
+transportation expenses \citep{Isalou_2014} \citep{Litman_2026}
+\citep{Oviedo_2025}. The literature distinguishes three groups of
+indicators:
+
+\begin{itemize}
+\item
+  The \emph{10 percent rule}, which considers the households who spend
+  more than 10\% of their income in transportation, having been adopted
+  in the United Kingdom, with its origins in the concept of ``fuel
+  poverty'' \citep{Lucas_2016} \citep{AlonsoEpelde_2023}.
+\item
+  The \emph{2M} approach, adapted from the concept of energy poverty,
+  which considers the households that spend in transportation more than
+  twice the national median \citep{AlonsoEpelde_2023}.
+\item
+  The combined approach of \emph{housing and transportation
+  affordability}, based on the premise that households make their
+  residential location choice based on both housing and transportation
+  costs. If the combined housing and transport cost doesn't exceed 45\%
+  of income, it is considered affordable \citep{Isalou_2014}
+  \citep{Litman_2026}.
+\end{itemize}
+
+The IMPT was rooted upon this last indicator, combining the costs of
+housing and transportation in relation to household income.
 
 \subsubsection{Safety}\label{sec-LR_safety}
 
@@ -526,33 +578,31 @@ corresponding to different analytical positions:
 \begin{itemize}
 \tightlist
 \item
-  Contrasting IMPT: based on entropy, highlights the variables with the
-  highest variation, better capturing territorial contrasts.
+  Contrasting IMPT: based on entropy, it highlights the variables with
+  the highest variation, better capturing territorial contrasts.
 \item
   Critical IMPT: based on the geometric mean, it non-linearly penalizes
-  the dimensions with the worst performance in each area.
+  the dimension with the worst performance in each geographical unit.
 \item
-  Balanced IMPT: based on the arithmetic mean, allows for compensation
-  between dimensions.
+  Balanced IMPT: based on the arithmetic mean, it allows for
+  compensation between dimensions.
 \item
-  Political IMPT: allowing for a personalized AHP weighting, it can be
-  tailored to the decision-maker's preferences.
+  Political IMPT: allowing for a personalized Analytic Hierarchical
+  Process (AHP) weighting, it can be tailored to the decision-maker's
+  preferences and priorities.
 \end{itemize}
 
 \section{Methodology}\label{sec-methodology}
 
-To compute the IMPT, the following procedural steps were taken: (1) data
-collection, computation and normalization of every indicator; (2)
-aggregation of indicators per dimension through a Principal Component
-Analysis (PCA), and normalization of each dimension; (3)
-multidimensional aggregation of the four dimensions, employing three
+Based on the guidelines provided by the OECD Handbook
+\citep{OECD_EU_2008}, the IMPT was computed through the following
+procedural steps: (1) data collection, computation and normalization of
+every indicator; (2) aggregation of indicators per dimension through a
+Principal Component Analysis (PCA), and normalization of each dimension;
+(3) multidimensional aggregation of the four dimensions, employing three
 distinct methods; (4) results validation, through a workshop with
 representatives of municipalities within the Lisbon Metropolitan Area
 (LMA).
-
-This methodology is consistent with the guidelines provided by the OECD
-Handbook \citep{OECD_EU_2008}, and is explained in detail in this
-section.
 
 \subsection{Case Study}\label{sec-MET_case_study}
 
@@ -570,7 +620,7 @@ The analysis is focused on the lowest administrative division, the
 \emph{freguesia} (parish), which is the most disaggregated geographical
 level that guarantees data coverage for all utilized sources. For the
 indicators that had a higher level of granularity, an analysis by grid
-level was also assembled. The LMA includes 124 parishes, which
+level was also assembled. The LMA contains 124 parishes, which
 constitute the observation units of the IMPT.
 
 \subsection{Data Sources}\label{sec-MET_data_sources}
