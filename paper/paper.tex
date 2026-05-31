@@ -1597,7 +1597,7 @@ per-mode IMPT:
 \tightlist
 \item
   \textbf{Critical IMPT - geometric mean} (equal weights,
-  Figure~\ref{fig-impt-geometric}):
+  Figure~\ref{fig-impt_geometric}):
   \[IMPT_{geom} = \left(\prod_{d} (S_d + 1)\right)^{1/n} - 1\]
 \end{enumerate}
 
@@ -1611,7 +1611,7 @@ one dimension is severely deficient.
 \tightlist
 \item
   \textbf{Balanced IMPT - arithmetic mean} (equal weights,
-  Figure~\ref{fig-impt-arithmetic}):
+  Figure~\ref{fig-impt_arithmetic}):
   \[IMPT_{avg} = \frac{1}{n} \sum_d S_d\]
 \end{enumerate}
 
@@ -1625,7 +1625,7 @@ communicating to non-specialist audiences.
 \tightlist
 \item
   \textbf{Contrasting IMPT - entropy-weighted geometric mean}
-  (Figure~\ref{fig-impt-entropy}):
+  (Figure~\ref{fig-impt_entropy}):
   \[IMPT_{entropy} = \prod_d (S_d + 1)^{w_d} - 1\]
 \end{enumerate}
 
@@ -1652,7 +1652,7 @@ dimension score for area \(i\).
 
 }
 
-\subcaption{\label{fig-impt-geometric}Critical IMPT (geometric mean)}
+\subcaption{\label{fig-impt_geometric}Critical IMPT}
 
 \end{minipage}%
 %
@@ -1664,7 +1664,7 @@ dimension score for area \(i\).
 
 }
 
-\subcaption{\label{fig-impt-arithmetic}Balanced IMPT (arithmetic mean)}
+\subcaption{\label{fig-impt_arithmetic}Balanced IMPT}
 
 \end{minipage}%
 %
@@ -1676,12 +1676,11 @@ dimension score for area \(i\).
 
 }
 
-\subcaption{\label{fig-impt-entropy}Contrasting IMPT (entropy-weighted
-mean)}
+\subcaption{\label{fig-impt_entropy}Contrasting IMPT}
 
 \end{minipage}%
 
-\caption{\label{fig-impt-methods}IMPT results for different aggregation
+\caption{\label{fig-impt_results}IMPT results for different aggregation
 methods for all modes (with Navegante)}
 
 \end{figure}%
@@ -1700,17 +1699,18 @@ transport authorities and operators.
 \section{Results}\label{sec-results}
 
 The full results of the IMPT for all LMA parishes are available in the
-dashboard created in the scope of this project. This dashboard allows
-for the visualization of the global indices (critical, balanced and
-contrasting), the results of each dimension by transport mode, all
-indicators that make up the index, as well as key statistics and
-summaries for various scales (parish, municipality and grid). Beyond
-results visualization, this tool allows for the calculation of the
-aggregated index adjusted to user preferences (political IMPT). For this
-purpose, an Analytic Hierarchical Process (AHP), that compares the
-user's preferences between dimensions and this way assigns weights to
-each, is made available to the dashboard's users. The dashboard is
-available at: \url{https://ushift.tecnico.ulisboa.pt/apps/impt}.
+dashboard (Figure~\ref{fig-dashboard}) created in the scope of this
+project. This dashboard allows for the visualization of the global
+indices (critical, balanced and contrasting), the results of each
+dimension by transport mode, all indicators that make up the index, as
+well as key statistics and summaries for various scales (parish,
+municipality and grid). Beyond results visualization, this tool allows
+for the calculation of the aggregated index adjusted to user preferences
+(political IMPT). For this purpose, an Analytic Hierarchical Process
+(AHP), that compares the user's preferences between dimensions and this
+way assigns weights to each, is made available to the dashboard's users.
+The dashboard is available at:
+\url{https://ushift.tecnico.ulisboa.pt/apps/impt}.
 
 \begin{figure}
 
@@ -1718,8 +1718,9 @@ available at: \url{https://ushift.tecnico.ulisboa.pt/apps/impt}.
 
 \pandocbounded{\includegraphics[keepaspectratio]{../documents/images/prints/dashboard.png}}
 
-\subcaption{\label{}IMPT Dashboard}
 \end{minipage}%
+
+\caption{\label{fig-dashboard}IMPT Dashboard}
 
 \end{figure}%
 
@@ -1731,12 +1732,32 @@ score of 0 (resp. 100) should not be interpreted as the ``best'' (resp.
 
 \subsection{Methodological comparison}\label{methodological-comparison}
 
+From Table~\ref{tbl-results_impt_contrasting}, it can be seen that the
+five parishes with the lowest contrasting IMPT form a contiguous cluster
+in the center of Lisbon. These areas benefit simultaneously from high
+Accessibility and Mobility (being located in the urban core, they have
+very good access to opportunities and quality public transport service
+and active modes infrastructure) and relatively low road accident rates
+(high Safety). Although these parishes also score very high in the
+Affordability dimension, it is worth noting that this score also stems
+from the high median income in this region, and is not only due to low
+transportation costs.
+
+Meanwhile, the parishes which score the highest in the IMPT are
+predominantly located in rural regions in the east and northwest, far
+from the urban core, namely in the municipalities of Montijo and Mafra.
+These parishes tend to score very poorly in every dimension apart from
+Safety, which is oftentimes even higher than the LMA average. The
+concentration of the worst-scoring parishes in specific areas of the LMA
+suggest that integrated intervention strategies, at the municipal level
+or higher, can be more effective than parish-by-parish interventions.
+
 \begin{longtable}[]{@{}
   >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.1786}}
   >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.5833}}
   >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.2262}}@{}}
 \caption{Contrasting IMPT results for the five best and worst-ranked
-parishes in the LMA}\label{tbl-best_worst_results}\tabularnewline
+parishes in the LMA}\label{tbl-results_impt_contrasting}\tabularnewline
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
 Ranking
@@ -1764,7 +1785,63 @@ Contrasting IMPT
 3 & Campo de Ourique & 15.0 \\
 4 & Santo António & 15.3 \\
 5 & Santa Maria Maior & 15.6 \\
-\ldots{} & & \\
+\ldots{} & \ldots{} & \ldots{} \\
+120 & Encarnação & 81.8 \\
+121 & Canha & 83.8 \\
+122 & União de Freguesias de Pegões & 83.9 \\
+123 & União de Freguesias de Igreja Nova e Cheleiros & 90.0 \\
+124 & União de Freguesias de Poceirão e Marateca & 93.4 \\
+\end{longtable}
+
+While the contrasting IMPT is a good indicator to evaluate differences
+between territories, the critical IMPT is better for evaluating specific
+dimensional deficiencies in each geographical unit.
+
+Analyzing this index (see Table~\ref{tbl-results_impt_critical}), it is
+visible that Arroios, which lead the contrasting IMPT ranking, is now
+outside of the five lowest-scoring parishes due to a poorer result in
+the Safety dimension, which was previously offset by a very high score
+in the other three. Carnide, also located close to the urban core of
+Lisbon, surges from 11th place in the contrasting IMPT to 5th,
+benefiting from having consistent scores in all four dimensions.
+Meanwhile, the highest-scoring parishes remain in the same rankings,
+with the only difference being the existence of slightly higher
+variation between their scores.
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.1646}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.6203}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.2025}}@{}}
+\caption{Critical IMPT results for the five best and worst-ranked
+parishes in the LMA}\label{tbl-results_impt_critical}\tabularnewline
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Ranking
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Parish
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Critical IMPT
+\end{minipage} \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Ranking
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Parish
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Critical IMPT
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+1 & Campo de Ourique & 15.0 \\
+2 & Areeiro & 15.5 \\
+3 & São Vicente & 18.1 \\
+4 & Santa Maria Maior & 18.5 \\
+5 & Carnide & 18.9 \\
+\ldots{} & \ldots{} & \ldots{} \\
 120 & Encarnação & 76.6 \\
 121 & Canha & 77.0 \\
 122 & União de Freguesias de Pegões & 80.6 \\
@@ -1772,16 +1849,48 @@ Contrasting IMPT
 124 & União de Freguesias de Poceirão e Marateca & 92.3 \\
 \end{longtable}
 
-\subsection{Spatial performance and
-outliers}\label{spatial-performance-and-outliers}
+\subsection{Dimensional and spatial
+performance}\label{dimensional-and-spatial-performance}
 
 \subsubsection{Accessibility}\label{accessibility}
 
+The main deficiencies in Accessibility in the LMA are located mostly in
+rural parishes, far from any urban center, in which reaching essential
+services is often a challenge. Meanwhile, the urban core of Lisbon,
+where the highest concentration of opportunities exists, is the
+best-performing in this regard, along other more peripheral urban
+centers such as Amadora, Odivelas or Barreiro.
+
 \subsubsection{Mobility}\label{mobility}
+
+This dimension indicates areas where either there is a lack of transport
+alternatives, or even if they exist, they are systemically inadequate,
+having impairments such as low service frequency or high travel times.
+The results for this dimension were expected, as the high concentration
+of jobs in the urban core of Lisbon requires peripheral regions to make
+long commutes, often with low public transport frequencies and high
+waiting times.
 
 \subsubsection{Affordability}\label{affordability}
 
+Most parishes of the LMA perform well in this dimension, showing high
+values of transport affordability. The most critical cases are
+concentrated in lower-income, car-dependent areas. This way, it can be
+stated that transport affordability doesn't need to be a concern for the
+LMA. The positive scores in this dimension can be at least partially
+attributed to the existence of a simple monthly, multimodal and
+wide-ranging public transport pass, the Navegante, which contributes
+significantly to lowering transportation costs.
+
 \subsubsection{Safety}\label{safety}
+
+This dimension exhibits different patterns from the others, with
+peripheral parishes performing mostly better than centrally-located
+ones. The poor results of some parishes in the Lisbon core is result of
+high number of crashes and vehicles involved, even if their severity is
+not extreme. However, the worst results are displayed in the near-shore
+areas of Oeiras and Cascais, due to the particularly high crash and
+mortality rates registered in the Marginal road (EN6).
 
 \subsection{Takeaways}\label{takeaways}
 
