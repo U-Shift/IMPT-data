@@ -578,18 +578,20 @@ corresponding to different analytical positions:
 \begin{itemize}
 \tightlist
 \item
-  Contrasting IMPT: based on entropy, it highlights the variables with
-  the highest variation, better capturing territorial contrasts.
+  \textbf{Contrasting IMPT:} based on entropy, it highlights the
+  variables with the highest variation, better capturing territorial
+  contrasts.
 \item
-  Critical IMPT: based on the geometric mean, it non-linearly penalizes
-  the dimension with the worst performance in each geographical unit.
+  \textbf{Critical IMPT:} based on the geometric mean, it non-linearly
+  penalizes the dimension with the worst performance in each
+  geographical unit.
 \item
-  Balanced IMPT: based on the arithmetic mean, it allows for
+  \textbf{Balanced IMPT:} based on the arithmetic mean, it allows for
   compensation between dimensions.
 \item
-  Political IMPT: allowing for a personalized Analytic Hierarchical
-  Process (AHP) weighting, it can be tailored to the decision-maker's
-  preferences and priorities.
+  \textbf{Political IMPT:} allowing for a personalized Analytic
+  Hierarchical Process (AHP) weighting, it can be tailored to the
+  decision-maker's preferences and priorities.
 \end{itemize}
 
 \section{Methodology}\label{sec-methodology}
@@ -674,14 +676,15 @@ Based on the literature, a preliminary list of indicators for each
 dimension was compiled, followed by an extensive search for public data
 to obtain the most possible of these indicators. However, some of them
 were either not found or not publicly accessible. This way, the final
-list of indicators included is shown in \textbf{?@tbl-all\_indicators}.
+list of indicators included is shown in Table~\ref{tbl-all_indicators}.
 This excludes indicators such as exposure to air pollution, overcrowding
 of public transportation, or walkability, as well as the dimension of
 digital literacy. The list of data sources used is shown in
-\textbf{?@tbl-data\_sources}.
+Table~\ref{tbl-data_sources}.
 
 \begin{longtable}[]{@{}ll@{}}
-\caption{Indicators used in the IMPT}\tabularnewline
+\caption{Indicators used in the
+IMPT}\label{tbl-all_indicators}\tabularnewline
 \toprule\noalign{}
 Dimension & Indicator \\
 \midrule\noalign{}
@@ -710,7 +713,7 @@ Safety & Aggregation of road safety indicators \\
   >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.3250}}
   >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.0600}}
   >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.5500}}@{}}
-\caption{Data sources used}\tabularnewline
+\caption{Data sources used}\label{tbl-data_sources}\tabularnewline
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
 Code
@@ -744,7 +747,7 @@ BGRI21 & Census 2021 - Base Reference Geographical Information & 2021 &
 IMOB & IMOB 2017/18 - Inquérito à Mobilidade nas Áreas Metropolitanas &
 2018 & \url{https://www.ine.pt/xurl/pub/349495406} \\
 GTFS & GTFS --- General Transit Feed Specification & 2026-02 & All LMA
-public transport operators (see \textbf{?@tbl-gtfs\_sources}) \\
+public transport operators (see Table~\ref{tbl-gtfs_sources}) \\
 OSM-RN & OpenStreetMap (OSM) --- Road network & 2026-01 &
 \url{https://export.hotosm.org/exports/4782f0b8-6778-4c0e-8e4f-97fc62e7f240} \\
 OSM-POI & OpenStreetMap (OSM) --- Points of interest & 2024-04 &
@@ -768,7 +771,7 @@ IP & Infraestruturas de Portugal --- Toll costs & 2026 &
 \end{longtable}
 
 GTFS data sources for all LMA operators are presented in
-\textbf{?@tbl-gtfs\_sources}. This data includes public transport
+Table~\ref{tbl-gtfs_sources}. This data includes public transport
 frequency, stop location and travel times, among other essential data to
 enable the estimation of Mobility and Accessibility metrics.
 
@@ -776,7 +779,8 @@ enable the estimation of Mobility and Accessibility metrics.
   >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.2886}}
   >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.1074}}
   >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.5973}}@{}}
-\caption{GTFS sources for LMA public transport operators}\tabularnewline
+\caption{GTFS sources for LMA public transport
+operators}\label{tbl-gtfs_sources}\tabularnewline
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
 Operator
@@ -828,43 +832,13 @@ The IMPT is not only multidimensional, but also intermodal. In
 Table~\ref{tbl-modes_per_dimension}, the dimensions used to compute the
 index for each mode are specified.
 
-\begin{Shaded}
-\begin{Highlighting}[]
-\NormalTok{modes\_per\_dimension }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{(}
-  \AttributeTok{Dimension =} \FunctionTok{c}\NormalTok{(}\StringTok{"Accessibility"}\NormalTok{,}
-                \StringTok{"Mobility"}\NormalTok{,}
-                \StringTok{"Affordability"}\NormalTok{,}
-                \StringTok{"Safety"}
-\NormalTok{                ),}
-  \AttributeTok{Mode =} \FunctionTok{c}\NormalTok{(}\StringTok{"Driving, Public Transport, Walking, Cycling"}\NormalTok{,}
-           \StringTok{"Driving, Public Transport, Walking, Cycling"}\NormalTok{,}
-           \StringTok{"Driving, Public Transport"}\NormalTok{,}
-           \StringTok{"Driving, Walking, Cycling"}
-\NormalTok{           )}
-\NormalTok{)}
-\NormalTok{knitr}\SpecialCharTok{::}\FunctionTok{kable}\NormalTok{(modes\_per\_dimension)}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{verbatim}
-Warning in attr(x, "align"): 'xfun::attr()' is deprecated.
-Use 'xfun::attr2()' instead.
-See help("Deprecated")
-\end{verbatim}
-
-\begin{verbatim}
-Warning in attr(x, "format"): 'xfun::attr()' is deprecated.
-Use 'xfun::attr2()' instead.
-See help("Deprecated")
-\end{verbatim}
-
 \begin{longtable}[]{@{}ll@{}}
-
-\caption{\label{tbl-modes_per_dimension}Modes evaluated in each
-dimension}
-
-\tabularnewline
-
+\caption{Modes computed for each dimension of the
+IMPT}\label{tbl-modes_per_dimension}\tabularnewline
+\toprule\noalign{}
+Dimension & Mode \\
+\midrule\noalign{}
+\endfirsthead
 \toprule\noalign{}
 Dimension & Mode \\
 \midrule\noalign{}
@@ -875,7 +849,6 @@ Accessibility & Driving, Public Transport, Walking, Cycling \\
 Mobility & Driving, Public Transport, Walking, Cycling \\
 Affordability & Driving, Public Transport \\
 Safety & Driving, Walking, Cycling \\
-
 \end{longtable}
 
 \subsubsection{Accessibility}\label{sec-MET_accessibility}
@@ -883,14 +856,15 @@ Safety & Driving, Walking, Cycling \\
 The Accessibility dimension quantifies the capacity to reach key
 destinations within a given travel time threshold. The key destination
 categories, as well as their data sources, are summarized in
-\textbf{?@tbl-poi\_categories}.
+Table~\ref{tbl-poi_categories}.
 
 \begin{longtable}[]{@{}
   >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.1938}}
   >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.1125}}
   >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2375}}
   >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.4438}}@{}}
-\caption{POI categories, sources and filters}\tabularnewline
+\caption{POI categories, sources and
+filters}\label{tbl-poi_categories}\tabularnewline
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
 Category
@@ -1006,14 +980,14 @@ measures. It was computed between each grid cell, over a network
 
 The matrix was computed using the function
 \texttt{r5r::travel\_time\_matrix()} \citep{Pereira_Herszenhut_2023}
-with the parameters shown in \textbf{?@tbl-ttm\_parameters}.
+with the parameters shown in Table~\ref{tbl-ttm_parameters}.
 
 \begin{longtable}[]{@{}
   >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.0805}}
   >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.2712}}
   >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.6441}}@{}}
 \caption{Parameters used in the computation of the travel time
-matrix}\tabularnewline
+matrix}\label{tbl-ttm_parameters}\tabularnewline
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
 Modes
@@ -1066,7 +1040,7 @@ grid cell, and the travel time cut-offs.
 
 This measure was computed for all combinations of POIs and modes for
 time cut-offs of 5, 10, 15, 30, 45, 60, 75 and 90 minutes. However, as
-can be seen in \textbf{?@tbl-accessibility\_n\_opportunities}, only
+can be seen in Table~\ref{tbl-accessibility_n_opportunities}, only
 selected combinations of modes/points of interest were included in
 IMPT's operationalization.
 
@@ -1075,7 +1049,7 @@ IMPT's operationalization.
   >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3947}}
   >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.2763}}@{}}
 \caption{Travel time threshold (minutes) to compute cumulative number of
-opportunities}\tabularnewline
+opportunities}\label{tbl-accessibility_n_opportunities}\tabularnewline
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
 Point of Interest
@@ -1164,11 +1138,11 @@ times}\label{public-transport-headways-and-waiting-times}
 Stop-level service frequencies were computed using
 \texttt{tidytransit::get\_stop\_frequency()} \citep{tidytransit} for
 four different time windows, as can be seen in
-\textbf{?@tbl-headway\_periods}
+Table~\ref{tbl-headway_periods}.
 
 \begin{longtable}[]{@{}lll@{}}
 \caption{Public transport service frequency periods
-observed}\tabularnewline
+observed}\label{tbl-headway_periods}\tabularnewline
 \toprule\noalign{}
 Period & Day & Time window \\
 \midrule\noalign{}
@@ -1219,14 +1193,14 @@ population data \citep{INE_Census2021} was further disaggregated by
 residential density class through the intersection with COS
 \citep{COS_2023}, in order to have the highest-possible resolution for
 residential locations. The residential density classes considered are
-shown in \textbf{?@tbl-cos\_classes}.
+shown in Table~\ref{tbl-cos_classes}.
 
 \begin{longtable}[]{@{}
-  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.4118}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.4118}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.1667}}@{}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.4200}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.4200}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.1500}}@{}}
 \caption{Population and building density weights for COS land use
-classes}\tabularnewline
+classes}\label{tbl-cos_classes}\tabularnewline
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
 Class of residential area
@@ -1429,41 +1403,13 @@ but transfers to different modes incur an additional charge.
 Based on operator revenue data, the average cost of a monthly pass was
 estimated (Table~\ref{tbl-navegante}).
 
-\begin{Shaded}
-\begin{Highlighting}[]
-\NormalTok{navegante }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{(}
-  \StringTok{"Pass type"} \OtherTok{=} \FunctionTok{c}\NormalTok{(}\StringTok{"Navegante Metropolitano"}\NormalTok{,}
-                  \StringTok{"Navegante Municipal"}\NormalTok{,}
-                  \StringTok{"Senior (+65)"}\NormalTok{,}
-                  \StringTok{"Family"}\NormalTok{,}
-                  \StringTok{"Youth (sub{-}23)"}
-\NormalTok{                  ),}
-  \StringTok{"Pass recharges"} \OtherTok{=} \FunctionTok{c}\NormalTok{(}\StringTok{"5,063,510"}\NormalTok{,}\StringTok{"887,190"}\NormalTok{,}\StringTok{"1,103,782"}\NormalTok{,}\StringTok{"243,784"}\NormalTok{,}\StringTok{"3,425,013"}\NormalTok{),}
-  \StringTok{"Pass price"} \OtherTok{=} \FunctionTok{c}\NormalTok{(}\StringTok{"40€"}\NormalTok{,}\StringTok{"30€"}\NormalTok{,}\StringTok{"20€"}\NormalTok{,}\StringTok{"80€"}\NormalTok{,}\StringTok{"0€"}\NormalTok{),}
-  \AttributeTok{check.names =} \ConstantTok{FALSE}
-\NormalTok{)}
-\NormalTok{knitr}\SpecialCharTok{::}\FunctionTok{kable}\NormalTok{(navegante)}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{verbatim}
-Warning in attr(x, "align"): 'xfun::attr()' is deprecated.
-Use 'xfun::attr2()' instead.
-See help("Deprecated")
-\end{verbatim}
-
-\begin{verbatim}
-Warning in attr(x, "format"): 'xfun::attr()' is deprecated.
-Use 'xfun::attr2()' instead.
-See help("Deprecated")
-\end{verbatim}
-
 \begin{longtable}[]{@{}lll@{}}
-
-\caption{\label{tbl-navegante}Revenue from Navegante monthly pass}
-
-\tabularnewline
-
+\caption{Revenue from Navegante monthly
+pass}\label{tbl-navegante}\tabularnewline
+\toprule\noalign{}
+Pass type & Pass recharges & Pass price \\
+\midrule\noalign{}
+\endfirsthead
 \toprule\noalign{}
 Pass type & Pass recharges & Pass price \\
 \midrule\noalign{}
@@ -1475,7 +1421,6 @@ Navegante Municipal & 887,190 & 30€ \\
 Senior (+65) & 1,103,782 & 20€ \\
 Family & 243,784 & 80€ \\
 Youth (sub-23) & 3,425,013 & 0€ \\
-
 \end{longtable}
 
 The average cost paid by a monthly pass holder is thus
@@ -1652,7 +1597,7 @@ per-mode IMPT:
 \tightlist
 \item
   \textbf{Critical IMPT - geometric mean} (equal weights,
-  Figure~\ref{fig-imt-geometric}):
+  Figure~\ref{fig-impt-geometric}):
   \[IMPT_{geom} = \left(\prod_{d} (S_d + 1)\right)^{1/n} - 1\]
 \end{enumerate}
 
@@ -1666,7 +1611,7 @@ one dimension is severely deficient.
 \tightlist
 \item
   \textbf{Balanced IMPT - arithmetic mean} (equal weights,
-  Figure~\ref{fig-imt-arithmetic}):
+  Figure~\ref{fig-impt-arithmetic}):
   \[IMPT_{avg} = \frac{1}{n} \sum_d S_d\]
 \end{enumerate}
 
@@ -1680,7 +1625,7 @@ communicating to non-specialist audiences.
 \tightlist
 \item
   \textbf{Contrasting IMPT - entropy-weighted geometric mean}
-  (Figure~\ref{fig-imt-entropy}):
+  (Figure~\ref{fig-impt-entropy}):
   \[IMPT_{entropy} = \prod_d (S_d + 1)^{w_d} - 1\]
 \end{enumerate}
 
@@ -1707,7 +1652,7 @@ dimension score for area \(i\).
 
 }
 
-\subcaption{\label{fig-imt-geometric}Geometric mean}
+\subcaption{\label{fig-impt-geometric}Critical IMPT (geometric mean)}
 
 \end{minipage}%
 %
@@ -1719,7 +1664,7 @@ dimension score for area \(i\).
 
 }
 
-\subcaption{\label{fig-imt-arithmetic}Arithmetic mean}
+\subcaption{\label{fig-impt-arithmetic}Balanced IMPT (arithmetic mean)}
 
 \end{minipage}%
 %
@@ -1731,11 +1676,12 @@ dimension score for area \(i\).
 
 }
 
-\subcaption{\label{fig-imt-entropy}Entropy-weighted mean}
+\subcaption{\label{fig-impt-entropy}Contrasting IMPT (entropy-weighted
+mean)}
 
 \end{minipage}%
 
-\caption{\label{fig-imt-methods}IMPT results for different aggregation
+\caption{\label{fig-impt-methods}IMPT results for different aggregation
 methods for all modes (with Navegante)}
 
 \end{figure}%
@@ -1766,16 +1712,76 @@ user's preferences between dimensions and this way assigns weights to
 each, is made available to the dashboard's users. The dashboard is
 available at: \url{https://ushift.tecnico.ulisboa.pt/apps/impt}.
 
+\begin{figure}
+
+\begin{minipage}{\linewidth}
+
+\pandocbounded{\includegraphics[keepaspectratio]{../documents/images/prints/dashboard.png}}
+
+\subcaption{\label{}IMPT Dashboard}
+\end{minipage}%
+
+\end{figure}%
+
 It is worth noting that the IMPT is a relative index, created with the
 purpose of comparing different areas in the same metropolitan area, not
 of being an absolute index of transport poverty. This way, a global
-score of 100 or 0 should not be interpreted as the ``best'' or ``worst''
-possible outcomes.
+score of 0 (resp. 100) should not be interpreted as the ``best'' (resp.
+``worst'') possible outcome.
 
 \subsection{Methodological comparison}\label{methodological-comparison}
 
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.1786}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.5833}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.2262}}@{}}
+\caption{Contrasting IMPT results for the five best and worst-ranked
+parishes in the LMA}\label{tbl-best_worst_results}\tabularnewline
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Ranking
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Parish
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Contrasting IMPT
+\end{minipage} \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Ranking
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Parish
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Contrasting IMPT
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+1 & Arroios & 13.4 \\
+2 & Areeiro & 14.9 \\
+3 & Campo de Ourique & 15.0 \\
+4 & Santo António & 15.3 \\
+5 & Santa Maria Maior & 15.6 \\
+\ldots{} & & \\
+120 & Encarnação & 76.6 \\
+121 & Canha & 77.0 \\
+122 & União de Freguesias de Pegões & 80.6 \\
+123 & União de Freguesias de Igreja Nova e Cheleiros & 82.4 \\
+124 & União de Freguesias de Poceirão e Marateca & 92.3 \\
+\end{longtable}
+
 \subsection{Spatial performance and
 outliers}\label{spatial-performance-and-outliers}
+
+\subsubsection{Accessibility}\label{accessibility}
+
+\subsubsection{Mobility}\label{mobility}
+
+\subsubsection{Affordability}\label{affordability}
+
+\subsubsection{Safety}\label{safety}
 
 \subsection{Takeaways}\label{takeaways}
 

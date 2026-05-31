@@ -139,10 +139,10 @@ IMPT emerges in an attempt to create an index synthesizing these dimensions and 
 
 Furthermore, the IMPT incorporates four methodological variants, corresponding to different analytical positions:
 
-- Contrasting IMPT: based on entropy, it highlights the variables with the highest variation, better capturing territorial contrasts.
-- Critical IMPT: based on the geometric mean, it non-linearly penalizes the dimension with the worst performance in each geographical unit.
-- Balanced IMPT: based on the arithmetic mean, it allows for compensation between dimensions.
-- Political IMPT: allowing for a personalized Analytic Hierarchical Process (AHP) weighting, it can be tailored to the decision-maker's preferences and priorities.
+- **Contrasting IMPT:** based on entropy, it highlights the variables with the highest variation, better capturing territorial contrasts.
+- **Critical IMPT:** based on the geometric mean, it non-linearly penalizes the dimension with the worst performance in each geographical unit.
+- **Balanced IMPT:** based on the arithmetic mean, it allows for compensation between dimensions.
+- **Political IMPT:** allowing for a personalized Analytic Hierarchical Process (AHP) weighting, it can be tailored to the decision-maker's preferences and priorities.
 
 # Methodology {#sec-methodology}
 
@@ -170,6 +170,7 @@ Geographical units used in the IMPT
 
 Based on the literature, a preliminary list of indicators for each dimension was compiled, followed by an extensive search for public data to obtain the most possible of these indicators. However, some of them were either not found or not publicly accessible. This way, the final list of indicators included is shown in @tbl-all_indicators. This excludes indicators such as exposure to air pollution, overcrowding of public transportation, or walkability, as well as the dimension of digital literacy. The list of data sources used is shown in @tbl-data_sources.
 
+::: {#tbl-all_indicators}
 | Dimension     | Indicator                                            |
 |---------------|------------------------------------------------------|
 | Accessibility | Number of opportunities within travel time threshold |
@@ -184,8 +185,10 @@ Based on the literature, a preliminary list of indicators for each dimension was
 | Affordability | Housing and transportation costs                     |
 | Safety        | Aggregation of road safety indicators                |
 
-: Indicators used in the IMPT
+Indicators used in the IMPT
+:::
 
+::: {#tbl-data_sources}
 +----------+----------------------------------------------------------------+-----------+-------------------------------------------------------------------------------------------------------------+
 | Code     | Database                                                       | Year      | Source                                                                                                      |
 +==========+================================================================+===========+=============================================================================================================+
@@ -218,10 +221,12 @@ Based on the literature, a preliminary list of indicators for each dimension was
 | IP       | Infraestruturas de Portugal — Toll costs                       | 2026      | <https://portagens.infraestruturasdeportugal.pt>                                                            |
 +----------+----------------------------------------------------------------+-----------+-------------------------------------------------------------------------------------------------------------+
 
-: Data sources used
+Data sources used
+:::
 
 GTFS data sources for all LMA operators are presented in @tbl-gtfs_sources. This data includes public transport frequency, stop location and travel times, among other essential data to enable the estimation of Mobility and Accessibility metrics.
 
+::: {#tbl-gtfs_sources}
 +------------------------------------------+---------------+----------------------------------------------------------------------------------------+
 | Operator                                 | Mode          | GTFS URL                                                                               |
 +==========================================+===============+========================================================================================+
@@ -244,7 +249,8 @@ GTFS data sources for all LMA operators are presented in @tbl-gtfs_sources. This
 | Transtejo/Softlusa (TTSL)                | Ferry         | <https://api.transtejo.pt/files/GTFS.zip>                                              |
 +------------------------------------------+---------------+----------------------------------------------------------------------------------------+
 
-: GTFS sources for LMA public transport operators
+GTFS sources for LMA public transport operators
+:::
 
 Lastly, the following R packages were utilized in the data processing and creation of both the index and its interactive dashboard: `readr, readxl, openxlsx, lubridate, dplyr, tidyr, stringr, tidyverse, sf, terra, mapview, stplanr, h3jsr, r5r, accessibility, odjitter, tidytransit, GTFShift, FactoMineR, assertthat, piggyback`.
 
@@ -252,29 +258,24 @@ Lastly, the following R packages were utilized in the data processing and creati
 
 The IMPT is not only multidimensional, but also intermodal. In @tbl-modes_per_dimension, the dimensions used to compute the index for each mode are specified.
 
-```{r}
-#| label: tbl-modes_per_dimension
-#| tbl-cap: Modes evaluated in each dimension
-#| echo: true
-modes_per_dimension <- data.frame(
-  Dimension = c("Accessibility",
-                "Mobility",
-                "Affordability",
-                "Safety"
-                ),
-  Mode = c("Driving, Public Transport, Walking, Cycling",
-           "Driving, Public Transport, Walking, Cycling",
-           "Driving, Public Transport",
-           "Driving, Walking, Cycling"
-           )
-)
-knitr::kable(modes_per_dimension)
-```
+::: {#tbl-modes_per_dimension}
+
+| Dimension     | Mode                                        |
+|---------------|---------------------------------------------|
+| Accessibility | Driving, Public Transport, Walking, Cycling |
+| Mobility      | Driving, Public Transport, Walking, Cycling |
+| Affordability | Driving, Public Transport                   |
+| Safety        | Driving, Walking, Cycling                   |
+
+Modes computed for each dimension of the IMPT
+
+:::
 
 ### Accessibility {#sec-MET_accessibility}
 
 The Accessibility dimension quantifies the capacity to reach key destinations within a given travel time threshold. The key destination categories, as well as their data sources, are summarized in @tbl-poi_categories.
 
+::: {#tbl-poi_categories}
 +------------------------------+-----------------+-------------------------------------+----------------------------------------------------------------------+
 | Category                     | Identifier      | Source                              | Filter/Description                                                   |
 +==============================+=================+=====================================+======================================================================+
@@ -305,7 +306,8 @@ The Accessibility dimension quantifies the capacity to reach key destinations wi
 | Jobs                         | jobs            | IMOB                                | Jittered OD destinations (see @sec-MET_jittering)                    |
 +------------------------------+-----------------+-------------------------------------+----------------------------------------------------------------------+
 
-: POI categories, sources and filters
+POI categories, sources and filters
+:::
 
 This dimension incorporates two metrics:
 
@@ -332,6 +334,7 @@ A travel time matrix was used as the basis for all accessibility measures. It wa
 
 The matrix was computed using the function `r5r::travel_time_matrix()` [@Pereira_Herszenhut_2023] with the parameters shown in @tbl-ttm_parameters.
 
+::: {#tbl-ttm_parameters}
 +------------------+---------------------------------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------+
 | Modes            | Parameter                                                     | Description                                                                                                                                           |
 +==================+===============================================================+=======================================================================================================================================================+
@@ -350,7 +353,8 @@ The matrix was computed using the function `r5r::travel_time_matrix()` [@Pereira
 | Cycling          | `max_lts = 3`                                                 | Maximum level of stress tolerated by cyclists in a road environment.                                                                                  |
 +------------------+---------------------------------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------+
 
-: Parameters used in the computation of the travel time matrix
+Parameters used in the computation of the travel time matrix
+:::
 
 #### Cumulative number of opportunities {#sec-MET_Nopportunities}
 
@@ -358,6 +362,7 @@ The cumulative number of opportunities was calculated using the function `access
 
 This measure was computed for all combinations of POIs and modes for time cut-offs of 5, 10, 15, 30, 45, 60, 75 and 90 minutes. However, as can be seen in @tbl-accessibility_n_opportunities, only selected combinations of modes/points of interest were included in IMPT's operationalization.
 
+::: {#tbl-accessibility_n_opportunities}
 +-----------------------+-----------------------------+--------------------+
 | Point of Interest     | Driving or Public Transport | Walking or Cycling |
 +=======================+=============================+====================+
@@ -374,7 +379,8 @@ This measure was computed for all combinations of POIs and modes for time cut-of
 | Jobs                  | 30-45                       | 30-45              |
 +-----------------------+-----------------------------+--------------------+
 
-: Travel time threshold (minutes) to compute cumulative number of opportunities
+Travel time threshold (minutes) to compute cumulative number of opportunities
+:::
 
 The value computed represents the number of opportunities reachable within the defined travel time threshold. Values at parish and municipality level are aggregated considering a weighted mean of the number of opportunities reachable in each grid cell within that geographical unit, weighted by the population of those cells.
 
@@ -400,8 +406,9 @@ For each commuting OD pair, the minimum number of transfers required for each pu
 
 #### Public transport headways and waiting times
 
-Stop-level service frequencies were computed using `tidytransit::get_stop_frequency()` [@tidytransit] for four different time windows, as can be seen in @tbl-headway_periods
+Stop-level service frequencies were computed using `tidytransit::get_stop_frequency()` [@tidytransit] for four different time windows, as can be seen in @tbl-headway_periods.
 
+::: {#tbl-headway_periods}
 | Period           | Day                  | Time window |
 |------------------|----------------------|-------------|
 | Weekday peak     | Wednesday 04/02/2026 | 08:00-09:00 |
@@ -409,7 +416,8 @@ Stop-level service frequencies were computed using `tidytransit::get_stop_freque
 | Weekday night    | Wednesday 04/02/2026 | 22:00-23:00 |
 | Weekend          | Sunday 08/02/2026    | 10:00-11:00 |
 
-: Public transport service frequency periods observed
+Public transport service frequency periods observed
+:::
 
 A 500-meter buffer per stop is used to allocate stops to BGRI [@INE_Census2021] population centroids. Results are aggregated to geographical units as population-weighted mean headway and waiting time. Additionally, frequency reduction factors were computed to quantify the reduction in service during night and weekend periods. <!--# the methodology for PT population coverage wasn't used for this?? -->
 
@@ -425,19 +433,21 @@ This indicator is estimated using walking isochrones around public transport sto
 
 To calculate resident population beyond the parish level, BGRI21-level population data [@INE_Census2021] was further disaggregated by residential density class through the intersection with COS [@COS_2023], in order to have the highest-possible resolution for residential locations. The residential density classes considered are shown in @tbl-cos_classes.
 
-+-----------------------------------------+-----------------------------------------+----------------+
-| Class of residential area               | Translation                             | Weight         |
-+=========================================+=========================================+================+
-| Contínuas predominantemente verticais   | Continuous and predominantly vertical   | 3.0            |
-+-----------------------------------------+-----------------------------------------+----------------+
-| Contínuas predominantemente horizontais | Continuous and predominantly horizontal | 1.0            |
-+-----------------------------------------+-----------------------------------------+----------------+
-| Descontínuas                            | Discontinuous                           | 0.6            |
-+-----------------------------------------+-----------------------------------------+----------------+
-| Descontínuas esparsas                   | Discontinuous and sparse                | 0.3            |
-+-----------------------------------------+-----------------------------------------+----------------+
+::: {#tbl-cos_classes}
++-----------------------------------------+-----------------------------------------+--------------+
+| Class of residential area               | Translation                             | Weight       |
++=========================================+=========================================+==============+
+| Contínuas predominantemente verticais   | Continuous and predominantly vertical   | 3.0          |
++-----------------------------------------+-----------------------------------------+--------------+
+| Contínuas predominantemente horizontais | Continuous and predominantly horizontal | 1.0          |
++-----------------------------------------+-----------------------------------------+--------------+
+| Descontínuas                            | Discontinuous                           | 0.6          |
++-----------------------------------------+-----------------------------------------+--------------+
+| Descontínuas esparsas                   | Discontinuous and sparse                | 0.3          |
++-----------------------------------------+-----------------------------------------+--------------+
 
-: Population and building density weights for COS land use classes
+Population and building density weights for COS land use classes
+:::
 
 Population data was then intersected with the public transport stop isochrones, and aggregated by geographical unit (see @fig-pt_coverage_all).
 
@@ -527,23 +537,17 @@ This way, a single ticket cost of **1.91€** was assumed for all modes. Free tr
 
 Based on operator revenue data, the average cost of a monthly pass was estimated (@tbl-navegante).
 
-```{r}
-#| label: tbl-navegante
-#| tbl-cap: Revenue from Navegante monthly pass
-#| echo: true
-navegante <- data.frame(
-  "Pass type" = c("Navegante Metropolitano",
-                  "Navegante Municipal",
-                  "Senior (+65)",
-                  "Family",
-                  "Youth (sub-23)"
-                  ),
-  "Pass recharges" = c("5,063,510","887,190","1,103,782","243,784","3,425,013"),
-  "Pass price" = c("40€","30€","20€","80€","0€"),
-  check.names = FALSE
-)
-knitr::kable(navegante)
-```
+::: {#tbl-navegante}
+| Pass type               | Pass recharges | Pass price |
+|-------------------------|----------------|------------|
+| Navegante Metropolitano | 5,063,510      | 40€        |
+| Navegante Municipal     | 887,190        | 30€        |
+| Senior (+65)            | 1,103,782      | 20€        |
+| Family                  | 243,784        | 80€        |
+| Youth (sub-23)          | 3,425,013      | 0€         |
+
+Revenue from Navegante monthly pass
+:::
 
 The average cost paid by a monthly pass holder is thus **\~25.25€**. Assuming an average of 44 monthly trips (2 trips in each of 22 working days), the average cost per trip becomes **\~0.57€**.
 
@@ -635,15 +639,15 @@ For Mobility - Car, a PCA is not applied, also due to there being too few indica
 
 Three aggregation methods are computed for the global IMPT and each per-mode IMPT:
 
-1.  **Critical IMPT - geometric mean** (equal weights, @fig-imt-geometric): $$IMPT_{geom} = \left(\prod_{d} (S_d + 1)\right)^{1/n} - 1$$
+1.  **Critical IMPT - geometric mean** (equal weights, @fig-impt-geometric): $$IMPT_{geom} = \left(\prod_{d} (S_d + 1)\right)^{1/n} - 1$$
 
 Partially compensatory: penalizes dimensions with very low values non-linearly. Highlights the most critical situations, where at least one dimension is severely deficient.
 
-2.  **Balanced IMPT - arithmetic mean** (equal weights, @fig-imt-arithmetic): $$IMPT_{avg} = \frac{1}{n} \sum_d S_d$$
+2.  **Balanced IMPT - arithmetic mean** (equal weights, @fig-impt-arithmetic): $$IMPT_{avg} = \frac{1}{n} \sum_d S_d$$
 
 Compensatory: high vulnerability in one dimension can be offset by good performance in others. Suitable for setting aggregate policy targets and communicating to non-specialist audiences.
 
-3.  **Contrasting IMPT - entropy-weighted geometric mean** (@fig-imt-entropy): $$IMPT_{entropy} = \prod_d (S_d + 1)^{w_d} - 1$$
+3.  **Contrasting IMPT - entropy-weighted geometric mean** (@fig-impt-entropy): $$IMPT_{entropy} = \prod_d (S_d + 1)^{w_d} - 1$$
 
 where weights $w_d$ are derived from the **entropy weighting method**:
 
@@ -653,12 +657,12 @@ $$w_d = \frac{d_d}{\sum_j d_j}, \quad d_d = 1 - e_d, \quad e_d = -k \sum_i p_{id
 
 with $k = 1/\ln(n)$ and $p_{id}$ being the proportion of the dimension score for area $i$.
 
-::: {#fig-imt-methods layout="[[1,1,1]]"}
-![Geometric mean](../documents/images/maps/impt_geometric.png){#fig-imt-geometric}
+::: {#fig-impt-methods layout="[[1,1,1]]"}
+![Critical IMPT (geometric mean)](../documents/images/maps/impt_geometric.png){#fig-impt-geometric}
 
-![Arithmetic mean](../documents/images/maps/impt_arithmetic.png){#fig-imt-arithmetic}
+![Balanced IMPT (arithmetic mean)](../documents/images/maps/impt_arithmetic.png){#fig-impt-arithmetic}
 
-![Entropy-weighted mean](../documents/images/maps/impt_entropy.png){#fig-imt-entropy}
+![Contrasting IMPT (entropy-weighted mean)](../documents/images/maps/impt_entropy.png){#fig-impt-entropy}
 
 IMPT results for different aggregation methods for all modes (with Navegante)
 :::
@@ -675,11 +679,53 @@ Finally, a workshop was carried out with LMA municipalities. It took place on Ap
 
 The full results of the IMPT for all LMA parishes are available in the dashboard created in the scope of this project. This dashboard allows for the visualization of the global indices (critical, balanced and contrasting), the results of each dimension by transport mode, all indicators that make up the index, as well as key statistics and summaries for various scales (parish, municipality and grid). Beyond results visualization, this tool allows for the calculation of the aggregated index adjusted to user preferences (political IMPT). For this purpose, an Analytic Hierarchical Process (AHP), that compares the user's preferences between dimensions and this way assigns weights to each, is made available to the dashboard's users. The dashboard is available at: <https://ushift.tecnico.ulisboa.pt/apps/impt>.
 
-It is worth noting that the IMPT is a relative index, created with the purpose of comparing different areas in the same metropolitan area, not of being an absolute index of transport poverty. This way, a global score of 100 or 0 should not be interpreted as the "best" or "worst" possible outcomes.
+::: {#fig-dashboard layout="[[1]]"}
+![IMPT Dashboard](../documents/images/prints/dashboard.png)
+:::
+
+It is worth noting that the IMPT is a relative index, created with the purpose of comparing different areas in the same metropolitan area, not of being an absolute index of transport poverty. This way, a global score of 0 (resp. 100) should not be interpreted as the "best" (resp. "worst") possible outcome.
 
 ## Methodological comparison
 
+::: {#tbl-best_worst_results}
++--------------+------------------------------------------------+------------------+
+| Ranking      | Parish                                         | Contrasting IMPT |
++==============+================================================+==================+
+| 1            | Arroios                                        | 13.4             |
++--------------+------------------------------------------------+------------------+
+| 2            | Areeiro                                        | 14.9             |
++--------------+------------------------------------------------+------------------+
+| 3            | Campo de Ourique                               | 15.0             |
++--------------+------------------------------------------------+------------------+
+| 4            | Santo António                                  | 15.3             |
++--------------+------------------------------------------------+------------------+
+| 5            | Santa Maria Maior                              | 15.6             |
++--------------+------------------------------------------------+------------------+
+| ...          |                                                |                  |
++--------------+------------------------------------------------+------------------+
+| 120          | Encarnação                                     | 76.6             |
++--------------+------------------------------------------------+------------------+
+| 121          | Canha                                          | 77.0             |
++--------------+------------------------------------------------+------------------+
+| 122          | União de Freguesias de Pegões                  | 80.6             |
++--------------+------------------------------------------------+------------------+
+| 123          | União de Freguesias de Igreja Nova e Cheleiros | 82.4             |
++--------------+------------------------------------------------+------------------+
+| 124          | União de Freguesias de Poceirão e Marateca     | 92.3             |
++--------------+------------------------------------------------+------------------+
+
+Contrasting IMPT results for the five best and worst-ranked parishes in the LMA
+:::
+
 ## Spatial performance and outliers
+
+### Accessibility
+
+### Mobility
+
+### Affordability
+
+### Safety
 
 ## Takeaways
 
