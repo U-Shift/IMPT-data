@@ -620,15 +620,15 @@ The analysis is focused on the lowest administrative division, the
 \emph{freguesia} (parish), which is the most disaggregated geographical
 level that guarantees data coverage for all utilized sources. For the
 indicators that had a higher level of granularity, an analysis by grid
-level was also assembled. The parish results were also aggregated by
-\emph{município} (municipality), the administrative level immediately
-above the parish. The LMA contains 18 municipalities and 124 parishes
-(Figure~\ref{fig-lma-units}), which constitute the observation units of
-the IMPT.
+level (see Figure~\ref{fig-lma_grid}) was also assembled. The parish
+results were also aggregated by \emph{município} (municipality), the
+administrative level immediately above the parish. The LMA contains 18
+municipalities and 124 parishes (Figure~\ref{fig-lma_units}), which
+constitute the observation units of the IMPT.
 
 \begin{figure}
 
-\begin{minipage}{0.50\linewidth}
+\begin{minipage}{0.33\linewidth}
 
 \centering{
 
@@ -636,11 +636,11 @@ the IMPT.
 
 }
 
-\subcaption{\label{fig-lma-mun}LMA Municipalities}
+\subcaption{\label{fig-lma_mun}LMA Municipalities}
 
 \end{minipage}%
 %
-\begin{minipage}{0.50\linewidth}
+\begin{minipage}{0.33\linewidth}
 
 \centering{
 
@@ -648,11 +648,23 @@ the IMPT.
 
 }
 
-\subcaption{\label{fig-lma-parish}LMA Parishes}
+\subcaption{\label{fig-lma_parish}LMA Parishes}
+
+\end{minipage}%
+%
+\begin{minipage}{0.33\linewidth}
+
+\centering{
+
+\pandocbounded{\includegraphics[keepaspectratio]{../documents/images/maps/grid.png}}
+
+}
+
+\subcaption{\label{fig-lma_grid}LMA Grid}
 
 \end{minipage}%
 
-\caption{\label{fig-lma-units}Geographical units of the LMA}
+\caption{\label{fig-lma_units}Geographical units used in the IMPT}
 
 \end{figure}%
 
@@ -662,15 +674,14 @@ Based on the literature, a preliminary list of indicators for each
 dimension was compiled, followed by an extensive search for public data
 to obtain the most possible of these indicators. However, some of them
 were either not found or not publicly accessible. This way, the final
-list of indicators included is shown in Table~\ref{tbl-all_indicators}.
+list of indicators included is shown in \textbf{?@tbl-all\_indicators}.
 This excludes indicators such as exposure to air pollution, overcrowding
 of public transportation, or walkability, as well as the dimension of
 digital literacy. The list of data sources used is shown in
-Table~\ref{tbl-data_sources}.
+\textbf{?@tbl-data\_sources}.
 
 \begin{longtable}[]{@{}ll@{}}
-\caption{Indicators used in the
-IMPT}\label{tbl-all_indicators}\tabularnewline
+\caption{Indicators used in the IMPT}\tabularnewline
 \toprule\noalign{}
 Dimension & Indicator \\
 \midrule\noalign{}
@@ -695,11 +706,11 @@ Safety & Aggregation of road safety indicators \\
 \end{longtable}
 
 \begin{longtable}[]{@{}
-  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2500}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2500}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2500}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2500}}@{}}
-\caption{Data sources used}\label{tbl-data_sources}\tabularnewline
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.0550}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.3250}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.0600}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.5500}}@{}}
+\caption{Data sources used}\tabularnewline
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
 Code
@@ -733,7 +744,7 @@ BGRI21 & Census 2021 - Base Reference Geographical Information & 2021 &
 IMOB & IMOB 2017/18 - Inquérito à Mobilidade nas Áreas Metropolitanas &
 2018 & \url{https://www.ine.pt/xurl/pub/349495406} \\
 GTFS & GTFS --- General Transit Feed Specification & 2026-02 & All LMA
-public transport operators (see Table~\ref{tbl-gtfs_sources}) \\
+public transport operators (see \textbf{?@tbl-gtfs\_sources}) \\
 OSM-RN & OpenStreetMap (OSM) --- Road network & 2026-01 &
 \url{https://export.hotosm.org/exports/4782f0b8-6778-4c0e-8e4f-97fc62e7f240} \\
 OSM-POI & OpenStreetMap (OSM) --- Points of interest & 2024-04 &
@@ -757,16 +768,15 @@ IP & Infraestruturas de Portugal --- Toll costs & 2026 &
 \end{longtable}
 
 GTFS data sources for all LMA operators are presented in
-Table~\ref{tbl-gtfs_sources}. This data includes public transport
+\textbf{?@tbl-gtfs\_sources}. This data includes public transport
 frequency, stop location and travel times, among other essential data to
 enable the estimation of Mobility and Accessibility metrics.
 
 \begin{longtable}[]{@{}
-  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}@{}}
-\caption{GTFS sources for LMA public transport
-operators}\label{tbl-gtfs_sources}\tabularnewline
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.2886}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.1074}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.5973}}@{}}
+\caption{GTFS sources for LMA public transport operators}\tabularnewline
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
 Operator
@@ -873,15 +883,14 @@ Safety & Driving, Walking, Cycling \\
 The Accessibility dimension quantifies the capacity to reach key
 destinations within a given travel time threshold. The key destination
 categories, as well as their data sources, are summarized in
-Table~\ref{tbl-poi_categories}.
+\textbf{?@tbl-poi\_categories}.
 
 \begin{longtable}[]{@{}
   >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.1938}}
   >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.1125}}
   >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2375}}
   >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.4438}}@{}}
-\caption{POI categories, sources and
-filters}\label{tbl-poi_categories}\tabularnewline
+\caption{POI categories, sources and filters}\tabularnewline
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
 Category
@@ -997,14 +1006,14 @@ measures. It was computed between each grid cell, over a network
 
 The matrix was computed using the function
 \texttt{r5r::travel\_time\_matrix()} \citep{Pereira_Herszenhut_2023}
-with the parameters shown in Table~\ref{tbl-ttm_parameters}.
+with the parameters shown in \textbf{?@tbl-ttm\_parameters}.
 
 \begin{longtable}[]{@{}
-  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}@{}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.0805}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.2712}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.6441}}@{}}
 \caption{Parameters used in the computation of the travel time
-matrix}\label{tbl-ttm_parameters}\tabularnewline
+matrix}\tabularnewline
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
 Modes
@@ -1057,16 +1066,16 @@ grid cell, and the travel time cut-offs.
 
 This measure was computed for all combinations of POIs and modes for
 time cut-offs of 5, 10, 15, 30, 45, 60, 75 and 90 minutes. However, as
-can be seen in Table~\ref{tbl-accessibility_n_opportunities}, only
+can be seen in \textbf{?@tbl-accessibility\_n\_opportunities}, only
 selected combinations of modes/points of interest were included in
 IMPT's operationalization.
 
 \begin{longtable}[]{@{}
-  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3194}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.4028}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.2778}}@{}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3158}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3947}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.2763}}@{}}
 \caption{Travel time threshold (minutes) to compute cumulative number of
-opportunities}\label{tbl-accessibility_n_opportunities}\tabularnewline
+opportunities}\tabularnewline
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
 Point of Interest
@@ -1155,11 +1164,11 @@ times}\label{public-transport-headways-and-waiting-times}
 Stop-level service frequencies were computed using
 \texttt{tidytransit::get\_stop\_frequency()} \citep{tidytransit} for
 four different time windows, as can be seen in
-Table~\ref{tbl-headway_periods}
+\textbf{?@tbl-headway\_periods}
 
 \begin{longtable}[]{@{}lll@{}}
 \caption{Public transport service frequency periods
-observed}\label{tbl-headway_periods}\tabularnewline
+observed}\tabularnewline
 \toprule\noalign{}
 Period & Day & Time window \\
 \midrule\noalign{}
@@ -1184,6 +1193,103 @@ reduction in service during night and weekend periods.
 
 \paragraph{Public transport population
 coverage}\label{public-transport-population-coverage}
+
+This indicator is estimated using walking isochrones around public
+transport stops (see Figure~\ref{fig-pt_coverage_iso_train} as an
+example), differentiated by transport mode and their typical service
+area. Isochrones are computed with the function
+\texttt{r5r::isochrone()} using the \texttt{WALK} mode and the AML
+street network. Three mode groups were defined based on stop type and
+catchment area, the rational being that high-density networks
+(e.g.~buses) have a lower acceptable walking threshold, while mass
+transit networks with sparse stops (e.g.~suburban railways) induce
+higher walking thresholds:
+
+\begin{itemize}
+\item
+  Bus (Carris, CM, MobiCascais, TCB) - 5-minute walking threshold.
+\item
+  Metro \& light rail (ML, MTS) - 10-minute walking threshold.
+\item
+  Train \& Ferry (CP, Fertagus, TTSL) - 15-minute walking threshold.
+\end{itemize}
+
+To calculate resident population beyond the parish level, BGRI21-level
+population data \citep{INE_Census2021} was further disaggregated by
+residential density class through the intersection with COS
+\citep{COS_2023}, in order to have the highest-possible resolution for
+residential locations. The residential density classes considered are
+shown in \textbf{?@tbl-cos\_classes}.
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.4118}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.4118}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.1667}}@{}}
+\caption{Population and building density weights for COS land use
+classes}\tabularnewline
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Class of residential area
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Translation
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Weight
+\end{minipage} \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Class of residential area
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Translation
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Weight
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Contínuas predominantemente verticais & Continuous and predominantly
+vertical & 3.0 \\
+Contínuas predominantemente horizontais & Continuous and predominantly
+horizontal & 1.0 \\
+Descontínuas & Discontinuous & 0.6 \\
+Descontínuas esparsas & Discontinuous and sparse & 0.3 \\
+\end{longtable}
+
+Population data was then intersected with the public transport stop
+isochrones, and aggregated by geographical unit (see
+Figure~\ref{fig-pt_coverage_all}).
+
+\begin{figure}
+
+\begin{minipage}{0.50\linewidth}
+
+\centering{
+
+\pandocbounded{\includegraphics[keepaspectratio]{../documents/images/maps/pt_coverage_iso_train.png}}
+
+}
+
+\subcaption{\label{fig-pt_coverage_iso_train}Walking isochrones to train
+and ferry stations}
+
+\end{minipage}%
+%
+\begin{minipage}{0.50\linewidth}
+
+\centering{
+
+\pandocbounded{\includegraphics[keepaspectratio]{../documents/images/maps/pt_coverage_all.png}}
+
+}
+
+\subcaption{\label{fig-pt_coverage_all}Total coverage of public
+transport stops}
+
+\end{minipage}%
+
+\end{figure}%
 
 \paragraph{Ratio of pedestrian and cycling
 infrastructure}\label{ratio-of-pedestrian-and-cycling-infrastructure}
