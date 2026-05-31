@@ -660,63 +660,21 @@ the IMPT.
 
 Based on the literature, a preliminary list of indicators for each
 dimension was compiled, followed by an extensive search for public data
-to obtain the most possible of these indicators. However, due to some of
-them not being found or not being publicly accessible, the final list of
-indicators included is shown in Table~\ref{tbl-all_indicators}. This
-excludes indicators such as exposure to air pollution, overcrowding of
-public transportation, or walkability, as well as the dimension of
-digital literacy.
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\NormalTok{all\_indicators }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{(}
-  \AttributeTok{Dimension =} \FunctionTok{c}\NormalTok{(}\StringTok{"Accessibility"}\NormalTok{,}
-                \StringTok{"Accessibility"}\NormalTok{,}
-                \StringTok{"Mobility"}\NormalTok{,}
-                \StringTok{"Mobility"}\NormalTok{,}
-                \StringTok{"Mobility"}\NormalTok{,}
-                \StringTok{"Mobility"}\NormalTok{,}
-                \StringTok{"Mobility"}\NormalTok{,}
-                \StringTok{"Mobility"}\NormalTok{,}
-                \StringTok{"Affordability"}\NormalTok{,}
-                \StringTok{"Affordability"}\NormalTok{,}
-                \StringTok{"Safety"}
-\NormalTok{                ),}
-  \AttributeTok{Indicator =} \FunctionTok{c}\NormalTok{(}\StringTok{"Number of opportunities within travel time threshold"}\NormalTok{,}
-                \StringTok{"Travel time to first n opportunities"}\NormalTok{,}
-                \StringTok{"Average commuting time"}\NormalTok{,}
-                \StringTok{"Average number of commuting transfers"}\NormalTok{,}
-                \StringTok{"Public transport headways and waiting times"}\NormalTok{,}
-                \StringTok{"Public transport population coverage"}\NormalTok{,}
-                \StringTok{"Ratio of pedestrian and cycling infrastructure"}\NormalTok{,}
-                \StringTok{"Shared mobility availability"}\NormalTok{,}
-                \StringTok{"Transportation costs"}\NormalTok{,}
-                \StringTok{"Housing and transportation costs"}\NormalTok{,}
-                \StringTok{"Aggregation of road safety indicators"}
-\NormalTok{                )}
-\NormalTok{)}
-\NormalTok{knitr}\SpecialCharTok{::}\FunctionTok{kable}\NormalTok{(all\_indicators)}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{verbatim}
-Warning in attr(x, "align"): 'xfun::attr()' is deprecated.
-Use 'xfun::attr2()' instead.
-See help("Deprecated")
-\end{verbatim}
-
-\begin{verbatim}
-Warning in attr(x, "format"): 'xfun::attr()' is deprecated.
-Use 'xfun::attr2()' instead.
-See help("Deprecated")
-\end{verbatim}
+to obtain the most possible of these indicators. However, some of them
+were either not found or not publicly accessible. This way, the final
+list of indicators included is shown in Table~\ref{tbl-all_indicators}.
+This excludes indicators such as exposure to air pollution, overcrowding
+of public transportation, or walkability, as well as the dimension of
+digital literacy. The list of data sources used is shown in
+Table~\ref{tbl-data_sources}.
 
 \begin{longtable}[]{@{}ll@{}}
-
-\caption{\label{tbl-all_indicators}Indicators used in the IMPT}
-
-\tabularnewline
-
+\caption{Indicators used in the
+IMPT}\label{tbl-all_indicators}\tabularnewline
+\toprule\noalign{}
+Dimension & Indicator \\
+\midrule\noalign{}
+\endfirsthead
 \toprule\noalign{}
 Dimension & Indicator \\
 \midrule\noalign{}
@@ -734,59 +692,14 @@ Mobility & Shared mobility availability \\
 Affordability & Transportation costs \\
 Affordability & Housing and transportation costs \\
 Safety & Aggregation of road safety indicators \\
-
 \end{longtable}
 
-From here,
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\NormalTok{data\_sources }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{(}
-  \AttributeTok{Code =} \FunctionTok{c}\NormalTok{(}\StringTok{"CAOP"}\NormalTok{,}\StringTok{"BGRI21"}\NormalTok{,}\StringTok{"IMOB"}\NormalTok{,}\StringTok{"GTFS"}\NormalTok{,}\StringTok{"OSM{-}RN"}\NormalTok{,}\StringTok{"OSM{-}POI"}\NormalTok{,}\StringTok{"CM"}\NormalTok{,}
-           \StringTok{"ASNR"}\NormalTok{,}\StringTok{"INE{-}Inc"}\NormalTok{,}\StringTok{"INE{-}Hous"}\NormalTok{,}\StringTok{"GBA"}\NormalTok{,}\StringTok{"PMUS"}\NormalTok{,}\StringTok{"COS"}\NormalTok{,}\StringTok{"IP"}\NormalTok{),}
-  \AttributeTok{Database =} \FunctionTok{c}\NormalTok{(}\StringTok{"CAOP 2024.1 {-} Administrative Boundaries"}\NormalTok{,}
-               \StringTok{"Census 2021 {-} Base Reference Geographical Information"}\NormalTok{,}
-               \StringTok{"IMOB 2017/18 {-} Inquérito à Mobilidade nas Áreas Metropolitanas"}\NormalTok{,}
-               \StringTok{"GTFS — General Transit Feed Specification"}\NormalTok{,}
-               \StringTok{"OpenStreetMap (OSM) — Road network"}\NormalTok{,}
-               \StringTok{"OpenStreetMap (OSM) — Points of interest"}\NormalTok{,}
-               \StringTok{"Carris Metropolitana — Health centres and schools datasets"}\NormalTok{,}
-               \StringTok{"ANSR — Road accident data (location and type)"}\NormalTok{,}
-               \StringTok{"INE — Household income by parish"}\NormalTok{,}
-               \StringTok{"INE — Housing costs by parish"}\NormalTok{,}
-               \StringTok{"Global Building Atlas {-} Building heights"}\NormalTok{,}
-               \StringTok{"TML PMUS {-} Shared mobility docks"}\NormalTok{,}
-               \StringTok{"COS 2023 v1 — Land use map"}\NormalTok{,}
-               \StringTok{"Infraestruturas de Portugal — Toll costs"}
-\NormalTok{               ),}
-  \AttributeTok{Year =} \FunctionTok{c}\NormalTok{(}\StringTok{"2024"}\NormalTok{,}\StringTok{"2021"}\NormalTok{,}\StringTok{"2018"}\NormalTok{,}\StringTok{"2026{-}02"}\NormalTok{,}\StringTok{"2026{-}01"}\NormalTok{,}\StringTok{"2024{-}04"}\NormalTok{,}\StringTok{"2025"}\NormalTok{,}
-           \StringTok{"2019{-}2023"}\NormalTok{,}\StringTok{"2023"}\NormalTok{,}\StringTok{"2021"}\NormalTok{,}\StringTok{"2026"}\NormalTok{,}\StringTok{"2025"}\NormalTok{,}\StringTok{"2023"}\NormalTok{,}\StringTok{"2026"}\NormalTok{)}
-\NormalTok{)}
-\NormalTok{knitr}\SpecialCharTok{::}\FunctionTok{kable}\NormalTok{(data\_sources)}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{verbatim}
-Warning in attr(x, "align"): 'xfun::attr()' is deprecated.
-Use 'xfun::attr2()' instead.
-See help("Deprecated")
-\end{verbatim}
-
-\begin{verbatim}
-Warning in attr(x, "format"): 'xfun::attr()' is deprecated.
-Use 'xfun::attr2()' instead.
-See help("Deprecated")
-\end{verbatim}
-
 \begin{longtable}[]{@{}
-  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.1098}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.7683}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.1220}}@{}}
-
-\caption{\label{tbl-data_sources}Data sources}
-
-\tabularnewline
-
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2500}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2500}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2500}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2500}}@{}}
+\caption{Data sources used}\label{tbl-data_sources}\tabularnewline
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
 Code
@@ -794,28 +707,105 @@ Code
 Database
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
 Year
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Source
+\end{minipage} \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Code
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Database
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Year
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Source
 \end{minipage} \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-CAOP & CAOP 2024.1 - Administrative Boundaries & 2024 \\
-BGRI21 & Census 2021 - Base Reference Geographical Information & 2021 \\
+CAOP & CAOP 2024.1 - Administrative Boundaries & 2024 &
+\url{https://www.dgterritorio.gov.pt/sites/default/files/ficheiros-cartografia/CAOP_Continente_2024.1-gpkg.zip} \\
+BGRI21 & Census 2021 - Base Reference Geographical Information & 2021 &
+\url{https://mapas.ine.pt/download/filesGPG/2021/nuts3/BGRI21_170.zip} \\
 IMOB & IMOB 2017/18 - Inquérito à Mobilidade nas Áreas Metropolitanas &
-2018 \\
-GTFS & GTFS --- General Transit Feed Specification & 2026-02 \\
-OSM-RN & OpenStreetMap (OSM) --- Road network & 2026-01 \\
-OSM-POI & OpenStreetMap (OSM) --- Points of interest & 2024-04 \\
-CM & Carris Metropolitana --- Health centres and schools datasets &
-2025 \\
-ASNR & ANSR --- Road accident data (location and type) & 2019-2023 \\
-INE-Inc & INE --- Household income by parish & 2023 \\
-INE-Hous & INE --- Housing costs by parish & 2021 \\
-GBA & Global Building Atlas - Building heights & 2026 \\
-PMUS & TML PMUS - Shared mobility docks & 2025 \\
-COS & COS 2023 v1 --- Land use map & 2023 \\
-IP & Infraestruturas de Portugal --- Toll costs & 2026 \\
+2018 & \url{https://www.ine.pt/xurl/pub/349495406} \\
+GTFS & GTFS --- General Transit Feed Specification & 2026-02 & All LMA
+public transport operators (see Table~\ref{tbl-gtfs_sources}) \\
+OSM-RN & OpenStreetMap (OSM) --- Road network & 2026-01 &
+\url{https://export.hotosm.org/exports/4782f0b8-6778-4c0e-8e4f-97fc62e7f240} \\
+OSM-POI & OpenStreetMap (OSM) --- Points of interest & 2024-04 &
+\url{https://github.com/U-Shift/SiteSelection/releases/download/0.1/osm_poi_landuse.gpkg} \\
+CM & Carris Metropolitana --- Health centres and schools datasets & 2025
+& \url{https://github.com/carrismetropolitana/datasets} \\
+ASNR & ANSR --- Road accident data (location and type) & 2019-2023 &
+\url{https://pmmus.tmlmobilidade.pt/} \\
+INE-Inc & INE --- Household income by parish & 2023 &
+\url{https://www.ine.pt/xurl/pub/66303599} \\
+INE-Hous & INE --- Housing costs by parish & 2021 &
+\url{https://www.ine.pt/xurl/pub/65586079} \\
+GBA & Global Building Atlas - Building heights & 2026 &
+\url{https://github.com/zhu-xlab/GlobalBuildingAtlas} \\
+PMMUS & TML PMMUS - Shared mobility docks & 2025 &
+\url{https://pmmus.tmlmobilidade.pt/} \\
+COS & COS 2023 v1 --- Land use map & 2023 &
+\url{https://geo2.dgterritorio.gov.pt/cos/S2/COS2023/COS2023v1-S2-gpkg.zip} \\
+IP & Infraestruturas de Portugal --- Toll costs & 2026 &
+\url{https://portagens.infraestruturasdeportugal.pt} \\
+\end{longtable}
 
+GTFS data sources for all LMA operators are presented in
+Table~\ref{tbl-gtfs_sources}. This data includes public transport
+frequency, stop location and travel times, among other essential data to
+enable the estimation of Mobility and Accessibility metrics.
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}@{}}
+\caption{GTFS sources for LMA public transport
+operators}\label{tbl-gtfs_sources}\tabularnewline
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Operator
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Mode
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+GTFS URL
+\end{minipage} \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Operator
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Mode
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+GTFS URL
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Carris Metropolitana (CM) & Bus &
+\url{https://api.carrismetropolitana.pt/gtfs} \\
+Carris & Bus &
+\url{https://gateway.carris.pt/gateway/gtfs/api/v2.8/GTFS} \\
+MobiCascais & Bus &
+\url{https://drive.google.com/u/0/uc?id=13ucYiAJRtu-gXsLa02qKJrGOgDjbnUWX&export=download} \\
+Transportes Colectivos do Barreiro (TCB) & Bus &
+\url{https://backend.tcbarreiro.pt/download-gtfs} \\
+Metropolitano de Lisboa (ML) & Metro &
+\url{https://metrolisboa.pt/google_transit/googleTransit.zip} \\
+Comboios de Portugal (CP) & Suburban rail &
+\url{https://publico.cp.pt/gtfs/gtfs.zip} \\
+Fertagus & Suburban rail & \url{https://mts.pt/imt/MTS-20240129.zip} \\
+Metro Transportes do Sul (MTS) & Light rail &
+\url{https://fertagus.pt/GTFSTMLzip/Fertagus_GTFS.zip} \\
+Transtejo/Softlusa (TTSL) & Ferry &
+\url{https://api.transtejo.pt/files/GTFS.zip} \\
 \end{longtable}
 
 Lastly, the following R packages were utilized in the data processing
@@ -882,8 +872,69 @@ Safety & Driving, Walking, Cycling \\
 
 The Accessibility dimension quantifies the capacity to reach key
 destinations within a given travel time threshold. The key destination
-categories, as well as their data sources, are summarized in table
-(\ldots)
+categories, as well as their data sources, are summarized in
+Table~\ref{tbl-poi_categories}.
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.1938}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.1125}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2375}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.4438}}@{}}
+\caption{POI categories, sources and
+filters}\label{tbl-poi_categories}\tabularnewline
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Category
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Identifier
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Source
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Filter/Description
+\end{minipage} \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Category
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Identifier
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Source
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Filter/Description
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Healthcare (all) & health & CM & All health centers \\
+Hospitals & health\_hospital & CM & Name contains `Hospital' or `Centro
+de Medicina' \\
+Primary care centers & health\_primary & CM & Name contains `Centro de
+Saúde' \\
+Supermarket/groceries & groceries & OSM &
+\texttt{type\ \%in\%\ c(\textquotesingle{}supermarket\textquotesingle{},\textquotesingle{}convenience\textquotesingle{})} \\
+Green spaces & green\_spaces & OSM &
+\texttt{group\ ==\ \textquotesingle{}leisure\textquotesingle{}\ \&\ type\ \%in\%\ c(\textquotesingle{}park\textquotesingle{},\textquotesingle{}garden\textquotesingle{})} \\
+Recreation & recreation & OSM &
+\begin{minipage}[t]{\linewidth}\raggedright
+\texttt{type\ \%in\%\ c(\textquotesingle{}library\textquotesingle{},\ \textquotesingle{}theatre\textquotesingle{},\ \textquotesingle{}cinema\textquotesingle{},\ \textquotesingle{}restaurant\textquotesingle{},\ \textquotesingle{}cafe\textquotesingle{},}\strut \\
+\texttt{\textquotesingle{}bar\textquotesingle{},\ \textquotesingle{}pub\textquotesingle{},\ \textquotesingle{}pitch\textquotesingle{},\ \textquotesingle{}fitness\_station\textquotesingle{},}\strut \\
+\texttt{\textquotesingle{}swimming\_pool\textquotesingle{},\ \textquotesingle{}sports\_centre\textquotesingle{},\ \textquotesingle{}fitness\_center\textquotesingle{})}\strut
+\end{minipage} \\
+Schools (all) & schools & CM & All school types \\
+Primary schools & schools\_primary & CM & Primary education schools
+only \\
+Transit stops (all) & transit & GTFS (all operators) & All transit stops
+from all operators \\
+Transit stops (bus) & transit\_bus & GTFS (Carris, CM, MobiCascais, TCB)
+& Bus stops only \\
+Transit stops (mass transit) & transit\_mass & GTFS (ML, CP, Fertagus,
+MTS, TTSL) & Mass transit (metro, rail and ferry) stops only \\
+Jobs & jobs & IMOB & Jittered OD destinations (see
+Section~\ref{sec-MET_jittering}) \\
+\end{longtable}
 
 This dimension incorporates two metrics:
 
@@ -917,8 +968,15 @@ disaggregated data regarding job locations, beyond the parish unit.
 
 This way, jittering \citep{Lovelace_2022} was used as a proxy for this
 purpose, using building volumes as trip attractors, and this way
-weighting origins and destinations. This allowed for the disaggregation
-of trips between parishes to ODs with up to 50 trips.
+weighting origins (random samples from residential buildings) and
+destinations (buildings weighted by volume). This allowed for the
+disaggregation of trips between parishes to OD pairs with a maximum of
+50 trips per OD, with ODs with more trips than this value are split into
+multiple point-to-point pairs, in order to provide further spatial
+resolution. The process generated approximately 18,500 jittered OD pairs
+that represent the daily commuting patterns of the LMA. This value was
+then expanded to the real number of trips using a weighting variable
+(\emph{PESOFIN)} provided by \citet{INE_IMOB2017}.
 
 \paragraph{Travel time matrix}\label{sec-MET_TTmatrix}
 
@@ -928,7 +986,8 @@ measures. It was computed between each grid cell, over a network
 
 \begin{itemize}
 \item
-  OpenStreetMap road network, exported from \citet{hot_osm}.
+  OpenStreetMap \citep{OpenStreetMap} road network, exported from
+  \citet{hot_osm}.
 \item
   General Transit Feed Specification (GTFS) for all operators in the LMA
   (valid at 04/02/2026).
@@ -937,7 +996,56 @@ measures. It was computed between each grid cell, over a network
 \end{itemize}
 
 The matrix was computed using the function
-\texttt{r5r::travel\_time\_matrix()} with the following parameters: ()
+\texttt{r5r::travel\_time\_matrix()} \citep{Pereira_Herszenhut_2023}
+with the parameters shown in Table~\ref{tbl-ttm_parameters}.
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}@{}}
+\caption{Parameters used in the computation of the travel time
+matrix}\label{tbl-ttm_parameters}\tabularnewline
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Modes
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Parameter
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Description
+\end{minipage} \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Modes
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Parameter
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Description
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+All & \texttt{percentiles\ =\ 50} & 50th percentile (median) travel
+time. It is used so results represent the median travel conditions and
+not the ``best-case'' or ``worst-case'' scenarios. \\
+All & \texttt{max\_trip\_duration\ =\ 120} & Maximum trip duration, in
+minutes. \\
+Public transport & \texttt{mode\_egress=WALK} & Mode used after egress
+from the last public transport. \\
+Public transport & \texttt{max\_walk\_time\ =\ 15} & Maximum walking
+time (in minutes) to access or egreess public transport, or to transfer
+inside the network. \\
+Public transport &
+\texttt{departure\_datetime\ =\ 04/02/2026\ at\ 08:00:00\ AM} &
+Departure date and time considered for public transport. \\
+Public transport & \texttt{Max\_rides\ =\ 2} (1 transfer) or
+\texttt{Max\_rides\ =\ 3} (2 transfers) & Maximum number of public
+transport transfers allowed in the same trip. \\
+Cycling & \texttt{max\_lts\ =\ 3} & Maximum level of stress tolerated by
+cyclists in a road environment. \\
+\end{longtable}
 
 \paragraph{Cumulative number of
 opportunities}\label{sec-MET_Nopportunities}
@@ -953,49 +1061,25 @@ can be seen in Table~\ref{tbl-accessibility_n_opportunities}, only
 selected combinations of modes/points of interest were included in
 IMPT's operationalization.
 
-\begin{Shaded}
-\begin{Highlighting}[]
-\NormalTok{accessibility\_n\_opportunities }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{(}
-  \StringTok{"Point of Interest/Mode"} \OtherTok{=} \FunctionTok{c}\NormalTok{(}\StringTok{"Healthcare Facilities"}\NormalTok{,}
-                               \StringTok{"Basic Education"}\NormalTok{,}
-                               \StringTok{"Green Spaces"}\NormalTok{,}
-                               \StringTok{"Recreation"}\NormalTok{,}
-                               \StringTok{"Groceries"}\NormalTok{,}
-                               \StringTok{"Jobs"}
-\NormalTok{                               ),}
-  \StringTok{"Driving or Public Transport"} \OtherTok{=} \FunctionTok{c}\NormalTok{(}\StringTok{"30"}\NormalTok{,}\StringTok{"30"}\NormalTok{,}\StringTok{"5{-}10"}\NormalTok{,}\StringTok{"5{-}10"}\NormalTok{,}\StringTok{"15"}\NormalTok{,}\StringTok{"30{-}45"}\NormalTok{),}
-  \StringTok{"Walking or Cycling"} \OtherTok{=} \FunctionTok{c}\NormalTok{(}\StringTok{"15"}\NormalTok{,}\StringTok{"15"}\NormalTok{,}\StringTok{"15{-}30"}\NormalTok{,}\StringTok{"15{-}30"}\NormalTok{,}\StringTok{"15"}\NormalTok{,}\StringTok{"30{-}45"}\NormalTok{),}
-  \AttributeTok{check.names =} \ConstantTok{FALSE}
-\NormalTok{)}
-\NormalTok{knitr}\SpecialCharTok{::}\FunctionTok{kable}\NormalTok{(accessibility\_n\_opportunities)}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{verbatim}
-Warning in attr(x, "align"): 'xfun::attr()' is deprecated.
-Use 'xfun::attr2()' instead.
-See help("Deprecated")
-\end{verbatim}
-
-\begin{verbatim}
-Warning in attr(x, "format"): 'xfun::attr()' is deprecated.
-Use 'xfun::attr2()' instead.
-See help("Deprecated")
-\end{verbatim}
-
 \begin{longtable}[]{@{}
-  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3286}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.4000}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.2714}}@{}}
-
-\caption{\label{tbl-accessibility_n_opportunities}Travel time threshold
-(minutes) to compute cumulative number of opportunities}
-
-\tabularnewline
-
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3194}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.4028}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.2778}}@{}}
+\caption{Travel time threshold (minutes) to compute cumulative number of
+opportunities}\label{tbl-accessibility_n_opportunities}\tabularnewline
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
-Point of Interest/Mode
+Point of Interest
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Driving or Public Transport
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Walking or Cycling
+\end{minipage} \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Point of Interest
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
 Driving or Public Transport
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
@@ -1005,13 +1089,12 @@ Walking or Cycling
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-Healthcare Facilities & 30 & 15 \\
-Basic Education & 30 & 15 \\
-Green Spaces & 5-10 & 15-30 \\
+Healthcare facilities & 30 & 15 \\
+Basic education & 30 & 15 \\
+Green spaces & 5-10 & 15-30 \\
 Recreation & 5-10 & 15-30 \\
 Groceries & 15 & 15 \\
 Jobs & 30-45 & 30-45 \\
-
 \end{longtable}
 
 The value computed represents the number of opportunities reachable
@@ -1024,13 +1107,14 @@ geographical unit, weighted by the population of those cells.
 opportunities}\label{sec-MET_TTopportunities}
 
 This measure was computed using the function
-\texttt{accessibility::cost\_to\_closest()} , considering the travel
-time matrices for each grid cell combination and the number of
-opportunities in each grid cell. Its output corresponds to the travel
-cost, in minutes, to reach \emph{n} opportunities of a certain category.
-Although calculations were performed for 1, 2 and 3 opportunities, only
-some of these were included in IMPT's operationalization, depending on
-the POI category:
+\texttt{accessibility::cost\_to\_closest()}
+\citep{Pereira_accessibility_2022} , considering the travel time
+matrices for each grid cell combination and the number of opportunities
+in each grid cell. Its output corresponds to the travel cost, in
+minutes, to reach \emph{n} opportunities of a certain category. Although
+calculations were performed for 1, 2 and 3 opportunities, only some of
+these were included in IMPT's operationalization, depending on the POI
+category:
 
 \begin{itemize}
 \item
@@ -1048,7 +1132,7 @@ detailed below.
 
 \paragraph{Average commuting time}\label{average-commuting-time}
 
-Using the jittered (Section~\ref{sec-MET_jittering}) OD pairs from
+Using the jittered (see Section~\ref{sec-MET_jittering}) OD pairs from
 \citet{INE_IMOB2017} (for commuting) and the travel time matrices,
 average commuting travel times are computed for each geographical unit
 and mode, weighted by number of trips. Trips with no feasible route
@@ -1073,41 +1157,13 @@ Stop-level service frequencies were computed using
 four different time windows, as can be seen in
 Table~\ref{tbl-headway_periods}
 
-\begin{Shaded}
-\begin{Highlighting}[]
-\NormalTok{headway\_periods }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{(}
-  \AttributeTok{Period =} \FunctionTok{c}\NormalTok{(}\StringTok{"Weekday peak"}\NormalTok{,}
-             \StringTok{"Weekday full day"}\NormalTok{,}
-             \StringTok{"Weekday night"}\NormalTok{,}
-             \StringTok{"Weekend"}
-\NormalTok{             ),}
-  \AttributeTok{Day =} \FunctionTok{c}\NormalTok{(}\StringTok{"Wednesday 04/02/2026"}\NormalTok{,}\StringTok{"Wednesday 04/02/2026"}\NormalTok{,}\StringTok{"Wednesday 04/02/2026"}\NormalTok{,}\StringTok{"Sunday 08/02/2026"}\NormalTok{),}
-  \StringTok{"Time window"} \OtherTok{=} \FunctionTok{c}\NormalTok{(}\StringTok{"08:00{-}09:00"}\NormalTok{,}\StringTok{"00:00{-}48:00"}\NormalTok{,}\StringTok{"22:00{-}23:00"}\NormalTok{,}\StringTok{"10:00{-}11:00"}\NormalTok{),}
-  \AttributeTok{check.names =} \ConstantTok{FALSE}
-\NormalTok{)}
-\NormalTok{knitr}\SpecialCharTok{::}\FunctionTok{kable}\NormalTok{(headway\_periods)}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{verbatim}
-Warning in attr(x, "align"): 'xfun::attr()' is deprecated.
-Use 'xfun::attr2()' instead.
-See help("Deprecated")
-\end{verbatim}
-
-\begin{verbatim}
-Warning in attr(x, "format"): 'xfun::attr()' is deprecated.
-Use 'xfun::attr2()' instead.
-See help("Deprecated")
-\end{verbatim}
-
 \begin{longtable}[]{@{}lll@{}}
-
-\caption{\label{tbl-headway_periods}Public transport service frequency
-periods observed}
-
-\tabularnewline
-
+\caption{Public transport service frequency periods
+observed}\label{tbl-headway_periods}\tabularnewline
+\toprule\noalign{}
+Period & Day & Time window \\
+\midrule\noalign{}
+\endfirsthead
 \toprule\noalign{}
 Period & Day & Time window \\
 \midrule\noalign{}
@@ -1118,7 +1174,6 @@ Weekday peak & Wednesday 04/02/2026 & 08:00-09:00 \\
 Weekday full day & Wednesday 04/02/2026 & 00:00-48:00 \\
 Weekday night & Wednesday 04/02/2026 & 22:00-23:00 \\
 Weekend & Sunday 08/02/2026 & 10:00-11:00 \\
-
 \end{longtable}
 
 A 500-meter buffer per stop is used to allocate stops to BGRI
@@ -1134,8 +1189,8 @@ coverage}\label{public-transport-population-coverage}
 infrastructure}\label{ratio-of-pedestrian-and-cycling-infrastructure}
 
 The pedestrian infrastructure ratio is the proportion of road length
-that includes pedestrian infrastructure, computed using OpenStreetMap
-data:
+that includes pedestrian infrastructure, computed using
+\citep{OpenStreetMap} data:
 
 \[R_{ped}=\frac{pedestrian\; path\; length}{road\; length}\]
 
@@ -1149,7 +1204,7 @@ and
 \texttt{footway\ =\ sidewalk\ \textbar{}\ crossing\ \textbar{}\ path\ \textbar{}\ platform\ \textbar{}\ corridor\ \textbar{}\ alley\ \textbar{}\ track,\ and\ sidewalk\ =\ both\ \textbar{}\ left\ \textbar{}\ right}.
 
 The calculation of cycling infrastructure ratio is analogous to the
-pedestrian ratio, and also extracted from OpenStreetMap . Cycling
+pedestrian ratio, and also extracted from \citet{OpenStreetMap}. Cycling
 infrastructure is further classified according to its type and level of
 segregation, according to the following description and OSM tags:
 

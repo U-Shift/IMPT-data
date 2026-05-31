@@ -166,70 +166,58 @@ Geographical units of the LMA
 
 ## Data Sources {#sec-MET_data_sources}
 
-Based on the literature, a preliminary list of indicators for each dimension was compiled, followed by an extensive search for public data to obtain the most possible of these indicators. However, due to some of them not being found or not being publicly accessible, the final list of indicators included is shown in @tbl-all_indicators. This excludes indicators such as exposure to air pollution, overcrowding of public transportation, or walkability, as well as the dimension of digital literacy.
+Based on the literature, a preliminary list of indicators for each dimension was compiled, followed by an extensive search for public data to obtain the most possible of these indicators. However, some of them were either not found or not publicly accessible. This way, the final list of indicators included is shown in @tbl-all_indicators. This excludes indicators such as exposure to air pollution, overcrowding of public transportation, or walkability, as well as the dimension of digital literacy. The list of data sources used is shown in @tbl-data_sources.
 
-```{r}
-#| label: tbl-all_indicators
-#| tbl-cap: Indicators used in the IMPT
-#| echo: true
-all_indicators <- data.frame(
-  Dimension = c("Accessibility",
-                "Accessibility",
-                "Mobility",
-                "Mobility",
-                "Mobility",
-                "Mobility",
-                "Mobility",
-                "Mobility",
-                "Affordability",
-                "Affordability",
-                "Safety"
-                ),
-  Indicator = c("Number of opportunities within travel time threshold",
-                "Travel time to first n opportunities",
-                "Average commuting time",
-                "Average number of commuting transfers",
-                "Public transport headways and waiting times",
-                "Public transport population coverage",
-                "Ratio of pedestrian and cycling infrastructure",
-                "Shared mobility availability",
-                "Transportation costs",
-                "Housing and transportation costs",
-                "Aggregation of road safety indicators"
-                )
-)
-knitr::kable(all_indicators)
-```
+| Dimension     | Indicator                                            |
+|---------------|------------------------------------------------------|
+| Accessibility | Number of opportunities within travel time threshold |
+| Accessibility | Travel time to first n opportunities                 |
+| Mobility      | Average commuting time                               |
+| Mobility      | Average number of commuting transfers                |
+| Mobility      | Public transport headways and waiting times          |
+| Mobility      | Public transport population coverage                 |
+| Mobility      | Ratio of pedestrian and cycling infrastructure       |
+| Mobility      | Shared mobility availability                         |
+| Affordability | Transportation costs                                 |
+| Affordability | Housing and transportation costs                     |
+| Safety        | Aggregation of road safety indicators                |
 
-From here,
+: Indicators used in the IMPT {#tbl-all_indicators}
 
-```{r}
-#| label: tbl-data_sources
-#| tbl-cap: Data sources
-#| echo: true
-data_sources <- data.frame(
-  Code = c("CAOP","BGRI21","IMOB","GTFS","OSM-RN","OSM-POI","CM",
-           "ASNR","INE-Inc","INE-Hous","GBA","PMUS","COS","IP"),
-  Database = c("CAOP 2024.1 - Administrative Boundaries",
-               "Census 2021 - Base Reference Geographical Information",
-               "IMOB 2017/18 - Inquérito à Mobilidade nas Áreas Metropolitanas",
-               "GTFS — General Transit Feed Specification",
-               "OpenStreetMap (OSM) — Road network",
-               "OpenStreetMap (OSM) — Points of interest",
-               "Carris Metropolitana — Health centres and schools datasets",
-               "ANSR — Road accident data (location and type)",
-               "INE — Household income by parish",
-               "INE — Housing costs by parish",
-               "Global Building Atlas - Building heights",
-               "TML PMUS - Shared mobility docks",
-               "COS 2023 v1 — Land use map",
-               "Infraestruturas de Portugal — Toll costs"
-               ),
-  Year = c("2024","2021","2018","2026-02","2026-01","2024-04","2025",
-           "2019-2023","2023","2021","2026","2025","2023","2026")
-)
-knitr::kable(data_sources)
-```
+| Code | Database | Year | Source |
+|----|----|----|----|
+| CAOP | CAOP 2024.1 - Administrative Boundaries | 2024 | <https://www.dgterritorio.gov.pt/sites/default/files/ficheiros-cartografia/CAOP_Continente_2024.1-gpkg.zip> |
+| BGRI21 | Census 2021 - Base Reference Geographical Information | 2021 | <https://mapas.ine.pt/download/filesGPG/2021/nuts3/BGRI21_170.zip> |
+| IMOB | IMOB 2017/18 - Inquérito à Mobilidade nas Áreas Metropolitanas | 2018 | <https://www.ine.pt/xurl/pub/349495406> |
+| GTFS | GTFS — General Transit Feed Specification | 2026-02 | All LMA public transport operators (see @tbl-gtfs_sources) |
+| OSM-RN | OpenStreetMap (OSM) — Road network | 2026-01 | <https://export.hotosm.org/exports/4782f0b8-6778-4c0e-8e4f-97fc62e7f240> |
+| OSM-POI | OpenStreetMap (OSM) — Points of interest | 2024-04 | <https://github.com/U-Shift/SiteSelection/releases/download/0.1/osm_poi_landuse.gpkg> |
+| CM | Carris Metropolitana — Health centres and schools datasets | 2025 | <https://github.com/carrismetropolitana/datasets> |
+| ASNR | ANSR — Road accident data (location and type) | 2019-2023 | <https://pmmus.tmlmobilidade.pt/> |
+| INE-Inc | INE — Household income by parish | 2023 | <https://www.ine.pt/xurl/pub/66303599> |
+| INE-Hous | INE — Housing costs by parish | 2021 | <https://www.ine.pt/xurl/pub/65586079> |
+| GBA | Global Building Atlas - Building heights | 2026 | <https://github.com/zhu-xlab/GlobalBuildingAtlas> |
+| PMMUS | TML PMMUS - Shared mobility docks | 2025 | <https://pmmus.tmlmobilidade.pt/> |
+| COS | COS 2023 v1 — Land use map | 2023 | <https://geo2.dgterritorio.gov.pt/cos/S2/COS2023/COS2023v1-S2-gpkg.zip> |
+| IP | Infraestruturas de Portugal — Toll costs | 2026 | <https://portagens.infraestruturasdeportugal.pt> |
+
+: Data sources used {#tbl-data_sources}
+
+GTFS data sources for all LMA operators are presented in @tbl-gtfs_sources. This data includes public transport frequency, stop location and travel times, among other essential data to enable the estimation of Mobility and Accessibility metrics.
+
+| Operator | Mode | GTFS URL |
+|----|----|----|
+| Carris Metropolitana (CM) | Bus | <https://api.carrismetropolitana.pt/gtfs> |
+| Carris | Bus | <https://gateway.carris.pt/gateway/gtfs/api/v2.8/GTFS> |
+| MobiCascais | Bus | <https://drive.google.com/u/0/uc?id=13ucYiAJRtu-gXsLa02qKJrGOgDjbnUWX&export=download> |
+| Transportes Colectivos do Barreiro (TCB) | Bus | <https://backend.tcbarreiro.pt/download-gtfs> |
+| Metropolitano de Lisboa (ML) | Metro | <https://metrolisboa.pt/google_transit/googleTransit.zip> |
+| Comboios de Portugal (CP) | Suburban rail | <https://publico.cp.pt/gtfs/gtfs.zip> |
+| Fertagus | Suburban rail | <https://mts.pt/imt/MTS-20240129.zip> |
+| Metro Transportes do Sul (MTS) | Light rail | <https://fertagus.pt/GTFSTMLzip/Fertagus_GTFS.zip> |
+| Transtejo/Softlusa (TTSL) | Ferry | <https://api.transtejo.pt/files/GTFS.zip> |
+
+: GTFS sources for LMA public transport operators {#tbl-gtfs_sources}
 
 Lastly, the following R packages were utilized in the data processing and creation of both the index and its interactive dashboard: `readr, readxl, openxlsx, lubridate, dplyr, tidyr, stringr, tidyverse, sf, terra, mapview, stplanr, h3jsr, r5r, accessibility, odjitter, tidytransit, GTFShift, FactoMineR, assertthat, piggyback`.
 
@@ -258,11 +246,39 @@ knitr::kable(modes_per_dimension)
 
 ### Accessibility {#sec-MET_accessibility}
 
-<!--# mencionar pereira e herszenhut 2022 -->
+The Accessibility dimension quantifies the capacity to reach key destinations within a given travel time threshold. The key destination categories, as well as their data sources, are summarized in @tbl-poi_categories.
 
-The Accessibility dimension quantifies the capacity to reach key destinations within a given travel time threshold. The key destination categories, as well as their data sources, are summarized in table (...)
++------------------------------+-----------------+-------------------------------------+----------------------------------------------------------------------+
+| Category                     | Identifier      | Source                              | Filter/Description                                                   |
++==============================+=================+=====================================+======================================================================+
+| Healthcare (all)             | health          | CM                                  | All health centers                                                   |
++------------------------------+-----------------+-------------------------------------+----------------------------------------------------------------------+
+| Hospitals                    | health_hospital | CM                                  | Name contains 'Hospital' or 'Centro de Medicina'                     |
++------------------------------+-----------------+-------------------------------------+----------------------------------------------------------------------+
+| Primary care centers         | health_primary  | CM                                  | Name contains 'Centro de Saúde'                                      |
++------------------------------+-----------------+-------------------------------------+----------------------------------------------------------------------+
+| Supermarket/groceries        | groceries       | OSM                                 | `type %in% c('supermarket','convenience')`                           |
++------------------------------+-----------------+-------------------------------------+----------------------------------------------------------------------+
+| Green spaces                 | green_spaces    | OSM                                 | `group == 'leisure' & type %in% c('park','garden')`                  |
++------------------------------+-----------------+-------------------------------------+----------------------------------------------------------------------+
+| Recreation                   | recreation      | OSM                                 | `type %in% c('library', 'theatre', 'cinema', 'restaurant', 'cafe',`\ |
+|                              |                 |                                     | `'bar', 'pub', 'pitch', 'fitness_station',`\                         |
+|                              |                 |                                     | `'swimming_pool', 'sports_centre', 'fitness_center')`                |
++------------------------------+-----------------+-------------------------------------+----------------------------------------------------------------------+
+| Schools (all)                | schools         | CM                                  | All school types                                                     |
++------------------------------+-----------------+-------------------------------------+----------------------------------------------------------------------+
+| Primary schools              | schools_primary | CM                                  | Primary education schools only                                       |
++------------------------------+-----------------+-------------------------------------+----------------------------------------------------------------------+
+| Transit stops (all)          | transit         | GTFS (all operators)                | All transit stops from all operators                                 |
++------------------------------+-----------------+-------------------------------------+----------------------------------------------------------------------+
+| Transit stops (bus)          | transit_bus     | GTFS (Carris, CM, MobiCascais, TCB) | Bus stops only                                                       |
++------------------------------+-----------------+-------------------------------------+----------------------------------------------------------------------+
+| Transit stops (mass transit) | transit_mass    | GTFS (ML, CP, Fertagus, MTS, TTSL)  | Mass transit (metro, rail and ferry) stops only                      |
++------------------------------+-----------------+-------------------------------------+----------------------------------------------------------------------+
+| Jobs                         | jobs            | IMOB                                | Jittered OD destinations (see @sec-MET_jittering)                    |
++------------------------------+-----------------+-------------------------------------+----------------------------------------------------------------------+
 
-<!--# adicionar tabela com fontes de dados para cada POI -->
+: POI categories, sources and filters {#tbl-poi_categories}
 
 This dimension incorporates two metrics:
 
@@ -275,21 +291,31 @@ Indicators for this dimension were computed using the H3 grid [@Uber_H3_2018] of
 
 Due to a lack of open access to fine data regarding job location, the most granular data obtained was an OD matrix at the parish level, provided by @INE_IMOB2017, with centroid to centroid representations, "a common approach involving the simplifying assumption that all trip destinations and origins can be represented by (sometimes population weighted or aggregated) zone centroids" [@Lovelace_2022]. However, in order to accurately compute accessibility and mobility measures, there was the need to have more disaggregated data regarding job locations, beyond the parish unit.
 
-This way, jittering [@Lovelace_2022] was used as a proxy for this purpose, using building volumes as trip attractors, and this way weighting origins and destinations. This allowed for the disaggregation of trips between parishes to ODs with up to 50 trips.
+This way, jittering [@Lovelace_2022] was used as a proxy for this purpose, using building volumes as trip attractors, and this way weighting origins (random samples from residential buildings) and destinations (buildings weighted by volume). This allowed for the disaggregation of trips between parishes to OD pairs with a maximum of 50 trips per OD, with ODs with more trips than this value are split into multiple point-to-point pairs, in order to provide further spatial resolution. The process generated approximately 18,500 jittered OD pairs that represent the daily commuting patterns of the LMA. This value was then expanded to the real number of trips using a weighting variable (*PESOFIN)* provided by @INE_IMOB2017.
 
 #### Travel time matrix {#sec-MET_TTmatrix}
 
 A travel time matrix was used as the basis for all accessibility measures. It was computed between each grid cell, over a network [@Pereira_r5r_2021] that was built considering:
 
-- OpenStreetMap road network, exported from @hot_osm.
+- OpenStreetMap [@OpenStreetMap] road network, exported from @hot_osm.
 
 - General Transit Feed Specification (GTFS) for all operators in the LMA (valid at 04/02/2026).
 
 - Terrain elevation profile [@copernicus_browser].
 
-The matrix was computed using the function `r5r::travel_time_matrix()` with the following parameters: (<!--# é preciso especificar os parâmetros da função? -->)
+The matrix was computed using the function `r5r::travel_time_matrix()` [@Pereira_Herszenhut_2023] with the parameters shown in @tbl-ttm_parameters.
 
-<!--# acabar -->
+| Modes | Parameter | Description |
+|----|----|----|
+| All | `percentiles = 50` | 50th percentile (median) travel time. It is used so results represent the median travel conditions and not the "best-case" or "worst-case" scenarios. |
+| All | `max_trip_duration = 120` | Maximum trip duration, in minutes. |
+| Public transport | `mode_egress=WALK` | Mode used after egress from the last public transport. |
+| Public transport | `max_walk_time = 15` | Maximum walking time (in minutes) to access or egreess public transport, or to transfer inside the network. |
+| Public transport | `departure_datetime = 04/02/2026 at 08:00:00 AM` | Departure date and time considered for public transport. |
+| Public transport | `Max_rides = 2` (1 transfer) or `Max_rides = 3` (2 transfers) | Maximum number of public transport transfers allowed in the same trip. |
+| Cycling | `max_lts = 3` | Maximum level of stress tolerated by cyclists in a road environment. |
+
+: Parameters used in the computation of the travel time matrix {#tbl-ttm_parameters}
 
 #### Cumulative number of opportunities {#sec-MET_Nopportunities}
 
@@ -297,30 +323,22 @@ The cumulative number of opportunities was calculated using the function `access
 
 This measure was computed for all combinations of POIs and modes for time cut-offs of 5, 10, 15, 30, 45, 60, 75 and 90 minutes. However, as can be seen in @tbl-accessibility_n_opportunities, only selected combinations of modes/points of interest were included in IMPT's operationalization.
 
-```{r}
-#| label: tbl-accessibility_n_opportunities
-#| tbl-cap: Travel time threshold (minutes) to compute cumulative number of opportunities
-#| echo: true
-accessibility_n_opportunities <- data.frame(
-  "Point of Interest/Mode" = c("Healthcare Facilities",
-                               "Basic Education",
-                               "Green Spaces",
-                               "Recreation",
-                               "Groceries",
-                               "Jobs"
-                               ),
-  "Driving or Public Transport" = c("30","30","5-10","5-10","15","30-45"),
-  "Walking or Cycling" = c("15","15","15-30","15-30","15","30-45"),
-  check.names = FALSE
-)
-knitr::kable(accessibility_n_opportunities)
-```
+| Point of Interest     | Driving or Public Transport | Walking or Cycling |
+|-----------------------|-----------------------------|--------------------|
+| Healthcare facilities | 30                          | 15                 |
+| Basic education       | 30                          | 15                 |
+| Green spaces          | 5-10                        | 15-30              |
+| Recreation            | 5-10                        | 15-30              |
+| Groceries             | 15                          | 15                 |
+| Jobs                  | 30-45                       | 30-45              |
+
+: Travel time threshold (minutes) to compute cumulative number of opportunities {#tbl-accessibility_n_opportunities}
 
 The value computed represents the number of opportunities reachable within the defined travel time threshold. Values at parish and municipality level are aggregated considering a weighted mean of the number of opportunities reachable in each grid cell within that geographical unit, weighted by the population of those cells.
 
 #### Travel time to reach closest opportunities {#sec-MET_TTopportunities}
 
-This measure was computed using the function `accessibility::cost_to_closest()` <!--# a citação do package de accessibility de Pereira 2022 não funciona (link não leva a lado nenhum) -->, considering the travel time matrices for each grid cell combination and the number of opportunities in each grid cell. Its output corresponds to the travel cost, in minutes, to reach *n* opportunities of a certain category. Although calculations were performed for 1, 2 and 3 opportunities, only some of these were included in IMPT's operationalization, depending on the POI category:
+This measure was computed using the function `accessibility::cost_to_closest()` [@Pereira_accessibility_2022] <!--# a citação do package de accessibility de Pereira 2022 não funciona (link não leva a lado nenhum) -->, considering the travel time matrices for each grid cell combination and the number of opportunities in each grid cell. Its output corresponds to the travel cost, in minutes, to reach *n* opportunities of a certain category. Although calculations were performed for 1, 2 and 3 opportunities, only some of these were included in IMPT's operationalization, depending on the POI category:
 
 - Healthcare, basic education and green spaces: 1 opportunity.
 
@@ -332,7 +350,7 @@ Mobility evaluates the quality of the transportation system as a service, indepe
 
 #### Average commuting time
 
-Using the jittered (@sec-MET_jittering) OD pairs from @INE_IMOB2017 (for commuting) and the travel time matrices, average commuting travel times are computed for each geographical unit and mode, weighted by number of trips. Trips with no feasible route within the constraints are assigned the maximum travel time (120 min) and counted separately as “not accomplishable” trips (PNA - Percentagem Não Alcançáveis).
+Using the jittered (see @sec-MET_jittering) OD pairs from @INE_IMOB2017 (for commuting) and the travel time matrices, average commuting travel times are computed for each geographical unit and mode, weighted by number of trips. Trips with no feasible route within the constraints are assigned the maximum travel time (120 min) and counted separately as “not accomplishable” trips (PNA - Percentagem Não Alcançáveis).
 
 #### Average number of commuting transfers
 
@@ -342,22 +360,14 @@ For each commuting OD pair, the minimum number of transfers required for each pu
 
 Stop-level service frequencies were computed using `tidytransit::get_stop_frequency()` [@tidytransit] for four different time windows, as can be seen in @tbl-headway_periods
 
-```{r}
-#| label: tbl-headway_periods
-#| tbl-cap: Public transport service frequency periods observed
-#| echo: true
-headway_periods <- data.frame(
-  Period = c("Weekday peak",
-             "Weekday full day",
-             "Weekday night",
-             "Weekend"
-             ),
-  Day = c("Wednesday 04/02/2026","Wednesday 04/02/2026","Wednesday 04/02/2026","Sunday 08/02/2026"),
-  "Time window" = c("08:00-09:00","00:00-48:00","22:00-23:00","10:00-11:00"),
-  check.names = FALSE
-)
-knitr::kable(headway_periods)
-```
+| Period           | Day                  | Time window |
+|------------------|----------------------|-------------|
+| Weekday peak     | Wednesday 04/02/2026 | 08:00-09:00 |
+| Weekday full day | Wednesday 04/02/2026 | 00:00-48:00 |
+| Weekday night    | Wednesday 04/02/2026 | 22:00-23:00 |
+| Weekend          | Sunday 08/02/2026    | 10:00-11:00 |
+
+: Public transport service frequency periods observed {#tbl-headway_periods}
 
 A 500-meter buffer per stop is used to allocate stops to BGRI [@INE_Census2021] population centroids. Results are aggregated to geographical units as population-weighted mean headway and waiting time. Additionally, frequency reduction factors were computed to quantify the reduction in service during night and weekend periods.
 
@@ -367,7 +377,7 @@ A 500-meter buffer per stop is used to allocate stops to BGRI [@INE_Census2021] 
 
 #### Ratio of pedestrian and cycling infrastructure
 
-The pedestrian infrastructure ratio is the proportion of road length that includes pedestrian infrastructure, computed using OpenStreetMap <!--# como citar? --> data:
+The pedestrian infrastructure ratio is the proportion of road length that includes pedestrian infrastructure, computed using [@OpenStreetMap] data:
 
 $$R_{ped}=\frac{pedestrian\; path\; length}{road\; length}$$
 
@@ -375,7 +385,7 @@ Road classification uses the highway tags: `motorway, trunk, primary, secondary,
 
 Pedestrian infrastructure classification uses the tags: `highway = footway | pedestrian | steps | residential` and `footway = sidewalk | crossing | path | platform | corridor | alley | track, and sidewalk = both | left | right`.
 
-The calculation of cycling infrastructure ratio is analogous to the pedestrian ratio, and also extracted from OpenStreetMap <!--# como citar? -->. Cycling infrastructure is further classified according to its type and level of segregation, according to the following description and OSM tags:
+The calculation of cycling infrastructure ratio is analogous to the pedestrian ratio, and also extracted from @OpenStreetMap. Cycling infrastructure is further classified according to its type and level of segregation, according to the following description and OSM tags:
 
 - Cycle track or lane (*Ciclovia segregada*): Segregated or light-separated tracks exclusive for cycling.
 
