@@ -154,7 +154,7 @@
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
 \urlstyle{same}
 \hypersetup{
-  pdftitle={Multidimensional Transport Poverty Index},
+  pdftitle={IMPT: A Multidimensional Transport Poverty Index},
   pdfauthor={Miguel Alvelos; Mauricio Orozco-Fontalvo; Gonçalo F. Matos; Rosa Félix; Camila Garcia; Filipe Moura},
   pdfkeywords={keyword1, keyword2},
   colorlinks=true,
@@ -169,8 +169,9 @@
 \begin{document}
 
 \begin{frontmatter}
-\title{Multidimensional Transport Poverty Index \\\large{A replicable
-multi-dimensional and multi-modal measure of transport poverty} }
+\title{IMPT: A Multidimensional Transport Poverty Index \\\large{A
+replicable multi-dimensional and multi-modal measure of transport
+poverty} }
 \author[1]{Miguel Alvelos%
 \corref{cor1}%
 }
@@ -238,35 +239,36 @@ tempus elit.
 
 Transportation is an essential service which can condition access to
 almost all human activities, be them work, education, health or social
-life. When this access is limited by insufficient supply, high costs, or
-elevated exposure to systemic risks and externalities, the term
-Transport Poverty is used \citep{Lucas_2016}. This phenomenon has direct
-consequences in social exclusion and territorial cohesion
+life. When an individual or household has this access limited by any
+factor related to transport, be it insufficient supply, high costs or
+elevated exposure to externalities, the term Transport Poverty is used
+\citep{Lucas_2016}. This phenomenon has direct consequences in social
+exclusion and territorial cohesion
 \citep{MejiaDorantes_MurauskaiteBull_2022}.
 
-In the European context, this problem has increased its political
-relevance over the last decade. The European Pillar of Social Rights, in
-its 20th Principle, enshrines the right to access essential services,
-including transportation. Regulation (EU) 2023/955 of 10 May 2023, which
-established the Social Climate Fund (SCF), enshrined the first legally
-bounding definition of transport poverty at an European scale, defining
-it as ``individuals' and households' inability or difficulty to meet the
-costs of private or public transport, or their lack of or limited access
-to transport needed for their access to essential socioeconomic services
-and activities, taking into account the national and spatial context''
+This problem has gained relevance over the last decade, particularly in
+the European context. The principle of access to essential services,
+including transportation, is enshrined in the European Pillar of Social
+Rights, and recently Regulation (EU) 2023/955, which established the
+Social Climate Fund (SCF) has provided the first legally bounding
+definition of Transport Poverty at the European scale, defining it as an
+``individuals' and households' inability or difficulty to meet the costs
+of private or public transport, or their lack of or limited access to
+transport needed for their access to essential socioeconomic services
+and activities, taking into account the national and spatial context''.
 \citep{EU_2023955} .
 
-Despite the clear empirical relevance of this phenomenon, there is
-difficulty in quantifying it in a systematic way. Specifically in
-Portugal, previous research has focused on punctual case studies
-\citep{Pritchard_2014} or on costly mobility surveys
-\citep{INE_IMOB2017}, which can hardly be renewed at the cadence
-required by public policy cycles.
+Despite the clear empirical relevance of this phenomenon, there are
+difficulties in its systematic quantification. In Portugal, previous
+research has focused on punctual case studies \citep{Pritchard_2014} or
+on costly mobility surveys \citep{INE_IMOB2017}, which allow neither for
+a continuous and longitudinal monitoring of this problem, nor its
+transferability to aid policy-makers' decisions.
 
 This project was thus developed in an attempt to bridge the existing
 methodological gap with the creation of a composite and intermodal tool
 - the Multidimensional Transport Poverty Index (IMPT) - that is
-replicable and scalable, as well as wholly based in public data,
+replicable and scalable, as well as wholly derived from public data,
 intended to assist and support public policy instruments, such as the
 European Union's Social Climate Fund (SCF) or Sustainable Urban Mobility
 Plans (SUMPs). The Lisbon Metropolitan Area (LMA) was employed as a case
@@ -278,7 +280,7 @@ study for the tool's validation.
 
 Transportation services are fundamental in modern society, and their
 deficiency or absence is related to social exclusion - a state where an
-individual or a societal group is left out of participating in regular
+individual or societal group is left out of participating in regular
 social activities in a given society \citep{Pritchard_2014} -,
 socio-territorial inequality and transport inequality - the differences
 in transport conditions for different groups of people
@@ -309,17 +311,15 @@ measurement and quantification poses a challenge
 
 This way, the necessity to comprehend this concept and quantify it
 becomes more urgent. It is essential to define reliable indicators of
-transport vulnerability to map ``public transport deserts''
-\citep{Jiao_Dillivan_2013} and low-accessibility areas in order to
-inform public intervention and to monitor the implementation of measures
-to improve these situations. A reliable and replicable index to measure
-transport poverty is thus fundamental to support public policy
-instruments.
+transport poverty in order to map disadvantaged areas, inform public
+interventions and monitor the implementation of measures to improve
+these situations. A reliable and replicable index to measure transport
+poverty is thus fundamental to support public policy instruments.
 
-\citet{Lucas_2016} proposes the most comprehensive conceptual
-systematization of transport poverty, clearly defining previously
-different but overlapping terminology. They define transport poverty as
-a combination of the following four dimensions:
+The most comprehensive conceptual systematization of transport poverty
+is proposed by \citet{Lucas_2016}, clearly defining previously different
+but overlapping terminology. They define transport poverty as a
+combination of four dimensions:
 
 \begin{itemize}
 \tightlist
@@ -341,17 +341,17 @@ a combination of the following four dimensions:
 
 Recently, and based on the aforementioned concepts,
 \citet{MejiaDorantes_MurauskaiteBull_2022} have proposed a definition
-that has been widely adopted: transport poverty is the inability of an
+that has been widely adopted: transport poverty as the inability of an
 individual or household to access essential services or opportunities
-due to transportation services that are inaccessible, inadequate,
-unaffordable, time-consuming or unsafe. This definition has been adapted
-and applied at the European scale, through \citet{EU_2023955} and a
-recent European Commission Report \citep{EuropeanCommission_2024}. The
-key dimensions in the EC Report are synthesized as \emph{Availability}
-(corresponding to Lucas' Mobility), \emph{Accessibility} and
-\emph{Affordability}, with exposure to externalities being included in
-the overarching concept of \emph{Adequacy}
-(Figure~\ref{fig-transport_poverty_concept}).
+due to transportation services that are limited or non-existent,
+inadequate, unreliable, unaffordable, time-consuming or unsafe. This
+definition has been adapted and applied at the European scale, through
+\citet{EU_2023955} and a recent European Commission Report
+\citep{EuropeanCommission_2024}. The key dimensions in the EC Report are
+synthesized as \emph{Availability} (corresponding to Lucas' Mobility),
+\emph{Accessibility} and \emph{Affordability}, with exposure to
+externalities being included in the overarching concept of
+\emph{Adequacy} (Figure~\ref{fig-transport_poverty_concept}).
 
 \begin{figure}
 
@@ -397,54 +397,39 @@ provides the technical base for the Accessibility dimension of the IMPT
 
 \subsubsection{Mobility}\label{sec-LR_mobility}
 
-Mobility refers to the systemic deficits of the transport system, be
-them lack of infrastructure, lack of service frequency or long trip
-duration \citep{Levinson_King_2020} \citep{Lucas_2016}
-\citep{MejiaDorantes_MurauskaiteBull_2022}. This dimension captures
-different aspects of transport supply that accessibility is not able to,
-their core difference being that, while accessibility asks which places
-are reachable, mobility focuses on how easy it is to reach them.
+The dimension of Mobility refers to the systemic characteristics of the
+transport system, be them existence and quality of infrastructure,
+service frequency or trip duration \citep{Levinson_King_2020}
+\citep{Lucas_2016} \citep{MejiaDorantes_MurauskaiteBull_2022}. This
+dimension captures different aspects of transport supply that
+accessibility is not able to, their core difference being that, while
+accessibility asks which places are reachable, mobility focuses on
+\emph{how easy} it is to reach them \citep{Levinson_King_2020}.
 
 \subsubsection{Affordability}\label{sec-LR_affordability}
 
-This dimension measures the capacity of households to support essential
-transportation expenses \citep{Isalou_2014} \citep{Litman_2026}
-\citep{Oviedo_2025}. The literature distinguishes three groups of
-indicators:
-
-\begin{itemize}
-\item
-  The \emph{10 percent rule}, which considers the households who spend
-  more than 10\% of their income in transportation, having been adopted
-  in the United Kingdom, with its origins in the concept of ``fuel
-  poverty'' \citep{Lucas_2016} \citep{AlonsoEpelde_2023}.
-\item
-  The \emph{2M} approach, adapted from the concept of energy poverty,
-  which considers the households that spend in transportation more than
-  twice the national median \citep{AlonsoEpelde_2023}.
-\item
-  The combined approach of \emph{housing and transportation
-  affordability}, based on the premise that households make their
-  residential location choice based on both housing and transportation
-  costs. If the combined housing and transport cost doesn't exceed 45\%
-  of income, it is considered affordable \citep{Isalou_2014}
-  \citep{Litman_2026}.
-\end{itemize}
-
-The IMPT was rooted upon this last indicator, combining the costs of
-housing and transportation in relation to household income.
+This dimension determines the capacity of households to support
+essential transportation expenses \citep{Isalou_2014}
+\citep{Litman_2026} \citep{Oviedo_2025}. Although different definitions
+of transportation affordability have been put forward \citep{Lucas_2016}
+\citep{AlonsoEpelde_2023}, IMPT uses the combined approach of
+\emph{housing and transportation affordability}, based on the premise
+that households make their residential location choice based on both
+housing and transportation costs. If the combined housing and
+transportation cost doesn't exceed 45\% of household income, it is
+considered affordable \citep{Isalou_2014} \citep{Litman_2026}.
 
 \subsubsection{Safety}\label{sec-LR_safety}
 
 This dimension is commonly not included in transport poverty indexes
 \citep{Kelly_2023}, being considered only in the most wide-ranging
 definitions of transport poverty \citep{Lucas_2016}
-\citep{UNHabitat_2013}. It refers to the exposure to externalities of
-the transport system, such as road crashes and pollution, which have
-disproportionate effects on the territory. For the IMPT, this
-dimension's inputs only included those related to road safety
-indicators, due to the inability to get open and granular data regarding
-environmental externalities.
+\citep{UNHabitat_2013}. It refers to exposure to externalities of the
+transport system, such as road crashes and pollution, which have
+disproportionate effects on the territory and population. For the IMPT,
+this dimension's inputs only included those related to road safety
+indicators, due to the inability to get open and sufficiently granular
+data regarding environmental externalities.
 
 A fifth dimension, digital literacy, was initially considered as a proxy
 for access to information and mobility services \citep{Durand_2022}
@@ -452,6 +437,16 @@ for access to information and mobility services \citep{Durand_2022}
 excluded from the final implementation of the index due to
 unavailability of data compatible with the scale of the lowest
 administrative division.
+
+It is also worth noting that a consequence of IMPT's reliance on
+secondary data is the exclusion of another dimension, perceived
+accessibility, which the literature considers a robust indicator, but
+requires open and georeferenced data regarding individual and household
+preferences, which rarely exists \citep{Farber2025}, and is extremely
+difficult to monitor through time. This way, IMPT adopts an objective
+approach, computing all indicators and dimensions through openly
+available secondary data, sacrificing possible individual subjectivity
+in favor of replicability and simpler longitudinal monitoring.
 
 \subsection{Examples of geospatial tools of accessibility and
 equity}\label{examples-of-geospatial-tools-of-accessibility-and-equity}
@@ -669,10 +664,10 @@ Safety & Aggregation of road safety indicators \\
 \end{longtable}
 
 \begin{longtable}[]{@{}
-  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.0550}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.3250}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.0600}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.5500}}@{}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.0806}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.3081}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.0806}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.5213}}@{}}
 \caption{Data sources used}\label{tbl-data_sources}\tabularnewline
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
@@ -736,9 +731,9 @@ frequency, stop location and travel times, among other essential data to
 enable the estimation of Mobility and Accessibility metrics.
 
 \begin{longtable}[]{@{}
-  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.2886}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.1074}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.5973}}@{}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.2739}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.1529}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.5669}}@{}}
 \caption{GTFS sources for LMA public transport
 operators}\label{tbl-gtfs_sources}\tabularnewline
 \toprule\noalign{}
@@ -943,9 +938,9 @@ The matrix was computed using the function
 with the parameters shown in Table~\ref{tbl-ttm_parameters}.
 
 \begin{longtable}[]{@{}
-  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.0805}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.2712}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.6441}}@{}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.0996}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.2656}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.6307}}@{}}
 \caption{Parameters used in the computation of the travel time
 matrix}\label{tbl-ttm_parameters}\tabularnewline
 \toprule\noalign{}
@@ -1156,9 +1151,9 @@ residential locations. The residential density classes considered are
 shown in Table~\ref{tbl-cos_classes}.
 
 \begin{longtable}[]{@{}
-  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.4118}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.4118}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.1667}}@{}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3853}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3853}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.2202}}@{}}
 \caption{Population and building density weights for COS land use
 classes}\label{tbl-cos_classes}\tabularnewline
 \toprule\noalign{}
@@ -1525,7 +1520,7 @@ respective variable prior to PCA.
 \subsection{PCA-Based Dimension Scores}\label{sec-MET_pca}
 
 For every dimension with multiple indicators (Accessibility, Mobility
-and Safety) and at the global (all-mode) and per-mode levels, a PCA is
+and Safety) and at the global (all-mode) and per-mode levels, a PCA was
 run using \texttt{FactoMineR::PCA()} at parish level.
 
 In line with \citet{OECD_EU_2008}, the first principal component (PC1)
@@ -1713,9 +1708,9 @@ suggest that integrated intervention strategies, at the municipal level
 or higher, can be more effective than parish-by-parish interventions.
 
 \begin{longtable}[]{@{}
-  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.1786}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.5833}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.2262}}@{}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.1687}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.5904}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.2289}}@{}}
 \caption{Contrasting IMPT results for the five best and worst-ranked
 parishes in the LMA}\label{tbl-results_impt_contrasting}\tabularnewline
 \toprule\noalign{}
@@ -1769,9 +1764,9 @@ with the only difference being the existence of slightly higher
 variation between their scores.
 
 \begin{longtable}[]{@{}
-  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.1750}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.6125}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.2000}}@{}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.1646}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.6203}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.2025}}@{}}
 \caption{Critical IMPT results for the five best and worst-ranked
 parishes in the LMA}\label{tbl-results_impt_critical}\tabularnewline
 \toprule\noalign{}
@@ -1814,43 +1809,45 @@ performance}\label{dimensional-and-spatial-performance}
 
 \subsubsection{Accessibility}\label{accessibility}
 
-The main deficiencies in Accessibility in the LMA are located mostly in
-rural parishes, far from any urban center, in which reaching essential
-services is often a challenge. Meanwhile, the urban core of Lisbon,
-where the highest concentration of opportunities exists, is the
-best-performing in this regard, along other more peripheral urban
-centers such as Amadora, Odivelas or Barreiro.
+The main deficiencies in Accessibility in the LMA are located in rural
+parishes, far from any urban center, where reaching essential services
+is often a challenge due to low density and long distances to essential
+services. Meanwhile, most urban centers perform well on this dimension,
+given that all urban areas provide a significant concentration of
+essential services, which are usually accessible in a reasonable travel
+time.
 
 \subsubsection{Mobility}\label{mobility}
 
 This dimension indicates areas where either there is a lack of transport
 alternatives, or even if they exist, they are systemically inadequate,
 having impairments such as low service frequency or high travel times.
-The results for this dimension were expected, as the high concentration
-of jobs in the urban core of Lisbon requires peripheral regions to make
-long commutes, often with low public transport frequencies and high
-waiting times.
+The results for this dimension highlight the radial nature of the Lisbon
+Metropolitan Area, with travel from the urban core of Lisbon (where the
+highest concentration of jobs exists) being unchallenging, but with
+travel from peripheral regions being much more constrained.
 
 \subsubsection{Affordability}\label{affordability}
 
 Most parishes of the LMA perform well in this dimension, showing high
 values of transport affordability. The most critical cases are
 concentrated in lower-income, car-dependent areas. This way, it can be
-stated that transport affordability doesn't need to be a concern for the
+stated that transport affordability isn't the primary concern for the
 LMA. The positive scores in this dimension can be at least partially
 attributed to the existence of a simple monthly, multimodal and
 wide-ranging public transport pass, the Navegante, which contributes
-significantly to lowering transportation costs.
+significantly to lowering household transportation costs.
 
 \subsubsection{Safety}\label{safety}
 
-This dimension exhibits different patterns from the others, with
-peripheral parishes performing mostly better than centrally-located
-ones. The poor results of some parishes in the Lisbon core is result of
-high number of crashes and vehicles involved, even if their severity is
-not extreme. However, the worst results are displayed in the near-shore
-areas of Oeiras and Cascais, due to the particularly high crash and
-mortality rates registered in the Marginal road (EN6).
+This dimension exhibits different territorial patterns from the others,
+with peripheral parishes performing mostly better than centrally-located
+ones. The poor results of some parishes in the Lisbon core is a result
+of the high number of crashes and vehicles involved, even if their
+severity is not extreme. However, the worst results are displayed in the
+near-shore areas of Oeiras and Cascais, and can be attributed to the
+particularly high crash and mortality rates registered in the Marginal
+road (EN6).
 
 \subsection{Takeaways}\label{takeaways}
 

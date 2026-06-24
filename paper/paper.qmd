@@ -1,5 +1,5 @@
 ---
-title: Multidimensional Transport Poverty Index
+title: "IMPT: A Multidimensional Transport Poverty Index"
 subtitle: A replicable multi-dimensional and multi-modal measure of transport poverty
 author:
   - name: Miguel Alvelos
@@ -58,32 +58,32 @@ format:
 
 # Introduction {#sec-introduction}
 
-Transportation is an essential service which can condition access to almost all human activities, be them work, education, health or social life. When this access is limited by insufficient supply, high costs, or elevated exposure to systemic risks and externalities, the term Transport Poverty is used [@Lucas_2016]. This phenomenon has direct consequences in social exclusion and territorial cohesion [@MejiaDorantes_MurauskaiteBull_2022].
+Transportation is an essential service which can condition access to almost all human activities, be them work, education, health or social life. When an individual or household has this access limited by any factor related to transport, be it insufficient supply, high costs or elevated exposure to externalities, the term Transport Poverty is used [@Lucas_2016]. This phenomenon has direct consequences in social exclusion and territorial cohesion [@MejiaDorantes_MurauskaiteBull_2022].
 
-In the European context, this problem has increased its political relevance over the last decade. The European Pillar of Social Rights, in its 20th Principle, enshrines the right to access essential services, including transportation. Regulation (EU) 2023/955 of 10 May 2023, which established the Social Climate Fund (SCF), enshrined the first legally bounding definition of transport poverty at an European scale, defining it as "individuals’ and households’ inability or difficulty to meet the costs of private or public transport, or their lack of or limited access to transport needed for their access to essential socioeconomic services and activities, taking into account the national and spatial context" [@EU_2023955] <!--# não tenho a certeza se esta citação está bem feita no .bib -->.
+This problem has gained relevance over the last decade, particularly in the European context. The principle of access to essential services, including transportation, is enshrined in the European Pillar of Social Rights, and recently Regulation (EU) 2023/955, which established the Social Climate Fund (SCF) has provided the first legally bounding definition of Transport Poverty at the European scale, defining it as an "individuals’ and households’ inability or difficulty to meet the costs of private or public transport, or their lack of or limited access to transport needed for their access to essential socioeconomic services and activities, taking into account the national and spatial context". [@EU_2023955] <!--# não tenho a certeza se esta citação está bem feita no .bib -->.
 
-Despite the clear empirical relevance of this phenomenon, there is difficulty in quantifying it in a systematic way. Specifically in Portugal, previous research has focused on punctual case studies [@Pritchard_2014] or on costly mobility surveys [@INE_IMOB2017], which can hardly be renewed at the cadence required by public policy cycles.
+Despite the clear empirical relevance of this phenomenon, there are difficulties in its systematic quantification. In Portugal, previous research has focused on punctual case studies [@Pritchard_2014] or on costly mobility surveys [@INE_IMOB2017], which allow neither for a continuous and longitudinal monitoring of this problem, nor its transferability to aid policy-makers' decisions.
 
-This project was thus developed in an attempt to bridge the existing methodological gap with the creation of a composite and intermodal tool - the Multidimensional Transport Poverty Index (IMPT) - that is replicable and scalable, as well as wholly based in public data, intended to assist and support public policy instruments, such as the European Union's Social Climate Fund (SCF) or Sustainable Urban Mobility Plans (SUMPs). The Lisbon Metropolitan Area (LMA) was employed as a case study for the tool's validation.
+This project was thus developed in an attempt to bridge the existing methodological gap with the creation of a composite and intermodal tool - the Multidimensional Transport Poverty Index (IMPT) - that is replicable and scalable, as well as wholly derived from public data, intended to assist and support public policy instruments, such as the European Union's Social Climate Fund (SCF) or Sustainable Urban Mobility Plans (SUMPs). The Lisbon Metropolitan Area (LMA) was employed as a case study for the tool's validation.
 
 # Literature review {#sec-literature_review}
 
 ## Definitions of Transport Poverty {#sec-LR_definitions}
 
-Transportation services are fundamental in modern society, and their deficiency or absence is related to social exclusion - a state where an individual or a societal group is left out of participating in regular social activities in a given society [@Pritchard_2014] -, socio-territorial inequality and transport inequality - the differences in transport conditions for different groups of people [@Hidayati_2021]. Despite the relation between poverty and transport conditions, these are also related to a wide range of social issues. As an example, motorized vehicle users contribute the most to externalities, but vulnerable road users are disproportionately affected by them in health, space allocation and time consumption [@Gossling_2016]. Moreover, lower-income households tend to not have financial conditions to have motorized transport or to reside in central areas, relegating them to live in areas distant from the city center, often poorly served by public transportation. [@Fedorowicz_2020] [@Lopes_2023].
+Transportation services are fundamental in modern society, and their deficiency or absence is related to social exclusion - a state where an individual or societal group is left out of participating in regular social activities in a given society [@Pritchard_2014] -, socio-territorial inequality and transport inequality - the differences in transport conditions for different groups of people [@Hidayati_2021]. Despite the relation between poverty and transport conditions, these are also related to a wide range of social issues. As an example, motorized vehicle users contribute the most to externalities, but vulnerable road users are disproportionately affected by them in health, space allocation and time consumption [@Gossling_2016]. Moreover, lower-income households tend to not have financial conditions to have motorized transport or to reside in central areas, relegating them to live in areas distant from the city center, often poorly served by public transportation. [@Fedorowicz_2020] [@Lopes_2023].
 
 These differences in transport conditions can lead to transport poverty, a concept which lacks a single universally accepted definition in scientific literature. This expression has been used to broadly describe inequities related with transportation access, but also in a more restricted way to refer to the economic inability to support transportation costs [@Mattioli_2018]. However, as @Lucas_2016 states, different terminologies relating to transport poverty - terms such as "mobility poverty", "accessibility poverty" or "transport disadvantage" - are used with "often very different, although also overlapping definitions". Due to this lack of a universal definition and the multidimensional nature of transport poverty, its measurement and quantification poses a challenge [@Levinson_King_2020].
 
-This way, the necessity to comprehend this concept and quantify it becomes more urgent. It is essential to define reliable indicators of transport vulnerability to map "public transport deserts" [@Jiao_Dillivan_2013] and low-accessibility areas in order to inform public intervention and to monitor the implementation of measures to improve these situations. A reliable and replicable index to measure transport poverty is thus fundamental to support public policy instruments.
+This way, the necessity to comprehend this concept and quantify it becomes more urgent. It is essential to define reliable indicators of transport poverty in order to map disadvantaged areas, inform public interventions and monitor the implementation of measures to improve these situations. A reliable and replicable index to measure transport poverty is thus fundamental to support public policy instruments.
 
-@Lucas_2016 proposes the most comprehensive conceptual systematization of transport poverty, clearly defining previously different but overlapping terminology. They define transport poverty as a combination of the following four dimensions:
+The most comprehensive conceptual systematization of transport poverty is proposed by @Lucas_2016, clearly defining previously different but overlapping terminology. They define transport poverty as a combination of four dimensions:
 
 - Accessibility - the capacity to reach usual destinations and activities (such as work, education or health).
 - Mobility - the systemic aspects of the transportation system itself that impact essential trips, expressed in parameters such as public transport service frequency or average commuting time.
 - Affordability - the ability of households to meet the cost of transportation.
 - Exposure to externalities (Safety) - the negative effects of exposure to the transport system itself, such as environmental pollution or road crash rates.
 
-Recently, and based on the aforementioned concepts, @MejiaDorantes_MurauskaiteBull_2022 have proposed a definition that has been widely adopted: transport poverty is the inability of an individual or household to access essential services or opportunities due to transportation services that are inaccessible, inadequate, unaffordable, time-consuming or unsafe. This definition has been adapted and applied at the European scale, through @EU_2023955 and a recent European Commission Report [@EuropeanCommission_2024]. The key dimensions in the EC Report are synthesized as *Availability* (corresponding to Lucas' Mobility), *Accessibility* and *Affordability*, with exposure to externalities being included in the overarching concept of *Adequacy* (@fig-transport_poverty_concept).
+Recently, and based on the aforementioned concepts, @MejiaDorantes_MurauskaiteBull_2022 have proposed a definition that has been widely adopted: transport poverty as the inability of an individual or household to access essential services or opportunities due to transportation services that are limited or non-existent, inadequate, unreliable, unaffordable, time-consuming or unsafe. This definition has been adapted and applied at the European scale, through @EU_2023955 and a recent European Commission Report [@EuropeanCommission_2024]. The key dimensions in the EC Report are synthesized as *Availability* (corresponding to Lucas' Mobility), *Accessibility* and *Affordability*, with exposure to externalities being included in the overarching concept of *Adequacy* (@fig-transport_poverty_concept).
 
 ![Conceptualization of Transport Poverty. Source: Oeko-Institut and University of Manchester](images/transport_poverty_concept.png){#fig-transport_poverty_concept fig-align="center"}
 
@@ -99,25 +99,19 @@ Accessibility refers to the ability to reach regular destinations such as employ
 
 ### Mobility {#sec-LR_mobility}
 
-Mobility refers to the systemic deficits of the transport system, be them lack of infrastructure, lack of service frequency or long trip duration [@Levinson_King_2020] [@Lucas_2016] [@MejiaDorantes_MurauskaiteBull_2022]. This dimension captures different aspects of transport supply that accessibility is not able to, their core difference being that, while accessibility asks which places are reachable, mobility focuses on how easy it is to reach them.
+The dimension of Mobility refers to the systemic characteristics of the transport system, be them existence and quality of infrastructure, service frequency or trip duration [@Levinson_King_2020] [@Lucas_2016] [@MejiaDorantes_MurauskaiteBull_2022]. This dimension captures different aspects of transport supply that accessibility is not able to, their core difference being that, while accessibility asks which places are reachable, mobility focuses on *how easy* it is to reach them [@Levinson_King_2020].
 
 ### Affordability {#sec-LR_affordability}
 
-This dimension measures the capacity of households to support essential transportation expenses [@Isalou_2014] [@Litman_2026] [@Oviedo_2025]. The literature distinguishes three groups of indicators:
-
-- The *10 percent rule*, which considers the households who spend more than 10% of their income in transportation, having been adopted in the United Kingdom, with its origins in the concept of "fuel poverty" [@Lucas_2016] [@AlonsoEpelde_2023].
-
-- The *2M* approach, adapted from the concept of energy poverty, which considers the households that spend in transportation more than twice the national median [@AlonsoEpelde_2023].
-
-- The combined approach of *housing and transportation affordability*, based on the premise that households make their residential location choice based on both housing and transportation costs. If the combined housing and transport cost doesn't exceed 45% of income, it is considered affordable [@Isalou_2014] [@Litman_2026].
-
-The IMPT was rooted upon this last indicator, combining the costs of housing and transportation in relation to household income.
+This dimension determines the capacity of households to support essential transportation expenses [@Isalou_2014] [@Litman_2026] [@Oviedo_2025]. Although different definitions of transportation affordability have been put forward [@Lucas_2016] [@AlonsoEpelde_2023], IMPT uses the combined approach of *housing and transportation affordability*, based on the premise that households make their residential location choice based on both housing and transportation costs. If the combined housing and transportation cost doesn't exceed 45% of household income, it is considered affordable [@Isalou_2014] [@Litman_2026].
 
 ### Safety {#sec-LR_safety}
 
-This dimension is commonly not included in transport poverty indexes [@Kelly_2023], being considered only in the most wide-ranging definitions of transport poverty [@Lucas_2016] [@UNHabitat_2013]. It refers to the exposure to externalities of the transport system, such as road crashes and pollution, which have disproportionate effects on the territory. For the IMPT, this dimension's inputs only included those related to road safety indicators, due to the inability to get open and granular data regarding environmental externalities.
+This dimension is commonly not included in transport poverty indexes [@Kelly_2023], being considered only in the most wide-ranging definitions of transport poverty [@Lucas_2016] [@UNHabitat_2013]. It refers to exposure to externalities of the transport system, such as road crashes and pollution, which have disproportionate effects on the territory and population. For the IMPT, this dimension's inputs only included those related to road safety indicators, due to the inability to get open and sufficiently granular data regarding environmental externalities.
 
 A fifth dimension, digital literacy, was initially considered as a proxy for access to information and mobility services [@Durand_2022] [@OrozcoFontalvo_2025] [@Velaga_2012]. However, it was excluded from the final implementation of the index due to unavailability of data compatible with the scale of the lowest administrative division.
+
+It is also worth noting that a consequence of IMPT's reliance on secondary data is the exclusion of another dimension, perceived accessibility, which the literature considers a robust indicator, but requires open and georeferenced data regarding individual and household preferences, which rarely exists [@Farber2025], and is extremely difficult to monitor through time. This way, IMPT adopts an objective approach, computing all indicators and dimensions through openly available secondary data, sacrificing possible individual subjectivity in favor of replicability and simpler longitudinal monitoring.
 
 ## Examples of geospatial tools of accessibility and equity
 
@@ -189,37 +183,37 @@ Indicators used in the IMPT
 :::
 
 ::: {#tbl-data_sources}
-+----------+----------------------------------------------------------------+-----------+-------------------------------------------------------------------------------------------------------------+
-| Code     | Database                                                       | Year      | Source                                                                                                      |
-+==========+================================================================+===========+=============================================================================================================+
-| CAOP     | CAOP 2024.1 - Administrative Boundaries                        | 2024      | <https://www.dgterritorio.gov.pt/sites/default/files/ficheiros-cartografia/CAOP_Continente_2024.1-gpkg.zip> |
-+----------+----------------------------------------------------------------+-----------+-------------------------------------------------------------------------------------------------------------+
-| BGRI21   | Census 2021 - Base Reference Geographical Information          | 2021      | <https://mapas.ine.pt/download/filesGPG/2021/nuts3/BGRI21_170.zip>                                          |
-+----------+----------------------------------------------------------------+-----------+-------------------------------------------------------------------------------------------------------------+
-| IMOB     | IMOB 2017/18 - Inquérito à Mobilidade nas Áreas Metropolitanas | 2018      | <https://www.ine.pt/xurl/pub/349495406>                                                                     |
-+----------+----------------------------------------------------------------+-----------+-------------------------------------------------------------------------------------------------------------+
-| GTFS     | GTFS — General Transit Feed Specification                      | 2026-02   | All LMA public transport operators (see @tbl-gtfs_sources)                                                  |
-+----------+----------------------------------------------------------------+-----------+-------------------------------------------------------------------------------------------------------------+
-| OSM-RN   | OpenStreetMap (OSM) — Road network                             | 2026-01   | <https://export.hotosm.org/exports/4782f0b8-6778-4c0e-8e4f-97fc62e7f240>                                    |
-+----------+----------------------------------------------------------------+-----------+-------------------------------------------------------------------------------------------------------------+
-| OSM-POI  | OpenStreetMap (OSM) — Points of interest                       | 2024-04   | <https://github.com/U-Shift/SiteSelection/releases/download/0.1/osm_poi_landuse.gpkg>                       |
-+----------+----------------------------------------------------------------+-----------+-------------------------------------------------------------------------------------------------------------+
-| CM       | Carris Metropolitana — Health centres and schools datasets     | 2025      | <https://github.com/carrismetropolitana/datasets>                                                           |
-+----------+----------------------------------------------------------------+-----------+-------------------------------------------------------------------------------------------------------------+
-| ASNR     | ANSR — Road accident data (location and type)                  | 2019-2023 | <https://pmmus.tmlmobilidade.pt/>                                                                           |
-+----------+----------------------------------------------------------------+-----------+-------------------------------------------------------------------------------------------------------------+
-| INE-Inc  | INE — Household income by parish                               | 2023      | <https://www.ine.pt/xurl/pub/66303599>                                                                      |
-+----------+----------------------------------------------------------------+-----------+-------------------------------------------------------------------------------------------------------------+
-| INE-Hous | INE — Housing costs by parish                                  | 2021      | <https://www.ine.pt/xurl/pub/65586079>                                                                      |
-+----------+----------------------------------------------------------------+-----------+-------------------------------------------------------------------------------------------------------------+
-| GBA      | Global Building Atlas - Building heights                       | 2026      | <https://github.com/zhu-xlab/GlobalBuildingAtlas>                                                           |
-+----------+----------------------------------------------------------------+-----------+-------------------------------------------------------------------------------------------------------------+
-| PMMUS    | TML PMMUS - Shared mobility docks                              | 2025      | <https://pmmus.tmlmobilidade.pt/>                                                                           |
-+----------+----------------------------------------------------------------+-----------+-------------------------------------------------------------------------------------------------------------+
-| COS      | COS 2023 v1 — Land use map                                     | 2023      | <https://geo2.dgterritorio.gov.pt/cos/S2/COS2023/COS2023v1-S2-gpkg.zip>                                     |
-+----------+----------------------------------------------------------------+-----------+-------------------------------------------------------------------------------------------------------------+
-| IP       | Infraestruturas de Portugal — Toll costs                       | 2026      | <https://portagens.infraestruturasdeportugal.pt>                                                            |
-+----------+----------------------------------------------------------------+-----------+-------------------------------------------------------------------------------------------------------------+
++----------------+----------------------------------------------------------------+----------------+-------------------------------------------------------------------------------------------------------------+
+| Code           | Database                                                       | Year           | Source                                                                                                      |
++================+================================================================+================+=============================================================================================================+
+| CAOP           | CAOP 2024.1 - Administrative Boundaries                        | 2024           | <https://www.dgterritorio.gov.pt/sites/default/files/ficheiros-cartografia/CAOP_Continente_2024.1-gpkg.zip> |
++----------------+----------------------------------------------------------------+----------------+-------------------------------------------------------------------------------------------------------------+
+| BGRI21         | Census 2021 - Base Reference Geographical Information          | 2021           | <https://mapas.ine.pt/download/filesGPG/2021/nuts3/BGRI21_170.zip>                                          |
++----------------+----------------------------------------------------------------+----------------+-------------------------------------------------------------------------------------------------------------+
+| IMOB           | IMOB 2017/18 - Inquérito à Mobilidade nas Áreas Metropolitanas | 2018           | <https://www.ine.pt/xurl/pub/349495406>                                                                     |
++----------------+----------------------------------------------------------------+----------------+-------------------------------------------------------------------------------------------------------------+
+| GTFS           | GTFS — General Transit Feed Specification                      | 2026-02        | All LMA public transport operators (see @tbl-gtfs_sources)                                                  |
++----------------+----------------------------------------------------------------+----------------+-------------------------------------------------------------------------------------------------------------+
+| OSM-RN         | OpenStreetMap (OSM) — Road network                             | 2026-01        | <https://export.hotosm.org/exports/4782f0b8-6778-4c0e-8e4f-97fc62e7f240>                                    |
++----------------+----------------------------------------------------------------+----------------+-------------------------------------------------------------------------------------------------------------+
+| OSM-POI        | OpenStreetMap (OSM) — Points of interest                       | 2024-04        | <https://github.com/U-Shift/SiteSelection/releases/download/0.1/osm_poi_landuse.gpkg>                       |
++----------------+----------------------------------------------------------------+----------------+-------------------------------------------------------------------------------------------------------------+
+| CM             | Carris Metropolitana — Health centres and schools datasets     | 2025           | <https://github.com/carrismetropolitana/datasets>                                                           |
++----------------+----------------------------------------------------------------+----------------+-------------------------------------------------------------------------------------------------------------+
+| ASNR           | ANSR — Road accident data (location and type)                  | 2019-2023      | <https://pmmus.tmlmobilidade.pt/>                                                                           |
++----------------+----------------------------------------------------------------+----------------+-------------------------------------------------------------------------------------------------------------+
+| INE-Inc        | INE — Household income by parish                               | 2023           | <https://www.ine.pt/xurl/pub/66303599>                                                                      |
++----------------+----------------------------------------------------------------+----------------+-------------------------------------------------------------------------------------------------------------+
+| INE-Hous       | INE — Housing costs by parish                                  | 2021           | <https://www.ine.pt/xurl/pub/65586079>                                                                      |
++----------------+----------------------------------------------------------------+----------------+-------------------------------------------------------------------------------------------------------------+
+| GBA            | Global Building Atlas - Building heights                       | 2026           | <https://github.com/zhu-xlab/GlobalBuildingAtlas>                                                           |
++----------------+----------------------------------------------------------------+----------------+-------------------------------------------------------------------------------------------------------------+
+| PMMUS          | TML PMMUS - Shared mobility docks                              | 2025           | <https://pmmus.tmlmobilidade.pt/>                                                                           |
++----------------+----------------------------------------------------------------+----------------+-------------------------------------------------------------------------------------------------------------+
+| COS            | COS 2023 v1 — Land use map                                     | 2023           | <https://geo2.dgterritorio.gov.pt/cos/S2/COS2023/COS2023v1-S2-gpkg.zip>                                     |
++----------------+----------------------------------------------------------------+----------------+-------------------------------------------------------------------------------------------------------------+
+| IP             | Infraestruturas de Portugal — Toll costs                       | 2026           | <https://portagens.infraestruturasdeportugal.pt>                                                            |
++----------------+----------------------------------------------------------------+----------------+-------------------------------------------------------------------------------------------------------------+
 
 Data sources used
 :::
@@ -227,27 +221,27 @@ Data sources used
 GTFS data sources for all LMA operators are presented in @tbl-gtfs_sources. This data includes public transport frequency, stop location and travel times, among other essential data to enable the estimation of Mobility and Accessibility metrics.
 
 ::: {#tbl-gtfs_sources}
-+------------------------------------------+---------------+----------------------------------------------------------------------------------------+
-| Operator                                 | Mode          | GTFS URL                                                                               |
-+==========================================+===============+========================================================================================+
-| Carris Metropolitana (CM)                | Bus           | <https://api.carrismetropolitana.pt/gtfs>                                              |
-+------------------------------------------+---------------+----------------------------------------------------------------------------------------+
-| Carris                                   | Bus           | <https://gateway.carris.pt/gateway/gtfs/api/v2.8/GTFS>                                 |
-+------------------------------------------+---------------+----------------------------------------------------------------------------------------+
-| MobiCascais                              | Bus           | <https://drive.google.com/u/0/uc?id=13ucYiAJRtu-gXsLa02qKJrGOgDjbnUWX&export=download> |
-+------------------------------------------+---------------+----------------------------------------------------------------------------------------+
-| Transportes Colectivos do Barreiro (TCB) | Bus           | <https://backend.tcbarreiro.pt/download-gtfs>                                          |
-+------------------------------------------+---------------+----------------------------------------------------------------------------------------+
-| Metropolitano de Lisboa (ML)             | Metro         | <https://metrolisboa.pt/google_transit/googleTransit.zip>                              |
-+------------------------------------------+---------------+----------------------------------------------------------------------------------------+
-| Comboios de Portugal (CP)                | Suburban rail | <https://publico.cp.pt/gtfs/gtfs.zip>                                                  |
-+------------------------------------------+---------------+----------------------------------------------------------------------------------------+
-| Fertagus                                 | Suburban rail | <https://mts.pt/imt/MTS-20240129.zip>                                                  |
-+------------------------------------------+---------------+----------------------------------------------------------------------------------------+
-| Metro Transportes do Sul (MTS)           | Light rail    | <https://fertagus.pt/GTFSTMLzip/Fertagus_GTFS.zip>                                     |
-+------------------------------------------+---------------+----------------------------------------------------------------------------------------+
-| Transtejo/Softlusa (TTSL)                | Ferry         | <https://api.transtejo.pt/files/GTFS.zip>                                              |
-+------------------------------------------+---------------+----------------------------------------------------------------------------------------+
++------------------------------------------+-----------------------+----------------------------------------------------------------------------------------+
+| Operator                                 | Mode                  | GTFS URL                                                                               |
++==========================================+=======================+========================================================================================+
+| Carris Metropolitana (CM)                | Bus                   | <https://api.carrismetropolitana.pt/gtfs>                                              |
++------------------------------------------+-----------------------+----------------------------------------------------------------------------------------+
+| Carris                                   | Bus                   | <https://gateway.carris.pt/gateway/gtfs/api/v2.8/GTFS>                                 |
++------------------------------------------+-----------------------+----------------------------------------------------------------------------------------+
+| MobiCascais                              | Bus                   | <https://drive.google.com/u/0/uc?id=13ucYiAJRtu-gXsLa02qKJrGOgDjbnUWX&export=download> |
++------------------------------------------+-----------------------+----------------------------------------------------------------------------------------+
+| Transportes Colectivos do Barreiro (TCB) | Bus                   | <https://backend.tcbarreiro.pt/download-gtfs>                                          |
++------------------------------------------+-----------------------+----------------------------------------------------------------------------------------+
+| Metropolitano de Lisboa (ML)             | Metro                 | <https://metrolisboa.pt/google_transit/googleTransit.zip>                              |
++------------------------------------------+-----------------------+----------------------------------------------------------------------------------------+
+| Comboios de Portugal (CP)                | Suburban rail         | <https://publico.cp.pt/gtfs/gtfs.zip>                                                  |
++------------------------------------------+-----------------------+----------------------------------------------------------------------------------------+
+| Fertagus                                 | Suburban rail         | <https://mts.pt/imt/MTS-20240129.zip>                                                  |
++------------------------------------------+-----------------------+----------------------------------------------------------------------------------------+
+| Metro Transportes do Sul (MTS)           | Light rail            | <https://fertagus.pt/GTFSTMLzip/Fertagus_GTFS.zip>                                     |
++------------------------------------------+-----------------------+----------------------------------------------------------------------------------------+
+| Transtejo/Softlusa (TTSL)                | Ferry                 | <https://api.transtejo.pt/files/GTFS.zip>                                              |
++------------------------------------------+-----------------------+----------------------------------------------------------------------------------------+
 
 GTFS sources for LMA public transport operators
 :::
@@ -333,23 +327,23 @@ A travel time matrix was used as the basis for all accessibility measures. It wa
 The matrix was computed using the function `r5r::travel_time_matrix()` [@Pereira_Herszenhut_2023] with the parameters shown in @tbl-ttm_parameters.
 
 ::: {#tbl-ttm_parameters}
-+------------------+---------------------------------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------+
-| Modes            | Parameter                                                     | Description                                                                                                                                           |
-+==================+===============================================================+=======================================================================================================================================================+
-| All              | `percentiles = 50`                                            | 50th percentile (median) travel time. It is used so results represent the median travel conditions and not the "best-case" or "worst-case" scenarios. |
-+------------------+---------------------------------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------+
-| All              | `max_trip_duration = 120`                                     | Maximum trip duration, in minutes.                                                                                                                    |
-+------------------+---------------------------------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------+
-| Public transport | `mode_egress=WALK`                                            | Mode used after egress from the last public transport.                                                                                                |
-+------------------+---------------------------------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------+
-| Public transport | `max_walk_time = 15`                                          | Maximum walking time (in minutes) to access or egreess public transport, or to transfer inside the network.                                           |
-+------------------+---------------------------------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------+
-| Public transport | `departure_datetime = 04/02/2026 at 08:00:00 AM`              | Departure date and time considered for public transport.                                                                                              |
-+------------------+---------------------------------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------+
-| Public transport | `Max_rides = 2` (1 transfer) or `Max_rides = 3` (2 transfers) | Maximum number of public transport transfers allowed in the same trip.                                                                                |
-+------------------+---------------------------------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------+
-| Cycling          | `max_lts = 3`                                                 | Maximum level of stress tolerated by cyclists in a road environment.                                                                                  |
-+------------------+---------------------------------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------+
++-----------------------+---------------------------------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Modes                 | Parameter                                                     | Description                                                                                                                                           |
++=======================+===============================================================+=======================================================================================================================================================+
+| All                   | `percentiles = 50`                                            | 50th percentile (median) travel time. It is used so results represent the median travel conditions and not the "best-case" or "worst-case" scenarios. |
++-----------------------+---------------------------------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------+
+| All                   | `max_trip_duration = 120`                                     | Maximum trip duration, in minutes.                                                                                                                    |
++-----------------------+---------------------------------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Public transport      | `mode_egress=WALK`                                            | Mode used after egress from the last public transport.                                                                                                |
++-----------------------+---------------------------------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Public transport      | `max_walk_time = 15`                                          | Maximum walking time (in minutes) to access or egreess public transport, or to transfer inside the network.                                           |
++-----------------------+---------------------------------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Public transport      | `departure_datetime = 04/02/2026 at 08:00:00 AM`              | Departure date and time considered for public transport.                                                                                              |
++-----------------------+---------------------------------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Public transport      | `Max_rides = 2` (1 transfer) or `Max_rides = 3` (2 transfers) | Maximum number of public transport transfers allowed in the same trip.                                                                                |
++-----------------------+---------------------------------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Cycling               | `max_lts = 3`                                                 | Maximum level of stress tolerated by cyclists in a road environment.                                                                                  |
++-----------------------+---------------------------------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------+
 
 Parameters used in the computation of the travel time matrix
 :::
@@ -432,17 +426,17 @@ This indicator is estimated using walking isochrones around public transport sto
 To calculate resident population beyond the parish level, BGRI21-level population data [@INE_Census2021] was further disaggregated by residential density class through the intersection with COS [@COS_2023], in order to have the highest-possible resolution for residential locations. The residential density classes considered are shown in @tbl-cos_classes.
 
 ::: {#tbl-cos_classes}
-+-----------------------------------------+-----------------------------------------+----------------+
-| Class of residential area               | Translation                             | Weight         |
-+=========================================+=========================================+================+
-| Contínuas predominantemente verticais   | Continuous and predominantly vertical   | 3.0            |
-+-----------------------------------------+-----------------------------------------+----------------+
-| Contínuas predominantemente horizontais | Continuous and predominantly horizontal | 1.0            |
-+-----------------------------------------+-----------------------------------------+----------------+
-| Descontínuas                            | Discontinuous                           | 0.6            |
-+-----------------------------------------+-----------------------------------------+----------------+
-| Descontínuas esparsas                   | Discontinuous and sparse                | 0.3            |
-+-----------------------------------------+-----------------------------------------+----------------+
++-----------------------------------------+-----------------------------------------+-----------------------+
+| Class of residential area               | Translation                             | Weight                |
++=========================================+=========================================+=======================+
+| Contínuas predominantemente verticais   | Continuous and predominantly vertical   | 3.0                   |
++-----------------------------------------+-----------------------------------------+-----------------------+
+| Contínuas predominantemente horizontais | Continuous and predominantly horizontal | 1.0                   |
++-----------------------------------------+-----------------------------------------+-----------------------+
+| Descontínuas                            | Discontinuous                           | 0.6                   |
++-----------------------------------------+-----------------------------------------+-----------------------+
+| Descontínuas esparsas                   | Discontinuous and sparse                | 0.3                   |
++-----------------------------------------+-----------------------------------------+-----------------------+
 
 Population and building density weights for COS land use classes
 :::
@@ -623,7 +617,7 @@ Missing values in accessibility indicators (arising from unfeasible public trans
 
 ## PCA-Based Dimension Scores {#sec-MET_pca}
 
-For every dimension with multiple indicators (Accessibility, Mobility and Safety) and at the global (all-mode) and per-mode levels, a PCA is run using `FactoMineR::PCA()` at parish level.
+For every dimension with multiple indicators (Accessibility, Mobility and Safety) and at the global (all-mode) and per-mode levels, a PCA was run using `FactoMineR::PCA()` at parish level.
 
 In line with @OECD_EU_2008, the first principal component (PC1) score is used as the dimension index after rescaling to \[1, 100\]. PC1 captures the dominant axis of variation among the normalised indicators.
 
@@ -692,31 +686,31 @@ From @tbl-results_impt_contrasting, it can be seen that the five parishes with t
 Meanwhile, the parishes which score the highest in the IMPT are predominantly located in rural regions in the east and northwest, far from the urban core, namely in the municipalities of Montijo and Mafra. These parishes tend to score very poorly in every dimension apart from Safety, which is oftentimes even higher than the LMA average. The concentration of the worst-scoring parishes in specific areas of the LMA suggest that integrated intervention strategies, at the municipal level or higher, can be more effective than parish-by-parish interventions.
 
 ::: {#tbl-results_impt_contrasting}
-+--------------+------------------------------------------------+------------------+
-| Ranking      | Parish                                         | Contrasting IMPT |
-+==============+================================================+==================+
-| 1            | Arroios                                        | 13.4             |
-+--------------+------------------------------------------------+------------------+
-| 2            | Areeiro                                        | 14.9             |
-+--------------+------------------------------------------------+------------------+
-| 3            | Campo de Ourique                               | 15.0             |
-+--------------+------------------------------------------------+------------------+
-| 4            | Santo António                                  | 15.3             |
-+--------------+------------------------------------------------+------------------+
-| 5            | Santa Maria Maior                              | 15.6             |
-+--------------+------------------------------------------------+------------------+
-| ...          | ...                                            | ...              |
-+--------------+------------------------------------------------+------------------+
-| 120          | Encarnação                                     | 81.8             |
-+--------------+------------------------------------------------+------------------+
-| 121          | Canha                                          | 83.8             |
-+--------------+------------------------------------------------+------------------+
-| 122          | União de Freguesias de Pegões                  | 83.9             |
-+--------------+------------------------------------------------+------------------+
-| 123          | União de Freguesias de Igreja Nova e Cheleiros | 90.0             |
-+--------------+------------------------------------------------+------------------+
-| 124          | União de Freguesias de Poceirão e Marateca     | 93.4             |
-+--------------+------------------------------------------------+------------------+
++-------------+------------------------------------------------+------------------+
+| Ranking     | Parish                                         | Contrasting IMPT |
++=============+================================================+==================+
+| 1           | Arroios                                        | 13.4             |
++-------------+------------------------------------------------+------------------+
+| 2           | Areeiro                                        | 14.9             |
++-------------+------------------------------------------------+------------------+
+| 3           | Campo de Ourique                               | 15.0             |
++-------------+------------------------------------------------+------------------+
+| 4           | Santo António                                  | 15.3             |
++-------------+------------------------------------------------+------------------+
+| 5           | Santa Maria Maior                              | 15.6             |
++-------------+------------------------------------------------+------------------+
+| ...         | ...                                            | ...              |
++-------------+------------------------------------------------+------------------+
+| 120         | Encarnação                                     | 81.8             |
++-------------+------------------------------------------------+------------------+
+| 121         | Canha                                          | 83.8             |
++-------------+------------------------------------------------+------------------+
+| 122         | União de Freguesias de Pegões                  | 83.9             |
++-------------+------------------------------------------------+------------------+
+| 123         | União de Freguesias de Igreja Nova e Cheleiros | 90.0             |
++-------------+------------------------------------------------+------------------+
+| 124         | União de Freguesias de Poceirão e Marateca     | 93.4             |
++-------------+------------------------------------------------+------------------+
 
 Contrasting IMPT results for the five best and worst-ranked parishes in the LMA
 :::
@@ -726,54 +720,54 @@ While the contrasting IMPT is a good indicator to evaluate differences between t
 Analyzing this index (see @tbl-results_impt_critical), it is visible that Arroios, which lead the contrasting IMPT ranking, is now outside of the five lowest-scoring parishes due to a poorer result in the Safety dimension, which was previously offset by a very high score in the other three. Carnide, also located close to the urban core of Lisbon, surges from 11th place in the contrasting IMPT to 5th, benefiting from having consistent scores in all four dimensions. Meanwhile, the highest-scoring parishes remain in the same rankings, with the only difference being the existence of slightly higher variation between their scores.
 
 ::: {#tbl-results_impt_critical}
-+-------------+------------------------------------------------+---------------+
-| Ranking     | Parish                                         | Critical IMPT |
-+=============+================================================+===============+
-| 1           | Campo de Ourique                               | 15.0          |
-+-------------+------------------------------------------------+---------------+
-| 2           | Areeiro                                        | 15.5          |
-+-------------+------------------------------------------------+---------------+
-| 3           | São Vicente                                    | 18.1          |
-+-------------+------------------------------------------------+---------------+
-| 4           | Santa Maria Maior                              | 18.5          |
-+-------------+------------------------------------------------+---------------+
-| 5           | Carnide                                        | 18.9          |
-+-------------+------------------------------------------------+---------------+
-| ...         | ...                                            | ...           |
-+-------------+------------------------------------------------+---------------+
-| 120         | Encarnação                                     | 76.6          |
-+-------------+------------------------------------------------+---------------+
-| 121         | Canha                                          | 77.0          |
-+-------------+------------------------------------------------+---------------+
-| 122         | União de Freguesias de Pegões                  | 80.6          |
-+-------------+------------------------------------------------+---------------+
-| 123         | União de Freguesias de Igreja Nova e Cheleiros | 82.4          |
-+-------------+------------------------------------------------+---------------+
-| 124         | União de Freguesias de Poceirão e Marateca     | 92.3          |
-+-------------+------------------------------------------------+---------------+
++------------+------------------------------------------------+---------------+
+| Ranking    | Parish                                         | Critical IMPT |
++============+================================================+===============+
+| 1          | Campo de Ourique                               | 15.0          |
++------------+------------------------------------------------+---------------+
+| 2          | Areeiro                                        | 15.5          |
++------------+------------------------------------------------+---------------+
+| 3          | São Vicente                                    | 18.1          |
++------------+------------------------------------------------+---------------+
+| 4          | Santa Maria Maior                              | 18.5          |
++------------+------------------------------------------------+---------------+
+| 5          | Carnide                                        | 18.9          |
++------------+------------------------------------------------+---------------+
+| ...        | ...                                            | ...           |
++------------+------------------------------------------------+---------------+
+| 120        | Encarnação                                     | 76.6          |
++------------+------------------------------------------------+---------------+
+| 121        | Canha                                          | 77.0          |
++------------+------------------------------------------------+---------------+
+| 122        | União de Freguesias de Pegões                  | 80.6          |
++------------+------------------------------------------------+---------------+
+| 123        | União de Freguesias de Igreja Nova e Cheleiros | 82.4          |
++------------+------------------------------------------------+---------------+
+| 124        | União de Freguesias de Poceirão e Marateca     | 92.3          |
++------------+------------------------------------------------+---------------+
 
 Critical IMPT results for the five best and worst-ranked parishes in the LMA
 :::
 
 ## Dimensional and spatial performance
 
-<!--# adicionar imagem dos resultados de cada dimensão -->
+<!--# adicionar imagens dos resultados de cada dimensão -->
 
 ### Accessibility
 
-The main deficiencies in Accessibility in the LMA are located mostly in rural parishes, far from any urban center, in which reaching essential services is often a challenge. Meanwhile, the urban core of Lisbon, where the highest concentration of opportunities exists, is the best-performing in this regard, along other more peripheral urban centers such as Amadora, Odivelas or Barreiro.
+The main deficiencies in Accessibility in the LMA are located in rural parishes, far from any urban center, where reaching essential services is often a challenge due to low density and long distances to essential services. Meanwhile, most urban centers perform well on this dimension, given that all urban areas provide a significant concentration of essential services, which are usually accessible in a reasonable travel time.
 
 ### Mobility
 
-This dimension indicates areas where either there is a lack of transport alternatives, or even if they exist, they are systemically inadequate, having impairments such as low service frequency or high travel times. The results for this dimension were expected, as the high concentration of jobs in the urban core of Lisbon requires peripheral regions to make long commutes, often with low public transport frequencies and high waiting times.
+This dimension indicates areas where either there is a lack of transport alternatives, or even if they exist, they are systemically inadequate, having impairments such as low service frequency or high travel times. The results for this dimension highlight the radial nature of the Lisbon Metropolitan Area, with travel from the urban core of Lisbon (where the highest concentration of jobs exists) being unchallenging, but with travel from peripheral regions being much more constrained.
 
 ### Affordability
 
-Most parishes of the LMA perform well in this dimension, showing high values of transport affordability. The most critical cases are concentrated in lower-income, car-dependent areas. This way, it can be stated that transport affordability doesn't need to be a concern for the LMA. The positive scores in this dimension can be at least partially attributed to the existence of a simple monthly, multimodal and wide-ranging public transport pass, the Navegante, which contributes significantly to lowering transportation costs.
+Most parishes of the LMA perform well in this dimension, showing high values of transport affordability. The most critical cases are concentrated in lower-income, car-dependent areas. This way, it can be stated that transport affordability isn't the primary concern for the LMA. The positive scores in this dimension can be at least partially attributed to the existence of a simple monthly, multimodal and wide-ranging public transport pass, the Navegante, which contributes significantly to lowering household transportation costs.
 
 ### Safety
 
-This dimension exhibits different patterns from the others, with peripheral parishes performing mostly better than centrally-located ones. The poor results of some parishes in the Lisbon core is result of high number of crashes and vehicles involved, even if their severity is not extreme. However, the worst results are displayed in the near-shore areas of Oeiras and Cascais, due to the particularly high crash and mortality rates registered in the Marginal road (EN6).
+This dimension exhibits different territorial patterns from the others, with peripheral parishes performing mostly better than centrally-located ones. The poor results of some parishes in the Lisbon core is a result of the high number of crashes and vehicles involved, even if their severity is not extreme. However, the worst results are displayed in the near-shore areas of Oeiras and Cascais, and can be attributed to the particularly high crash and mortality rates registered in the Marginal road (EN6).
 
 ## Takeaways
 
