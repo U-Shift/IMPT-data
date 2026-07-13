@@ -300,8 +300,12 @@ grid_aggregated <- grid_aggregated |>
   ) |>
   left_join(
     grid_access_gap_time |>
-      select(grid_id, accessibility_gap, relative_gap_time) |> # Other columns duplicate commuting
-      rename(id = grid_id, relative_gap_time_pt = relative_gap_time, accessibility_gap_pt = accessibility_gap) |>
+      select(grid_id, accessibility_gap, relative_gap_time, accessibility_gap_bike, relative_gap_bike_time) |> 
+      rename(
+        id = grid_id, 
+        relative_gap_time_pt = relative_gap_time, accessibility_gap_pt = accessibility_gap,
+        relative_gap_time_bike = relative_gap_bike_time, accessibility_gap_bike = accessibility_gap_bike
+      ) |>
       rename_with(~ paste0("access_gap_time_", .), -id),
     by = "id"
   ) |>
@@ -501,8 +505,12 @@ freguesias_aggregated <- freguesias_aggregated |>
   ) |>
   left_join(
     freguesia_access_gap_time |>
-      select(freg_id, accessibility_gap, relative_gap_time) |> # Other columns duplicate commuting
-      rename(id = freg_id, relative_gap_time_pt = relative_gap_time, accessibility_gap_pt = accessibility_gap) |>
+      select(freg_id, accessibility_gap, relative_gap_time, accessibility_gap_bike, relative_gap_bike_time) |> 
+      rename(
+        id = freg_id,
+        relative_gap_time_pt = relative_gap_time, accessibility_gap_pt = accessibility_gap,
+        relative_gap_time_bike = relative_gap_bike_time, accessibility_gap_bike = accessibility_gap_bike
+      ) |>
       mutate(id = as.character(id)) |>
       rename_with(~ paste0("access_gap_time_", .), -id),
     by = "id"
@@ -696,8 +704,12 @@ municipios_aggregated <- municipios_aggregated |>
   ) |>
   left_join(
     municipio_access_gap_time |>
-      select(mun_id, accessibility_gap, relative_gap_time) |> # Other columns duplicate commuting
-      rename(id = mun_id, relative_gap_time_pt = relative_gap_time, accessibility_gap_pt = accessibility_gap) |>
+      select(mun_id, accessibility_gap, relative_gap_time, accessibility_gap_bike, relative_gap_bike_time) |> 
+      rename(
+        id = mun_id,
+        relative_gap_time_pt = relative_gap_time, accessibility_gap_pt = accessibility_gap,
+        relative_gap_time_bike = relative_gap_bike_time, accessibility_gap_bike = accessibility_gap_bike
+      ) |>
       rename_with(~ paste0("access_gap_time_", .), -id),
     by = "id"
   ) |>
@@ -814,9 +826,9 @@ impt_write(json_str, paste(output_dir, "champions.json", sep = "/"))
 # grid_aggregated <- impt_read("/dashboard_data/grid_aggregated.csv")
 # freguesias_aggregated <- impt_read("/dashboard_data/freguesias_aggregated.csv")
 # municipios_aggregated <- impt_read("/dashboard_data/municipios_aggregated.csv")
-length(names(grid_aggregated)) # 1319
-length(names(freguesias_aggregated)) # 1717
-length(names(municipios_aggregated)) # 1708
+length(names(grid_aggregated)) # 1321
+length(names(freguesias_aggregated)) # 1719
+length(names(municipios_aggregated)) # 1710
 
 municipio_names <- names(municipios_aggregated) |> data.frame()
 freguesia_names <- names(freguesias_aggregated) |> data.frame()
