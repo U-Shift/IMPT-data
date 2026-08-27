@@ -24,7 +24,7 @@ book:
         - affordability.qmd
         - safety.qmd
         - calculator.qmd
-    - part: "**Dashboard and Reproducibility**"
+    - part: "**Outputs and Reproducibility**"
       chapters:
         - output_dashboard.qmd
         - reproducibility.qmd

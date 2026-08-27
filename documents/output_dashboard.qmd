@@ -1,4 +1,4 @@
-# Output and Dashboard {#sec-output}
+# Outputs and Dashboard {#sec-output}
 
 ## Output Files
 
@@ -61,3 +61,7 @@ The dashboard provides a comprehensive suite of features for exploring the data:
 - **Open Data:** Direct download of all the results and indicators as CSV and GeoJSON.
 
 ![IMPT Dashboard, available at [ushift.pt/apps/impt](https://ushift.pt/apps/impt)](images/prints/dashboard.png){#fig-dashboard}
+
+## Policy Brief
+
+The IMPT project also generated a policy brief to communicate the results of the project to policymakers and the general public. The policy brief is available at the [PLANAPP website](https://www.planapp.gov.pt/policy-brief/indice-multidimensional-de-pobreza-nos-transportes-em-portugal/){target="_blank"}, both in Portuguese and English versions.
