@@ -220,7 +220,7 @@ mapview(vehicles_by_parish, zcol="total_motor_vehicles_per_hh", homebutton = FAL
 
 ## 5  Travel Time Matrix ---------------------------------------------------
 
-ttm_car_60min_202602040300 <- readRDS("/data/IMPT/ttm/ttm_h3_res8/ttm_car_60min_202602040300.rds")
+ttm_car_60min_202602040300 <- impt_read("ttm/ttm_h3_res8/ttm_car_60min_202602040300.rds")
 points_h3 <- impt_read("/geo/grelha_h3_r8_centroids.gpkg")
 
 ttm_map = ttm_car_60min_202602040300 |>
@@ -236,6 +236,14 @@ ttm_map <- st_as_sf(ttm_map)
 
 mapview(grid, alpha.regions=0, color="#808080", homebutton = FALSE, layer.control.show = FALSE, legend=FALSE) +
 mapview(ttm_map, alpha=0.5, zcol="travel_time_p50", homebutton = FALSE, layer.control.show = FALSE, col.regions=select_equidistant(Viridis, 10), layer.name="Travel time (min)")
+
+freguesias_centroids = freguesias |> sf::st_centroid()
+buildings <- impt_read("/pois/lisbon_metro_buildings_height.geojson")
+
+mapview(ttm_map, alpha=0.5, zcol="travel_time_p50", homebutton = FALSE, layer.control.show = FALSE, col.regions=select_equidistant(Viridis, 10), layer.name="Jittered O/D") +
+  mapview(freguesias_centroids, homebutton = FALSE, layer.control.show = FALSE, layer.name="Original O/D", color="black", col.regions="gray", lwd=1)
+  # mapview(buildings, homebutton = FALSE, layer.control.show = FALSE, layer.name="Buildings", color="orange", col.regions="orange", lwd=1) 
+
 
 
 ## 6  Mobility -------------------------------------------------------------
