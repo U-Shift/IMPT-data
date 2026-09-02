@@ -2,13 +2,16 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.8.25">
+<meta name="generator" content="quarto-1.9.37">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>11&nbsp; Output and Dashboard – IMPT - Methodological Report</title>
+<title>11&nbsp; Outputs and Dashboard – IMPT - Methodological Report</title>
 <style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
 div.columns{display: flex; gap: min(4vw, 1.5em);}
@@ -24,7 +27,6 @@ ul.task-list li input[type="checkbox"] {
 div.csl-bib-body { }
 div.csl-entry {
   clear: both;
-  margin-bottom: 0em;
 }
 .hanging-indent div.csl-entry {
   margin-left:2em;
@@ -55,19 +57,18 @@ div.csl-indent {
 <link href="./images/icon.ico" rel="icon">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
-<script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="site_libs/quarto-html/anchor.min.js"></script>
 <link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-7b89279ff1a6dce999919e0e67d4d9ec.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark-707d8167ce6003fca903bfe2be84ab7f.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-7b89279ff1a6dce999919e0e67d4d9ec.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark-d0ae9245876894da5ac7e18953ecc5cc.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-f301bfec8aa1688484056fecac87ffb6.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="site_libs/bootstrap/bootstrap-dark-8da15c8200cabd653792465749d5391a.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="site_libs/bootstrap/bootstrap-f301bfec8aa1688484056fecac87ffb6.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-1639bb64a19928aae5da347f8145b16e.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark-fb756cd849a2431fe15fcc9ff42bf5e9.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="site_libs/bootstrap/bootstrap-1639bb64a19928aae5da347f8145b16e.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script src="site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
 <link href="site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
 <link href="site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
@@ -101,38 +102,38 @@ div.csl-indent {
 
 
 <link rel="stylesheet" href="styles/global.css">
-<meta name="citation_title" content="[[11]{.chapter-number}&nbsp; [Output and Dashboard]{.chapter-title}]{#sec-output .quarto-section-identifier}">
+<meta name="citation_title" content="[[11]{.chapter-number}&nbsp; [Outputs and Dashboard]{.chapter-title}]{#sec-output .quarto-section-identifier}">
 <meta name="citation_language" content="en">
-<meta name="citation_reference" content="citation_title=Jittering: A Computationally Efficient Method for Generating Realistic Route Networks from Origin-Destination Data;,citation_author=Robin Lovelace;,citation_author=Rosa Félix;,citation_author=Dustin Carlino;,citation_publication_date=2022;,citation_cover_date=2022;,citation_year=2022;,citation_fulltext_html_url=https://doi.org/10.32866/001c.33873;,citation_doi=10.32866/001c.33873;,citation_journal_title=Findings;">
-<meta name="citation_reference" content="citation_title=r5r: Rapid Realistic Routing on Multimodal Transport Networks with R5 in R;,citation_author=Rafael H. M. Pereira;,citation_author=Marcus Saraiva;,citation_author=Daniel Herszenhut;,citation_author=Carlos K. V. Braga;,citation_author=Matthew Wigginton Conway;,citation_publication_date=2021;,citation_cover_date=2021;,citation_year=2021;,citation_fulltext_html_url=https://doi.org/10.32866/001c.21262;,citation_doi=10.32866/001c.21262;,citation_journal_title=Findings;">
-<meta name="citation_reference" content="citation_title=accessibility: Transport Accessibility Measures;,citation_author=Rafael H. M. Pereira;,citation_author=Daniel Herszenhut;,citation_publication_date=2022;,citation_cover_date=2022;,citation_year=2022;,citation_fulltext_html_url=https://ipeagit.github.io/accessibility/;">
-<meta name="citation_reference" content="citation_title=odjitter: Jitter Origin-Destination Data;,citation_author=Dustin Carlino;,citation_author=Robin Lovelace;,citation_publication_date=2022;,citation_cover_date=2022;,citation_year=2022;,citation_fulltext_html_url=https://github.com/itsleeds/odjitter;">
-<meta name="citation_reference" content="citation_title=H3: A Hexagonal Hierarchical Spatial Index;,citation_author=Uber Technologies;,citation_publication_date=2018;,citation_cover_date=2018;,citation_year=2018;,citation_fulltext_html_url=https://h3geo.org;">
-<meta name="citation_reference" content="citation_title=Censos 2021 — Base Geográfica de Referenciação de Informação, NUTS 3 Lisboa;,citation_author=Instituto Nacional de Estatística INE;,citation_publication_date=2021;,citation_cover_date=2021;,citation_year=2021;,citation_fulltext_html_url=https://mapas.ine.pt/download/filesGPG/2021/nuts3/BGRI21_170.zip;">
-<meta name="citation_reference" content="citation_title=Inquérito à Mobilidade nas Áreas Metropolitanas do Porto e de Lisboa — IMOB 2017;,citation_author=Instituto Nacional de Estatística INE;,citation_publication_date=2018;,citation_cover_date=2018;,citation_year=2018;,citation_fulltext_html_url=https://www.ine.pt/xurl/pub/349495406;">
-<meta name="citation_reference" content="citation_title=Carta Administrativa Oficial de Portugal, CAOP 2024.1;,citation_author=DGT — Direção-Geral do Território;,citation_publication_date=2024;,citation_cover_date=2024;,citation_year=2024;,citation_fulltext_html_url=https://geo2.dgterritorio.gov.pt/caop;">
-<meta name="citation_reference" content="citation_title=Portaria n.º 1553-D/2008, de 31 de dezembro — Ajudas de custo e transportes em automóvel próprio;,citation_author=República Portuguesa;,citation_publication_date=2008;,citation_cover_date=2008;,citation_year=2008;,citation_fulltext_html_url=https://diariodarepublica.pt/dr/detalhe/portaria/1553-d-2008-243733;">
-<meta name="citation_reference" content="citation_title=Carta Administrativa Oficial de Portugal 2024.1;,citation_author=Direção-Geral do Território DGT;,citation_publication_date=2024;,citation_cover_date=2024;,citation_year=2024;,citation_fulltext_html_url=https://www.dgterritorio.gov.pt/atividades/cartografia/cartografia-tematica/caop;">
-<meta name="citation_reference" content="citation_title=COSc2023 - Carta de Ocupação do Solo Conjuntural de 2023;,citation_author=Direção-Geral do Território DGT;,citation_publication_date=2023;,citation_cover_date=2023;,citation_year=2023;,citation_fulltext_html_url=https://www.dgterritorio.gov.pt/COSc2023-Carta-de-Ocupacao-do-Solo-Conjuntural-de-2023;">
-<meta name="citation_reference" content="citation_title=h3jsr: Access Uber’s H3 Library;,citation_author=Lauren O’Brien;,citation_publication_date=2023-01;,citation_cover_date=2023-01;,citation_year=2023;,citation_fulltext_html_url=https://cran.r-project.org/web/packages/h3jsr/index.html;">
-<meta name="citation_reference" content="citation_title=OpenStreetMap: Map data available under the Open Database License (ODbL);,citation_author=undefined OpenStreetMap;,citation_publication_date=2026;,citation_cover_date=2026;,citation_year=2026;,citation_fulltext_html_url=https://www.openstreetmap.org/;">
-<meta name="citation_reference" content="citation_title=datasets;,citation_author=Carris Metropolitana;,citation_publication_date=2026-04;,citation_cover_date=2026-04;,citation_year=2026;,citation_fulltext_html_url=https://github.com/carrismetropolitana/datasets;,citation_publisher=Carris Metropolitana;">
-<meta name="citation_reference" content="citation_title=HOT Export Tool;,citation_author=Humanitarian OpenStreetMap Team HOT;,citation_publication_date=2026;,citation_cover_date=2026;,citation_year=2026;,citation_fulltext_html_url=https://export.hotosm.org/;">
-<meta name="citation_reference" content="citation_title=Copernicus Browser;,citation_author=Copernicus EU;,citation_publication_date=2026;,citation_cover_date=2026;,citation_year=2026;,citation_fulltext_html_url=https://browser.dataspace.copernicus.eu/;">
-<meta name="citation_reference" content="citation_title=População residente que vive no alojamento a maior parte do ano (N.º) por Local de residência à data dos Censos [2021] (NUTS - 2013), Sexo, Condição perante o trabalho, Principal meio de transporte e Local de trabalho ou estudo;,citation_author=Instituto Nacional de Estatística INE;,citation_publication_date=2021;,citation_cover_date=2021;,citation_year=2021;,citation_fulltext_html_url=https://tabulador.ine.pt/indicador/?id=0011704;">
-<meta name="citation_reference" content="citation_title=tidytransit: Read, Validate, Analyze, and Map GTFS Feeds;,citation_author=Flavio Poletti;,citation_author=Daniel Herszenhut;,citation_author=Mark Padgham;,citation_author=Tom Buckley;,citation_author=Danton Noriega-Goodwin;,citation_author=Angela Li;,citation_author=Elaine McVey;,citation_author=Charles Hans Thompson;,citation_author=Michael Sumner;,citation_author=Patrick Hausmann;,citation_author=Bob Rudis;,citation_author=James Lamb;,citation_author=Alexandra Kapp;,citation_author=Kearey Smith;,citation_author=Dave Vautin;,citation_author=Kyle Walker;,citation_author=Davis Vaughan;,citation_author=Ryan Rymarczyk;,citation_author=Kirill Müller;,citation_publication_date=2026-01;,citation_cover_date=2026-01;,citation_year=2026;,citation_fulltext_html_url=https://cran.r-project.org/web/packages/tidytransit/index.html;">
-<meta name="citation_reference" content="citation_title=PMMUS – Plano Metropolitano de Mobilidade Urbana Sustentável da amL;,citation_author=Transportes Metropolitanos de Lisboa TML;,citation_author=Consultores Associados Lda. Way2Go;,citation_publication_date=2025;,citation_cover_date=2025;,citation_year=2025;,citation_fulltext_html_url=https://pmmus.tmlmobilidade.pt/;">
-<meta name="citation_reference" content="citation_title=Portaria n.º 1553-D/2008, de 31 de dezembro;,citation_author=Ministério das Finanças e da Administração Pública;,citation_publication_date=2008;,citation_cover_date=2008;,citation_year=2008;,citation_fulltext_html_url=https://diariodarepublica.pt/dr/detalhe/portaria/1553-d-2008-243733;,citation_volume=n.º 252/2008, 4º Suplemento, Série I de 2008-12-31;,citation_journal_title=Diário da República;">
+<meta name="citation_reference" content="citation_title=Jittering: A computationally efficient method for generating realistic route networks from origin-destination data;,citation_author=Robin Lovelace;,citation_author=Rosa Félix;,citation_author=Dustin Carlino;,citation_publication_date=2022;,citation_cover_date=2022;,citation_year=2022;,citation_fulltext_html_url=https://doi.org/10.32866/001c.33873;,citation_doi=10.32866/001c.33873;,citation_journal_title=Findings;">
+<meta name="citation_reference" content="citation_title=r5r: Rapid realistic routing on multimodal transport networks with R5 in R;,citation_author=Rafael H. M. Pereira;,citation_author=Marcus Saraiva;,citation_author=Daniel Herszenhut;,citation_author=Carlos K. V. Braga;,citation_author=Matthew Wigginton Conway;,citation_publication_date=2021;,citation_cover_date=2021;,citation_year=2021;,citation_fulltext_html_url=https://doi.org/10.32866/001c.21262;,citation_doi=10.32866/001c.21262;,citation_journal_title=Findings;">
+<meta name="citation_reference" content="citation_title=Accessibility: Transport accessibility measures;,citation_author=Rafael H. M. Pereira;,citation_author=Daniel Herszenhut;,citation_publication_date=2022;,citation_cover_date=2022;,citation_year=2022;,citation_fulltext_html_url=https://ipeagit.github.io/accessibility/;">
+<meta name="citation_reference" content="citation_title=Odjitter: Jitter origin-destination data;,citation_author=Dustin Carlino;,citation_author=Robin Lovelace;,citation_publication_date=2022;,citation_cover_date=2022;,citation_year=2022;,citation_fulltext_html_url=https://github.com/itsleeds/odjitter;">
+<meta name="citation_reference" content="citation_title=H3: A hexagonal hierarchical spatial index;,citation_author=Uber Technologies;,citation_publication_date=2018;,citation_cover_date=2018;,citation_year=2018;,citation_fulltext_html_url=https://h3geo.org;">
+<meta name="citation_reference" content="citation_title=Censos 2021 — base geográfica de referenciação de informação, NUTS 3 lisboa;,citation_author=Instituto Nacional de Estatística INE;,citation_publication_date=2021;,citation_cover_date=2021;,citation_year=2021;,citation_fulltext_html_url=https://mapas.ine.pt/download/filesGPG/2021/nuts3/BGRI21_170.zip;">
+<meta name="citation_reference" content="citation_title=Inquérito à mobilidade nas áreas metropolitanas do porto e de lisboa — IMOB 2017;,citation_author=Instituto Nacional de Estatística INE;,citation_publication_date=2018;,citation_cover_date=2018;,citation_year=2018;,citation_fulltext_html_url=https://www.ine.pt/xurl/pub/349495406;">
+<meta name="citation_reference" content="citation_title=Carta administrativa oficial de portugal, CAOP 2024.1;,citation_author=DGT — Direção-Geral do Território;,citation_publication_date=2024;,citation_cover_date=2024;,citation_year=2024;,citation_fulltext_html_url=https://geo2.dgterritorio.gov.pt/caop;">
+<meta name="citation_reference" content="citation_title=Portaria n.º 1553-d/2008, de 31 de dezembro — ajudas de custo e transportes em automóvel próprio;,citation_author=República Portuguesa;,citation_publication_date=2008;,citation_cover_date=2008;,citation_year=2008;,citation_fulltext_html_url=https://diariodarepublica.pt/dr/detalhe/portaria/1553-d-2008-243733;">
+<meta name="citation_reference" content="citation_title=Carta administrativa oficial de portugal 2024.1;,citation_author=Direção-Geral do Território DGT;,citation_publication_date=2024;,citation_cover_date=2024;,citation_year=2024;,citation_fulltext_html_url=https://www.dgterritorio.gov.pt/atividades/cartografia/cartografia-tematica/caop;">
+<meta name="citation_reference" content="citation_title=COSc2023 - carta de ocupação do solo conjuntural de 2023;,citation_author=Direção-Geral do Território DGT;,citation_publication_date=2023;,citation_cover_date=2023;,citation_year=2023;,citation_fulltext_html_url=https://www.dgterritorio.gov.pt/COSc2023-Carta-de-Ocupacao-do-Solo-Conjuntural-de-2023;">
+<meta name="citation_reference" content="citation_title=h3jsr: Access uber’s H3 library;,citation_author=Lauren O’Brien;,citation_publication_date=2023-01;,citation_cover_date=2023-01;,citation_year=2023;,citation_fulltext_html_url=https://cran.r-project.org/web/packages/h3jsr/index.html;">
+<meta name="citation_reference" content="citation_title=OpenStreetMap: Map data available under the open database license (ODbL);,citation_author=undefined OpenStreetMap;,citation_publication_date=2026;,citation_cover_date=2026;,citation_year=2026;,citation_fulltext_html_url=https://www.openstreetmap.org/;">
+<meta name="citation_reference" content="citation_title=Datasets;,citation_author=Carris Metropolitana;,citation_publication_date=2026-04;,citation_cover_date=2026-04;,citation_year=2026;,citation_fulltext_html_url=https://github.com/carrismetropolitana/datasets;,citation_publisher=Carris Metropolitana;">
+<meta name="citation_reference" content="citation_title=HOT export tool;,citation_author=Humanitarian OpenStreetMap Team HOT;,citation_publication_date=2026;,citation_cover_date=2026;,citation_year=2026;,citation_fulltext_html_url=https://export.hotosm.org/;">
+<meta name="citation_reference" content="citation_title=Copernicus browser;,citation_author=Copernicus EU;,citation_publication_date=2026;,citation_cover_date=2026;,citation_year=2026;,citation_fulltext_html_url=https://browser.dataspace.copernicus.eu/;">
+<meta name="citation_reference" content="citation_title=População residente que vive no alojamento a maior parte do ano (n.º) por local de residência à data dos censos [2021] (NUTS - 2013), sexo, condição perante o trabalho, principal meio de transporte e local de trabalho ou estudo;,citation_author=Instituto Nacional de Estatística INE;,citation_publication_date=2021;,citation_cover_date=2021;,citation_year=2021;,citation_fulltext_html_url=https://tabulador.ine.pt/indicador/?id=0011704;">
+<meta name="citation_reference" content="citation_title=Tidytransit: Read, validate, analyze, and map GTFS feeds;,citation_author=Flavio Poletti;,citation_author=Daniel Herszenhut;,citation_author=Mark Padgham;,citation_author=Tom Buckley;,citation_author=Danton Noriega-Goodwin;,citation_author=Angela Li;,citation_author=Elaine McVey;,citation_author=Charles Hans Thompson;,citation_author=Michael Sumner;,citation_author=Patrick Hausmann;,citation_author=Bob Rudis;,citation_author=James Lamb;,citation_author=Alexandra Kapp;,citation_author=Kearey Smith;,citation_author=Dave Vautin;,citation_author=Kyle Walker;,citation_author=Davis Vaughan;,citation_author=Ryan Rymarczyk;,citation_author=Kirill Müller;,citation_publication_date=2026-01;,citation_cover_date=2026-01;,citation_year=2026;,citation_fulltext_html_url=https://cran.r-project.org/web/packages/tidytransit/index.html;">
+<meta name="citation_reference" content="citation_title=PMMUS – plano metropolitano de mobilidade urbana sustentável da amL;,citation_author=Transportes Metropolitanos de Lisboa TML;,citation_author=Consultores Associados Lda. Way2Go;,citation_publication_date=2025;,citation_cover_date=2025;,citation_year=2025;,citation_fulltext_html_url=https://pmmus.tmlmobilidade.pt/;">
+<meta name="citation_reference" content="citation_title=Portaria n.º 1553-d/2008, de 31 de dezembro;,citation_author=Ministério das Finanças e da Administração Pública;,citation_publication_date=2008;,citation_cover_date=2008;,citation_year=2008;,citation_fulltext_html_url=https://diariodarepublica.pt/dr/detalhe/portaria/1553-d-2008-243733;,citation_volume=n.º 252/2008, 4º Suplemento, Série I de 2008-12-31;,citation_journal_title=Diário da República;">
 <meta name="citation_reference" content="citation_title=Cálculo de percursos com portagens;,citation_author=Infraestruturas de Portugal IP;,citation_publication_date=2026;,citation_cover_date=2026;,citation_year=2026;,citation_fulltext_html_url=https://portagens.infraestruturasdeportugal.pt/;">
-<meta name="citation_reference" content="citation_title=Relatório e Contas 2024;,citation_author=undefined Carris;,citation_publication_date=2024-04;,citation_cover_date=2024-04;,citation_year=2024;,citation_fulltext_html_url=https://www.carris.pt/media/ikvdezmc/relat%C3%B3rio-e-contas-carris-2024.pdf;">
+<meta name="citation_reference" content="citation_title=Relatório e contas 2024;,citation_author=undefined Carris;,citation_publication_date=2024-04;,citation_cover_date=2024-04;,citation_year=2024;,citation_fulltext_html_url=https://www.carris.pt/media/ikvdezmc/relat%C3%B3rio-e-contas-carris-2024.pdf;">
 <meta name="citation_reference" content="citation_title=Tarifas;,citation_author=Metro de Lisboa;,citation_publication_date=2025;,citation_cover_date=2025;,citation_year=2025;,citation_fulltext_html_url=https://www.metrolisboa.pt/wp-content/uploads/2025/12/Tarifas_site_2026_PT.pdf;">
-<meta name="citation_reference" content="citation_title=Estatísticas do rendimento ao nível local - Indicadores de rendimento declarado no IRS - 2023;,citation_author=Instituto Nacional de Estatística INE;,citation_publication_date=2025;,citation_cover_date=2025;,citation_year=2025;,citation_fulltext_html_url=https://www.ine.pt/xurl/pub/66303599;">
-<meta name="citation_reference" content="citation_title=Censos - Resultados definitivos - 2021;,citation_author=Instituto Nacional de Estatística INE;,citation_publication_date=2022;,citation_cover_date=2022;,citation_year=2022;,citation_fulltext_html_url=https://www.ine.pt/xurl/pub/65586079;">
-<meta name="citation_reference" content="citation_title=FactoMineR: Multivariate Exploratory Data Analysis and Data Mining;,citation_author=Francois Husson;,citation_author=Julie Josse;,citation_author=Sebastien Le;,citation_author=Jeremy Mazet;,citation_publication_date=2026-04;,citation_cover_date=2026-04;,citation_year=2026;,citation_fulltext_html_url=https://cran.r-project.org/web/packages/FactoMineR/index.html;">
+<meta name="citation_reference" content="citation_title=Estatísticas do rendimento ao nível local - indicadores de rendimento declarado no IRS - 2023;,citation_author=Instituto Nacional de Estatística INE;,citation_publication_date=2025;,citation_cover_date=2025;,citation_year=2025;,citation_fulltext_html_url=https://www.ine.pt/xurl/pub/66303599;">
+<meta name="citation_reference" content="citation_title=Censos - resultados definitivos - 2021;,citation_author=Instituto Nacional de Estatística INE;,citation_publication_date=2022;,citation_cover_date=2022;,citation_year=2022;,citation_fulltext_html_url=https://www.ine.pt/xurl/pub/65586079;">
+<meta name="citation_reference" content="citation_title=FactoMineR: Multivariate exploratory data analysis and data mining;,citation_author=Francois Husson;,citation_author=Julie Josse;,citation_author=Sebastien Le;,citation_author=Jeremy Mazet;,citation_publication_date=2026-04;,citation_cover_date=2026-04;,citation_year=2026;,citation_fulltext_html_url=https://cran.r-project.org/web/packages/FactoMineR/index.html;">
 <meta name="citation_reference" content="citation_title=React;,citation_author=undefined Meta;,citation_publication_date=2026;,citation_cover_date=2026;,citation_year=2026;,citation_fulltext_html_url=https://react.dev/;">
 <meta name="citation_reference" content="citation_title=Vite;,citation_author=VoidZero Inc.;,citation_publication_date=2026;,citation_cover_date=2026;,citation_year=2026;,citation_fulltext_html_url=https://vite.dev;,citation_journal_title=vitejs;">
 <meta name="citation_reference" content="citation_title=Leaflet — an open-source JavaScript library for interactive maps;,citation_author=Volodymyr Agafonkin;,citation_publication_date=2026;,citation_cover_date=2026;,citation_year=2026;,citation_fulltext_html_url=https://leafletjs.com/;">
-<meta name="citation_reference" content="citation_title=Tailwind CSS - Rapidly build modern websites without ever leaving your HTML.;,citation_author=Tailwind Labs Inc.;,citation_publication_date=2026;,citation_cover_date=2026;,citation_year=2026;,citation_fulltext_html_url=https://tailwindcss.com/;">
+<meta name="citation_reference" content="citation_title=Tailwind CSS - rapidly build modern websites without ever leaving your HTML.;,citation_author=Tailwind Labs Inc.;,citation_publication_date=2026;,citation_cover_date=2026;,citation_year=2026;,citation_fulltext_html_url=https://tailwindcss.com/;">
 </head>
 
 <body class="nav-sidebar floating quarto-light"><script id="quarto-html-before-body" type="application/javascript">
@@ -306,7 +307,7 @@ div.csl-indent {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./output_dashboard.html"><strong>Dashboard and Reproducibility</strong></a></li><li class="breadcrumb-item"><a href="./output_dashboard.html"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Output and Dashboard</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./output_dashboard.html"><strong>Outputs and Reproducibility</strong></a></li><li class="breadcrumb-item"><a href="./output_dashboard.html"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Outputs and Dashboard</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -319,9 +320,7 @@ div.csl-indent {
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
 <!-- sidebar -->
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
-    <div class="pt-lg-2 mt-2 text-left sidebar-header sidebar-header-stacked">
-      <a href="./index.html" class="sidebar-logo-link">
-      </a>
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
     <div class="sidebar-title mb-0 py-0">
       <a href="./">IMPT - Methodological Report</a> 
         <div class="sidebar-tools-main tools-wide">
@@ -423,7 +422,7 @@ div.csl-indent {
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
- <span class="menu-text"><strong>Dashboard and Reproducibility</strong></span></a>
+ <span class="menu-text"><strong>Outputs and Reproducibility</strong></span></a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -432,7 +431,7 @@ div.csl-indent {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./output_dashboard.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Output and Dashboard</span></span></a>
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Outputs and Dashboard</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -497,6 +496,8 @@ div.csl-indent {
   <li><a href="#output-files" id="toc-output-files" class="nav-link active" data-scroll-target="#output-files"><span class="header-section-number">11.1</span> Output Files</a></li>
   <li><a href="#sec-dashboard" id="toc-sec-dashboard" class="nav-link" data-scroll-target="#sec-dashboard"><span class="header-section-number">11.2</span> Dashboard Export</a></li>
   <li><a href="#web-dashboard" id="toc-web-dashboard" class="nav-link" data-scroll-target="#web-dashboard"><span class="header-section-number">11.3</span> Web Dashboard</a></li>
+  <li><a href="#policy-brief" id="toc-policy-brief" class="nav-link" data-scroll-target="#policy-brief"><span class="header-section-number">11.4</span> Policy Brief</a></li>
+  <li><a href="#presentations" id="toc-presentations" class="nav-link" data-scroll-target="#presentations"><span class="header-section-number">11.5</span> Presentations</a></li>
   </ul>
 </nav>
     </div>
@@ -504,9 +505,9 @@ div.csl-indent {
 <main class="content" id="quarto-document-content">
 
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./output_dashboard.html"><strong>Dashboard and Reproducibility</strong></a></li><li class="breadcrumb-item"><a href="./output_dashboard.html"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Output and Dashboard</span></a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./output_dashboard.html"><strong>Outputs and Reproducibility</strong></a></li><li class="breadcrumb-item"><a href="./output_dashboard.html"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Outputs and Dashboard</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title"><span id="sec-output" class="quarto-section-identifier"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Output and Dashboard</span></span></h1>
+<h1 class="title"><span id="sec-output" class="quarto-section-identifier"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Outputs and Dashboard</span></span></h1>
 </div>
 
 
@@ -627,20 +628,37 @@ Figure&nbsp;11.1: IMPT Dashboard, available at <a href="https://ushift.pt/apps/i
 </figcaption>
 </figure>
 </div>
+</section>
+<section id="policy-brief" class="level2" data-number="11.4">
+<h2 data-number="11.4" class="anchored" data-anchor-id="policy-brief"><span class="header-section-number">11.4</span> Policy Brief</h2>
+<p>The IMPT project also generated a policy brief to communicate the results of the project to policymakers and the general public. The policy brief is available at the <a href="https://www.planapp.gov.pt/policy-brief/indice-multidimensional-de-pobreza-nos-transportes-em-portugal/" target="_blank">PLANAPP website</a>, both in Portuguese and English versions.</p>
+</section>
+<section id="presentations" class="level2" data-number="11.5">
+<h2 data-number="11.5" class="anchored" data-anchor-id="presentations"><span class="header-section-number">11.5</span> Presentations</h2>
+<div class="quarto-layout-panel" data-layout="[[30,70]]">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 30.0%;justify-content: center;">
+<p><a href="images/outputs/2026_nectar.png" class="lightbox" data-gallery="quarto-lightbox-gallery-2"><img src="images/outputs/2026_nectar.png" class="img-fluid"></a></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 70.0%;justify-content: flex-start;">
+<p><a href="./slides/" target="_blank">From Isolation to Inclusion: Introducing the Multidimensional Transport Poverty Index tool</a><br> July 2026<br> NECTAR 2026, Munich</p>
+</div>
+</div>
+</div>
 
 
-<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list" style="display: none">
+<div id="refs" class="references csl-bib-body hanging-indent" role="list" style="display: none">
 <div id="ref-leaflet_2026" class="csl-entry" role="listitem">
-Agafonkin, Volodymyr. 2026. <span>“Leaflet — an Open-Source JavaScript Library for Interactive Maps.”</span> <a href="https://leafletjs.com/">https://leafletjs.com/</a>.
+Agafonkin, Volodymyr. 2026. <em>Leaflet — an Open-Source JavaScript Library for Interactive Maps</em>. <a href="https://leafletjs.com/">https://leafletjs.com/</a>.
 </div>
 <div id="ref-tailwindcss_2026" class="csl-entry" role="listitem">
-Inc., Tailwind Labs. 2026. <span>“Tailwind CSS - Rapidly Build Modern Websites Without Ever Leaving Your HTML.”</span> <a href="https://tailwindcss.com/">https://tailwindcss.com/</a>.
+Inc., Tailwind Labs. 2026. <em>Tailwind CSS - Rapidly Build Modern Websites Without Ever Leaving Your HTML.</em> <a href="https://tailwindcss.com/">https://tailwindcss.com/</a>.
 </div>
 <div id="ref-vite_2026" class="csl-entry" role="listitem">
-Inc., VoidZero. 2026. <span>“Vite.”</span> <em>Vitejs</em>. <a href="https://vite.dev">https://vite.dev</a>.
+Inc., VoidZero. 2026. <span>“Vite.”</span> In <em>Vitejs</em>. <a href="https://vite.dev">https://vite.dev</a>.
 </div>
 <div id="ref-react_2026" class="csl-entry" role="listitem">
-Meta. 2026. <span>“React.”</span> <a href="https://react.dev/">https://react.dev/</a>.
+Meta. 2026. <em>React</em>. <a href="https://react.dev/">https://react.dev/</a>.
 </div>
 </div>
 </section>

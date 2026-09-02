@@ -1,0 +1,220 @@
+/* =============================================
+   IMPT – NECTAR 2026 Presentation Styles (Branded)
+   ============================================= */
+
+/* --- Fonts Import --- */
+@import url('https://fonts.googleapis.com/css2?family=Barlow:wght@300;400;600&family=Libre+Franklin:wght@700&display=swap');
+
+/* Fallback to Franklin Gothic if local, otherwise Libre Franklin */
+.reveal {
+    font-family: 'Barlow', sans-serif;
+    background-color: #FAF1E2;
+}
+
+/* --- Typography & base colors --- */
+
+.reveal p {
+    color: #424141;
+    font-size: 0.9em;
+    font-weight: 400;
+}
+
+.reveal a {
+    color: #da4100;
+}
+
+.reveal ul,
+.reveal ol,
+.reveal li {
+    color: #555555;
+    font-size: 0.92em;
+}
+
+.slide-1em-list ul,
+.slide-1em-list li {
+    font-size: 1em !important;
+}
+
+.reveal ul ul,
+.reveal ol ol {
+    font-size: 0.85em;
+    color: #666666;
+}
+
+/* --- Headings --- */
+
+.reveal h1,
+.reveal h2,
+.reveal h3,
+.reveal h4,
+.reveal h5,
+.reveal h6 {
+    font-family: 'Franklin Gothic', 'Libre Franklin', sans-serif;
+    font-weight: bold;
+}
+
+.reveal h1 {
+    font-size: 3.2em;
+    color: #0e396e;
+}
+
+.reveal h2 {
+    font-family: 'Barlow', sans-serif;
+    font-weight: 600;
+    font-size: 1.55em;
+    color: #0e396e;
+}
+
+.reveal h3 {
+    font-family: 'Barlow', sans-serif;
+    font-weight: 600;
+    font-size: 1.25em;
+    color: #22b273;
+}
+
+.reveal h4 {
+    font-family: 'Barlow', sans-serif;
+    font-weight: 600;
+    font-size: 1.05em;
+    color: #da4100;
+}
+
+/* --- Title slide custom classes --- */
+
+.title {
+    font-family: 'Franklin Gothic', 'Libre Franklin', sans-serif !important;
+    font-weight: bold !important;
+    font-size: 68px !important;
+    line-height: 1.15em !important;
+    color: #0e396e !important;
+}
+
+.subtitle {
+    font-family: 'Barlow', sans-serif !important;
+    font-weight: 600 !important;
+    font-size: 38px !important;
+    color: #da4100 !important;
+    margin-top: 15px !important;
+}
+
+/* --- Section slides --- */
+
+.section-slide h1 {
+    color: #FAF1E2 !important;
+    font-size: 2.4em;
+}
+
+.section-slide h2 {
+    color: #22b273 !important;
+}
+
+/* --- Figures & captions --- */
+
+.reveal figcaption,
+.reveal .caption {
+    font-size: 0.52em !important;
+    color: #666666 !important;
+    margin-top: 2px !important;
+    text-align: center !important;
+    font-weight: 300;
+}
+
+/* --- Tables --- */
+
+.reveal table {
+    font-size: 0.78em;
+    line-height: 1.5 !important;
+    border-collapse: collapse !important;
+    width: auto !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+}
+
+.reveal table th,
+.reveal table td {
+    border: none;
+    box-shadow: none !important;
+    text-align: center;
+    padding: 0.18em 0.6em !important;
+    color: #424141;
+}
+
+.reveal table thead {
+    border-bottom: 2px solid #0e396e !important;
+}
+
+.reveal table tr:nth-child(even) {
+    background-color: rgba(34, 178, 115, 0.05);
+    /* very light green */
+}
+
+/* --- Utility layout --- */
+
+.v-center-container {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: center !important;
+    height: 100% !important;
+}
+
+.h-center-text {
+    text-align: center !important;
+}
+
+.h-center-text ul {
+    display: inline-block !important;
+    text-align: left !important;
+}
+
+/* --- Dimension cards --- */
+
+.dim-card {
+    margin-bottom: 0.5em;
+    font-size: 0.88em;
+    line-height: 1.4;
+}
+
+/* --- Table wrapper & notes --- */
+
+.table-wrapper {
+    margin: auto;
+    width: fit-content;
+    max-width: 100%;
+}
+
+.table-note {
+    font-size: 0.5em !important;
+    color: #666 !important;
+    text-align: right;
+    margin-top: 0.2em;
+    line-height: 1.2;
+}
+
+/* --- References --- */
+
+div[id="refs"] {
+    font-size: 0.85em;
+}
+
+div[id="refs"] .csl-entry {
+    margin-bottom: 0.8em !important;
+}
+
+/* --- Footer & slide number --- */
+
+.reveal .slide-number {
+    font-size: 0.6em;
+    color: #0e396e;
+}
+
+/* --- Blockquote --- */
+
+.reveal blockquote {
+    border-left: 4px solid #da4100;
+    padding-left: 0.8em;
+    color: #0e396e;
+    /* font-style: italic;*/
+    background: rgba(218, 65, 0, 0.05);
+    border-radius: 0 4px 4px 0;
+}

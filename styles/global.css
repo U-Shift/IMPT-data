@@ -1,19 +1,7 @@
+#impt-text {display:none;}
+
 .orcid-icon {
   height: 1.1em;
   vertical-align: middle;
   margin-right: 0.2em;
-}
-
-@media (max-width: 1000px) {
-  .sidebar-title img {
-    width: 50% !important;
-    height: auto !important;
-  }
-}
-
-@media (max-width: 768px) {
-  .sidebar-title img {
-    width: 75% !important;
-    height: auto !important;
-  }
 }
