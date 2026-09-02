@@ -1,6 +1,8 @@
 project:
   type: book
   output-dir: _book
+  resources:
+    - slides
 
 book:
   title: "IMPT - Methodological Report"
