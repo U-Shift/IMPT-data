@@ -3,6 +3,7 @@ project:
   output-dir: _book
   resources:
     - slides
+    - images
 
 book:
   title: "IMPT - Methodological Report"
