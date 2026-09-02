@@ -65,3 +65,15 @@ The dashboard provides a comprehensive suite of features for exploring the data:
 ## Policy Brief
 
 The IMPT project also generated a policy brief to communicate the results of the project to policymakers and the general public. The policy brief is available at the [PLANAPP website](https://www.planapp.gov.pt/policy-brief/indice-multidimensional-de-pobreza-nos-transportes-em-portugal/){target="_blank"}, both in Portuguese and English versions.
+
+## Presentations
+
+::::{layout="[[30,70]]"}
+
+![](images/outputs/2026_nectar.png)
+
+[From Isolation to Inclusion: Introducing the Multidimensional Transport Poverty Index tool](./slides/){target="_blank"}<br/>
+July 2026<br/>
+NECTAR 2026, Munich
+
+::::
