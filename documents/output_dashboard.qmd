@@ -80,7 +80,7 @@ NECTAR 2026, Munich
 
 ::::{layout="[[30,70]]"}
 
-![](images/outputs/2026_barcelona.png.png)
+![](images/outputs/2026_barcelona.png)
 
 [From Isolation to Inclusion: Introducing the Multidimensional Transport Poverty Index tool](./slides/workshop-bcn/){target="_blank"}<br/>
 November 2026<br/>
