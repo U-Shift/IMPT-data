@@ -411,7 +411,7 @@ a.btn-action:hover {
 .reveal .widget,
 .widget {
     background: none;
-    border-top: 3px solid #BFBFBF;
+    /* border-top: 3px solid #BFBFBF; */
     padding: 0.5em 0 0.35em;
     margin-bottom: 0.6em;
 }
