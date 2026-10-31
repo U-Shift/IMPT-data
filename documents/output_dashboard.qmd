@@ -72,7 +72,7 @@ The IMPT project also generated a policy brief to communicate the results of the
 
 ![](images/outputs/2026_nectar.png)
 
-[From Isolation to Inclusion: Introducing the Multidimensional Transport Poverty Index tool](./slides/){target="_blank"}<br/>
+[From Isolation to Inclusion: Introducing the Multidimensional Transport Poverty Index tool](./slides/nectar/){target="_blank"}<br/>
 July 2026<br/>
 NECTAR 2026, Munich
 
