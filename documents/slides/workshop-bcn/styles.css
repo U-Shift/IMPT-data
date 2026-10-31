@@ -394,16 +394,21 @@ a.btn-action:hover {
 }
 
 /* --- Interactive Widgets (PCA, etc.) --- */
+.reveal .small,
 .small {
-    font-size: 0.82em;
+    font-size: 0.75em;
     color: #555;
+    line-height: 1.35;
 }
 
+.reveal .tiny,
 .tiny {
-    font-size: 0.8em;
+    font-size: 0.58em;
     color: #666;
+    line-height: 1.25;
 }
 
+.reveal .widget,
 .widget {
     background: none;
     border-top: 3px solid #BFBFBF;
@@ -411,6 +416,7 @@ a.btn-action:hover {
     margin-bottom: 0.6em;
 }
 
+.reveal .widget .row,
 .widget .row {
     display: grid;
     grid-template-columns: 9em 1fr 3.4em;
@@ -419,20 +425,23 @@ a.btn-action:hover {
     margin: 0.15em 0;
 }
 
+.reveal .widget input[type=range],
 .widget input[type=range] {
     width: 100%;
     accent-color: #181D70;
 }
 
+.reveal .widget .val,
 .widget .val {
     text-align: right;
     font-weight: 600;
     color: #404040;
 }
 
+.reveal .preset,
 .preset {
     font: inherit;
-    font-size: 0.9em;
+    font-size: 0.85em;
     border: 2px solid #404040;
     background: #fff;
     color: #404040;
@@ -442,12 +451,15 @@ a.btn-action:hover {
     cursor: pointer;
 }
 
+.reveal .preset.on,
+.reveal .preset:hover,
 .preset.on,
 .preset:hover {
     background: #404040;
     color: #fff;
 }
 
+.reveal .pca canvas,
 .pca canvas {
     display: block;
     width: auto;
