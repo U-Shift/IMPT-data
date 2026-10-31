@@ -274,12 +274,18 @@ Multi-dimentional · Multi-modal · Scalable · Replicable</p>
 <figcaption>Source: Wikipedia</figcaption>
 </figure>
 </div>
-</div><div class="column" style="width:60%;">
+</div><div class="fragment column" style="width:60%;">
 <ul>
 <li><strong>18 municipalities</strong> · <strong>124 parishes</strong> · ~2.8M inhabitants, 3,000 km²</li>
 <li>Analysis unit: <strong>freguesia</strong> (parish) — lowest admin level with full data coverage</li>
 <li>Also computed at <strong>municipality</strong> and <strong>H3 grid</strong> level, resolution 8 (~3,686 hexagons)</li>
 </ul>
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="images/h3_grid_example.png"></p>
+<figcaption>res 8 grid example</figcaption>
+</figure>
+</div>
 </div></div>
 </section>
 <section id="open-data" class="slide level2 center">
@@ -346,12 +352,38 @@ Multi-dimentional · Multi-modal · Scalable · Replicable</p>
 </figure>
 </div>
 </div>
-<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="r-stack quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="fragment fade-out" data-fragment-index="1" style="width: 100%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="../../images/maps/access_health_walk.png"></p>
+<figcaption>Cumulative accessibility by <strong>walking</strong> to health centres</figcaption>
+</figure>
+</div>
+</div>
+<div class="fragment fade-in-then-out" data-fragment-index="1" style="width: 100%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="../../images/maps/access_health_bike.png"></p>
+<figcaption>Cumulative accessibility by <strong>bicycle</strong> to health centres</figcaption>
+</figure>
+</div>
+</div>
+<div class="fragment fade-in-then-out" data-fragment-index="2" style="width: 100%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="../../images/maps/access_health_pt.png"></p>
+<figcaption>Cumulative accessibility by <strong>public transport</strong> to health centres</figcaption>
+</figure>
+</div>
+</div>
+<div class="fragment" data-fragment-index="3" style="width: 100%;">
 <div class="quarto-figure quarto-figure-center">
 <figure>
 <p><img data-src="../../images/maps/access_health_car.png"></p>
-<figcaption>Commulative accessibility by car to health centres</figcaption>
+<figcaption>Cumulative accessibility by <strong>car</strong> to health centres</figcaption>
 </figure>
+</div>
 </div>
 </div>
 </div>
@@ -482,7 +514,7 @@ Multi-dimentional · Multi-modal · Scalable · Replicable</p>
 <div style="font-size: 0.8em; color: #666;">
 <p><span class="math display">\[X_{norm} = \frac{X - X_{min}}{X_{max} - X_{min}} \times 100\ \text{ or }\ X_{norm} = \frac{X_{max} - X}{X_{max} - X_{min}} \times 100\]</span></p>
 </div>
-<p>Intra-dimension: <strong>PCA</strong> (PC1 score) aggregates multiple indicators <span class="citation" data-cites="OECD_EU_2008">(<a href="#/references" role="doc-biblioref" onclick="">OECD et al. 2008</a>)</span></p>
+<p>Intra-dimension: <strong>PCA</strong> (<a href="#/sec-pca">PC1 score</a>) aggregates multiple indicators <span class="citation" data-cites="OECD_EU_2008">(<a href="#/references" role="doc-biblioref" onclick="">OECD et al. 2008</a>)</span></p>
 <p><br></p>
 <p><strong>Inter-dimensional aggregation</strong></p>
 <table class="caption-top">
@@ -610,7 +642,7 @@ Multi-dimentional · Multi-modal · Scalable · Replicable</p>
 <li>High scores overall</li>
 <li>The <strong>Navegante</strong> monthly pass greatly mitigates costs (inexpensive)</li>
 <li>Worst cases in <strong>low-income, car-dependent</strong> areas</li>
-<li>Housing more expensive where Transportation is more affordable and vice-versa</li>
+<li><strong>Paradox</strong>: Housing more expensive where Transportation is more affordable and vice-versa</li>
 </ul>
 </div></div>
 </section>
@@ -703,6 +735,29 @@ Multi-dimentional · Multi-modal · Scalable · Replicable</p>
 → **Urban core** parishes benefit from high accessibility, good PT, and higher incomes  
 → **Rural/peripheral** parishes suffer poor access, car-dependence, and very limited PT
 :::-->
+</section>
+<section id="a-single-score-or-many-indicators" class="slide level2 fill center">
+<h2>🧩 A single score, or many indicators?</h2>
+<div class="small">
+<blockquote>
+<p>“multiple indicators are better than any single metric or composite” <span class="citation" data-cites="Lowans_2021">(<a href="#/references" role="doc-biblioref" onclick="">Lowans et al. 2021</a>)</span></p>
+</blockquote>
+</div>
+<p><br></p>
+<div class="quarto-layout-panel" data-layout-ncol="2">
+<div class="quarto-layout-row">
+<div class="card c-warn quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<p><strong>Risk of one single number</strong><br>A composite can hide which dimension is failing.</p>
+</div>
+<div class="card c-green quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<p><strong>Value of one single number</strong><br>It ranks places, targets funds and communicates quickly.</p>
+</div>
+</div>
+</div>
+<p><br></p>
+<div class="fragment h-center-text">
+<p><strong>What we did:</strong> publish the composite index <em>together with</em> every dimension and indicator, so users can further investigate.</p>
+</div>
 </section></section>
 <section>
 <section id="validation" class="title-slide slide level1 section-slide center" data-transition="fade-in slide-out" data-background-color="#181D70">
@@ -715,11 +770,6 @@ Multi-dimentional · Multi-modal · Scalable · Replicable</p>
 <li><strong>13/18 municipalities</strong> represented + transport authorities + operators</li>
 <li>Participants assessed transport poverty levels in their territories and compared with IMPT scores</li>
 </ul>
-<div class="fragment" style="font-size: 0.85em; text-align: center">
-<p><strong>Result:</strong> Higher convergence than expected for a secondary-data index</p>
-<p>Stakeholders were very <strong>optimistic</strong> regarding transport poverty in their territories</p>
-<p>Main divergence: <strong>Safety</strong> — participants systematically <strong>underestimated</strong> crash risks in their territories</p>
-</div>
 <div class="columns">
 <div class="column" style="width:45%;">
 <div class="quarto-figure quarto-figure-center">
@@ -736,6 +786,11 @@ Multi-dimentional · Multi-modal · Scalable · Replicable</p>
 </figure>
 </div>
 </div></div>
+<div class="fragment" style="font-size: 0.82em; text-align: center">
+<p>Stakeholders were very <strong>optimistic</strong> regarding transport poverty in their territories</p>
+<p>Main divergence: <strong>Safety</strong> — participants systematically <strong>underestimated</strong> crash risks in their territories</p>
+<p>Higher convergence than expected for a <strong>secondary-data</strong> index</p>
+</div>
 </section></section>
 <section>
 <section id="conclusions" class="title-slide slide level1 section-slide center" data-transition="fade-in slide-out" data-background-color="#181D70">
@@ -778,6 +833,9 @@ Multi-dimentional · Multi-modal · Scalable · Replicable</p>
 <li>💨 Include <strong>air pollution</strong> and <strong>noise</strong> exposure as environmental externalities</li>
 <li>📡 <strong>Longitudinal monitoring</strong>: IMPT updates as data becomes available (eg.APIs) to assess interventions’ impacts</li>
 </ul>
+<div class="fragment" style="text-align: center; margin-top: 1em;">
+<p><a class="btn-action" href="">👀 Which one would you tackle first? </a></p>
+</div>
 </section></section>
 <section>
 <section id="thank-you" class="title-slide slide level1 no-footer center">
@@ -821,6 +879,9 @@ Isalou, Ali A., Todd Litman, and Behzad Shahmoradi. 2014. <span>“Testing the H
 <div id="ref-Litman_2026" class="csl-entry" role="listitem">
 Litman, Todd. 2026. <span>“Evaluating Transportation Affordability.”</span> In <em>Victoria Transport Policy Institute</em>. <a href="https://www.vtpi.org/affordability.pdf">https://www.vtpi.org/affordability.pdf</a>.
 </div>
+<div id="ref-Lowans_2021" class="csl-entry" role="listitem">
+Lowans, Christopher, Dylan Furszyfer Del Rio, Benjamin K. Sovacool, David Rooney, and Aoife M. Foley. 2021. <span>“What Is the State of the Art in Energy and Transport Poverty Metrics? A Critical and Comprehensive Review.”</span> <em>Energy Economics</em> 101: 105360. <a href="https://doi.org/10.1016/j.eneco.2021.105360">https://doi.org/10.1016/j.eneco.2021.105360</a>.
+</div>
 <div id="ref-Lucas_2016" class="csl-entry" role="listitem">
 Lucas, Karen, Giulio Mattioli, Ersilia Verlinghieri, and Alvaro Guzman. 2016. <span>“Transport Poverty and Its Adverse Social Consequences.”</span> <em>Proceedings of the Institution of Civil Engineers - Transport</em> 169 (6): 353–65. <a href="https://doi.org/10.1680/jtran.15.00073">https://doi.org/10.1680/jtran.15.00073</a>.
 </div>
@@ -840,13 +901,94 @@ Pereira, Rafael H. M., Marcus Saraiva, Daniel Herszenhut, Carlos K. V. Braga, an
 Pritchard, John P., Filipe Moura, João de Abreu e Silva, and Luiz M. Martinez. 2014. <span>“Spatial Analysis of Transportation-Related Social Exclusion in the Lisbon Metropolitan Area.”</span> <em>Procedia - Social and Behavioral Sciences</em> 111: 440–49. <a href="https://doi.org/10.1016/j.sbspro.2014.01.077">https://doi.org/10.1016/j.sbspro.2014.01.077</a>.
 </div>
 </div>
+</section>
+<section id="your-turn" class="slide level2 center">
+<h2>Your turn!</h2>
+<ul>
+<li>Explore the IMPT dashboard</li>
+<li>Start the <strong>AHP</strong> survey</li>
+<li>Apply <strong>your own weights</strong> to the indicators!</li>
+</ul>
+<div class="quarto-layout-panel" data-layout="[50, 50]" style="align-items: center;">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="images/AHP_IMPT_example2.png" class="quarto-figure quarto-figure-center" width="160"></p>
+</figure>
+</div>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="images/AHP_IMPT_example.png" class="quarto-figure quarto-figure-center" width="500"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="where-do-people-actually-live" class="slide level2 center" data-visibility="uncounted">
+<h2>Where do people actually live?</h2>
+<div class="quarto-layout-panel" data-layout-ncol="2">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="images/census_bgri.png"></p>
+<figcaption>Census block data are coarse</figcaption>
+</figure>
+</div>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="images/jittering_buildings.png"></p>
+<figcaption>Resident population redistributed using buildings</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<div class="small text-justify">
+<p>Considering the <strong>average</strong> over a parish can mislead when people live in a small part of it. Distributing the population across <strong>buildings</strong> (weighted by its volumes) gives better <em>proxies</em>.</p>
+</div>
+</section>
+<section id="sec-pca" class="slide level2 center" data-visibility="uncounted">
+<h2>What is PCA?</h2>
+<div class="columns">
+<div class="column pcatxt" style="width:45%;">
+<p><em>From Mauricio Orozco lectures’ slides</em></p>
+<div style="font-size: 0.7em;">
+<p>A <strong>dimension</strong> is described by <strong>several indicators</strong>, and many of them move together (<em>e.g.&nbsp;jobs reachable in 30 and in 45 minutes</em>). Adding them up counts the same information twice.</p>
+<p>Principal Component Analysis (PCA) finds the direction along which places <strong>differ most</strong>. The first component (PC1) is that direction. Each place gets one score: its position along it.</p>
+<p>PCA is the approach recommended by the <strong>OECD/JRC Handbook</strong> on composite indicators <span class="citation" data-cites="OECD_EU_2008">(<a href="#/references" role="doc-biblioref" onclick="">OECD et al. 2008</a>)</span>.</p>
+</div>
+<p>PC1 should capture a large share of the <strong>variation</strong>, and every indicator should push it in the same direction.</p>
+</div><div class="column" style="width:55%;">
+<div class="widget pca">
+<canvas width="560" height="400">
+</canvas>
+<div class="row">
+<span>Rotate the axis</span><input type="range" min="0" max="179" value="20" data-k="ang"><span class="val" data-o="ang"></span>
+</div>
+<div class="small" style="margin:0.2em 0;">
+Variation kept by this axis: <b data-o="share"></b> <button class="preset" data-act="snap">Snap to PC1</button>
+</div>
+<div class="tiny">
+Each dot is a district, and the vaues are accessibility and mobility scores (standardised). The dots stay fixed: the axis rotates, and each district gets a score where it lands on the axis.
+</div>
+</div>
+</div></div>
+<script src="tp-data.js"></script>
+<script src="tp-widgets.js"></script>
 
 </section></section>
     </div>
   <div class="quarto-auto-generated-content" style="display: none;">
 <p><img src="images/transport_poverty_logo_dark_cropped.png" class="slide-logo"></p>
 <div class="footer footer-default">
-<p>Orozco-Fontalvo, Félix, Matos, Alvelos, Garcia, Moura — Equity in Transport, Barcelona</p>
+<p>Orozco-Fontalvo, Félix, Matos, Alvelos, Garcia, Moura - Equity in Transport, Barcelona</p>
 </div>
 </div></div>
 
