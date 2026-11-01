@@ -61,3 +61,7 @@ paper/
 raw/*
 .positai
 
+# Track rendered slides entry html
+!documents/slides/*.html
+!documents/slides/*/*.html
+
